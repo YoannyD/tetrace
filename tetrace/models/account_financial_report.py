@@ -4,7 +4,7 @@
 import logging
 import ast
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.tools import float_is_zero, ustr
 from odoo.tools.safe_eval import safe_eval
 from odoo.addons.account_reports.models.account_financial_report import FormulaContext, FormulaLine
@@ -93,7 +93,7 @@ class AccountFinancialReportLine(models.Model):
             FROM
                 res_currency_rate cr INNER JOIN
                 account_move_line ml
-                ON cr.currency_id = ml.company_currency_id and cr.name <= ml.date
+                ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
             WHERE
                 cr.company_id = %s
             ORDER BY cr.name DESC
@@ -187,7 +187,7 @@ class AccountFinancialReportLine(models.Model):
                 FROM
                     res_currency_rate cr INNER JOIN
                     account_move_line ml
-                    ON cr.currency_id = ml.company_currency_id and cr.name <= ml.date
+                    ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
                 WHERE
                     cr.company_id = %s
                 ORDER BY cr.name DESC
