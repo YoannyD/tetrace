@@ -7,3 +7,13 @@
 	path = OCA/server-ux
 	url = git@github.com:OCA/server-ux.git
 	branch = 13.0
+
+[submodule "OCA/l10n-spain"]
+	path = OCA/l10n-spain
+	url = git@github.com:OCA/l10n-spain.git
+	branch = 13.0
+
+[submodule "OCA/partner-contact"]
+	path = OCA/partner-contact
+	url = git@github.com:OCA/partner-contact.git
+	branch = 13.0
