@@ -4,7 +4,6 @@
         <field name="name">account.financial.html.report.form.tetrace</field>
         <field name="inherit_id" ref="account_reports.view_account_financial_report_form" />
         <field name="model">account.financial.html.report</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='hierarchy_option']" position="after">
                 <field name="informe_fecha_contable"/>

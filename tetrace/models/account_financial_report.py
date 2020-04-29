@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ReportAccountFinancialReport(models.Model):
-    _name = "account.financial.html.report"
+    _inherit = "account.financial.html.report"
 
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
 
