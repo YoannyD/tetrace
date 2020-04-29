@@ -38,7 +38,7 @@ class AccountFinancialReportLine(models.Model):
             COALESCE(SUM(\"account_move_line\".credit), 0) AS credit
         '''
         if currency_table:
-            if self.informe_fecha_contable:
+            if self.financial_report_id.informe_fecha_contable:
                 select = '''
                     COALESCE(SUM(ROUND(\"account_move_line\".balance * (%s / \"cr\".rate), %s)), 0) AS balance,
                     COALESCE(SUM(ROUND(\"account_move_line\".amount_residual * (%s / \"cr\".rate), %s)), 0) AS amount_residual,
@@ -91,7 +91,7 @@ class AccountFinancialReportLine(models.Model):
                 domain[index] = ('tax_ids', 'in', taxes.ids)
         aml_obj = self.env['account.move.line']
         tables, where_clause, where_params = aml_obj._query_get(domain=self._get_aml_domain())
-        if self.informe_fecha_contable:
+        if self.financial_report_id.informe_fecha_contable:
             tables += """,(
                 SELECT
                     ml.id,
@@ -186,7 +186,7 @@ class AccountFinancialReportLine(models.Model):
 
             aml_obj = self.env['account.move.line']
             tables, where_clause, where_params = aml_obj._query_get(domain=self._get_aml_domain())
-            if self.informe_fecha_contable:
+            if self.financial_report_id.informe_fecha_contable:
                 tables += """,(
                     SELECT
                         ml.id,
