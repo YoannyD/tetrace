@@ -11,12 +11,4 @@ _logger = logging.getLogger(__name__)
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    categoria_ids = fields.Many2many('account.move.line.category')
-
-
-class CategoriaMoveLine(models.Model):
-    _name = "account.move.line.category"
-    _description = "Categorías de las líneas de movimiento"
-
-    name = fields.Char('Nombre', required=True)
-    move_line_ids = fields.Many2many('account.move.line')
+    tetrace_account_id = fields.Many2one(related="account_id.tetrace_account_id")

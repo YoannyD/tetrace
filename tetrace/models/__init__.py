@@ -2,4 +2,5 @@
 # © 2020 Ingetive - <info@ingetive.com>
 
 from . import account_financial_report
+from . import account_account
 from . import account_move_line

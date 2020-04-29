@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_account_move_line_category,access_account_move_line_category,model_account_move_line_category,base.group_user,1,0,0,0
+access_tetrace_account,access_tetrace_account,model_tetrace_account,base.group_user,1,1,1,1

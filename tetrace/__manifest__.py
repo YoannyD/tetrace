@@ -13,8 +13,10 @@
         'account_reports'
     ],
     'data': [
+        'security/ir.model.access.csv',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
+        'views/account_account.xml',
     ],
     'demo': [],
     'installable': True,
