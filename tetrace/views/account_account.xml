@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_account_form">
+        <field name="name">account.account.form.tetrace</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="model">account.account</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deprecated']" position="after">
+                <field name="tetrace_account_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_tetrace_account_form">
+        <field name="name">tetrace.account.form</field>
+        <field name="model">tetrace.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_tetrace_account_tree">
+        <field name="name">tetrace.account.tree</field>
+        <field name="model">tetrace.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <act_window id="action_tetrace_account"
+                name="Cuentas consolidacion Tetrace"
+                res_model="tetrace.account"
+                view_mode="tree,form"/>
+
+    <menuitem id="menu_tetrace_account"
+              action="action_tetrace_account"
+              name="Cuentas consolidacion Tetrace"
+              parent="account.account_account_menu"
+              sequence="2"/>
+</odoo>
