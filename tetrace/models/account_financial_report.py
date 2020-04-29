@@ -12,6 +12,12 @@ from odoo.addons.account_reports.models.account_financial_report import FormulaC
 _logger = logging.getLogger(__name__)
 
 
+class ReportAccountFinancialReport(models.Model):
+    _name = "account.financial.html.report"
+
+    informe_fecha_contable = fields.Boolean('Informe con fecha contable')
+
+
 class AccountFinancialReportLine(models.Model):
     _inherit = "account.financial.html.report.line"
 
@@ -32,36 +38,35 @@ class AccountFinancialReportLine(models.Model):
             COALESCE(SUM(\"account_move_line\".credit), 0) AS credit
         '''
         if currency_table:
-            select = '''
-                COALESCE(SUM(ROUND(\"account_move_line\".balance * (%s / \"cr\".rate), %s)), 0) AS balance,
-                COALESCE(SUM(ROUND(\"account_move_line\".amount_residual * (%s / \"cr\".rate), %s)), 0) AS amount_residual,
-                COALESCE(SUM(ROUND(\"account_move_line\".debit * (%s / \"cr\".rate), %s)), 0) AS debit,
-                COALESCE(SUM(ROUND(\"account_move_line\".credit * (%s / \"cr\".rate), %s)), 0) AS credit
-            '''
-            extra_params += [used_currency.rate, decimal_places,
-                             used_currency.rate, decimal_places,
-                             used_currency.rate, decimal_places,
-                             used_currency.rate, decimal_places]
-
-            """
-            select = 'COALESCE(SUM(CASE '
-            for currency_id, rate in currency_table.items():
-                extra_params += [currency_id, rate, decimal_places]
-                select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".balance * rate, %s) '
-            select += 'ELSE \"account_move_line\".balance END), 0) AS balance, COALESCE(SUM(CASE '
-            for currency_id, rate in currency_table.items():
-                extra_params += [currency_id, rate, decimal_places]
-                select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".amount_residual * rate, %s) '
-            select += 'ELSE \"account_move_line\".amount_residual END), 0) AS amount_residual, COALESCE(SUM(CASE '
-            for currency_id, rate in currency_table.items():
-                extra_params += [currency_id, rate, decimal_places]
-                select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".debit * rate, %s) '
-            select += 'ELSE \"account_move_line\".debit END), 0) AS debit, COALESCE(SUM(CASE '
-            for currency_id, rate in currency_table.items():
-                extra_params += [currency_id, rate, decimal_places]
-                select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".credit * rate, %s) '
-            select += 'ELSE \"account_move_line\".credit END), 0) AS credit'
-            """
+            if self.informe_fecha_contable:
+                select = '''
+                    COALESCE(SUM(ROUND(\"account_move_line\".balance * (%s / \"cr\".rate), %s)), 0) AS balance,
+                    COALESCE(SUM(ROUND(\"account_move_line\".amount_residual * (%s / \"cr\".rate), %s)), 0) AS amount_residual,
+                    COALESCE(SUM(ROUND(\"account_move_line\".debit * (%s / \"cr\".rate), %s)), 0) AS debit,
+                    COALESCE(SUM(ROUND(\"account_move_line\".credit * (%s / \"cr\".rate), %s)), 0) AS credit
+                '''
+                extra_params += [used_currency.rate, decimal_places,
+                                 used_currency.rate, decimal_places,
+                                 used_currency.rate, decimal_places,
+                                 used_currency.rate, decimal_places]
+            else:
+                select = 'COALESCE(SUM(CASE '
+                for currency_id, rate in currency_table.items():
+                    extra_params += [currency_id, rate, decimal_places]
+                    select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".balance * %s, %s) '
+                select += 'ELSE \"account_move_line\".balance END), 0) AS balance, COALESCE(SUM(CASE '
+                for currency_id, rate in currency_table.items():
+                    extra_params += [currency_id, rate, decimal_places]
+                    select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".amount_residual * %s, %s) '
+                select += 'ELSE \"account_move_line\".amount_residual END), 0) AS amount_residual, COALESCE(SUM(CASE '
+                for currency_id, rate in currency_table.items():
+                    extra_params += [currency_id, rate, decimal_places]
+                    select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".debit * %s, %s) '
+                select += 'ELSE \"account_move_line\".debit END), 0) AS debit, COALESCE(SUM(CASE '
+                for currency_id, rate in currency_table.items():
+                    extra_params += [currency_id, rate, decimal_places]
+                    select += 'WHEN \"account_move_line\".company_currency_id = %s THEN ROUND(\"account_move_line\".credit * %s, %s) '
+                select += 'ELSE \"account_move_line\".credit END), 0) AS credit'
 
         return select, extra_params
 
@@ -86,20 +91,21 @@ class AccountFinancialReportLine(models.Model):
                 domain[index] = ('tax_ids', 'in', taxes.ids)
         aml_obj = self.env['account.move.line']
         tables, where_clause, where_params = aml_obj._query_get(domain=self._get_aml_domain())
-        tables += """,(
-            SELECT
-                ml.id,
-                COALESCE(cr.rate, 1.0) AS rate
-            FROM
-                res_currency_rate cr INNER JOIN
-                account_move_line ml
-                ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
-            WHERE
-                cr.company_id = %s
-            ORDER BY cr.name DESC
-            ) AS cr
-            """ % self.env.company.id
-        where_clause = "(\"cr\".\"id\" = \"account_move_line\".\"id\") AND " + where_clause
+        if self.informe_fecha_contable:
+            tables += """,(
+                SELECT
+                    ml.id,
+                    COALESCE(cr.rate, 1.0) AS rate
+                FROM
+                    res_currency_rate cr INNER JOIN
+                    account_move_line ml
+                    ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
+                WHERE
+                    cr.company_id = %s
+                ORDER BY cr.name DESC
+                ) AS cr
+                """ % self.env.company.id
+            where_clause = "(\"cr\".\"id\" = \"account_move_line\".\"id\") AND " + where_clause
 
         if financial_report.tax_report:
             where_clause += ''' AND "account_move_line".tax_exigible = 't' '''
@@ -180,20 +186,22 @@ class AccountFinancialReportLine(models.Model):
 
             aml_obj = self.env['account.move.line']
             tables, where_clause, where_params = aml_obj._query_get(domain=self._get_aml_domain())
-            tables += """,(
-                SELECT
-                    ml.id,
-                    COALESCE(cr.rate, 1.0) AS rate
-                FROM
-                    res_currency_rate cr INNER JOIN
-                    account_move_line ml
-                    ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
-                WHERE
-                    cr.company_id = %s
-                ORDER BY cr.name DESC
-                ) AS cr
-                """ % self.env.company.id
-            where_clause = "(\"cr\".\"id\" = \"account_move_line\".\"id\") AND " + where_clause
+            if self.informe_fecha_contable:
+                tables += """,(
+                    SELECT
+                        ml.id,
+                        COALESCE(cr.rate, 1.0) AS rate
+                    FROM
+                        res_currency_rate cr INNER JOIN
+                        account_move_line ml
+                        ON cr.currency_id = ml.company_currency_id and cr.name = ml.date
+                    WHERE
+                        cr.company_id = %s
+                    ORDER BY cr.name DESC
+                    ) AS cr
+                    """ % self.env.company.id
+                where_clause = "(\"cr\".\"id\" = \"account_move_line\".\"id\") AND " + where_clause
+
             if financial_report.tax_report:
                 where_clause += ''' AND "account_move_line".tax_exigible = 't' '''
 

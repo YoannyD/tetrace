@@ -13,6 +13,7 @@
         'account_reports'
     ],
     'data': [
+        'views/account_financial_report.xml',
     ],
     'demo': [],
     'installable': True,
