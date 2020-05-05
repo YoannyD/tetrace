@@ -26,7 +26,22 @@ class CityZipGeonamesImport(models.TransientModel):
         parsed_csv = super(CityZipGeonamesImport, self).get_and_parse_csv(country)
         if self.limit:
             offset = self.offset if self.offset else 0
-            parsed_csv = parsed_csv[offset:(self.limit + offset)]
+            new_parse_csv = []
+            i = 0
+            add = 0
+            for item in parsed_csv:
+                if i < offset:
+                    i = i + 1
+                    continue
+
+                if add >= self.limit:
+                    break
+
+                new_parse_csv.append(item)
+                add = add + 1
+                i = i + 1
+
+            parsed_csv = new_parse_csv
         return parsed_csv
 
     def _process_csv(self, parsed_csv, country):
