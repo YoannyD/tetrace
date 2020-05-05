@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="city_zip_geonames_import_form" model="ir.ui.view">
+        <field name="name">Import from Geonames form view por partes</field>
+        <field name="model">city.zip.geonames.import</field>
+        <field name="inherit_id" ref="base_location_geonames_import.city_zip_geonames_import_form"/>
+        <field name="arch"  type="xml">
+            <xpath expr="//group[@name='main']" position="inside">
+                <field name="offset"/>
+                <field name="limit"/>
+                <field name="eliminar_antiguos"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
