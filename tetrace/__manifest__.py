@@ -15,6 +15,8 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'report/account.xml',
+        'report/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
         'views/account_account.xml',
