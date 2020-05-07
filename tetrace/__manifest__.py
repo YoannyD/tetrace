@@ -11,10 +11,13 @@
     'depends': [
         'base',
         'account',
-        'account_reports'
+        'account_reports',
+        'l10n_ar'
     ],
     'data': [
         'security/ir.model.access.csv',
+        'report/account.xml',
+        'report/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
         'views/account_account.xml',
