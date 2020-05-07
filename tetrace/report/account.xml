@@ -2,8 +2,10 @@
 <odoo>
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
-            <span>Factura Nº</span> <br/>
-            <span t-if="o.name != '/'" t-field="o.name"/>
+            <h2>
+                <span>Factura Nº</span> <br/>
+                <span t-if="o.name != '/'" t-field="o.name"/>
+            </h2>
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="attributes">

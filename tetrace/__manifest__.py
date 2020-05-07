@@ -11,7 +11,8 @@
     'depends': [
         'base',
         'account',
-        'account_reports'
+        'account_reports',
+        'l10n_in'
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="external_layout_standard" inherit_id="web.external_layout_standard">
-        <xpath expr="//li[@t-if='company.vat']" position="attributes">
+        <xpath expr="//li[@t-if='vat or company.vat']" position="attributes">
             <attribute name="style">display:none</attribute>
         </xpath>
     </template>
