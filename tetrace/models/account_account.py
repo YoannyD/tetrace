@@ -20,3 +20,4 @@ class TetraceAccount(models.Model):
 
     name = fields.Char('Nombre', required=True)
     account_ids = fields.One2many('account.account', 'tetrace_account_id')
+    account_move_line_ids = fields.One2many('account.account', 'tetrace_account_id')
