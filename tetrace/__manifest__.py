@@ -12,7 +12,8 @@
         'base',
         'account',
         'account_reports',
-        'l10n_ar'
+        'l10n_ar',
+        'l10n_latam_invoice_document'
     ],
     'data': [
         'security/ir.model.access.csv',
