@@ -12,7 +12,7 @@
         'base',
         'account',
         'account_reports',
-        'l10n_in'
+        'l10n_ar'
     ],
     'data': [
         'security/ir.model.access.csv',
