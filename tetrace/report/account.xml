@@ -8,12 +8,12 @@
             </h2>
         </xpath>
 
-        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="attributes">
-            <attribute name="style">display:none</attribute>
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
+            <th name="th_taxes"/>
         </xpath>
 
-        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']/td[5]" position="attributes">
-            <attribute name="style">display:none</attribute>
+        <xpath expr="//span[@id='line_tax_ids']" position="replace">
+            <span style="display:none" id="line_tax_ids"/>
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="replace"/>
