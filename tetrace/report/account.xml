@@ -2,8 +2,8 @@
 <odoo>
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
-            <addres>
-                <span class="text-uppercase" t-field="o.partner_id.name"/> <br/>
+            <address>
+                <span style="display:block;padding-top:30px;" class="text-uppercase" t-field="o.partner_id.name"/>
                 <t t-if="o.partner_id.street">
                     <span t-field="o.partner_id.street"/> <br/>
                 </t>
@@ -25,7 +25,7 @@
                 <t t-if="o.partner_id.country_id">
                     <span t-field="o.partner_id.country_id.name"/>
                 </t>
-            </addres>
+            </address>
         </xpath>
 
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
