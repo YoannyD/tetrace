@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_move_form_inherit_l10n_cl">
+        <field name="name">account.move.form.inherit.l10n.cl.tetrace</field>
+        <field name="inherit_id" ref="l10n_cl.view_move_form_inherit_l10n_cl"/>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='ref']" position="attributes">
+                <attribute name="attrs">{'required': [('l10n_latam_internal_type', '=', 'debit_note')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

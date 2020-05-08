@@ -22,6 +22,7 @@
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
         'views/account_account.xml',
+        'views/account_move.xml'
     ],
     'demo': [],
     'installable': True,
