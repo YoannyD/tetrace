@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document" sequence="17">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
             <address>
-                <span style="display:block;padding-top:30px;" class="text-uppercase" t-field="o.partner_id.name"/>
-                <t t-if="o.partner_id.street">
-                    <span t-field="o.partner_id.street"/> <br/>
-                </t>
-                <t t-if="o.partner_id.street2">
-                    <span t-field="o.partner_id.street2"/> <br/>
-                </t>
-                <t t-if="o.partner_id.zip">
+                <div>
+                    <h3>Importador</h3>
+                </div>
+                <div>
+                    <span style="display:block;padding-top:30px;" class="text-uppercase" t-field="o.partner_id.name"/>
+                </div>
+                <div t-if="o.partner_id.street">
+                    <span t-field="o.partner_id.street"/>
+                </div>
+                <div t-if="o.partner_id.street2">
+                    <span t-field="o.partner_id.street2"/>
+                </div>
+                <div t-if="o.partner_id.zip">
                     <span t-field="o.partner_id.zip"/>
-                </t>
-                <t t-if="o.partner_id.city">
+                </div>
+                <div t-if="o.partner_id.city">
                     <span t-field="o.partner_id.city"/>
-                </t>
-                <t t-if="o.partner_id.state_id">
+                </div>
+                <div t-if="o.partner_id.state_id">
                     - <span t-field="o.partner_id.state_id.name"/>
-                </t>
-                <t t-if="o.partner_id.zip or o.partner_id.city or o.partner_id.state_id">
+                </div>
+                <div t-if="o.partner_id.zip or o.partner_id.city or o.partner_id.state_id">
                     <br/>
-                </t>
-                <t t-if="o.partner_id.country_id">
+                </div>
+                <div t-if="o.partner_id.country_id">
                     <span t-field="o.partner_id.country_id.name"/>
-                </t>
+                </div>
             </address>
         </xpath>
 
@@ -33,6 +38,13 @@
                 <span>Factura Nº</span> <br/>
                 <span t-if="o.name != '/'" t-field="o.name"/>
             </h2>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div class="col-auto mw-100 mb-2" t-if="o.ref" name="reference">
+                <strong>Incoterm:</strong>
+                <p class="m-0" t-field="o.invoice_incoterm_id"/>
+            </div>
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
@@ -56,5 +68,27 @@
                 <span t-field="line.l10n_latam_price_unit"/>
             </td>
         </xpath>
+
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr[1]/th[1]" position="before">
+            <th>
+                Artículo
+            </th>
+            <th>
+                Código arancelario
+            </th>
+        </xpath>
+
+        <xpath epxr="//t[@name='account_invoice_line_accountable']/td" position="before">
+            <td>
+                <span t-field="line.product_id.default_code"/>
+            </td>
+            <td>
+                <span t-field="line.intrastat_transaction_id"/>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">
+        <xpath expr="//div[@t-field='o.partner_id']" position="replace"/>
     </template>
 </odoo>
