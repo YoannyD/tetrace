@@ -7,7 +7,7 @@
                     <h3>Importador</h3>
                 </div>
                 <div>
-                    <span style="display:block;padding-top:30px;" class="text-uppercase" t-field="o.partner_id.name"/>
+                    <span class="text-uppercase" t-field="o.partner_id.name"/>
                 </div>
                 <div t-if="o.partner_id.street">
                     <span t-field="o.partner_id.street"/>
