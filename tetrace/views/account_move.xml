@@ -8,6 +8,23 @@
             <xpath expr="//field[@name='ref']" position="attributes">
                 <attribute name="attrs">{'required': [('l10n_latam_internal_type', '=', 'debit_note')]}</attribute>
             </xpath>
+
+            <xpath expr="//group[@name='sale_info_group']/field[@name='invoice_user_id']" position="inside">
+                <field name="asiento_anticipo_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_account_invoice_filter">
+        <field name="name">account.invoice.select.tetrace</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='myinvoices']" position="after">
+                <filter domain="[('asiento_anticipo_id', '!=', False)]"
+                        name="filter_asiento_anticipo_id"
+                        help="Facturas anticipadas"/>
+            </xpath>
         </field>
     </record>
 </odoo>
