@@ -2,32 +2,36 @@
 <odoo>
     <template id="external_layout_standard" inherit_id="web.external_layout_standard">
         <xpath expr="//div[@t-field='company.partner_id']" position="replace">
-            <div>
-                <h4>Exportador</h4>
-            </div>
-            <div>
-                <span class="text-uppercase" t-field="company.name"/>
-            </div>
-            <div t-if="company.company_registry">
-                NIF: <span t-field="company.company_registry"/> <br/>
-            </div>
-            <div t-if="company.street">
-                <span t-field="company.street"/> <br/>
-            </div>
-            <div t-if="company.street2">
-                <span t-field="company.street2"/> <br/>
-            </div>
-            <div t-if="company.zip">
-                <span t-field="company.zip"/>
-            </div>
-            <div t-if="company.city">
-                <span t-field="company.city"/>
-                <t t-if="company.state_id">
-                    - <span t-field="company.state_id.name"/>
-                </t>
-            </div>
-            <div t-if="company.country_id">
-                <span t-field="company.country_id.name"/>
+            <div style="display:block">
+                <div>
+                    <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Exportador</h5>
+                </div>
+                <div>
+                    <span class="text-uppercase" t-field="company.name"/>
+                </div>
+                <div style="font-size:0.9em;">
+                    <div t-if="company.company_registry">
+                        NIF: <span t-field="company.company_registry"/> <br/>
+                    </div>
+                    <div t-if="company.street">
+                        <span t-field="company.street"/> <br/>
+                    </div>
+                    <div t-if="company.street2">
+                        <span t-field="company.street2"/> <br/>
+                    </div>
+                    <div t-if="company.city or company.zip or company.state_id or company.country_id">
+                        <span t-field="company.city"/>
+                        <t t-if="company.zip">
+                            - <span t-field="company.zip"/>
+                        </t>
+                        <t t-if="company.state_id">
+                            - <span t-field="company.state_id.name"/>
+                        </t>
+                        <t t-if="company.country_id">
+                            - <span t-field="company.country_id.name"/>
+                        </t>
+                    </div>
+                </div>
             </div>
         </xpath>
     </template>
