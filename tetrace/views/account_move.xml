@@ -20,7 +20,7 @@
         <field name="inherit_id" ref="account.view_account_invoice_filter"/>
         <field name="model">account.move</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='myinvoices']" position="after">
+            <xpath expr="//filter[@name='myinvoices']" position="after">
                 <filter domain="[('asiento_anticipo_id', '!=', False)]"
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
