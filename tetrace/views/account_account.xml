@@ -5,8 +5,11 @@
         <field name="inherit_id" ref="account.view_account_form"/>
         <field name="model">account.account</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='deprecated']" position="after">
-                <field name="tetrace_account_id"/>
+            <xpath expr="//group[1]" position="after">
+                <group name="" string="Tetrace">
+                    <field name="tetrace_account_id"/>
+                    <field name="gestionar_cartera"/>
+                </group>
             </xpath>
         </field>
     </record>

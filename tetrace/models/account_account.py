@@ -11,7 +11,8 @@ _logger = logging.getLogger(__name__)
 class AccountAccount(models.Model):
     _inherit = "account.account"
 
-    tetrace_account_id = fields.Many2one('tetrace.account', string="Cuenta Tetrace")
+    tetrace_account_id = fields.Many2one('tetrace.account', string="Cuenta Consolidación")
+    gestionar_cartera = fields.Boolean('Gestionar cartera')
 
 
 class TetraceAccount(models.Model):
