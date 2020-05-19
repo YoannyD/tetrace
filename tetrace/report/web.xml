@@ -34,6 +34,15 @@
                 </div>
             </div>
         </xpath>
+
+        <xpath expr="//li[@t-if='company.email']/span[@t-field='company.email']" position="replace">
+            <t t-if="o and o._name == 'account.move'">
+                invoicing@tetrace.com
+            </t>
+            <t t-if="not o or o._name != 'account.move'">
+                <span t-field="company.email"/>
+            </t>
+        </xpath>
     </template>
 
     <template id="argentinian_extra_info" inherit_id="l10n_ar.argentinian_extra_info">
