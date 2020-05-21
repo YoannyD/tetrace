@@ -2,7 +2,11 @@
 <odoo>
     <template id="external_layout_standard" inherit_id="web.external_layout_standard">
         <xpath expr="//div[@t-field='company.partner_id']" position="replace">
-            <div style="display:block">
+            <div t-field="company.partner_id"
+                 t-if="not o or o._name != 'account.move' or (o._name == 'account.move' and (not o.journal_id or o.journal_id.code != 'INVE'))"
+                 t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}"/>
+
+            <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.code == 'INVE'" style="display:block">
                 <div>
                     <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Exportador</h5>
                 </div>
