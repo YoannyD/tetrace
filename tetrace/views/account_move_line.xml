@@ -7,6 +7,33 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='account_id']" position="after">
                 <field name="tetrace_account_id"/>
+                <field name="asiento_anticipo_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_payments_tree">
+        <field name="name">Payments tetrace</field>
+        <field name="inherit_id" ref="account_due_list.view_payments_tree" />
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="asiento_anticipo_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_payments_filter">
+        <field name="name">Payments Selection tetrace</field>
+        <field name="inherit_id" ref="account_due_list.view_payments_filter" />
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_id']" position="after">
+                <field name="tetrace_account_id"/>
+                <field name="asiento_anticipo_id"/>
+                <filter domain="[('asiento_anticipo_id', '!=', False)]"
+                        name="filter_asiento_anticipo_id"
+                        help="Facturas anticipadas"/>
             </xpath>
         </field>
     </record>
