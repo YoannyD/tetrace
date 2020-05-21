@@ -4,17 +4,24 @@
             model="account.move"
             string="Factura exportador"
             report_type="qweb-pdf"
-            context="{'invoice_export': True}"
             name="account.report_invoice_with_payments"
             file="account.report_invoice_with_payments"
             attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"
             print_report_name="(object._get_report_base_filename())"
             groups="account.group_account_invoice"
-        />
+    />
+
+    <record id="tetrace.account_invoices_export" model="ir.actions.report">
+        <field name="context">{'invoice_export': True}</field>
+    </record>
 
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
-            <address style="padding-top:20px;">
+            <address t-field="o.partner_id"
+                     t-if="not context.get('invoice_export')"
+                     t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
+
+            <address t-if="context.get('invoice_export')" style="padding-top:20px;">
                 <div>
                     <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Importador</h5>
                 </div>
@@ -46,14 +53,25 @@
         </xpath>
 
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
-            <h2>
+            <h2 t-if="not context.get('invoice_export')">
+                <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Invoice</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
+                <span t-if="o.type == 'out_refund'">Credit Note</span>
+                <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
+                <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
+                <span t-if="o.name != '/'" t-field="o.name"/>
+            </h2>
+            <t t-esc="context"/>
+            <h2 t-if="context.get('invoice_export')">
+
                 <span>Factura Nº</span> <br/>
                 <span t-if="o.name != '/'" t-field="o.name"/>
             </h2>
         </xpath>
 
         <xpath expr="//div[@id='informations']" position="inside">
-            <div class="col-auto mw-100 mb-2" t-if="o.ref" name="reference">
+            <div class="col-auto mw-100 mb-2" t-if="context.get('invoice_export') and o.ref" name="reference">
                 <strong>Incoterm:</strong>
                 <p class="m-0" t-field="o.invoice_incoterm_id"/>
             </div>
@@ -82,21 +100,25 @@
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr[1]/th[1]" position="before">
-            <th>
-                Artículo
-            </th>
-            <th>
-                Código arancelario
-            </th>
+            <t t-if="context.get('invoice_export')">
+                <th>
+                    Artículo
+                </th>
+                <th>
+                    Código arancelario
+                </th>
+            </t>
         </xpath>
 
         <xpath expr="//td[@name='account_invoice_line_name']" position="before">
-            <td>
-                <span t-field="line.product_id.default_code"/>
-            </td>
-            <td>
-                <span t-field="line.intrastat_transaction_id"/>
-            </td>
+            <t t-if="context.get('invoice_export')">
+                <td>
+                    <span t-field="line.product_id.default_code"/>
+                </td>
+                <td>
+                    <span t-field="line.intrastat_transaction_id"/>
+                </td>
+            </t>
         </xpath>
     </template>
 

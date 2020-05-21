@@ -13,6 +13,7 @@
         'sale',
         'account',
         'account_reports',
+        'account_intrastat',
         'l10n_ar',
         'l10n_cl',
         'l10n_latam_invoice_document',
