@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <report id="account_invoices_export"
+            model="account.move"
+            string="Factura exportador"
+            report_type="qweb-pdf"
+            context="{'invoice_export': True}"
+            name="account.report_invoice_with_payments"
+            file="account.report_invoice_with_payments"
+            attachment="(object.state == 'posted') and ((object.name or 'INV').replace('/','_')+'.pdf')"
+            print_report_name="(object._get_report_base_filename())"
+            groups="account.group_account_invoice"
+        />
+
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
             <address style="padding-top:20px;">

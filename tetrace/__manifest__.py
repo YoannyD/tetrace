@@ -16,7 +16,8 @@
         'l10n_ar',
         'l10n_cl',
         'l10n_latam_invoice_document',
-        'account_due_list'
+        'account_due_list',
+        'report_context'
     ],
     'data': [
         'security/ir.model.access.csv',
