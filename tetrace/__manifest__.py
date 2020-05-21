@@ -10,10 +10,14 @@
     'version': '13.0.1.0.1',
     'depends': [
         'base',
+        'sale',
         'account',
         'account_reports',
+        'account_intrastat',
         'l10n_ar',
-        'l10n_latam_invoice_document'
+        'l10n_cl',
+        'l10n_latam_invoice_document',
+        'account_due_list',
     ],
     'data': [
         'security/ir.model.access.csv',
