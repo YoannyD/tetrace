@@ -35,4 +35,15 @@
             </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="view_invoice_tree">
+        <field name="name">account.invoice.tree.tetrace</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="asiento_anticipo_id"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

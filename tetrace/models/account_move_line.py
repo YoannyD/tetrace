@@ -13,6 +13,7 @@ class AccountMoveLine(models.Model):
 
     tetrace_account_id = fields.Many2one("tetrace.account", string="Cuenta Tetrace", company_dependent=False,
                                          compute="_compute_tetrace_account_id", store=True)
+    asiento_anticipo_id = fields.Many2one(related="move_id.asiento_anticipo_id")
 
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):

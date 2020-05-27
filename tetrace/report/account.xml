@@ -60,6 +60,12 @@
                 <strong>Incoterm:</strong>
                 <p class="m-0" t-field="o.invoice_incoterm_id"/>
             </div>
+
+            <div class="col-auto mw-100 mb-2" name="intrastat_transport"
+                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.intrastat_transport_mode_id">
+                <strong>Modo transporte:</strong>
+                <p class="m-0" t-field="o.intrastat_transport_mode_id"/>
+            </div>
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
@@ -108,6 +114,10 @@
     </template>
 
     <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">
+        <xpath expr="//div[@groups='sale.group_delivery_invoice_address']" position="attributes">
+            <attribute name="style">padding-top:15px;padding-bottom:15px;</attribute>
+        </xpath>
+
         <xpath expr="//div[@t-field='o.partner_id']" position="replace"/>
     </template>
 </odoo>
