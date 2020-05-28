@@ -6,6 +6,7 @@
         <field name="model">hr.applicant</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
+                <field name="fecha_recepcion"/>
                 <field name="country_id"/>
                 <field name="job_ids" widget="many2many_tags"/>
                 <field name="carpeta_drive"/>
