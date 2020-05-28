@@ -29,6 +29,16 @@ class GoogleDrive(models.AbstractModel):
         url += params_query if params_query else ''
         return self.env['google.service']._do_request(url, {}, self.HEADERS_REQUEST, type='GET')
 
+    def buscar(self, params_query=None, user=None):
+        url = "%s/files?access_token=%s" % (self.BASE_URL_DRIVE, self.get_token(user))
+        url += params_query if params_query else ''
+        return self.env['google.service']._do_request(url, {}, self.HEADERS_REQUEST, type='GET')
+
+    def export(self, field_id, params_query=None, user=None):
+        url = "%s/files/%s/export?access_token=%s" % (self.BASE_URL_DRIVE, field_id, self.get_token(user))
+        url += params_query if params_query else ''
+        return self.env['google.service']._do_request(url, {}, self.HEADERS_REQUEST, type='GET')
+
     def crear(self, data=None, params_query=None, user=None):
         if not data:
             data = {}
