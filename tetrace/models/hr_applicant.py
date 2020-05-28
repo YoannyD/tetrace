@@ -12,6 +12,5 @@ class Applicant(models.Model):
     _inherit = "hr.applicant"
 
     country_id = fields.Many2one('res.country', string="País")
-    applicant_optional_ids = fields.Many2many('hr.applicant', 'rel_applicant_optional', 'apli1', 'apli2',
-                                              string="Otro puesto de trabajo")
+    job_ids = fields.Many2many('hr.job', 'applicant_id', string="Otro puesto de trabajo")
     carpeta_drive = fields.Char('Carpeta Drive')
