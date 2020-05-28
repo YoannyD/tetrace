@@ -18,6 +18,7 @@
         'l10n_cl',
         'l10n_latam_invoice_document',
         'account_due_list',
+        'hr_recruitment'
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -26,7 +27,8 @@
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
         'views/account_account.xml',
-        'views/account_move.xml'
+        'views/account_move.xml',
+        'views/hr_applicant.xml',
     ],
     'demo': [],
     'installable': True,
