@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.google.drive</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="35"/>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='integration']" position="inside">
+                <div class="col-xs-12 col-md-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="module_gdrive"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label string="Google Drive (Ingetive)" for="module_gdrive"/>
+                        <div class="text-muted">
+                            Synchronize your checkings with Google Drive
+                        </div>
+                        <div class="content-group" attrs="{'invisible': [('module_gdrive','=',False)]}">
+                            <div class="mt16 row">
+                                <label for="google_gdrive_client_id" string="Client ID" class="col-xs-3 col-md-3 o_light_label"/>
+                                <field name="google_gdrive_client_id" nolabel="1"/>
+                                <label for="google_gdrive_client_secret" string="Client Secret" class="col-xs-3 col-md-3 o_light_label"/>
+                                <field name="google_gdrive_client_secret" password="True" nolabel="1"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

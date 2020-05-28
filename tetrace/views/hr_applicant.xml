@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="country_id"/>
                 <field name="applicant_optional_ids" widget="many2many_tags"/>
+                <field name="carpeta_drive"/>
             </xpath>
         </field>
     </record>
