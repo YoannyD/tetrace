@@ -11,9 +11,10 @@
         'base_setup',
         'base',
         'website',
+        'google_account'
     ],
     'data': [
-        'data/mails.xml',
+        # 'data/mails.xml',
         'views/res_users.xml',
         'views/res_config_settings.xml',
         'templates/google_drive.xml',
