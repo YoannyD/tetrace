@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form" model="ir.ui.view">
+        <field name="name">res.users.form.gdrive</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button string="Enviar email conectarse a Google Drive"
+                        type="object"
+                        name="action_enviar_email_conexion_google_drive"
+                        context="{'create_user': 1}"/>
+            </xpath>
+
+            <notebook colspan="4" position="inside">
+                <page string="Drive">
+                    <group>
+                        <field name="google_gdrive_rtoken"/>
+                        <field name="google_gdrive_token"/>
+                        <field name="google_gdrive_token_validity"/>
+                        <field name="google_gdrive_last_sync_date"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
+

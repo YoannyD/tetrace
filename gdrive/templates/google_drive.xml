@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="authorize" name="Authorize Drive">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12 mt64" style="text-align:center;">
+                            <div>
+                                <h1>
+                                    Conectarse con Google Drive
+                                </h1>
+                            </div>
+                            <t t-if="user_id.google_gdrive_token">
+                                <div class="mt64">
+                                    <p>
+                                        <i style="font-size:2em;color:#3c763d;" class="fa fa-check" aria-hidden="true"/>
+                                    </p>
+                                    <p>
+                                        Ya tiene la cuenta conectada con Google Drive
+                                    </p>
+                                    <p class="mt32">
+                                        <a class="btn btn-primary btn-lg" t-att-href="url_authorize">Actualizar conexión</a>
+                                    </p>
+                                </div>
+                            </t>
+
+                            <t t-if="not user_id.google_gdrive_token">
+                                <div>
+                                    <p>
+                                        Es necesario que se conecte con Google Drive para poder sincronizar documentos.
+                                    </p>
+                                </div>
+                                <div class="mt64">
+                                    <img t-attf-src="/web/image/res.partner/#{user_id.id}/image/125x125" width="125" style="vertical-align:top;"/>
+                                    <i style="font-size:9em;margin:0 30px;" class="fa fa-arrows-h"/>
+                                    <img src="/gdrive/static/src/img/google_drive_icon.png" width="125" style="vertical-align:top;"/>
+                                </div>
+                                <div class="mt64">
+                                    <p>
+                                        <a class="btn btn-primary btn-lg" t-att-href="url_authorize">Conectarse</a>
+                                    </p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
