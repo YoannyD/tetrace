@@ -16,6 +16,7 @@ class AccountMoveLine(models.Model):
     asiento_anticipo_id = fields.Many2one(related="move_id.asiento_anticipo_id")
     asiento_anticipo_fecha_vencimiento = fields.Date("Fecha vencimiento anticipo",
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
+    confirmado = fields.Boolean('Confirmado')
 
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):

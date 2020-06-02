@@ -21,6 +21,10 @@
                 <field name="asiento_anticipo_id"/>
                 <field name="asiento_anticipo_fecha_vencimiento"/>
             </xpath>
+
+            <xpath expr="//field[@name='date_maturity']" position="after">
+                <field name="confirmado"/>
+            </xpath>
         </field>
     </record>
 
@@ -35,6 +39,8 @@
                 <filter domain="[('asiento_anticipo_id', '!=', False)]"
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
+                <filter domain="[('confirmado', '=', True)]"
+                        name="filter_confirmado"/>
             </xpath>
         </field>
     </record>
