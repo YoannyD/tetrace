@@ -40,6 +40,7 @@
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
                 <filter domain="[('confirmado', '=', True)]"
+                        help="Confirmado"
                         name="filter_confirmado"/>
             </xpath>
         </field>
