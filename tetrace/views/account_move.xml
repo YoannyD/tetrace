@@ -52,6 +52,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="asiento_anticipo_id"/>
+                <field name="fecha_vencimiento_anticipo"/>
             </xpath>
         </field>
     </record>

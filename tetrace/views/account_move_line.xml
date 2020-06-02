@@ -9,6 +9,10 @@
                 <field name="tetrace_account_id"/>
                 <field name="asiento_anticipo_id"/>
             </xpath>
+
+            <xpath expr="//field[@name='date_maturity']" position="after">
+                <field name="confirmado"/>
+            </xpath>
         </field>
     </record>
 
@@ -19,6 +23,11 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='account_id']" position="after">
                 <field name="asiento_anticipo_id"/>
+                <field name="asiento_anticipo_fecha_vencimiento"/>
+            </xpath>
+
+            <xpath expr="//field[@name='date_maturity']" position="after">
+                <field name="confirmado"/>
             </xpath>
         </field>
     </record>
@@ -34,6 +43,9 @@
                 <filter domain="[('asiento_anticipo_id', '!=', False)]"
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
+                <filter domain="[('confirmado', '=', True)]"
+                        help="Confirmado"
+                        name="filter_confirmado"/>
             </xpath>
         </field>
     </record>
