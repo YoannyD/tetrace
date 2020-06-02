@@ -12,4 +12,4 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
-    icoterm_complemento = fields.Char('Complemento Icoterm')
+    incoterm_complemento = fields.Char('Complemento Incoterm')
