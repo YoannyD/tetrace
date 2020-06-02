@@ -111,6 +111,7 @@ class GoogleDrive(models.AbstractModel):
 
     def get_drive_scope(self, RO=False):
         readonly = '.readonly' if RO else ''
+        return 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.file'
         return 'https://www.googleapis.com/auth/drive%s' % (readonly)
 
     def authorize_google_uri(self, from_url='http://www.odoo.com'):

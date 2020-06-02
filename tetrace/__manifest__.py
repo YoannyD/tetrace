@@ -19,7 +19,6 @@
         'l10n_latam_invoice_document',
         'account_due_list',
         'hr_recruitment',
-        'gdrive'
     ],
     'data': [
         'security/ir.model.access.csv',
