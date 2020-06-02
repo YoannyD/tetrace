@@ -22,7 +22,7 @@ class AccountMove(models.Model):
             if r.asiento_anticipo_id:
                 for line in r.asiento_anticipo_id.line_ids:
                     if line.date_maturity and line.account_id and line.account_id.group_id and \
-                        line.account_id.group_id.code_prefix == 5200:
+                        line.account_id.group_id.code_prefix == '5200':
                         fecha_vencimiento_anticipo = line.date_maturity
                         break
             r.fecha_vencimiento_anticipo = fecha_vencimiento_anticipo

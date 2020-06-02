@@ -26,6 +26,10 @@ class AccountMoveLine(models.Model):
     def _compute_asiento_anticipo_fecha_vencimiento(self):
         for r in self:
             fecha_vencimiento = None
-            if r.asiento_anticipo_id and r.asiento_anticipo_id.fecha_vencimiento_anticipo:
-                fecha_vencimiento = r.asiento_anticipo_id.fecha_vencimiento_anticipo
+            if r.asiento_anticipo_id:
+                for line in r.asiento_anticipo_id.line_ids:
+                    if line.date_maturity and line.account_id and line.account_id.group_id and \
+                        line.account_id.group_id.code_prefix == '5200':
+                        fecha_vencimiento = line.date_maturity
+                        break
             r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
