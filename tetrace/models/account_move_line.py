@@ -14,9 +14,17 @@ class AccountMoveLine(models.Model):
     tetrace_account_id = fields.Many2one("tetrace.account", string="Cuenta Tetrace", company_dependent=False,
                                          compute="_compute_tetrace_account_id", store=True)
     asiento_anticipo_id = fields.Many2one(related="move_id.asiento_anticipo_id")
-    asiento_anticipo_fecha_vencimiento = fields.Date(related="move_id.asiento_anticipo_id.fecha_vencimiento_anticipo")
+    asiento_anticipo_fecha_vencimiento = fields.Date("Fecha vencimiento anticipo",
+                                                     compute="_compute_asiento_anticipo_fecha_vencimiento")
 
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
         for r in self:
             r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else None
+
+    def _compute_asiento_anticipo_fecha_vencimiento(self):
+        for r in self:
+            fecha_vencimiento = None
+            if r.asiento_anticipo_id and r.asiento_anticipo_id.fecha_vencimiento_anticipo:
+                fecha_vencimiento = r.asiento_anticipo_id.fecha_vencimiento_anticipo
+            r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
