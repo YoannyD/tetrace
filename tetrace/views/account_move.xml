@@ -38,6 +38,7 @@
                 <label for="invoice_incoterm_id" />
                 <div class="d-flex">
                     <field name="invoice_incoterm_id"/>
+                     <span class="o_form_label mx-3"> </span>
                     <field name="icoterm_complemento"/>
                 </div>
             </xpath>
