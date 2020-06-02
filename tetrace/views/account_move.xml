@@ -33,6 +33,14 @@
             <xpath expr="//group[@name='sale_info_group']" position="inside">
                 <field name="asiento_anticipo_id"/>
             </xpath>
+
+            <xpath expr="//field[@name='invoice_incoterm_id']" position="replace">
+                <label for="invoice_incoterm_id" />
+                <div class="d-flex">
+                    <field name="invoice_incoterm_id"/>
+                    <field name="icoterm_complemento"/>
+                </div>
+            </xpath>
         </field>
     </record>
 
