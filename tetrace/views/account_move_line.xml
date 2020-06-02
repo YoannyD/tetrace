@@ -9,6 +9,10 @@
                 <field name="tetrace_account_id"/>
                 <field name="asiento_anticipo_id"/>
             </xpath>
+
+            <xpath expr="//field[@name='date_maturity']" position="after">
+                <field name="confirmado"/>
+            </xpath>
         </field>
     </record>
 
