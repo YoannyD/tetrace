@@ -19,6 +19,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='account_id']" position="after">
                 <field name="asiento_anticipo_id"/>
+                <field name="asiento_anticipo_id"/>
             </xpath>
         </field>
     </record>
