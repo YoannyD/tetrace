@@ -17,3 +17,4 @@ class Applicant(models.Model):
     carpeta_drive = fields.Char('Carpeta Drive')
     fecha_recepcion = fields.Date('Fecha recepción')
     sin_adjuntos = fields.Boolean('Sin adjuntos en Drive')
+    categ_ids = fields.Many2many(string='Formación')
