@@ -54,17 +54,24 @@
         </xpath>
 
         <xpath expr="//div[@id='informations']" position="inside">
-            <div class="col-auto mw-100 mb-2"
-                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.ref"
-                 name="reference">
-                <strong>Incoterm:</strong>
-                <p class="m-0" t-field="o.invoice_incoterm_id"/>
-            </div>
-
             <div class="col-auto mw-100 mb-2" name="intrastat_transport"
                  t-if="o.journal_id and o.journal_id.code == 'INVE' and o.intrastat_transport_mode_id">
                 <strong>Modo transporte:</strong>
                 <p class="m-0" t-field="o.intrastat_transport_mode_id"/>
+            </div>
+
+            <div class="col-auto mw-100 mb-2"
+                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.invoice_incoterm_id"
+                 name="incoterm">
+                <strong>Incoterm:</strong>
+                <p class="m-0" t-field="o.invoice_incoterm_id"/>
+            </div>
+
+            <div class="col-auto mw-100 mb-2"
+                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.incoterm_complemento"
+                 name="incoterm_complemento">
+                <strong> </strong>
+                <p class="m-0" t-field="o.incoterm_complemento"/>
             </div>
         </xpath>
 
@@ -110,6 +117,15 @@
                     <span t-if="line.product_id.intrastat_id" t-field="line.product_id.intrastat_id.code"/>
                 </td>
             </t>
+        </xpath>
+
+        <xpath expr="//div[@id='total']//t[@t-foreach='o.amount_by_group'][1]" position="attributes">
+            <attribute name="t-if">not o.journal_id or o.journal_id.code != 'INVE'</attribute>
+        </xpath>
+
+        <xpath expr="//tr[hasClass('o_total')]/td[1]/strong[1]" position="replace">
+            <strong t-if="o.journal_id and o.journal_id.code == 'INVE'">Total CIP</strong>
+            <strong t-if="not o.journal_id or o.journal_id.code != 'INVE'">Total</strong>
         </xpath>
     </template>
 
