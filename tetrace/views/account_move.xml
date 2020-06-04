@@ -42,6 +42,14 @@
                     <field name="incoterm_complemento"/>
                 </div>
             </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree[1]/field[@name='analytic_account_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/form[1]/field[@name='analytic_account_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
         </field>
     </record>
 
