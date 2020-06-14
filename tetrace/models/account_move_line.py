@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +20,12 @@ class AccountMoveLine(models.Model):
     confirmado = fields.Boolean('Confirmado')
     analytic_account_id = fields.Many2one('account.analytic.account', required=True)
 
+    @api.constrains('analytic_account_id')
+    def _check_analytic_account_id(self):
+        for r in self:
+            if r.move_id and r.move_id.type in ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'] and \
+                not r.analytic_account_id:
+                raise ValidationError('La cuenta analítica es obligatorio.')
 
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
