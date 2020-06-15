@@ -18,7 +18,6 @@ class AccountMoveLine(models.Model):
     asiento_anticipo_fecha_vencimiento = fields.Date("Fecha vencimiento anticipo",
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
-    analytic_account_id = fields.Many2one('account.analytic.account', required=True)
 
     @api.constrains('analytic_account_id')
     def _check_analytic_account_id(self):
