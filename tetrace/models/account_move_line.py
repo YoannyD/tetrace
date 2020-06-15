@@ -19,10 +19,11 @@ class AccountMoveLine(models.Model):
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
 
+    @api.constrains('analytic_account_id')
     def _check_analytic_account_id(self):
         for r in self:
             if r.move_id and r.move_id.type in ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'] and \
-                not r.analytic_account_id:
+                not r.exclude_from_invoice_tab and not r.analytic_account_id:
                 raise ValidationError('La cuenta analítica es obligatorio.')
 
     @api.depends("account_id.tetrace_account_id")
@@ -40,15 +41,3 @@ class AccountMoveLine(models.Model):
                         fecha_vencimiento = line.date_maturity
                         break
             r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
-
-    def create(self, vals):
-        res = super(AccountMoveLine, self).create(vals)
-        res._check_analytic_account_id()
-        return res
-
-    def write(self, vals):
-        res = super(AccountMoveLine, self).write(vals)
-        self._check_analytic_account_id()
-        return res
-
-
