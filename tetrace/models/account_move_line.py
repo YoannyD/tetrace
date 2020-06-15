@@ -41,3 +41,4 @@ class AccountMoveLine(models.Model):
                         fecha_vencimiento = line.date_maturity
                         break
             r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
+
