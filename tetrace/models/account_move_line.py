@@ -50,3 +50,5 @@ class AccountMoveLine(models.Model):
         res = super(AccountMoveLine, self).write(vals)
         self._check_analytic_account_id()
         return res
+
+
