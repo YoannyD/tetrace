@@ -18,6 +18,7 @@
         'l10n_cl',
         'l10n_latam_invoice_document',
         'account_due_list',
+        'hr',
         'hr_recruitment',
     ],
     'data': [
@@ -29,6 +30,7 @@
         'views/account_account.xml',
         'views/account_move.xml',
         'views/hr_applicant.xml',
+        'views/hr_employee.xml',
     ],
     'demo': [],
     'installable': True,
