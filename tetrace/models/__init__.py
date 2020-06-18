@@ -8,3 +8,4 @@ from . import account_move_line
 from . import hr_applicant
 from . import hr_job
 from . import hr_employee
+from . import ir_attachment

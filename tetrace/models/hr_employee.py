@@ -15,3 +15,4 @@ class Employee(models.Model):
     codigo_drive = fields.Char('Carpeta Drive')
     numero_ss = fields.Char('Nº Seguridad Social')
     IND_NoResidente_A3 = fields.Char('No residente A3')
+    sin_adjuntos = fields.Boolean("Sin adjuntos")

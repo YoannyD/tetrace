@@ -42,6 +42,14 @@
                     <field name="incoterm_complemento"/>
                 </div>
             </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree[1]/field[@name='tax_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/form[1]//field[@name='tax_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
         </field>
     </record>
 
@@ -57,3 +65,4 @@
         </field>
     </record>
 </odoo>
+
