@@ -18,7 +18,7 @@ class Product(models.Model):
 
         if self.env.context.get('invoice_type') in ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'] and \
             self.env.context.get('journal_id'):
-            journal = self.env[''].search([
+            journal = self.env['account.journal'].search([
                 ('id', '=', self.env.context.get('journal_id')),
                 ('code', '=', 'INVE')
             ], limit=1)
