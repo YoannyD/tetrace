@@ -43,6 +43,14 @@
                 </div>
             </xpath>
 
+            <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                <attribute name="context">{'journal_id': journal_id, 'default_partner_id': commercial_partner_id, 'default_currency_id': currency_id != company_currency_id and currency_id or False, 'invoice_type': type}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/tree[1]/field[@name='product_id']" position="attributes">
+                <attribute name="context">{'journal_id': context.get('journal_id'), 'invoice_type': context.get('invoice_type')}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='invoice_line_ids']/tree[1]/field[@name='tax_ids']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>

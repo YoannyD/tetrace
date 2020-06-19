@@ -9,3 +9,5 @@ from . import hr_applicant
 from . import hr_job
 from . import hr_employee
 from . import ir_attachment
+from . import product
+from . import account_partner_ledger
