@@ -85,11 +85,10 @@ class AccountMoveLine(models.Model):
                 else:  # search for existing sale line
                     sale_line = self.env['sale.order.line'].search([
                         ('order_id', '=', sale_order.id),
-                        ('price_unit', '=', price),
-                        ('product_id', '=', move_line.product_id.id),
-                        ('is_expense', '=', True),
+                        ('product_id', '=', move_line.product_id.id)
                     ], limit=1)
                     if sale_line:  # found existing one, so keep the browse record
+                        sale_line.update({'is_expense': True})
                         map_move_sale_line[move_line.id] = existing_sale_line_cache[map_entry_key] = sale_line
                     else:  # should be create, so use the index of creation values instead of browse record
                         # save value to create it
