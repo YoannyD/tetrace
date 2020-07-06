@@ -13,12 +13,14 @@ class Project(models.Model):
 
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
-        so_lines = self.sudo()\
-            .mapped('sale_line_id.order_id.order_line')\
-            .filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
+        so_lines = self.sudo() \
+            .mapped('sale_line_id.order_id.order_line') \
+            .filtered(lambda
+                          sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
         # include the service SO line of SO sharing the same project
         sale_order = self.env['sale.order'].search([('project_id', 'in', self.ids)])
-        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
+        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda
+                                                                                    sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
             so_lines.mapped('order_id').ids) | set(sale_order.ids)
 
     def _table_get_line_values(self):
@@ -31,8 +33,8 @@ class Project(models.Model):
             if row[0]['res_id'] and row[0]['res_model'] == 'sale.order.line':
                 sale_line_id = self.env['sale.order.line'].sudo().browse(row[0]['res_id'])
                 if sale_line_id:
-                    new_row[6] = sale_line_id.qty_delivered
-                    new_row[7] = sale_line_id.qty_invoiced - sale_line_id.qty_delivered
+                    new_row[6] = sale_line_id.qty_invoiced
+                    new_row[7] = sale_line_id.qty_delivered - sale_line_id.qty_invoiced
 
                     key = str(sale_line_id.order_id.id)
                     if key not in sales_group:
@@ -46,6 +48,7 @@ class Project(models.Model):
         for row in timesheet_forecast_table_rows:
             new_row = row
             if row[0]['res_id'] and str(row[0]['res_id']) in sales_group and row[0]['res_model'] == 'sale.order':
+                key = str(row[0]['res_id'])
                 new_row[6] = sales_group[key]['facturado']
                 new_row[7] = sales_group[key]['restante']
             table_rows.append(new_row)
@@ -54,4 +57,3 @@ class Project(models.Model):
             'header': result['header'],
             'rows': table_rows
         }
-
