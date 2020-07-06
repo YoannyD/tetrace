@@ -20,6 +20,7 @@
         'account_due_list',
         'hr',
         'hr_recruitment',
+        'sale_timesheet'
     ],
     'data': [
         'security/ir.model.access.csv',
