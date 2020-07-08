@@ -21,6 +21,7 @@
         'hr',
         'hr_recruitment',
         'sale_timesheet'
+        'tier_validation'
     ],
     'data': [
         'security/ir.model.access.csv',
