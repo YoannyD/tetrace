@@ -20,7 +20,7 @@
         'account_due_list',
         'hr',
         'hr_recruitment',
-        'sale_timesheet'
+        'sale_timesheet',
         'tier_validation'
     ],
     'data': [
