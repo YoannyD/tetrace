@@ -9,7 +9,7 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class TierValidation(models.Model):
+class TierValidation(models.AbstractModel):
     _inherit = "tier.validation"
 
     def write(self, vals):
