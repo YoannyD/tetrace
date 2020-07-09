@@ -48,8 +48,3 @@ class TierValidation(models.AbstractModel):
                 raise ValidationError(_("The operation is under validation."))
         if vals.get(self._state_field) in self._state_from:
             self.mapped("review_ids").unlink()
-
-        try:
-            return super(TierValidation, self).write(vals)
-        except:
-            pass
