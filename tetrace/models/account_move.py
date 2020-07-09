@@ -11,6 +11,8 @@ _logger = logging.getLogger(__name__)
 class AccountMove(models.Model):
     _inherit = "account.move"
 
+    _state_to = ["posted"]
+
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
