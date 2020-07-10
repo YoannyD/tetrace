@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <menuitem id="hr.menu_hr_root" name="RRHH"/>
+
+    <record id="hr.open_view_employee_list_my" model="ir.actions.act_window">
+        <field name="name">RRHH</field>
+    </record>
+
     <record model="ir.ui.view" id="view_employee_form">
         <field name="name">hr.employee.form</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>

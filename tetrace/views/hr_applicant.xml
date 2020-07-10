@@ -9,9 +9,16 @@
                 <field name="fecha_recepcion"/>
                 <field name="country_id"/>
                 <field name="job_ids" widget="many2many_tags"/>
-                <field name="carpeta_drive"/>
                 <field name="sin_adjuntos"/>
                 <field name="icono_warning"/>
+            </xpath>
+
+            <xpath expr="//label[@for='salary_proposed']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='salary_proposed']/following::div" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
