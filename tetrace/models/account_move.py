@@ -56,7 +56,6 @@ class AccountMove(models.Model):
                 date = datetime.strptime(fecha_aux, "%d/%m/%Y").strftime("%Y-%m-%d")
 
             get_param = self.env['ir.config_parameter'].sudo().get_param
-            journal_id = get_param('tetrace_account_move_jorunal_id', default=False)
             try:
                 journal_id = int(get_param('tetrace_account_move_jorunal_id', default=False))
             except:
