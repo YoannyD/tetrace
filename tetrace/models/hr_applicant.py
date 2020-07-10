@@ -19,3 +19,4 @@ class Applicant(models.Model):
     categ_ids = fields.Many2many(string='Formación')
     priority = fields.Selection(selection_add=[('4', 'Perfecto')], default='2')
     icono_warning = fields.Boolean('Veneno')
+    referencia = fields.Char('Referencia Tetrace')

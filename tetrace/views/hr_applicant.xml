@@ -13,6 +13,10 @@
                 <field name="icono_warning"/>
             </xpath>
 
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field name="referencia"/>
+            </xpath>
+
             <xpath expr="//label[@for='salary_proposed']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -28,8 +32,19 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="model">hr.applicant</field>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="before">
+                <field name="referencia"/>
+            </xpath>
+
             <xpath expr="//field[@name='attachment_ids']" position="after">
                 <field name="country_id"/>
+            </xpath>
+
+            <xpath expr="//group[1]/filter[@name='job']" position="before">
+                <filter string="Referencia Tetrace"
+                        name="filter_referencia"
+                        domain="[]"
+                        context="{'group_by': 'referencia'}"/>
             </xpath>
         </field>
     </record>
