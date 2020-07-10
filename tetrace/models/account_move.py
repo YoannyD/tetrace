@@ -57,7 +57,10 @@ class AccountMove(models.Model):
 
             get_param = self.env['ir.config_parameter'].sudo().get_param
             journal_id = get_param('tetrace_account_move_jorunal_id', default=False)
-            journal_id = journal_id if journal_id else 245
+            try:
+                journal_id = int(get_param('tetrace_account_move_jorunal_id', default=False))
+            except:
+                journal_id = False
             company = self.env['res.company'].search([('vat', '=', "ES%s" % gastos[0]['NIF_Empresa'])], limit=1)
 
             values = {
