@@ -4,7 +4,9 @@
 import logging
 
 from odoo import models, fields, api
-from odoo.addons.mtformacion.models.conexion_mysql import ConexionMysql
+from datetime import datetime
+from odoo.exceptions import ValidationError
+from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
 
 _logger = logging.getLogger(__name__)
 
@@ -33,21 +35,27 @@ class AccountMove(models.Model):
     @api.model
     def importar_gastos_tickelia(self):
         cnx = ConexionMysql()
-        query = "SELECT * FROM Tickelia where TraspasoOdoo = 0"
+        query = "SELECT * FROM Tickelia_2 where TraspasoOdoo = 0 and Cuenta_Contable != ''"
         data = cnx.execute(query)
 
-        gastos = {}
+        gastos_agrupados = {}
         for r in data:
             key = "%s-%s" % (r[u'id_Liquidaci\xf3n'], r['Tique_Factura'])
-            if key not in gastos:
-                gastos.update({key: []})
-            gastos[key].append(r)
+            if key not in gastos_agrupados:
+                gastos_agrupados.update({key: []})
+            gastos_agrupados[key].append(r)
 
-        for key, gastos in gastos.items():
+        for key, gastos in gastos_agrupados.items():
+            if not gastos:
+                continue
+
             ref = "Liquidación %s" % gastos[0][u'id_Liquidaci\xf3n']
-            date = gastos[0][u'Fecha_Liquidaci\xf3n']
+            date = None
+            if gastos[0][u'Fecha_Liquidaci\xf3n']:
+                fecha_aux = gastos[0][u'Fecha_Liquidaci\xf3n'].split(" ")[0]
+                date = datetime.strptime(fecha_aux, "%d/%m/%Y").strftime("%Y-%m-%d")
             journal_id = 245
-            company = self.env['res.company'].search(['vat', '=', "ES%s" % gastos[0]['NIF_Empresa']], limit=1)
+            company = self.env['res.company'].search([('vat', '=', "ES%s" % gastos[0]['NIF_Empresa'])], limit=1)
 
             values = {
                 'ref': ref,
@@ -66,11 +74,20 @@ class AccountMove(models.Model):
                     ('company_id', '=', company.id)
                 ], limit=1)
 
-                employee = self.env['hr.employee'].search([('identification_id', '=', gasto['DNI_Usuario'])], limit=1)
-                partner_id = employee.partner_id.id if employee and employee.partner_id else None
+                if not account_1:
+                    raise ValidationError(gasto['Cuenta_Contable'])
 
-                analytic_buscar = "%s%s" % (gasto['NIVEL 1'], gasto['id_Proyecto'])
-                analytic = self.env['account.analytic.account'].search([('code', '=', analytic_buscar)], limit=1)
+                employee = self.env['hr.employee'].sudo().search([('identification_id', '=', gasto['DNI_Usuario'])],
+                                                                 limit=1)
+                partner_id = employee.address_home_id.id if employee and employee.address_home_id else None
+
+                analytic_buscar = "46%s" % gasto['id_Proyecto']
+                analytic = self.env['account.analytic.account'].search([('code', '=like', analytic_buscar)], limit=1)
+                if not analytic:
+                    analytic = self.env['account.analytic.account'].create({
+                        'name': analytic_buscar,
+                        'code': analytic_buscar
+                    })
 
                 currency = self.env['res.currency'].search([('name', '=', gasto['Moneda_Base'])], limit=1)
 
@@ -83,15 +100,19 @@ class AccountMove(models.Model):
                     ('company_id', '=', company.id)
                 ], limit=1)
 
-                debit = gasto['Importe_Base_Validado']
-                credit = gasto['Importe_Base_Validado']
+                if not account_2:
+                    continue
+                #                     raise ValidationError(cuenta_a_buscar)
+
+                debit = gasto['Importe_Base_Validado'].replace(",", ".")
+                credit = gasto['Importe_Base_Validado'].replace(",", ".")
 
                 line_ids.append((0, 0, {
                     'name': name,
                     'account_id': account_1.id if account_1 else None,
                     'partner_id': partner_id,
                     'analytic_account_id': analytic.id if analytic else None,
-                    'currency_id': currency.id if currency else None,
+                    #                     'currency_id': currency.id if currency else None,
                     'debit': debit,
                     'credit': 0
                 }))
@@ -101,7 +122,7 @@ class AccountMove(models.Model):
                     'account_id': account_2.id if account_2 else None,
                     'partner_id': partner_id,
                     'analytic_account_id': analytic.id if analytic else None,
-                    'currency_id': currency.id if currency else None,
+                    #                     'currency_id': currency.id if currency else None,
                     'debit': 0,
                     'credit': credit
                 }))
@@ -109,6 +130,4 @@ class AccountMove(models.Model):
                 gastos_ids.append(gasto['id'])
 
             values.update({'line_ids': line_ids})
-            print(values)
-
             self.create(values)
