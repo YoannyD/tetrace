@@ -54,7 +54,10 @@ class AccountMove(models.Model):
             if gastos[0][u'Fecha_Liquidaci\xf3n']:
                 fecha_aux = gastos[0][u'Fecha_Liquidaci\xf3n'].split(" ")[0]
                 date = datetime.strptime(fecha_aux, "%d/%m/%Y").strftime("%Y-%m-%d")
-            journal_id = 245
+
+            get_param = self.env['ir.config_parameter'].sudo().get_param
+            journal_id = get_param('tetrace_account_move_jorunal_id', default=False)
+            journal_id = journal_id if journal_id else 245
             company = self.env['res.company'].search([('vat', '=', "ES%s" % gastos[0]['NIF_Empresa'])], limit=1)
 
             values = {

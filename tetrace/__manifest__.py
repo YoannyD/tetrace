@@ -33,6 +33,7 @@
         'views/account_move.xml',
         'views/hr_applicant.xml',
         'views/hr_employee.xml',
+        'views/res_config_settings.xml',
     ],
     'demo': [],
     'installable': True,
