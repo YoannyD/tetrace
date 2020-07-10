@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # © 2020 Ingetive - <info@ingetive.com>
 
-import json
 import logging
 
 from odoo import models, fields, api
@@ -18,3 +17,4 @@ class Applicant(models.Model):
     fecha_recepcion = fields.Date('Fecha recepción')
     sin_adjuntos = fields.Boolean('Sin adjuntos en Drive')
     categ_ids = fields.Many2many(string='Formación')
+    priority = fields.Selection(selection_add=[('4', 'Perfecto')], default='2')
