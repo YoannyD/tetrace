@@ -13,15 +13,16 @@ class ProductTemplate(models.Model):
 
     secuencia_default_code = fields.Integer('Secuencia Ref. Interna')
 
+    @api.model
     def create(self, vals):
-        if not vals.get('default_code'):
-            secuencia, default_code = self.generar_default_code()
-            vals.update({
+        res = super(ProductTemplate, self).create(vals)
+        if not res.default_code:
+            secuencia, default_code = res.generar_default_code()
+            res.write({
                 'default_code': default_code,
                 'secuencia_default_code': secuencia,
             })
-
-        return super(ProductTemplate, self).create(vals)
+        return res
 
     def generar_default_code(self):
         self.ensure_one()
@@ -31,7 +32,7 @@ class ProductTemplate(models.Model):
         elif self.type == 'service':
             tipo = "S"
         elif self.type == 'product':
-            tipo = "S"
+            tipo = "P"
 
         categoria = self.categ_id.name if self.categ_id else None
 
@@ -39,12 +40,13 @@ class ProductTemplate(models.Model):
                                       order="secuencia_default_code desc", limit=1)
         if ultimo_producto:
             caracteres = len(str(ultimo_producto.secuencia_default_code))
-            secuencia = ultimo_producto.secuencia_default_code
-            for num in range(1, (5-caracteres)):
+            secuencia_int = ultimo_producto.secuencia_default_code
+            secuencia = secuencia_int + 1
+            for num in range(0, (5-caracteres)):
                 secuencia = "0%s" % secuencia
         else:
             secuencia = "00001"
+            secuencia_int = 1
 
         code = "%s-%s-%s" % (tipo, categoria, secuencia)
-        return secuencia, code
-
+        return secuencia_int + 1, code
