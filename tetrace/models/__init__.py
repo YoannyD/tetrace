@@ -11,6 +11,7 @@ from . import hr_employee
 from . import ir_attachment
 from . import product
 from . import product_template
+from . import product_category
 from . import account_partner_ledger
 from . import project_overview
 from . import conexion_mysql

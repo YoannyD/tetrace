@@ -34,6 +34,7 @@
         'views/account_move.xml',
         'views/hr_applicant.xml',
         'views/hr_employee.xml',
+        'views/product_category.xml',
         'views/tetrace_skills.xml',
         'views/res_config_settings.xml',
     ],
