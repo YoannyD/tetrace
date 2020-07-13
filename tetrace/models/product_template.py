@@ -29,7 +29,10 @@ class ProductTemplate(models.Model):
         if 'type' in vals or 'categ_id' in vals:
             for r in self:
                 secuencia, default_code = r.generar_default_code(True)
-                r.write({'default_code': default_code})
+                r.write({
+                    'default_code': default_code,
+                    'secuencia_int': secuencia
+                })
         return res
 
     def generar_default_code(self, update=False):
@@ -63,6 +66,7 @@ class ProductTemplate(models.Model):
             else:
                 secuencia = "00001"
                 secuencia_int = 1
+            secuencia_int = secuencia_int + 1
 
         code = "%s-%s-%s" % (tipo, categoria, secuencia)
-        return secuencia_int + 1, code
+        return secuencia_int, code
