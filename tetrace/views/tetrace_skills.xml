@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="tetrace_skill_view_form" model="ir.ui.view">
+        <field name="name">tetrace.skill.form</field>
+        <field name="model">tetrace.skill</field>
+        <field name="arch" type="xml">
+            <form string="Habilidades">
+                <sheet>
+                    <field name="name"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tetrace_skill_type_view_tree" model="ir.ui.view">
+        <field name="name">tetrace.skill.type.tree</field>
+        <field name="model">tetrace.skill.type</field>
+        <field name="arch" type="xml">
+            <tree string="Skill Types">
+                <field name="name"/>
+                <field name="skill_ids" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

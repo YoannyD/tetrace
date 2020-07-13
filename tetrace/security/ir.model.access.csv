@@ -2,3 +2,7 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_tetrace_account,access_tetrace_account,model_tetrace_account,base.group_user,1,1,1,1
 access_tetrace_resume_line,access_tetrace_resume_line,model_tetrace_resume_line,base.group_user,1,1,1,1
 access_tetrace_resume_line_type,access_tetrace_resume_line_type,model_tetrace_resume_line_type,base.group_user,1,1,1,1
+access_tetrace_skill,access_tetrace_skill,model_tetrace_skill,base.group_user,1,1,1,1
+access_tetrace_applicant_skill,access_tetrace_applicant_skill,model_tetrace_applicant_skill,base.group_user,1,1,1,1
+access_tetrace_skill_level,access_tetrace_skill_level,model_tetrace_skill_level,base.group_user,1,1,1,1
+access_tetrace_skill_type,access_tetrace_skill_type,model_tetrace_skill_type,base.group_user,1,1,1,1

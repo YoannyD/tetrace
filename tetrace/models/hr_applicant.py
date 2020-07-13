@@ -20,7 +20,7 @@ class Applicant(models.Model):
     priority = fields.Selection(selection_add=[('4', 'Perfecto')], default='2')
     icono_warning = fields.Boolean('Veneno')
     referencia = fields.Char('Referencia Tetrace')
-    resume_line_ids = fields.One2many('tetrace.resume.line', 'application_id', string="Resumé lines")
+    resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
 
 
@@ -29,7 +29,7 @@ class ApplicationResumeLine(models.Model):
     _description = "Currículums vitaes"
     _order = "line_type_id, date_end desc, date_start desc"
 
-    application_id = fields.Many2one('hr.applicant', required=True, ondelete='cascade')
+    applicant_id = fields.Many2one('hr.applicant', required=True, ondelete='cascade')
     name = fields.Char(required=True)
     date_start = fields.Date(required=True)
     date_end = fields.Date()
