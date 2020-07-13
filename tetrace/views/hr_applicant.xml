@@ -9,8 +9,58 @@
                 <field name="fecha_recepcion"/>
                 <field name="country_id"/>
                 <field name="job_ids" widget="many2many_tags"/>
-                <field name="carpeta_drive"/>
                 <field name="sin_adjuntos"/>
+                <field name="icono_warning"/>
+            </xpath>
+
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field name="referencia"/>
+            </xpath>
+
+            <xpath expr="//label[@for='salary_proposed']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//label[@for='salary_proposed']/following::div" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//sheet[1]" position="inside">
+                <notebook>
+                    <page name="cv" string="Currículum vitae">
+                        <div class="row">
+                        <div class="o_hr_skills_group o_group_resume col-lg-7 d-flex">
+                            <!-- This field uses a custom tree view rendered by the 'hr_resume' widget.
+                                Adding fields in the tree arch below makes them accessible to the widget
+                            -->
+                            <field mode="tree" nolabel="1" name="resume_line_ids" widget="hr_resume">
+                                <tree>
+                                    <field name="line_type_id"/>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                    <field name="display_type" invisible="1"/>
+                                </tree>
+                                <group>
+
+                                </group>
+                            </field>
+                        </div>
+                        <div class="o_hr_skills_group o_group_skills col-lg-5 d-flex flex-column">
+                            <separator string="Habilidades"/>
+                            <field mode="tree" nolabel="1" name="applicant_skill_ids" widget="hr_skills">
+                                <tree>
+                                    <field name="skill_type_id" invisible="1"/>
+                                    <field name="skill_id"/>
+                                    <field name="skill_level_id"/>
+                                    <field name="level_progress" widget="progressbar"/>
+                                </tree>
+                            </field>
+                        </div>
+                    </div>
+                    </page>
+                </notebook>
             </xpath>
         </field>
     </record>
@@ -20,9 +70,46 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="model">hr.applicant</field>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="before">
+                <field name="referencia"/>
+            </xpath>
+
             <xpath expr="//field[@name='attachment_ids']" position="after">
                 <field name="country_id"/>
             </xpath>
+
+            <xpath expr="//group[1]/filter[@name='job']" position="before">
+                <filter string="Referencia Tetrace"
+                        name="filter_referencia"
+                        domain="[]"
+                        context="{'group_by': 'referencia'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="resume_line_view_form" model="ir.ui.view">
+        <field name="name">tetrace.resume.line.form</field>
+        <field name="model">tetrace.resume.line</field>
+        <field name="arch" type="xml">
+            <form string="Resumé">
+                <div class="oe_title">
+                    <label for="name" class="oe_edit_only"/>
+                    <h1>
+                        <field name="name" placeholder="Title" required="True"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="line_type_id"/>
+                        <field name="display_type" required="1"/>
+                    </group>
+                    <group>
+                        <field name="date_start" required="True"/>
+                        <field name="date_end"/>
+                    </group>
+                </group>
+                <field name="description" placeholder="Description"/>
+            </form>
         </field>
     </record>
 </odoo>

@@ -10,5 +10,9 @@ from . import hr_job
 from . import hr_employee
 from . import ir_attachment
 from . import product
+from . import product_template
 from . import account_partner_ledger
 from . import project_overview
+from . import conexion_mysql
+from . import res_config_settings
+from . import tetrace_skills

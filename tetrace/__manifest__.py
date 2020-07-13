@@ -20,18 +20,22 @@
         'account_due_list',
         'hr',
         'hr_recruitment',
-        'sale_timesheet'
+        'sale_timesheet',
+        'account_move_tier_validation'
     ],
     'data': [
         'security/ir.model.access.csv',
         'report/account.xml',
         'report/web.xml',
+        'views/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
         'views/account_account.xml',
         'views/account_move.xml',
         'views/hr_applicant.xml',
         'views/hr_employee.xml',
+        'views/tetrace_skills.xml',
+        'views/res_config_settings.xml',
     ],
     'demo': [],
     'installable': True,
