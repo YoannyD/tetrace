@@ -34,7 +34,7 @@ class ApplicationResumeLine(models.Model):
     date_start = fields.Date(required=True)
     date_end = fields.Date()
     description = fields.Text(string="Description")
-    line_type_id = fields.Many2one('tetrace.resume.line.type', string="Type")
+    line_type_id = fields.Many2one('tetrace.resume.line.type', string="Tipo")
     display_type = fields.Selection([('classic', 'Classic')], string="Display Type", default='classic')
 
     _sql_constraints = [

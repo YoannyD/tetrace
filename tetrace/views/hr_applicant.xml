@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="tetrace_resume_type_action" model="ir.actions.act_window">
+        <field name="name">Tipos de líneas currículum vitae</field>
+        <field name="res_model">tetrace.resume.line.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_human_resources_configuration_resume"
+              name="Currículum vitae"
+              parent="hr_recruitment.menu_hr_recruitment_configuration"
+              sequence="4"
+              groups="base.group_no_one"/>
+
+    <menuitem id="tetrace_resume_line_type_menu"
+              name="Tipos"
+              action="tetrace_resume_type_action"
+              parent="menu_human_resources_configuration_resume"
+              sequence="3"
+              groups="base.group_no_one"/>
+
     <record model="ir.ui.view" id="hr_applicant_view_form">
         <field name="name">Jobs - Recruitment Form tetrace</field>
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
@@ -29,36 +48,36 @@
                 <notebook>
                     <page name="cv" string="Currículum vitae">
                         <div class="row">
-                        <div class="o_hr_skills_group o_group_resume col-lg-7 d-flex">
-                            <!-- This field uses a custom tree view rendered by the 'hr_resume' widget.
-                                Adding fields in the tree arch below makes them accessible to the widget
-                            -->
-                            <field mode="tree" nolabel="1" name="resume_line_ids" widget="hr_resume">
-                                <tree>
-                                    <field name="line_type_id"/>
-                                    <field name="name"/>
-                                    <field name="description"/>
-                                    <field name="date_start"/>
-                                    <field name="date_end"/>
-                                    <field name="display_type" invisible="1"/>
-                                </tree>
-                                <group>
+                            <div class="o_hr_skills_group o_group_resume col-lg-7 d-flex">
+                                <!-- This field uses a custom tree view rendered by the 'hr_resume' widget.
+                                    Adding fields in the tree arch below makes them accessible to the widget
+                                -->
+                                <field mode="tree" nolabel="1" name="resume_line_ids" widget="hr_resume">
+                                    <tree>
+                                        <field name="line_type_id"/>
+                                        <field name="name"/>
+                                        <field name="description"/>
+                                        <field name="date_start"/>
+                                        <field name="date_end"/>
+                                        <field name="display_type" invisible="1"/>
+                                    </tree>
+                                    <group>
 
-                                </group>
-                            </field>
+                                    </group>
+                                </field>
+                            </div>
+                            <div class="o_hr_skills_group o_group_skills col-lg-5 d-flex flex-column">
+                                <separator string="Habilidades"/>
+                                <field mode="tree" nolabel="1" name="applicant_skill_ids" widget="hr_skills">
+                                    <tree>
+                                        <field name="skill_type_id" invisible="1"/>
+                                        <field name="skill_id"/>
+                                        <field name="skill_level_id"/>
+                                        <field name="level_progress" widget="progressbar"/>
+                                    </tree>
+                                </field>
+                            </div>
                         </div>
-                        <div class="o_hr_skills_group o_group_skills col-lg-5 d-flex flex-column">
-                            <separator string="Habilidades"/>
-                            <field mode="tree" nolabel="1" name="applicant_skill_ids" widget="hr_skills">
-                                <tree>
-                                    <field name="skill_type_id" invisible="1"/>
-                                    <field name="skill_id"/>
-                                    <field name="skill_level_id"/>
-                                    <field name="level_progress" widget="progressbar"/>
-                                </tree>
-                            </field>
-                        </div>
-                    </div>
                     </page>
                 </notebook>
             </xpath>
@@ -72,6 +91,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='job_id']" position="before">
                 <field name="referencia"/>
+                <field name="applicant_skill_ids"/>
+                <field name="resume_line_ids" string="Currículum vitae"
+                       filter_domain="['|', ('resume_line_ids.name', 'ilike', self), ('resume_line_ids.description', 'ilike', self)]"/>
             </xpath>
 
             <xpath expr="//field[@name='attachment_ids']" position="after">
@@ -84,6 +106,16 @@
                         domain="[]"
                         context="{'group_by': 'referencia'}"/>
             </xpath>
+        </field>
+    </record>
+
+    <record id="resume_line_view_search" model="ir.ui.view">
+        <field name="name">tetrace.resume.search</field>
+        <field name="model">tetrace.resume.line</field>
+        <field name="arch" type="xml">
+            <search string="Currículum vitae">
+                <filter string="Currículum vitare" name="group_by_resume_line_type" context="{'group_by':'line_type'}"/>
+            </search>
         </field>
     </record>
 
