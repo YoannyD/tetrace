@@ -53,7 +53,7 @@ class SkillLevel(models.Model):
 
     skill_type_id = fields.Many2one('tetrace.skill.type')
     name = fields.Char(required=True)
-    level_progress = fields.Integer(string="Progress", help="Progress from zero knowledge (0%) to fully mastered (100%).")
+    level_progress = fields.Integer(string="Progreso", help="Progress from zero knowledge (0%) to fully mastered (100%).")
 
 
 class SkillType(models.Model):
@@ -61,5 +61,5 @@ class SkillType(models.Model):
     _description = "Skill Type"
 
     name = fields.Char(required=True)
-    skill_ids = fields.One2many('tetrace.skill', 'skill_type_id', string="Skills", ondelete='cascade')
-    skill_level_ids = fields.One2many('tetrace.skill.level', 'skill_type_id', string="Levels", ondelete='cascade')
+    skill_ids = fields.One2many('tetrace.skill', 'skill_type_id', string="Habilidades", ondelete='cascade')
+    skill_level_ids = fields.One2many('tetrace.skill.level', 'skill_type_id', string="Niveles", ondelete='cascade')
