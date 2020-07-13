@@ -31,7 +31,7 @@ class ProductTemplate(models.Model):
                 secuencia, default_code = r.generar_default_code(True)
                 r.write({
                     'default_code': default_code,
-                    'secuencia_int': secuencia
+                    'secuencia_default_code': secuencia
                 })
         return res
 
