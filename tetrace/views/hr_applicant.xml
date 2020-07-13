@@ -109,6 +109,27 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="hr_kanban_view_applicant">
+        <field name="name">Hr Applicants kanban tetrace</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+        <field name="model">hr.applicant</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='stage_id']" position="after">
+                <field name="icono_warning"/>
+            </xpath>
+
+            <xpath expr="//div[hasclass('o_kanban_record_headings')]/b[1]" position="before">
+                <div class="float-right" t-if="record.icono_warning.raw_value" style="margin-right:15px;">
+                    <span class="fa fa-bomb text-warning"
+                          role="img"
+                          aria-label="Alerta"
+                          title="Alerta"
+                          name="alerta"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
     <record id="resume_line_view_search" model="ir.ui.view">
         <field name="name">tetrace.resume.search</field>
         <field name="model">tetrace.resume.line</field>
