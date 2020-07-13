@@ -15,3 +15,4 @@ from . import account_partner_ledger
 from . import project_overview
 from . import conexion_mysql
 from . import res_config_settings
+from . import tetrace_skills
