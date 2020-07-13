@@ -16,10 +16,7 @@ class ProductCategory(models.Model):
     def write(self, vals):
         res = super(ProductCategory, self).write(vals)
         if 'referencia' in vals:
-            product_tmpls = self.env['product.template'].search([
-                ('categ_id', 'in', self.ids),
-                ('secuencia_default_code', '!=', False)
-            ])
+            product_tmpls = self.env['product.template'].search([('categ_id', 'in', self.ids)])
             if product_tmpls:
                 for product in product_tmpls:
                     secuencia, default_code = product.generar_default_code(True)

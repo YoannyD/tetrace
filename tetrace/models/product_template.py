@@ -51,7 +51,7 @@ class ProductTemplate(models.Model):
                 secuencia = "0%s" % secuencia
             return secuencia
 
-        if update:
+        if update and self.secuencia_default_code:
             secuencia = secuencia_str(self.secuencia_default_code)
             secuencia_int = self.secuencia_default_code
         else:
