@@ -18,7 +18,7 @@ class Applicant(models.Model):
     sin_adjuntos = fields.Boolean('Sin adjuntos en Drive')
     categ_ids = fields.Many2many(string='Formación')
     priority = fields.Selection(selection_add=[('4', 'Perfecto')], default='2')
-    icono_warning = fields.Boolean('Veneno')
+    icono_warning = fields.Boolean('Alerta')
     referencia = fields.Char('Referencia Tetrace')
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
