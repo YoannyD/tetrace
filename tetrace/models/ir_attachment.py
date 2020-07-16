@@ -12,6 +12,9 @@ _logger = logging.getLogger(__name__)
 class Attachment(models.Model):
     _inherit = "ir.attachment"
 
+    document_ids = fields.One2many('documents.document', 'attachment_id')
+    document_id = fields.Many2one('documents.document')
+
     def convert_tiff_to_pdf(self):
         for r in self:
             if r.mimetype != 'image/tiff' and r.type != 'binary' and not r.db_datas:
