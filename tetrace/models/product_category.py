@@ -20,5 +20,8 @@ class ProductCategory(models.Model):
             if product_tmpls:
                 for product in product_tmpls:
                     secuencia, default_code = product.generar_default_code(True)
-                    product.write({'default_code': default_code})
+                    product.write({
+                        'default_code': default_code,
+                        'secuencia_default_code': secuencia
+                    })
         return res
