@@ -17,19 +17,22 @@ class Employee(models.Model):
     IND_NoResidente_A3 = fields.Char('No residente A3')
     sin_adjuntos = fields.Boolean("Sin adjuntos")
     # documento_url = fields.Char('Documento', compute="_compute_documento_url")
-
+    #
     # def _compute_documento_url(self):
-    #     menu_id = self.env.ref('crm.crm_menu_root').id
-    #     action_id = self.env.ref('crm.action_your_pipeline').id
+    #     menu_id = self.env.ref('documents.menu_root').id
+    #     action_id = self.env.ref('documents.document_action').id
     #     for r in self:
-    #         r.url_form = "/web#id=%s&model=crm.lead&view_type=form&menu_id=%s&action=%s" % (r.id, menu_id, action_id)
-
+    #         r.url_form = "/web#model=documents.document&view_type=kanban&menu_id=%s&action=%s" % (menu_id, action_id)
+    #
     def action_view_documentos(self):
-        action = self.env.ref("documents.document_action")
-        action.update({
-            'context': {
-                'default_res_model': 'hr.employee',
-                'res_id': self.id
-            }
-        })
-        return action
+        return {
+            'name': 'Documentos',
+            'type': 'ir.actions.act_window',
+            'res_model': 'documents.document',
+            'view_mode': 'kanban,tree,form',
+            'view_ids': [(5, 0, 0),
+                    (0, 0, {'view_mode': 'kanban', 'view_id': self.env.ref('documents.document_view_kanban')}),
+                    (0, 0, {'view_mode': 'tree', 'view_id': False}),
+                    (0, 0, {'view_mode': 'form', 'view_id': self.env.ref('documents.document_view_form')})],
+            'target': "inline"
+        }
