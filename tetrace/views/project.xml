@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="edit_project">
+        <field name="name">project.project.form.tetrace</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='settings']" position="inside">
+                <group>
+                    <field name="descripcion"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -22,7 +22,8 @@
         'hr_recruitment',
         'sale_timesheet',
         'account_move_tier_validation',
-        'documents'
+        'documents',
+        'project'
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -37,6 +38,7 @@
         'views/hr_employee.xml',
         'views/product_category.xml',
         'views/tetrace_skills.xml',
+        'views/project.xml',
         'views/res_config_settings.xml',
     ],
     'demo': [],
