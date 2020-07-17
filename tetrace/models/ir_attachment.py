@@ -18,7 +18,7 @@ class Attachment(models.Model):
     @api.depends('document_ids')
     def _compute_document_id(self):
         for p in self:
-            p.document_id = p.document_ids[:1].id
+            p.document_id = p.document_ids[:1].id if p.document_ids else None
 
     def convert_tiff_to_pdf(self):
         for r in self:
