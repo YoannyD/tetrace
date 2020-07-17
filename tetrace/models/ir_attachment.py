@@ -13,7 +13,12 @@ class Attachment(models.Model):
     _inherit = "ir.attachment"
 
     document_ids = fields.One2many('documents.document', 'attachment_id')
-    document_id = fields.Many2one('documents.document')
+    document_id = fields.Many2one('documents.document', compute='_compute_document_id')
+
+    @api.depends('document_ids')
+    def _compute_document_id(self):
+        for p in self:
+            p.document_id = p.document_ids[:1].id
 
     def convert_tiff_to_pdf(self):
         for r in self:
