@@ -1,4 +1,4 @@
-odoo.define('mail.form_renderer', function (require) {
+odoo.define('tetrace.form_renderer', function (require) {
 "use strict";
 
 var Chatter = require('mail.Chatter');
@@ -9,6 +9,7 @@ FormRenderer.include({
         var self = this;
         if (node.tag === 'div' && node.attrs.class === 'oe_chatter') {
             if (!this.chatter) {
+                var options;
                 if(this.state != undefined && this.state.model == "hr.employee"){
                     options = {
                         isEditable: this.activeActions.edit,
