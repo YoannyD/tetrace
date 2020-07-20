@@ -11,6 +11,12 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
+            <xpath expr="//header[1]" position="inside">
+                <button name="action_view_documentos"
+                        string="Documentos"
+                        type="object"/>
+            </xpath>
+
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="codigo_trabajador_A3"/>
             </xpath>
@@ -22,6 +28,20 @@
             <xpath expr="//field[@name='passport_id']" position="before">
                 <field name="numero_ss"/>
                 <field name="IND_NoResidente_A3"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_employee_tree">
+        <field name="name">hr.employee.tree.tetrace</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <button readonly="1"
+                        icon="fa-exclamation-triangle text-danger"
+                        invisible="[('contract_warning', '!=', False)]"
+                        class="oe_inline oe_stat_button"/>
             </xpath>
         </field>
     </record>

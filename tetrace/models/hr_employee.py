@@ -16,3 +16,8 @@ class Employee(models.Model):
     numero_ss = fields.Char('Nº Seguridad Social')
     IND_NoResidente_A3 = fields.Char('No residente A3')
     sin_adjuntos = fields.Boolean("Sin adjuntos")
+
+    def action_view_documentos(self):
+        action = self.env.ref('documents.document_action').read()[0]
+        action['domain'] = [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)]
+        return action
