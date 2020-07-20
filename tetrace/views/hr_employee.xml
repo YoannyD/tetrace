@@ -38,9 +38,10 @@
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="before">
+                <field name="contract_warning" invisible="1"/>
                 <button readonly="1"
-                        icon="fa-exclamation-triangle text-danger"
-                        invisible="[('contract_warning', '!=', False)]"
+                        icon="fa-exclamation-triangle text-warning"
+                        attrs="{'invisible':[('contract_warning', '=', False)]}"
                         class="oe_inline oe_stat_button"/>
             </xpath>
         </field>
