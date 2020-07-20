@@ -31,4 +31,18 @@
             </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="view_employee_tree">
+        <field name="name">hr.employee.tree.tetrace</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <button readonly="1"
+                        icon="fa-exclamation-triangle text-danger"
+                        invisible="[('contract_warning', '!=', False)]"
+                        class="oe_inline oe_stat_button"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
