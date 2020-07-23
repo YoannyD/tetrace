@@ -31,7 +31,7 @@
             </xpath>
 
             <xpath expr="//field[@name='name']" position="after">
-                <field name="ref_proyecto" string="Quotation Number"/>
+                <field name="ref_proyecto"/>
             </xpath>
         </field>
     </record>
