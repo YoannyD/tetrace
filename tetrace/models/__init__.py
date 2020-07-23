@@ -17,3 +17,4 @@ from . import project
 from . import conexion_mysql
 from . import res_config_settings
 from . import tetrace_skills
+from . import res_partner
