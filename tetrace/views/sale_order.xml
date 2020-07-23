@@ -20,4 +20,30 @@
             </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="view_quotation_tree">
+        <field name="name">sale.order.tree.tetrace</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref_proyecto" string="Quotation Number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sales_order_filter">
+        <field name="name">sale.order.list.select.tetrace</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref_proyecto"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
