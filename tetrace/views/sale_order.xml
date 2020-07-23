@@ -5,8 +5,44 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/h1[1]" position="attributes">
+                <attribute name="style">float-left</attribute>
+            </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]/h1[1]" position="after">
+                <h1 style="float-right">
+                    <field name="ref_proyecto"/>
+                </h1>
+            </xpath>
+
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="context">{'res_partner_search_mode': 'customer', 'solo_company': 1, 'show_address': 1, 'show_vat': True}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_quotation_tree">
+        <field name="name">sale.order.tree.tetrace</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref_proyecto" string="Quotation Number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sales_order_filter">
+        <field name="name">sale.order.list.select.tetrace</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref_proyecto"/>
             </xpath>
         </field>
     </record>
