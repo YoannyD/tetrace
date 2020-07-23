@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="project.open_view_project_all" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
     <record model="ir.ui.view" id="edit_project">
         <field name="name">project.project.form.tetrace</field>
         <field name="inherit_id" ref="project.edit_project"/>

@@ -11,6 +11,7 @@
     'depends': [
         'base',
         'sale',
+        'purchase',
         'account',
         'account_reports',
         'account_intrastat',
