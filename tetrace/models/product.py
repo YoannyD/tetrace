@@ -27,3 +27,9 @@ class Product(models.Model):
                 args += [('intrastat_id', '!=', False)]
 
         return super(Product, self)._name_search(name, args, operator, limit, name_get_uid)
+
+    def get_product_multiline_description_sale(self):
+        name = ''
+        if self.description_sale:
+            name += '\n' + self.description_sale
+        return name

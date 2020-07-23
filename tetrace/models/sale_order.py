@@ -16,3 +16,4 @@ class SaleOrder(models.Model):
     _sql_constraints = [
         ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
     ]
+
