@@ -5,6 +5,16 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]/h1[1]" position="attributes">
+                <attribute name="style">float-left</attribute>
+            </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]/h1[1]" position="after">
+                <h1 style="float-right">
+                    <field name="ref_proyecto"/>
+                </h1>
+            </xpath>
+
             <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="context">{'res_partner_search_mode': 'customer', 'solo_company': 1, 'show_address': 1, 'show_vat': True}</attribute>
             </xpath>
