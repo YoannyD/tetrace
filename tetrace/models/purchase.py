@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class PurchaseOrderLine(models.Model):
-    _name = 'purchase.order.line'
+    _inherit = 'purchase.order.line'
 
     def _get_product_purchase_description(self, product_lang):
         self.ensure_one()
