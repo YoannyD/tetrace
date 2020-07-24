@@ -30,6 +30,7 @@
         'security/ir.model.access.csv',
         'report/account.xml',
         'report/web.xml',
+        'report/sale.xml',
         'views/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',

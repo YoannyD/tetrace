@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report id="action_report_proyecto"
+            string="Proyectos"
+            model="sale.order"
+            report_type="qweb-pdf"
+            file="sale.report_saleorder_proyecto"
+            name="sale.report_saleorder_proyecto"
+            print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
+    />
+
+    <template id="report_saleorder_proyecto">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang">
+                    <t t-set="proyecto" t-value="True"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_saleorder_document" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//span[@t-field='doc.name']" position="replace">
+            <span t-if="not proyecto" t-field="doc.name"/>
+        </xpath>
+
+        <xpath expr="//span[@t-field='doc.name']" position="after">
+            <span t-if="proyecto" t-field="doc.ref_proyecto"/>
+        </xpath>
+
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='th_taxes']" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+
+        <xpath expr="//div[@name='so_total_summary']" position="attributes">
+            <attribute name="t-if">not proyecto</attribute>
+        </xpath>
+    </template>
+</odoo>
