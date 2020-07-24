@@ -125,11 +125,10 @@ class AccountMoveLine(models.Model):
         else:
             product = self.product_id
 
-        values = []
         if self.journal_id.type == 'sale':
             if product.description_sale:
-                values.append(product.description_sale)
+                return product.description_sale
         elif self.journal_id.type == 'purchase':
             if product.description_purchase:
-                values.append(product.description_purchase)
-        return '\n'.join(values)
+                return product.description_purchase
+        return ''

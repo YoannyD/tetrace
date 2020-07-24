@@ -31,5 +31,5 @@ class Product(models.Model):
     def get_product_multiline_description_sale(self):
         name = ''
         if self.description_sale:
-            name += '\n' + self.description_sale
+            return self.description_sale
         return name
