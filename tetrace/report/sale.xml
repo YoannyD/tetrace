@@ -4,8 +4,8 @@
             string="Proyectos"
             model="sale.order"
             report_type="qweb-pdf"
-            file="sale.report_saleorder_proyecto"
-            name="sale.report_saleorder_proyecto"
+            file="tetrace.report_saleorder_proyecto"
+            name="tetrace.report_saleorder_proyecto"
             print_report_name="(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or 'Order - %s' % (object.name)"
     />
 
@@ -32,7 +32,7 @@
             <attribute name="style">display:none</attribute>
         </xpath>
 
-        <xpath expr="//td[@name='th_taxes']" position="attributes">
+        <xpath expr="//td[@name='td_taxes']" position="attributes">
             <attribute name="style">display:none</attribute>
         </xpath>
 
