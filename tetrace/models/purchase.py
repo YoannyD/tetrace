@@ -15,5 +15,5 @@ class PurchaseOrderLine(models.Model):
         self.ensure_one()
         name = ""
         if product_lang.description_purchase:
-            name += '\n' + product_lang.description_purchase
+            return product_lang.description_purchase
         return name
