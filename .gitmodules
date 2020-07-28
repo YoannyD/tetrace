@@ -48,3 +48,13 @@
 	path = OCA/purchase-workflow
 	url = git@github.com:OCA/purchase-workflow.git
 	branch = 13.0
+
+[submodule "OCA/mis-builder"]
+	path = OCA/mis-builder
+	url = git@github.com:OCA/mis-builder.git
+	branch = 13.0
+
+[submodule "OCA/reporting-engine"]
+	path = OCA/reporting-engine
+	url = git@github.com:OCA/reporting-engine.git
+	branch = 13.0
