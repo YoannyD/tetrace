@@ -33,6 +33,7 @@ class AccountAnalyticLineRel(models.Model):
     date = fields.Date(related="analytic_line_id.date", store=True)
     company_id = fields.Many2one(related="analytic_line_id.company_id", store=True)
     balance = fields.Monetary('Balance', compute="_compute_debit_credit", store=True)
+    analytic_account_id = fields.Many2one(related="analytic_line_id.account_id", store=True)
 
     @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):
