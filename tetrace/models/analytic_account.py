@@ -22,7 +22,7 @@ class AccountAnalyticLine(models.Model):
 
 class AccountAnalyticLineRel(models.Model):
     _name = 'account.analytic.line.rel'
-    description = 'Líneas analítica (relación)'
+    _description = 'Líneas analítica (relación)'
 
     analytic_line_id = fields.Many2one('account.analytic.line', string="Línea analítica", required=True,
                                        ondelete='cascade')
