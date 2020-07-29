@@ -29,7 +29,10 @@ class AccountAnalyticLineRel(models.Model):
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
     account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
-    currency_id = fields.Many2one(related="analytic_line_id.currency_id")
+    currency_id = fields.Many2one(related="analytic_line_id.currency_id", store=True)
+    date = fields.Date(related="analytic_line_id.date", store=True)
+    company_id = fields.Many2one(related="analytic_line_id.company_id", store=True)
+    balance = fields.Monetary('Balance', compute="_compute_debit_credit", store=True)
 
     @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):
@@ -45,4 +48,5 @@ class AccountAnalyticLineRel(models.Model):
             r.update({
                 'credit': credit,
                 'debit': debit,
+                'balance': debit - credit
             })
