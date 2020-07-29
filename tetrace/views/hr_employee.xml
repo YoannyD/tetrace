@@ -32,6 +32,26 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="hr_employee_view_form_inherit_timesheet">
+        <field name="name">hr.employee.form.timesheet.tetrace</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_employee_view_form_inherit_timesheet"/>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='timesheet']" position="after">
+                <group name="precios_hora" string="Precios hora">
+                    <label for="coste_hora"/>
+                    <div>
+                        <field name="coste_hora" class="oe_inline"/> per hour
+                    </div>
+                    <label for="precio_hora"/>
+                    <div>
+                        <field name="precio_hora" class="oe_inline"/> per hour
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="view_employee_tree">
         <field name="name">hr.employee.tree.tetrace</field>
         <field name="inherit_id" ref="hr.view_employee_tree"/>

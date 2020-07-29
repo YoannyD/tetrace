@@ -16,6 +16,8 @@ class Employee(models.Model):
     numero_ss = fields.Char('Nº Seguridad Social')
     IND_NoResidente_A3 = fields.Char('No residente A3')
     sin_adjuntos = fields.Boolean("Sin adjuntos")
+    coste_hora = fields.Monetary('Coste hora')
+    precio_hora = fields.Monetary('Precio hora')
 
     def action_view_documentos(self):
         action = self.env.ref('documents.document_action').read()[0]
