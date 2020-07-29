@@ -24,10 +24,13 @@
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
-        'project'
+        'project',
+        'analytic'
     ],
     'data': [
+        'security/tetrace_security.xml',
         'security/ir.model.access.csv',
+        'data/project.xml',
         'report/account.xml',
         'report/web.xml',
         'report/sale.xml',
