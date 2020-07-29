@@ -29,6 +29,7 @@ class AccountAnalyticLineRel(models.Model):
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
     account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
+    currency_id = fields.Many2one(related="analytic_line_id.currency_id")
 
     @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):
