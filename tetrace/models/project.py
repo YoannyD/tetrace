@@ -8,10 +8,25 @@ from odoo import models, fields, api
 _logger = logging.getLogger(__name__)
 
 
+class Estado(models.Model):
+    _name = 'tetrace.project_state'
+    _description = "Estados"
+    _order = "sequence,name"
+
+    sequence = fields.Integer('Secuencia')
+    name = fields.Char('Nombre', required=True)
+    project_ids = fields.One2many('project.project', 'estado_id')
+
+
 class Project(models.Model):
     _inherit = 'project.project'
 
+    def _default_estado_id(self):
+        return self.env['tetrace.project_state'].search([], limit=1).id
+
     descripcion = fields.Text("Descripción")
+    estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True, index=True,
+                                copy=False, default=lambda self: self._default_estado_id())
 
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
@@ -59,3 +74,4 @@ class Project(models.Model):
             'header': result['header'],
             'rows': table_rows
         }
+

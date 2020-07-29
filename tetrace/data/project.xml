@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="project_state_en_proceso" model="tetrace.project_state" forcecreate="False">
+            <field name="sequence">0</field>
+            <field name="name">En proceso</field>
+        </record>
+
+        <record id="project_state_terminado" model="tetrace.project_state" forcecreate="False">
+            <field name="sequence">1</field>
+            <field name="name">Terminado</field>
+        </record>
+    </data>
+</odoo>

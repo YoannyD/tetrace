@@ -9,6 +9,10 @@
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="estado_id" widget="statusbar"/>
+            </xpath>
+
             <xpath expr="//page[@name='settings']" position="inside">
                 <group>
                     <field name="descripcion"/>

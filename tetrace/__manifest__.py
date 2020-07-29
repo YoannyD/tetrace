@@ -28,6 +28,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'report/project.xml',
         'report/account.xml',
         'report/web.xml',
         'report/sale.xml',
