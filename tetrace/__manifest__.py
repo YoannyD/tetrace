@@ -24,7 +24,8 @@
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
-        'project'
+        'project',
+        'analytic'
     ],
     'data': [
         'security/tetrace_security.xml',
