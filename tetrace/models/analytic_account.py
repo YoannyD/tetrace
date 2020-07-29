@@ -11,27 +11,37 @@ _logger = logging.getLogger(__name__)
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
+    line_rel_ids = fields.One2many('account.analytic.line.rel', 'analytic_line_id')
+
+    @api.model
+    def create(self, vals):
+        res = super(AccountAnalyticLine, self).create(vals)
+        self.env['account.analytic.line.rel'].create({'analytic_line_id': res.id})
+        return res
+
+
+class AccountAnalyticLineRel(models.Model):
+    _name = 'account.analytic.line.rel'
+    description = 'Líneas analítica (relación)'
+
+    analytic_line_id = fields.Many2one('account.analytic.line', string="Línea analítica", required=True,
+                                       ondelete='cascade')
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
-    account_id = fields.Many2one('account.account', 'Cuenta financiera', required=True, ondelete='restrict',
-                                 index=True, compute="_compute_general_account_id", store=True)
+    account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
 
-    @api.depends('amount')
+    @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):
         for r in self:
             credit = 0
             debit = 0
-            if r.amount > 0:
-                credit = r.amount
+            amount = r.analytic_line_id.amount
+            if amount > 0:
+                credit = amount
             else:
-                debit = r.amount
+                debit = amount
 
             r.update({
                 'credit': credit,
                 'debit': debit,
             })
-
-    @api.depends('general_account_id')
-    def _compute_general_account_id(self):
-        for r in self:
-            r.account_id = r.general_account_id.id if r.general_account_id else None
