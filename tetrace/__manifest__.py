@@ -27,8 +27,9 @@
         'project'
     ],
     'data': [
+        'security/tetrace_security.xml',
         'security/ir.model.access.csv',
-        'report/project.xml',
+        'data/project.xml',
         'report/account.xml',
         'report/web.xml',
         'report/sale.xml',

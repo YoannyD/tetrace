@@ -25,7 +25,8 @@ class Project(models.Model):
         return self.env['tetrace.project_state'].search([], limit=1).id
 
     descripcion = fields.Text("Descripción")
-    estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True, index=True,
+    estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True,
+                                index=True, group_expand='_read_group_estado_ids',
                                 copy=False, default=lambda self: self._default_estado_id())
 
     def _table_get_empty_so_lines(self):
@@ -75,3 +76,6 @@ class Project(models.Model):
             'rows': table_rows
         }
 
+    @api.model
+    def _read_group_estado_ids(self, estados, domain, order):
+        return self.env['tetrace.project_state'].search([])

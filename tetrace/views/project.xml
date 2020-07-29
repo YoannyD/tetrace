@@ -4,13 +4,25 @@
         <field name="view_mode">kanban,tree,form</field>
     </record>
 
+    <record model="ir.ui.view" id="view_project">
+        <field name="name">project.project.tree.tetrace</field>
+        <field name="inherit_id" ref="project.view_project"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="estado_id"/>
+            </xpath>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="edit_project">
         <field name="name">project.project.form.tetrace</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <field name="estado_id" widget="statusbar"/>
+            <xpath expr="//header[1]" position="inside">
+                <field name="estado_id" widget="statusbar" options="{'clickable': '1'}"
+                       groups="tetrace.group_tetrace_project_estado"/>
             </xpath>
 
             <xpath expr="//page[@name='settings']" position="inside">
@@ -18,6 +30,58 @@
                     <field name="descripcion"/>
                 </group>
             </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_project_project_filter">
+        <field name="name">project.project.select.tetrace</field>
+        <field name="inherit_id" ref="project.view_project_project_filter"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="estado_id"/>
+            </xpath>
+
+            <xpath expr="//group[1]" position="inside">
+                <filter string="Estados" name="filter_estado_id" context="{'group_by': 'estado_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_tetrace_project_state" model="ir.actions.act_window">
+        <field name="name">Estados proyectos</field>
+        <field name="res_model">tetrace.project_state</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_tetrace_project_state"
+              id="menu_tetrace_project_state"
+              name="Estados proyecto"
+              parent="project.menu_project_config"
+              sequence="7"/>
+
+    <record model="ir.ui.view" id="project_project_state_form">
+        <field name="name">tetrace.project_state.form</field>
+        <field name="model">tetrace.project_state</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="project_project_state_tree">
+        <field name="name">tetrace.project_state.tree</field>
+        <field name="model">tetrace.project_state</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
         </field>
     </record>
 </odoo>
