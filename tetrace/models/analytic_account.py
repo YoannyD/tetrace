@@ -13,14 +13,14 @@ class AccountAnalyticLine(models.Model):
 
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
-    account_id = fields.Many2one('account.analytic.account', 'Analytic Account', required=True, ondelete='restrict',
+    account_id = fields.Many2one('account.account', 'Cuenta financiera', required=True, ondelete='restrict',
                                  index=True, compute="_compute_general_account_id", store=True)
 
     @api.depends('amount')
     def _compute_debit_credit(self):
         for r in self:
             credit = 0
-            debit= 0
+            debit = 0
             if r.amount > 0:
                 credit = r.amount
             else:
