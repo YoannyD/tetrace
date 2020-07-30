@@ -79,3 +79,9 @@ class Project(models.Model):
     @api.model
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
+
+
+class ProjectTaskType(models.Model):
+    _inherit = 'project.task.type'
+
+    bloquear_imputar_tiempos = fields.Boolean('Bloquear imputación de tiempos')

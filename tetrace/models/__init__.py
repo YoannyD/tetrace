@@ -21,3 +21,4 @@ from . import res_partner
 from . import sale_order
 from . import purchase
 from . import analytic_account
+from . import stock_move

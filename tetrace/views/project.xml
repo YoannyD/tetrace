@@ -84,4 +84,26 @@
             </tree>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="task_type_edit">
+        <field name="name">project.task.type.form.tetrace</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='sequence']" position="after">
+                <field name="bloquear_imputar_tiempos"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="task_type_tree">
+        <field name="name">project.task.type.tree.tetrace</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='fold']" position="after">
+                <field name="bloquear_imputar_tiempos"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
