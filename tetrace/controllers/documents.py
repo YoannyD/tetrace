@@ -58,7 +58,6 @@ class ShareRoute(ShareRoute):
                 except Exception as e:
                     _logger.exception("Fail to upload document %s" % ufile.filename)
                     result = {'error': str(e)}
-            _logger.warning(vals_list)
             request.env['documents.document'].create(vals_list)
 
         return json.dumps(result)

@@ -40,7 +40,7 @@ DocumentsKC.include({
             if (context.default_owner_id) {
                 data.append('owner_id', context.default_owner_id);
             }
-            if (context.params && context.active_id != undefined &&
+            if (context.active_id != undefined &&
             (context.active_model == 'hr.employee' || context.active_model == 'hr.applicant')) {
                 data.append('res_model', context.active_model);
                 data.append('res_id', context.active_id);
