@@ -4,6 +4,7 @@
         <xpath expr="." position="inside">
             <link rel="stylesheet" type="text/scss" href="/tetrace/static/src/scss/backend.scss"/>
             <script type="text/javascript" src="/tetrace/static/src/js/form_rendered.js"/>
+            <script type="text/javascript" src="/tetrace/static/src/js/documents_kanban_controllers.js"/>
         </xpath>
     </template>
 </odoo>

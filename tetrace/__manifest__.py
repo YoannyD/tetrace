@@ -24,6 +24,7 @@
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
+        'documents_hr',
         'project',
         'analytic'
     ],
@@ -44,6 +45,8 @@
         'views/product_category.xml',
         'views/tetrace_skills.xml',
         'views/project.xml',
+        'views/documents.xml',
+        'views/purchase.xml',
         'views/sale_order.xml',
         'views/res_config_settings.xml',
     ],

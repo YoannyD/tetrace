@@ -11,12 +11,6 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
-            <xpath expr="//header[1]" position="inside">
-                <button name="action_view_documentos"
-                        string="Documentos"
-                        type="object"/>
-            </xpath>
-
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="codigo_trabajador_A3"/>
             </xpath>
@@ -32,6 +26,26 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="hr_employee_view_form_inherit_timesheet">
+        <field name="name">hr.employee.form.timesheet.tetrace</field>
+        <field name="inherit_id" ref="hr_timesheet.hr_employee_view_form_inherit_timesheet"/>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='timesheet']" position="after">
+                <group name="precios_hora" string="Precios hora">
+                    <label for="coste_hora"/>
+                    <div>
+                        <field name="coste_hora" class="oe_inline"/> per hour
+                    </div>
+                    <label for="precio_hora"/>
+                    <div>
+                        <field name="precio_hora" class="oe_inline"/> per hour
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="view_employee_tree">
         <field name="name">hr.employee.tree.tetrace</field>
         <field name="inherit_id" ref="hr.view_employee_tree"/>
@@ -43,6 +57,25 @@
                         icon="fa-exclamation-triangle text-warning"
                         attrs="{'invisible':[('contract_warning', '=', False)]}"
                         class="oe_inline oe_stat_button"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.inherit.documents.tetrace</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="documents_hr.hr_employee_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(documents.document_action)d']" position="replace">
+                <field name="id" invisible="1"/>
+                <button name="%(documents.document_action)d"
+                    context="{'search_default_res_model': 'hr.employee', 'search_default_res_id': id}"
+                    class="oe_stat_button"
+                    groups="documents.group_documents_user"
+                    icon="fa-file-text"
+                    type="action">
+                    <field name="document_employee_count" widget="statinfo"/>
+                </button>
             </xpath>
         </field>
     </record>

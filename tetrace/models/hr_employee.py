@@ -16,8 +16,14 @@ class Employee(models.Model):
     numero_ss = fields.Char('Nº Seguridad Social')
     IND_NoResidente_A3 = fields.Char('No residente A3')
     sin_adjuntos = fields.Boolean("Sin adjuntos")
+    coste_hora = fields.Monetary('Coste hora')
+    precio_hora = fields.Monetary('Precio hora')
+    document_employee_count = fields.Integer('Documentos', compute="_compute_document_employee")
 
-    def action_view_documentos(self):
-        action = self.env.ref('documents.document_action').read()[0]
-        action['domain'] = [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)]
-        return action
+    def _compute_document_employee(self):
+        for r in self:
+            documents = self.env['documents.document'].search_count([
+                ('res_model', '=', 'hr.employee'),
+                ('res_id', '=', r.id),
+            ])
+            r.document_employee_count = documents
