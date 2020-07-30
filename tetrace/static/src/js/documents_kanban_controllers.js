@@ -33,6 +33,7 @@ DocumentsKC.include({
             }
             data.append('document_id', documentID);
         }
+        console.log(context);
         if (context) {
             if (context.default_partner_id) {
                 data.append('partner_id', context.default_partner_id);
