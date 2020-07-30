@@ -13,11 +13,8 @@ var KanbanController = require('web.KanbanController');
 var qweb = core.qweb;
 var _t = core._t;
 
-console.log("rrrrrrrrrrrrrr");
-
 DocumentsKC.include({
     async _processFiles(files, documentID) {
-        console.log("dddddddddddddddddddd");
         const uploadID = _.uniqueId('uploadID');
         const folderID = this._searchPanel.getSelectedFolderId();
         const context = this.model.get(this.handle, { raw: true }).getContext();
@@ -36,7 +33,6 @@ DocumentsKC.include({
             }
             data.append('document_id', documentID);
         }
-        console.log(context);
         if (context) {
             if (context.default_partner_id) {
                 data.append('partner_id', context.default_partner_id);
@@ -59,7 +55,7 @@ DocumentsKC.include({
             title = files[0].name;
             type = files[0].type;
         }
-        console.log(data);
+
         const prom = new Promise(resolve => {
             const xhr = this._createXHR();
             xhr.open('POST', '/documents/upload_attachment');
