@@ -21,5 +21,5 @@ class Employee(models.Model):
 
     def action_view_documentos(self):
         action = self.env.ref('documents.document_action').read()[0]
-        action['domain'] = [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)]
+        action['domain'] = [('res_model', '=', 'hr.applicant'), ('res_id', '=', self.id)]
         return action

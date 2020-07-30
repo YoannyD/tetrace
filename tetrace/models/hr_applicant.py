@@ -23,6 +23,11 @@ class Applicant(models.Model):
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
 
+    def action_view_documentos(self):
+        action = self.env.ref('documents.document_action').read()[0]
+        action['domain'] = [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)]
+        return action
+
 
 class ApplicationResumeLine(models.Model):
     _name = 'tetrace.resume.line'

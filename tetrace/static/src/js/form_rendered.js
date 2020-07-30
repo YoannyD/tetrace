@@ -10,7 +10,8 @@ FormRenderer.include({
         if (node.tag === 'div' && node.attrs.class === 'oe_chatter') {
             if (!this.chatter) {
                 var options;
-                if(this.state != undefined && this.state.model == "hr.employee"){
+                if(this.state != undefined &&
+                (this.state.model == "hr.employee" || this.state.model == "hr.applicant")){
                     options = {
                         isEditable: this.activeActions.edit,
                         viewType: 'form',
