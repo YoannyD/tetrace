@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="document_view_search" model="ir.ui.view">
+        <field name="name">Document search view tetrace</field>
+        <field name="model">documents.document</field>
+        <field name="inherit_id" ref="documents.document_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='Inactive']" position="after">
+                <field name="res_model"/>
+                <field name="res_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

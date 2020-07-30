@@ -66,8 +66,16 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="documents_hr.hr_employee_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[1]" position="attributes">
-                <attribute name="attrs">{'invisible': 0}</attribute>
+            <xpath expr="//button[@name='%(documents.document_action)d']" position="replace">
+                <field name="id" invisible="1"/>
+                <button name="%(documents.document_action)d"
+                    context="{'search_default_res_model': 'hr.employee', 'search_default_res_id': id}"
+                    class="oe_stat_button"
+                    groups="documents.group_documents_user"
+                    icon="fa-file-text"
+                    type="action">
+                    <field name="document_employee_count" widget="statinfo"/>
+                </button>
             </xpath>
         </field>
     </record>

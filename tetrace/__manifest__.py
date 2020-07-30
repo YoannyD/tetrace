@@ -45,6 +45,7 @@
         'views/product_category.xml',
         'views/tetrace_skills.xml',
         'views/project.xml',
+        'views/documents.xml',
         'views/purchase.xml',
         'views/sale_order.xml',
         'views/res_config_settings.xml',
