@@ -11,12 +11,6 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
-            <xpath expr="//header[1]" position="inside">
-                <button name="action_view_documentos"
-                        string="Documentos"
-                        type="object"/>
-            </xpath>
-
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="codigo_trabajador_A3"/>
             </xpath>
@@ -63,6 +57,17 @@
                         icon="fa-exclamation-triangle text-warning"
                         attrs="{'invisible':[('contract_warning', '=', False)]}"
                         class="oe_inline oe_stat_button"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hr_employee_view_form" model="ir.ui.view">
+        <field name="name">hr.employee.view.form.inherit.documents.tetrace</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="documents_hr.hr_employee_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[1]" position="attributes">
+                <attribute name="attrs">{'invisible': 0}</attribute>
             </xpath>
         </field>
     </record>

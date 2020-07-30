@@ -24,6 +24,7 @@
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
+        'documents_hr',
         'project',
         'analytic'
     ],

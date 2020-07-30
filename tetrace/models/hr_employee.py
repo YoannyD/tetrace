@@ -18,8 +18,3 @@ class Employee(models.Model):
     sin_adjuntos = fields.Boolean("Sin adjuntos")
     coste_hora = fields.Monetary('Coste hora')
     precio_hora = fields.Monetary('Precio hora')
-
-    def action_view_documentos(self):
-        action = self.env.ref('documents.document_action').read()[0]
-        action['domain'] = [('res_model', '=', 'hr.applicant'), ('res_id', '=', self.id)]
-        return action
