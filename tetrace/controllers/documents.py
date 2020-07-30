@@ -17,7 +17,6 @@ class ShareRoute(ShareRoute):
     @http.route('/documents/upload_attachment', type='http', methods=['POST'], auth="user")
     def upload_document(self, folder_id, ufile, document_id=False, partner_id=False, owner_id=False, res_model=False,
                         res_id=False):
-        _logger.warning(request.env.context)
         files = request.httprequest.files.getlist('ufile')
         result = {'success': _("All files uploaded")}
         if document_id:
