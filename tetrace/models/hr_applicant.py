@@ -22,11 +22,15 @@ class Applicant(models.Model):
     referencia = fields.Char('Referencia Tetrace')
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
+    document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
 
-    def action_view_documentos(self):
-        action = self.env.ref('documents.document_action').read()[0]
-        action['domain'] = [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)]
-        return action
+    def _compute_document_applicant(self):
+        for r in self:
+            documents = self.env['documents.document'].search_count([
+                ('res_model', '=', 'hr.applicant'),
+                ('res_id', '=', r.id),
+            ])
+            r.document_applicant_count = documents
 
 
 class ApplicationResumeLine(models.Model):

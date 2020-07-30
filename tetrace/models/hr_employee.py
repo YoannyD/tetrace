@@ -18,7 +18,7 @@ class Employee(models.Model):
     sin_adjuntos = fields.Boolean("Sin adjuntos")
     coste_hora = fields.Monetary('Coste hora')
     precio_hora = fields.Monetary('Precio hora')
-    document_employee_count = fields.Integer('Nº Documentos', compute="_compute_document_employee")
+    document_employee_count = fields.Integer('Documentos', compute="_compute_document_employee")
 
     def _compute_document_employee(self):
         for r in self:

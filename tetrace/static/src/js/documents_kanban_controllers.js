@@ -44,7 +44,8 @@ DocumentsKC.include({
             if (context.default_owner_id) {
                 data.append('owner_id', context.default_owner_id);
             }
-            if (context.params && context.params.model == 'hr.employee' && context.params.id != undefined) {
+            if (context.params && context.params.id != undefined &&
+            (context.params.model == 'hr.employee' || context.params.model == 'hr.applicant')) {
                 data.append('res_model', context.params.model);
                 data.append('res_id', context.params.id);
             }
