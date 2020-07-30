@@ -48,6 +48,7 @@
         'views/documents.xml',
         'views/purchase.xml',
         'views/sale_order.xml',
+        'views/stock_move.xml',
         'views/res_config_settings.xml',
     ],
     'demo': [],
