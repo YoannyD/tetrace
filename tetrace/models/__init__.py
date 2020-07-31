@@ -22,3 +22,6 @@ from . import sale_order
 from . import purchase
 from . import analytic_account
 from . import stock_move
+from . import mis_report_instance
+from . import mis_report
+from . import aep
