@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="mis_report_instance_view_form">
+        <field name="name">mis.report.instance.view.form.tetrace</field>
+        <field name="inherit_id" ref="mis_builder.mis_report_instance_view_form"/>
+        <field name="model">mis.report.instance</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='comparison_mode']" position="after">
+                <field name="informe_fecha_contable"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
