@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="report_invoice_document" inherit_id="account.report_invoice_document">
+    <template id="report_invoice_document" inherit_id="account.report_invoice_document" priority="5">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
             <address t-field="o.partner_id"
                      t-if="not o.journal_id or o.journal_id.code != 'INVE'"
@@ -75,7 +75,7 @@
             </div>
         </xpath>
 
-        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
+        <xpath expr="//table[@name='invoice_line_table']/thead[1]/tr[1]/th[@name='th_taxes']" position="replace">
             <th name="th_taxes"/>
         </xpath>
 
@@ -87,14 +87,6 @@
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_priceunit']" position="after">
             <th name="th_quantity" class="text-right"><span>Quantity</span></th>
-        </xpath>
-
-        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']//span[@t-field='line.l10n_latam_price_unit']/.." position="replace"/>
-
-        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']//span[@t-field='line.quantity']/.." position="before">
-            <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
-                <span t-field="line.l10n_latam_price_unit"/>
-            </td>
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr[1]/th[1]" position="before">
@@ -129,11 +121,13 @@
         </xpath>
     </template>
 
-    <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">
-        <xpath expr="//div[@groups='sale.group_delivery_invoice_address']" position="attributes">
-            <attribute name="style">padding-top:15px;padding-bottom:15px;</attribute>
-        </xpath>
+    <template id="l10n_ar_report_invoice_document" inherit_id="l10n_ar.report_invoice_document" priority="20">
+        <xpath expr="//table[@name='invoice_line_table']/tbody[1]//t[@name='account_invoice_line_accountable']//span[@t-field='line.l10n_latam_price_unit']/.." position="replace"/>
 
-        <xpath expr="//div[@t-field='o.partner_id']" position="replace"/>
+        <xpath expr="//table[@name='invoice_line_table']/tbody[1]//t[@name='account_invoice_line_accountable']//span[@t-field='line.quantity']/.." position="before">
+            <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                <span t-field="line.l10n_latam_price_unit"/>
+            </td>
+        </xpath>
     </template>
 </odoo>
