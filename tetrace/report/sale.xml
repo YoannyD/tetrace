@@ -11,21 +11,14 @@
 
     <template id="report_saleorder_proyecto_document">
         <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-        <div style="width:100%;height:100%;background-color:#872292;overflow:hidden;">
+        <div class="page" style="width:100%;height:100%;background-color:#872292;overflow:hidden;">
             <div style="width:95%;height:100%;background-color:white;">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="cab_proyecto">
-                            <img src="/tetrace/static/src/img/cab_report_proyecto.jpg" width="100%"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin:32px auto 0 auto;max-width:85%;">
-                    <div class="col-md-12">
+                <div class="row" style="padding:32px auto 0 auto;max-width:85%;">
+                    <div class="col-12">
                         <strong t-esc="doc.descripcion_proyecto"/>
                     </div>
 
-                    <div class="col-md-12" style="margin-top:32px;">
+                    <div class="col-12" style="margin-top:32px;">
                         <strong><span t-field="doc.partner_id"/></strong> <br/>
                         <t t-if="doc.partner_id.street">
                             <span t-field="doc.partner_id.street"/> <br/>
@@ -53,23 +46,22 @@
                         </t>
                     </div>
 
-                    <div class="col-md-12" style="margin-top:32px;">
-                        <div style="float:right">
+                    <div class="col-12" style="margin-top:32px;">
+                        <div style="text-align:right;">
                             <t t-if="doc.company_id.city">
                                 En <span t-field="doc.company_id.city"/>, a
                             </t>
-
                             <span t-field="doc.date_order" t-options='{"format": "d MMMM y"}'/>.
                         </div>
                     </div>
 
-                    <div class="col-md-12" style="margin-top:32px;">
+                    <div class="col-12" style="margin-top:32px;">
                         <span t-field="doc.cabecera_proyecto"/>
                     </div>
                 </div>
 
                 <div class="row" style="margin:32px auto 0 auto;max-width:85%;">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <t t-set="num_linea" t-value="1"/>
                         <t t-foreach="doc.order_line" t-as="line">
 
@@ -109,19 +101,19 @@
                 </div>
 
                 <div class="row" style="margin:32px auto 0 auto;max-width:85%;">
-                    <div class="col-md-12">
+                    <div class="col-12">
                         <span t-field="doc.note"/>
                     </div>
                 </div>
 
                 <div class="row" style="margin:48px auto 0 auto;max-width:85%;min-height:120px;">
-                    <div class="col-md-6 text-center">
+                    <div class="col-6 text-center">
                         <strong>Firma / Sello</strong>
                         <img t-if="doc.signature" t-att-src="image_data_uri(doc.signature)" style="max-height: 4cm; max-width: 8cm;"/>
                         <span t-field="doc.signed_by"/>
                     </div>
 
-                    <div class="col-md-6 text-center">
+                    <div class="col-6 text-center">
                         <strong>Firma / Sello</strong>
 
                         <span t-field="doc.signed_by"/>
@@ -131,8 +123,39 @@
         </div>
     </template>
 
+    <template id="html_clear">
+        <html t-att-lang="lang and lang.replace('_', '-')"
+              t-att-data-report-margin-top="data_report_margin_top"
+              t-att-data-report-header-spacing="data_report_header_spacing"
+              t-att-data-report-dpi="data_report_dpi"
+              t-att-data-report-landscape="data_report_landscape"
+              t-att-web-base-url="web_base_url">
+            <head>
+                <meta charset="utf-8"/>
+                <meta name="viewport" content="initial-scale=1"/>
+                <title><t t-esc="title or 'Odoo Report'"/></title>
+                <t t-call-assets="web.report_assets_common" t-js="false"/>
+                <t t-call-assets="web.assets_common" t-css="false"/>
+                <t t-call-assets="web.report_assets_common" t-css="false"/>
+            </head>
+            <body>
+                <main style="padding:0;margin:0;">
+                    <t t-raw="0"/>
+                </main>
+            </body>
+        </html>
+    </template>
+
     <template id="report_saleorder_proyecto">
-        <t t-call="web.html_container">
+        <t t-call="tetrace.html_clear">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="cab_proyecto">
+                        <t t-set="base_url" t-value="request.env['ir.config_parameter'].get_param('web.base.url')"/>
+                        <img t-att-src="'%s/tetrace/static/src/img/cab_report_proyecto.jpg' % base_url" width="100%"/>
+                    </div>
+                </div>
+            </div>
             <t t-foreach="docs" t-as="doc">
                 <t t-call="tetrace.report_saleorder_proyecto_document" t-lang="doc.partner_id.lang"/>
             </t>
