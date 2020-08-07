@@ -21,6 +21,19 @@ class SaleOrder(models.Model):
         ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
     ]
 
+    @api.constrains("ref_proyecto")
+    def _check_ref_proyecto(self):
+        msg_error = "La referencia tiene que tener el formato 000.000"
+        for r in self:
+            if r.ref_proyecto:
+                if r.ref_proyecto.find('.') != 3 or len(r.ref_proyecto) != 7:
+                    raise ValidationError(msg_error)
+
+                aux = r.ref_proyecto.split(".")
+                for a in aux:
+                    if not isinstance(a, int):
+                        raise ValidationError(msg_error)
+
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
         if 'ref_proyecto' in vals or 'nombre_proyecto' in vals:
