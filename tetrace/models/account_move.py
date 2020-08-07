@@ -96,9 +96,9 @@ class AccountMove(models.Model):
 
                 currency = self.env['res.currency'].search([('name', '=', gasto['Moneda_Base'])], limit=1)
 
-                cuenta_a_buscar = gasto['Cuenta_Contable_Anticipos']
+                cuenta_a_buscar = gasto['Cuenta_Contable_Tarjeta']
                 if not cuenta_a_buscar:
-                    cuenta_a_buscar = gasto['Cuenta_Contable_Tarjeta']
+                    cuenta_a_buscar = gasto['Cuenta_Contable_Anticipos']
 
                 account_2 = self.env['account.account'].search([
                     ('code', '=', cuenta_a_buscar),
@@ -126,7 +126,7 @@ class AccountMove(models.Model):
                     'name': name,
                     'account_id': account_2.id if account_2 else None,
                     'partner_id': partner_id,
-                    'analytic_account_id': analytic.id if analytic else None,
+                    #'analytic_account_id': analytic.id if analytic else None,
                     #                     'currency_id': currency.id if currency else None,
                     'debit': 0,
                     'credit': credit

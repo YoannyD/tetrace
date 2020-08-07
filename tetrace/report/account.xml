@@ -75,13 +75,14 @@
             </div>
         </xpath>
 
-        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_taxes']" position="replace">
+        <xpath expr="//table[@name='invoice_line_table']/thead[1]/tr[1]/th[@name='th_taxes']" position="replace">
             <th name="th_taxes"/>
         </xpath>
 
         <xpath expr="//span[@id='line_tax_ids']" position="replace">
             <span style="display:none" id="line_tax_ids"/>
         </xpath>
+
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="replace"/>
 
@@ -127,13 +128,5 @@
             <strong t-if="o.journal_id and o.journal_id.code == 'INVE'">Total CIP</strong>
             <strong t-if="not o.journal_id or o.journal_id.code != 'INVE'">Total</strong>
         </xpath>
-    </template>
-
-    <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">
-        <xpath expr="//div[@groups='sale.group_delivery_invoice_address']" position="attributes">
-            <attribute name="style">padding-top:15px;padding-bottom:15px;</attribute>
-        </xpath>
-
-        <xpath expr="//div[@t-field='o.partner_id']" position="replace"/>
     </template>
 </odoo>
