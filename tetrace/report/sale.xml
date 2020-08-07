@@ -179,10 +179,8 @@
 
     <template id="report_saleorder_proyecto">
         <t t-call="tetrace.html_report_proyecto">
-            <t t-call="">
-                <t t-foreach="docs" t-as="doc">
-                    <t t-call="tetrace.report_saleorder_proyecto_document" t-lang="doc.partner_id.lang"/>
-                </t>
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="tetrace.report_saleorder_proyecto_document" t-lang="doc.partner_id.lang"/>
             </t>
         </t>
     </template>
