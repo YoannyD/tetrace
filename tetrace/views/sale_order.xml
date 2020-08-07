@@ -25,7 +25,10 @@
              <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="domain">[('is_company', '=', True)]</attribute>
                 <attribute name="context">{'res_partner_search_mode': 'customer', 'solo_company': 1, 'show_address': 1, 'show_vat': True}</attribute>
+            </xpath>
 
+            <xpath expr="//group[1]/group[2]" position="inside">
+                <field name="nombre_proyecto"/>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
