@@ -138,57 +138,55 @@
                 <t t-call-assets="web.report_assets_common" t-css="false"/>
             </head>
             <body>
-                <div style="width:100%;height:100%;background-color:#872292;overflow:hidden;padding:0;">
-                    <header style="width:100%;height:100%;background-color:white;">
-                        <div class="row">
+                <div style="width:100%;height:100vh;background-color:#872292;padding:0;">
+                    <div style="width:98%;height:100%;background-color:white;">
+                        <header class="row">
                             <div class="col-md-12">
                                 <div class="cab_proyecto">
                                     <t t-set="base_url" t-value="request.env['ir.config_parameter'].get_param('web.base.url')"/>
                                     <img t-att-src="'%s/tetrace/static/src/img/cab_report_proyecto.jpg' % base_url" width="100%"/>
                                 </div>
                             </div>
-                        </div>
-                    </header>
+                        </header>
 
-                    <main style="padding:0;margin:0;">
-                        <t t-raw="0"/>
-                    </main>
+                        <main style="padding:0;margin:0;">
+                            <t t-raw="0"/>
+                        </main>
 
-                    <t t-if="not o" t-set="o" t-value="doc"/>
+                        <t t-if="not o" t-set="o" t-value="doc"/>
 
-                    <t t-if="not company">
-                        <!-- Multicompany -->
-                        <t t-if="company_id">
-                            <t t-set="company" t-value="company_id"/>
+                        <t t-if="not company">
+                            <!-- Multicompany -->
+                            <t t-if="company_id">
+                                <t t-set="company" t-value="company_id"/>
+                            </t>
+                            <t t-elif="o and 'company_id' in o">
+                                <t t-set="company" t-value="o.company_id.sudo()"/>
+                            </t>
+                            <t t-else="else">
+                                <t t-set="company" t-value="res_company"/>
+                            </t>
                         </t>
-                        <t t-elif="o and 'company_id' in o">
-                            <t t-set="company" t-value="o.company_id.sudo()"/>
-                        </t>
-                        <t t-else="else">
-                            <t t-set="company" t-value="res_company"/>
-                        </t>
-                    </t>
 
-                    <footer t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
-                        <div class="text-center" style="border-top: 1px solid black;">
-                            <ul class="list-inline mb4">
-                                <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
-                                     adding d-inline class fixes the problem-->
-                                <li t-if="company.phone" class="list-inline-item d-inline">Phone: <span t-field="company.phone"/></li>
-                                <li t-if="company.email" class="list-inline-item d-inline">Email: <span t-field="company.email"/></li>
-                                <li t-if="company.website" class="list-inline-item d-inline">Web: <span t-field="company.website"/></li>
-                                <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
-                            </ul>
+                        <footer t-attf-class="footer o_standard_footer">
+                            <div class="text-center" style="border-top: 1px solid #872292;">
+                                <div style="float:left">
+                                    <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="100%"/>
+                                </div>
 
-                            <div name="financial_infos">
-                                <span t-field="company.report_footer"/>
+                                <div style="float:right">
+                                    <span t-field="company.name"/>
+                                    <t t-if="company.vat">
+                                        | CIF: <span t-field="company.vat"/>
+                                    </t>
+                                </div>
+
+                                <div t-if="report_type == 'pdf'" class="text-muted">
+                                    Page: <span class="page"/> / <span class="topage"/>
+                                </div>
                             </div>
-
-                            <div t-if="report_type == 'pdf'" class="text-muted">
-                                Page: <span class="page"/> / <span class="topage"/>
-                            </div>
-                        </div>
-                    </footer>
+                        </footer>
+                    </div>
                 </div>
             </body>
         </html>
