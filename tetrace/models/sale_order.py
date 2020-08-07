@@ -12,6 +12,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     ref_proyecto = fields.Char('Referencia proyecto')
+    nombre_proyecto = fields.Char('Nombre proyecto')
     descripcion_proyecto = fields.Char('Descripción proyecto')
     cabecera_proyecto = fields.Html('Cabecera proyecto')
 
