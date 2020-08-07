@@ -21,6 +21,18 @@ class SaleOrder(models.Model):
         ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
     ]
 
+    def write(self, vals):
+        res = super(SaleOrder, self).write(vals)
+        if 'ref_proyecto' in vals or 'nombre_proyecto' in vals:
+            for r in self:
+                if r.project_ids:
+                    if not vals.get('ref_proyecto') or not vals.get('nombre_proyecto'):
+                        raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
+
+                    name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
+                    r.project_ids.write({'name': name})
+        return res
+
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"

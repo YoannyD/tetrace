@@ -28,7 +28,7 @@
             </xpath>
 
             <xpath expr="//group[1]/group[2]" position="inside">
-                <field name="nombre_proyecto" required="1"/>
+                <field name="nombre_proyecto"/>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
