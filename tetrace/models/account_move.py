@@ -126,7 +126,7 @@ class AccountMove(models.Model):
                     'name': name,
                     'account_id': account_2.id if account_2 else None,
                     'partner_id': partner_id,
-                    'analytic_account_id': analytic.id if analytic else None,
+                    #'analytic_account_id': analytic.id if analytic else None,
                     #                     'currency_id': currency.id if currency else None,
                     'debit': 0,
                     'credit': credit
