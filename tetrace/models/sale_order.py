@@ -31,7 +31,9 @@ class SaleOrder(models.Model):
 
                 aux = r.ref_proyecto.split(".")
                 for a in aux:
-                    if not isinstance(a, int):
+                    try:
+                        int(a)
+                    except:
                         raise ValidationError(msg_error)
 
     def write(self, vals):
@@ -39,7 +41,7 @@ class SaleOrder(models.Model):
         if 'ref_proyecto' in vals or 'nombre_proyecto' in vals:
             for r in self:
                 if r.project_ids:
-                    if not vals.get('ref_proyecto') or not vals.get('nombre_proyecto'):
+                    if not r.ref_proyecto or not r.nombre_proyecto:
                         raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
 
                     name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
