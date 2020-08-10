@@ -18,8 +18,9 @@
                     <div class="col-12">
                         <strong t-esc="doc.descripcion_proyecto"/>
                     </div>
-
-                    <div class="col-12" style="margin-top:32px;">
+                </div>
+                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;">
+                    <div class="col-12" style="text-align:right;">
                         <strong><span t-field="doc.partner_id"/></strong> <br/>
                         <t t-if="doc.partner_id.street">
                             <span t-field="doc.partner_id.street"/> <br/>
@@ -46,8 +47,9 @@
                             <span t-field="doc.partner_id.vat"/>
                         </t>
                     </div>
-
-                    <div class="col-12" style="margin-top:32px;">
+                </div>
+                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;">
+                    <div class="col-12">
                         <div style="text-align:right;">
                             <t t-if="doc.company_id.city">
                                 En <span t-field="doc.company_id.city"/>, a
@@ -55,8 +57,9 @@
                             <span t-field="doc.date_order" t-options='{"format": "d MMMM y"}'/>.
                         </div>
                     </div>
-
-                    <div class="col-12" style="margin-top:32px;">
+                </div>
+                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;">
+                    <div class="col-12">
                         <span t-field="doc.cabecera_proyecto"/>
                     </div>
                 </div>
