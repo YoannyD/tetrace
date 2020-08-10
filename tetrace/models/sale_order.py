@@ -46,6 +46,8 @@ class SaleOrder(models.Model):
 
                     name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
                     r.project_ids.write({'name': name})
+                    for p in r.project_ids:
+                        p.analytic_account_id.write({'name': r.ref_proyecto})
         return res
 
 

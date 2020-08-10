@@ -49,6 +49,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="ref_proyecto"/>
+                <field name="nombre_proyecto"/>
             </xpath>
         </field>
     </record>
@@ -60,6 +61,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
                 <field name="ref_proyecto"/>
+                <field name="nombre_proyecto"/>
             </xpath>
         </field>
     </record>
