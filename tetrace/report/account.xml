@@ -128,5 +128,9 @@
             <strong t-if="o.journal_id and o.journal_id.code == 'INVE'">Total CIP</strong>
             <strong t-if="not o.journal_id or o.journal_id.code != 'INVE'">Total</strong>
         </xpath>
+
+        <xpath expr="//p[@name='comment']" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
     </template>
 </odoo>
