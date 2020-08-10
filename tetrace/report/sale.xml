@@ -13,123 +13,6 @@
         <t t-call="web.external_layout">
             <t t-set="informe_proyecto" t-value="True"/>
             <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-            <div class="page">
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12">
-                        <strong t-esc="doc.descripcion_proyecto"/>
-                    </div>
-                </div>
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12" style="text-align:right;">
-                        <strong><span t-field="doc.partner_id"/></strong> <br/>
-                        <t t-if="doc.partner_id.street">
-                            <span t-field="doc.partner_id.street"/> <br/>
-                        </t>
-                        <t t-if="doc.partner_id.street2">
-                            <span t-field="doc.partner_id.street"/> <br/>
-                        </t>
-
-                        <t t-if="doc.partner_id.zip or doc.partner_id.city or doc.partner_id.state_id or doc.partner_id.country_id">
-                            <span t-field="doc.partner_id.zip"/>
-                            <span t-field="doc.partner_id.city"/>
-
-                            <t t-if="doc.partner_id.state_id">
-                                , <span t-field="doc.partner_id.state_id"/>
-                            </t>
-
-                            <t t-if="doc.partner_id.country_id">
-                                (<span t-field="doc.partner_id.country_id"/>)
-                            </t>
-                            <br/>
-                        </t>
-
-                        <t t-if="doc.partner_id.vat">
-                            <span t-field="doc.partner_id.vat"/>
-                        </t>
-                    </div>
-                </div>
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12">
-                        <div style="text-align:right;">
-                            <t t-if="doc.company_id.city">
-                                En <span t-field="doc.company_id.city"/>, a
-                            </t>
-                            <span t-field="doc.date_order" t-options='{"format": "d MMMM y"}'/>.
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12">
-                        <span t-field="doc.cabecera_proyecto"/>
-                    </div>
-                </div>
-
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12">
-                        <t t-set="num_linea" t-value="1"/>
-                        <t t-foreach="doc.order_line" t-as="line">
-
-
-                            <t t-if="line.display_type == 'line_section'">
-                                <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;">
-                                    <span t-field="line.name"/>
-                                </div>
-                            </t>
-
-                            <t t-if="line.display_type == 'line_note'">
-                                <div style="padding-left:25px;margin-top:8px;">
-                                    <span t-field="line.name"/>
-                                </div>
-                            </t>
-
-                            <t t-if="line.display_type not in ['line_section', 'line_note']">
-                                <div style="font-weight:bold;white-space: nowrap; text-overflow: ellipsis;margin-top:8px">
-                                    <t t-esc="'%s.' % num_linea"/>
-                                    <span t-field="line.name"/>
-
-                                    <t t-if="line.price_subtotal == 0">
-                                        INCLUIDO
-                                    </t>
-
-                                    <t t-if="line.price_subtotal > 0">
-                                        <div style="display:inline-block;float:right">
-                                            <span t-field="line.price_subtotal"/> / <span t-field="line.product_uom"/>
-                                        </div>
-                                    </t>
-
-                                </div>
-                                <t t-set="num_linea" t-value="num_linea + line_index"/>
-                            </t>
-                        </t>
-                    </div>
-                </div>
-
-                <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;float:left;clear:both;">
-                    <div class="col-12">
-                        <span t-field="doc.note"/>
-                    </div>
-                </div>
-
-                <div class="row" style="margin:48px auto 0 auto;max-width:80%;padding-left:20px;min-height:120px;clear:both;">
-                    <div class="col-12">
-                        <div style="width:50%;float:left;text-align:center">
-                            <strong>Firma / Sello</strong>
-                            <img t-if="doc.signature" t-att-src="image_data_uri(doc.signature)" style="max-height: 4cm; max-width: 8cm;"/>
-                            <span t-field="doc.signed_by"/>
-                        </div>
-                        <div style="width:50%;float:left;text-align:center">
-                            <strong>Firma / Sello</strong>
-
-                            <span t-field="doc.signed_by"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <template id="html_report_proyecto">
-        <main style="padding:0;margin:0;">
             <div style="width:104%;height:100vh;background-color:#872292;padding:0;margin-left:-2%;">
                 <div style="width:101%;height:100vh;background-color:white;margin-left:-4%;">
                     <div class="row">
@@ -140,11 +23,127 @@
                             </div>
                         </div>
                     </div>
+                    <div class="page">
+                        <div class="row" style="margin:32px auto 0 auto;width:95%;padding-right:20px;float:right;clear:both;">
+                            <div class="col-md-12">
+                                <strong t-esc="doc.descripcion_proyecto"/>
+                            </div>
+                        </div>
+                        <div class="row" style="margin:32px auto 0 auto;width:95%;padding-right:20px;float:right;clear:both;">
+                            <div class="col-md-12" style="text-align:right;width:100%;">
+                                <strong><span t-field="doc.partner_id"/></strong> <br/>
+                                <t t-if="doc.partner_id.street">
+                                    <span t-field="doc.partner_id.street"/> <br/>
+                                </t>
+                                <t t-if="doc.partner_id.street2">
+                                    <span t-field="doc.partner_id.street"/> <br/>
+                                </t>
 
-                    <div>
-                        <t t-raw="0"/>
+                                <t t-if="doc.partner_id.zip or doc.partner_id.city or doc.partner_id.state_id or doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.zip"/>
+                                    <span t-field="doc.partner_id.city"/>
+
+                                    <t t-if="doc.partner_id.state_id">
+                                        , <span t-field="doc.partner_id.state_id"/>
+                                    </t>
+
+                                    <t t-if="doc.partner_id.country_id">
+                                        (<span t-field="doc.partner_id.country_id"/>)
+                                    </t>
+                                    <br/>
+                                </t>
+
+                                <t t-if="doc.partner_id.vat">
+                                    <span t-field="doc.partner_id.vat"/>
+                                </t>
+                            </div>
+                        </div>
+                        <div class="row" style="margin:32px auto 0 auto;width:95%;padding-right:20px;float:right;clear:both;text-align:right;">
+                            <div class="col-md-12">
+                                <div style="text-align:right;">
+                                    <t t-if="doc.company_id.city">
+                                        En <span t-field="doc.company_id.city"/>, a
+                                    </t>
+                                    <span t-field="doc.date_order" t-options="{&quot;format&quot;: &quot;d MMMM y&quot;}"/>.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-right:20px;float:right;clear:both;">
+                            <div class="col-md-12">
+                                <span t-field="doc.cabecera_proyecto"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:32px auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
+                            <div class="col-md-12">
+                                <t t-set="num_linea" t-value="1"/>
+                                <t t-foreach="doc.order_line" t-as="line">
+
+
+                                    <t t-if="line.display_type == 'line_section'">
+                                        <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;">
+                                            <span t-field="line.name"/>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="line.display_type == 'line_note'">
+                                        <div style="padding-left:25px;margin-top:8px;">
+                                            <span t-field="line.name"/>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="line.display_type not in ['line_section', 'line_note']">
+                                        <div style="font-weight:bold;white-space: nowrap; text-overflow: ellipsis;margin-top:8px">
+                                            <t t-esc="'%s.' % num_linea"/>
+                                            <span t-field="line.name"/>
+
+                                            <t t-if="line.price_subtotal == 0">
+                                                INCLUIDO
+                                            </t>
+
+                                            <t t-if="line.price_subtotal &gt; 0">
+                                                <div style="display:inline-block;float:right">
+                                                    <span t-field="line.price_subtotal"/> / <span t-field="line.product_uom"/>
+                                                </div>
+                                            </t>
+
+                                        </div>
+                                        <t t-set="num_linea" t-value="num_linea + line_index"/>
+                                    </t>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
+                            <div class="col-md-12">
+                                <span t-field="doc.note"/>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin:0 auto;max-width:95%;padding-left:20px;min-height:120px;clear:both;padding-top:48px;">
+                            <div class="col-md-12">
+                                <div style="width:50%;float:left;text-align:center">
+                                    <strong>Firma / Sello</strong>
+                                    <img t-if="doc.signature" t-att-src="image_data_uri(doc.signature)" style="max-height: 4cm; max-width: 8cm;"/>
+                                    <span t-field="doc.signed_by"/>
+                                </div>
+                                <div style="width:50%;float:left;text-align:center">
+                                    <strong>Firma / Sello</strong>
+
+                                    <span t-field="doc.signed_by"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="html_report_proyecto">
+        <main style="padding:0;margin:0;">
+            <div>
+                <t t-raw="0"/>
             </div>
         </main>
     </template>
