@@ -118,10 +118,15 @@ class AccountMoveLine(models.Model):
         else:
             product = self.product_id
 
+        name = ''
         if self.journal_id.type == 'sale':
             if product.description_sale:
-                return product.description_sale
+                name = product.description_sale
         elif self.journal_id.type == 'purchase':
             if product.description_purchase:
-                return product.description_purchase
-        return ''
+                name =  product.description_purchase
+
+        if not name and product.partner_ref:
+            name = product.partner_ref
+
+        return name
