@@ -125,7 +125,7 @@
     </template>
 
     <template id="html_report_proyecto">
-        <div style="padding:0;margin:0;">
+        <main style="padding:0;margin:0;">
             <div style="width:104%;height:100vh;background-color:#872292;padding:0;margin-left:-2%;">
                 <div style="width:101%;height:100vh;background-color:white;margin-left:-4%;">
                     <div class="row">
@@ -140,24 +140,9 @@
                     <div>
                         <t t-raw="0"/>
                     </div>
-
-                    <t t-if="not o" t-set="o" t-value="doc"/>
-
-                    <t t-if="not company">
-                        <!-- Multicompany -->
-                        <t t-if="company_id">
-                            <t t-set="company" t-value="company_id"/>
-                        </t>
-                        <t t-elif="o and 'company_id' in o">
-                            <t t-set="company" t-value="o.company_id.sudo()"/>
-                        </t>
-                        <t t-else="else">
-                            <t t-set="company" t-value="res_company"/>
-                        </t>
-                    </t>
                 </div>
             </div>
-        </div>
+        </main>
     </template>
 
     <template id="report_saleorder_proyecto">
@@ -169,14 +154,18 @@
     </template>
 
     <template id="external_layout_clean" inherit_id="web.external_layout_clean">
+        <xpath expr="//div[@t-attf-class='header o_company_#{company.id}_layout']" position="attributes">
+            <attribute name="t-if">not informe_proyecto</attribute>
+        </xpath>
+
         <xpath expr="//div[@t-attf-class='footer o_clean_footer o_company_#{company.id}_layout']" position="attributes">
             <attribute name="t-if">not informe_proyecto</attribute>
         </xpath>
 
         <xpath expr="//div[@t-attf-class='footer o_clean_footer o_company_#{company.id}_layout']" position="after">
-            <div t-attf-class="footer o_standard_footer">
+            <div t-if="informe_proyecto" t-attf-class="footer o_standard_footer">
                 <div class="text-center" style="border-top: 1px solid #872292;">
-                    <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-left:20px;">
+                    <div class="row" style="margin:10px auto;max-width:80%;padding-left:20px;">
                         <div class="col-12">
                             <div style="float:left">
                                 <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="240px;"/>
