@@ -23,10 +23,10 @@ class SaleOrder(models.Model):
 
     @api.constrains("ref_proyecto")
     def _check_ref_proyecto(self):
-        msg_error = "La referencia tiene que tener el formato 000.000"
+        msg_error = "La referencia tiene que tener el formato 0000.0000"
         for r in self:
             if r.ref_proyecto:
-                if r.ref_proyecto.find('.') != 3 or len(r.ref_proyecto) != 7:
+                if r.ref_proyecto.find('.') != 4 or len(r.ref_proyecto) != 9:
                     raise ValidationError(msg_error)
 
                 aux = r.ref_proyecto.split(".")
