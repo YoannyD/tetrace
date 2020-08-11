@@ -27,7 +27,8 @@
         'documents_hr',
         'project',
         'analytic',
-        'mis_builder'
+        'mis_builder',
+        'account_asset'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -52,6 +53,7 @@
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
         'views/res_config_settings.xml',
+        'wizard/asset_modify.xml',
     ],
     'demo': [],
     'installable': True,
