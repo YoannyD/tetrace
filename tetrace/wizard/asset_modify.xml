@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="asset_modify_form">
+        <field name="name">wizard.asset.modify.form.tetrace</field>
+        <field name="inherit_id" ref="account_asset.asset_modify_form"/>
+        <field name="model">asset.modify</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_depreciation_expense_id']" position="after">
+                <field name="account_analytic_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

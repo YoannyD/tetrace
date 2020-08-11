@@ -156,42 +156,6 @@
         </t>
     </template>
 
-    <template id="external_layout_clean" inherit_id="web.external_layout_clean">
-        <xpath expr="//div[@t-attf-class='article o_report_layout_clean o_company_#{company.id}_layout']" position="attributes">
-            <attribute name="t-if">not informe_proyecto</attribute>
-        </xpath>
-
-        <xpath expr="//div[@t-attf-class='header o_company_#{company.id}_layout']" position="attributes">
-            <attribute name="t-if">not informe_proyecto</attribute>
-        </xpath>
-
-        <xpath expr="//div[@t-attf-class='footer o_clean_footer o_company_#{company.id}_layout']" position="attributes">
-            <attribute name="t-if">not informe_proyecto</attribute>
-        </xpath>
-
-        <xpath expr="//div[@t-attf-class='footer o_clean_footer o_company_#{company.id}_layout']" position="after">
-            <div t-if="informe_proyecto" t-attf-class="footer o_standard_footer">
-                <div class="text-center">
-                    <div class="row" style="margin:10px auto;max-width:80%;padding-left:20px;padding-top:32px;">
-                        <div class="col-12">
-                            <div style="float:left">
-                                <t t-set="base_url" t-value="request.env['ir.config_parameter'].get_param('web.base.url')"/>
-                                <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="240px;"/>
-                            </div>
-
-                            <div style="float:right;width:50%;text-align:right;padding-top:7px;">
-                                <span t-field="company.name"/>
-                                <t t-if="company.vat">
-                                    | CIF: <span t-field="company.vat"/>
-                                </t>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </xpath>
-    </template>
-
     <template id="report_saleorder_document" inherit_id="sale.report_saleorder_document">
         <xpath expr="//th[@name='th_taxes']" position="attributes">
             <attribute name="style">display:none</attribute>
