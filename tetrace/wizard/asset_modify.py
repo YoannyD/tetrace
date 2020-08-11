@@ -97,7 +97,7 @@ class AssetModify(models.TransientModel):
                 'account_asset_id': self.account_asset_id.id,
                 'account_depreciation_id': self.account_depreciation_id.id,
                 'account_depreciation_expense_id': self.account_depreciation_expense_id.id,
-                'account_analytic_id': self.account_analytic_id.id,
+                'account_analytic_id': self.account_analytic_id.id if self.account_analytic_id else False,
                 'journal_id': self.asset_id.journal_id.id,
                 'parent_id': self.asset_id.id,
                 'original_move_line_ids': [
