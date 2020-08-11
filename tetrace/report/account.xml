@@ -130,7 +130,7 @@
         </xpath>
 
         <xpath expr="//p[@name='comment']" position="attributes">
-            <attribute name="t-if">o.type != 'out_invoice' and o.type == 'out_refund' and o.narration</attribute>
+            <attribute name="t-if">o.type != 'out_invoice' and o.type != 'out_refund' and o.narration</attribute>
         </xpath>
     </template>
 </odoo>
