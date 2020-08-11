@@ -53,7 +53,7 @@
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
         'views/res_config_settings.xml',
-        'views/asset_modify.xml',
+        'wizard/asset_modify.xml',
     ],
     'demo': [],
     'installable': True,
