@@ -13,13 +13,14 @@ _logger = logging.getLogger(__name__)
 
 class AccountMove(models.Model):
     _inherit = "account.move"
-
     _state_to = ["posted"]
 
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
     incoterm_complemento = fields.Char('Complemento Incoterm')
+    secuencia_num = fields.Integer('Número secuencia')
+    secuencia = fields.Char('Secuencia')
 
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:
@@ -31,6 +32,37 @@ class AccountMove(models.Model):
                         fecha_vencimiento_anticipo = line.date_maturity
                         break
             r.fecha_vencimiento_anticipo = fecha_vencimiento_anticipo
+
+    @api.model
+    def create(self, vals):
+        res = super(AccountMove, self).create(vals)
+
+        if res.journal_id.type == 'sale':
+            secuencia, name = self.generar_secuencia()
+            res.write({
+                'secuencia_num': secuencia,
+                'secuencia': name
+            })
+        return res
+
+    def generar_secuencia(self):
+        self.ensure_one()
+        secuencia_num = 0
+        move = self.search([
+            ('journal_id.type', '=', 'sale'),
+            ('secuencia_num', '!=', 'False')
+        ], limit=1, order="secuencia_num desc")
+
+        if move:
+            secuencia_num = move.secuencia_num + 1
+
+        numero_faltantes = 4 - len(secuencia_num)
+        numero_completo = secuencia_num
+        for n in range(numero_faltantes - 1):
+            numero_completo = "0%s" % numero_completo
+
+        name = "PROF/%s/%s" % (datetime.now().year, numero_completo)
+        return secuencia_num, name
 
     @api.model
     def importar_gastos_tickelia(self):
