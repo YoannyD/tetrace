@@ -15,13 +15,13 @@
         <field name="name">tetrace.tipo_contrato.form</field>
         <field name="model">tetrace.tipo_contrato</field>
         <field name="arch" type="xml">
-            <sheet>
-                <form>
+            <form>
+                <sheet>
                     <group>
                         <field name="name"/>
                     </group>
-                </form>
-            </sheet>
+                </sheet>
+            </form>
         </field>
     </record>
 
@@ -39,9 +39,9 @@
         <field name="name">tetrace.tipo_contrato.search</field>
         <field name="model">tetrace.tipo_contrato</field>
         <field name="arch" type="xml">
-            <tree>
+            <search>
                 <field name="name"/>
-            </tree>
+            </search>
         </field>
     </record>
 </odoo>
