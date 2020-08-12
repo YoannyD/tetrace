@@ -101,6 +101,10 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="model">hr.applicant</field>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="replace">
+                <field name="job_id" filter_domain="['|', ('job_id', '=', self), ('job_ids', 'in', self)]"/>
+            </xpath>
+
             <xpath expr="//field[@name='job_id']" position="before">
                 <field name="referencia"/>
                 <field name="applicant_skill_ids"/>
