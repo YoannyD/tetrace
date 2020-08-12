@@ -18,6 +18,7 @@ from . import conexion_mysql
 from . import res_config_settings
 from . import tetrace_skills
 from . import tetrace_tipo_contrato
+from . import hr_contract
 from . import res_partner
 from . import sale_order
 from . import purchase
