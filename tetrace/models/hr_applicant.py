@@ -12,7 +12,7 @@ class Applicant(models.Model):
     _inherit = "hr.applicant"
 
     country_id = fields.Many2one('res.country', string="País")
-    job_ids = fields.Many2many('hr.job', string="Otro puesto de trabajo")
+    job_ids = fields.Many2many('hr.job', 'applicant_id', string="Otro puesto de trabajo")
     carpeta_drive = fields.Char('Carpeta Drive')
     fecha_recepcion = fields.Date('Fecha recepción')
     sin_adjuntos = fields.Boolean('Sin adjuntos en Drive')
