@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <act_window id="action_tetrace_tipo_contrato"
+                name="Tipos de contrato"
+                view_mode="tree,form"
+                res_model="tetrace.tipo_contrato" />
+
+    <menuitem action="action_tetrace_tipo_contrato"
+              id="menu_tetrace_tipo_contrato"
+              name="Tipos de contrato"
+              parent="hr.menu_human_resources_configuration"
+              sequence="2"/>
+
+    <record model="ir.ui.view" id="tetrace_tipo_contrato_form">
+        <field name="name">tetrace.tipo_contrato.form</field>
+        <field name="model">tetrace.tipo_contrato</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_tipo_contrato_tree">
+        <field name="name">tetrace.tipo_contrato.tree</field>
+        <field name="model">tetrace.tipo_contrato</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_tipo_contrato_search">
+        <field name="name">tetrace.tipo_contrato.search</field>
+        <field name="model">tetrace.tipo_contrato</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+</odoo>
