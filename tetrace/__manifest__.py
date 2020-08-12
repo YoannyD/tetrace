@@ -46,6 +46,7 @@
         'views/hr_employee.xml',
         'views/product_category.xml',
         'views/tetrace_skills.xml',
+        'views/tetrace_tipo_contrato.xml',
         'views/project.xml',
         'views/documents.xml',
         'views/purchase.xml',

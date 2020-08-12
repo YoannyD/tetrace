@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="hr_contract_view_form">
+        <field name="name">hr.contract.form</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="model">hr.contract</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_start']" position="before">
+                <field name="tipo_contrato_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
