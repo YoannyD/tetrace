@@ -2,14 +2,14 @@
 <odoo>
     <act_window id="action_tetrace_tipo_contrato"
                 name="Tipos de contrato"
-                view_mode="form"
+                view_mode="tree,form"
                 res_model="tetrace.tipo_contrato" />
 
     <menuitem action="action_tetrace_tipo_contrato"
               id="menu_tetrace_tipo_contrato"
               name="Tipos de contrato"
               parent="hr.menu_human_resources_configuration"
-              sequence="7"/>
+              sequence="2"/>
 
     <record model="ir.ui.view" id="tetrace_tipo_contrato_form">
         <field name="name">tetrace.tipo_contrato.form</field>
