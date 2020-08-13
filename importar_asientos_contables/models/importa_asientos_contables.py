@@ -18,7 +18,7 @@ class ImportarAsientosContables(models.AbstractModel):
 
     @api.model
     def importar(self, db_name, db_user, db_pass, db_host, db_table, company_id, offset=0, limit=100000, where='', order=''):
-        if self.env.company != company_id:
+        if self.env.company.id != company_id:
             raise UserError("La compañia que se ha pasado como parámetro tiene que ser la misma que la seleccionada actualmente.")
 
         query = self._create_query(db_table, offset, limit, where, order)
@@ -45,7 +45,7 @@ class ImportarAsientosContables(models.AbstractModel):
             sin_cuenta = False
             values_lines = []
             for item in items:
-                account = self._buscar_cuenta(item['cuenta'])
+                account = self._buscar_cuenta(item['cuenta'], company_id)
                 if not account:
                     print("La cuenta %s del asiento %s no se ha econtrado." % (item['cuenta'], ref_asiento))
                     sin_cuenta = True
@@ -116,7 +116,7 @@ class ImportarAsientosContables(models.AbstractModel):
 
     def _marcar_registro(self, db_name, db_user, db_pass, db_host, db_table, ref_asiento, traspasado):
         query = "UPDATE %s SET traspaso = %s where numero_asiento = %s;" % (db_table, traspasado, ref_asiento)
-        self.execute(db_name, db_user, db_pass, db_host, query)
+        self.execute(db_name, db_user, db_pass, db_host, query, commit=True)
 
     def execute(self, db_name, db_user, db_pass, db_host, query, params=None, commit=False):
         data = []
