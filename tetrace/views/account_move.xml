@@ -21,6 +21,7 @@
                 <filter domain="[('asiento_anticipo_id', '!=', False)]"
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
+                <field name="secuencia"/>
             </xpath>
         </field>
     </record>
