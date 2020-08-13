@@ -40,7 +40,7 @@
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
             <h2 t-if="not o.journal_id or o.journal_id.code != 'INVE'">
                 <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Invoice</span>
-                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice <t t-esc="o.secuencia"/></span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'draft'"><t t-if="o.journal_id.type != 'sale'">Draft Invoice</t> <t t-if="o.journal_id.type == 'sale'">Factura proforma <t t-esc="o.secuencia"/></t></span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
                 <span t-if="o.type == 'out_refund'">Credit Note</span>
                 <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
