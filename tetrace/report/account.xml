@@ -40,12 +40,12 @@
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
             <h2 t-if="not o.journal_id or o.journal_id.code != 'INVE'">
                 <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Invoice</span>
-                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice</span>
+                <span t-if="o.type == 'out_invoice' and o.state == 'draft'">Draft Invoice <t t-esc="o.secuencia"/></span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
                 <span t-if="o.type == 'out_refund'">Credit Note</span>
                 <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
                 <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
-                <span t-if="o.name != '/'" t-field="o.name"/>
+                <span t-if="o.name != '/' and o.type != 'out_invoice' and o.state != 'draft'" t-field="o.name"/>
             </h2>
             <h2 t-if="o.journal_id and o.journal_id.code == 'INVE'">
                 <span>Factura Nº</span> <br/>

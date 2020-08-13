@@ -43,7 +43,7 @@
             </xpath>
 
             <xpath expr="//group[@id='header_left_group']/div[1]" position="before">
-                <field name="secuencia"/>
+                <field name="secuencia" readonly="1"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_incoterm_id']" position="replace">

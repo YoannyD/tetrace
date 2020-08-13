@@ -38,7 +38,7 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).create(vals)
 
         if res.journal_id.type == 'sale':
-            secuencia, name = self.generar_secuencia()
+            secuencia, name = res.generar_secuencia()
             res.write({
                 'secuencia_num': secuencia,
                 'secuencia': name
@@ -47,18 +47,18 @@ class AccountMove(models.Model):
 
     def generar_secuencia(self):
         self.ensure_one()
-        secuencia_num = 0
+        secuencia_num = 1
         move = self.search([
             ('journal_id.type', '=', 'sale'),
-            ('secuencia_num', '!=', 'False')
+            ('secuencia_num', '!=', False)
         ], limit=1, order="secuencia_num desc")
 
         if move:
             secuencia_num = move.secuencia_num + 1
 
-        numero_faltantes = 4 - len(secuencia_num)
-        numero_completo = secuencia_num
-        for n in range(numero_faltantes - 1):
+        numero_faltantes = 4 - len(str(secuencia_num))
+        numero_completo = str(secuencia_num)
+        for n in range(numero_faltantes):
             numero_completo = "0%s" % numero_completo
 
         name = "PROF/%s/%s" % (datetime.now().year, numero_completo)
