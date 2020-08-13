@@ -21,6 +21,7 @@
                 <filter domain="[('asiento_anticipo_id', '!=', False)]"
                         name="filter_asiento_anticipo_id"
                         help="Facturas anticipadas"/>
+                <field name="secuencia"/>
             </xpath>
         </field>
     </record>
@@ -40,6 +41,10 @@
 
             <xpath expr="//group[@name='sale_info_group']" position="inside">
                 <field name="asiento_anticipo_id"/>
+            </xpath>
+
+            <xpath expr="//group[@id='header_left_group']/div[1]" position="before">
+                <field name="secuencia" readonly="1"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_incoterm_id']" position="replace">
@@ -77,6 +82,10 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="asiento_anticipo_id"/>
                 <field name="fecha_vencimiento_anticipo"/>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="secuencia"/>
             </xpath>
         </field>
     </record>
