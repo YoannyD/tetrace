@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    secuencia_default_code = fields.Integer('Secuencia Ref. Interna')
+    secuencia_default_code = fields.Integer('Secuencia Ref. Interna', copy=False)
 
     @api.model
     def create(self, vals):
