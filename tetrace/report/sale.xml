@@ -76,10 +76,7 @@
 
                         <div class="row" style="margin:32px auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
                             <div class="col-md-12">
-                                <t t-set="num_linea" t-value="1"/>
                                 <t t-foreach="doc.order_line" t-as="line">
-
-
                                     <t t-if="line.display_type == 'line_section'">
                                         <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;">
                                             <span t-field="line.name"/>
@@ -94,7 +91,6 @@
 
                                     <t t-if="line.display_type not in ['line_section', 'line_note']">
                                         <div style="font-weight:bold;white-space: nowrap; text-overflow: ellipsis;margin-top:8px">
-                                            <t t-esc="'%s.' % num_linea"/>
                                             <span t-field="line.name"/>
 
                                             <t t-if="line.price_subtotal == 0">
@@ -108,7 +104,6 @@
                                             </t>
 
                                         </div>
-                                        <t t-set="num_linea" t-value="num_linea + line_index"/>
                                     </t>
                                 </t>
                             </div>
