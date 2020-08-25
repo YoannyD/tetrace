@@ -31,13 +31,14 @@ class Employee(models.Model):
             ])
             r.document_employee_count = documents
 
-    @api.depends('contract_id', 'contract_id.date_end', 'contract_id.trial_date_end')
+    @api.depends('contract_id', 'contract_id.date_end', 'contract_id.trial_date_end', 'contract_id.state',
+                 'contract_id.kanban_state')
     def _compute_contract_clock(self):
-        fecha_fin_contrato = fields.Date.today() + timedelta(days=15)
-        fecha_fin_prueba = fields.Date.today() + timedelta(days=7)
+        fecha_fin_contrato = fields.Date.today() - timedelta(days=15)
+        fecha_fin_prueba = fields.Date.today() - timedelta(days=7)
         for r in self:
             clock = False
-            if r.contract_id and (r.contract_id.date_end != False and r.contract_id.date_end <= fecha_fin_contrato) or \
-                (r.contract_id.trial_date_end != False and r.contract_id.trial_date_end <= fecha_fin_prueba):
+            if r.contract_id and (r.contract_id.date_end != False and r.contract_id.date_end >= fecha_fin_contrato) or \
+                (r.contract_id.trial_date_end != False and r.contract_id.trial_date_end >= fecha_fin_prueba):
                 clock = True
             r.contract_clock = clock

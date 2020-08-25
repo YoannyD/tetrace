@@ -27,8 +27,8 @@
     </record>
 
     <record model="ir.ui.view" id="hr_employee_view_kanban">
-        <field name="name">hr.employee.view.kanban</field>
-        <field name="inherit_id" ref="hr_contract.hr_employee_view_kanban"/>
+        <field name="name">hr.employee.view.kanban.tetrace</field>
+        <field name="inherit_id" ref="hr.hr_kanban_view_employees"/>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('o_kanban_record_headings')]" position="after">
