@@ -14,6 +14,11 @@ class ProductTemplate(models.Model):
     secuencia_default_code = fields.Integer('Secuencia Ref. Interna', copy=False)
 
     @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        self = self.with_context(force_company=19)
+        return super(ProductTemplate, self)._search(args, offset, limit, order, count, access_rights_uid)
+
+    @api.model
     def create(self, vals):
         res = super(ProductTemplate, self).create(vals)
         if not res.default_code:

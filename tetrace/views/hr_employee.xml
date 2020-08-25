@@ -26,6 +26,23 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="hr_employee_view_kanban">
+        <field name="name">hr.employee.view.kanban</field>
+        <field name="inherit_id" ref="hr_contract.hr_employee_view_kanban"/>
+        <field name="model">hr.employee</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_kanban_record_headings')]" position="after">
+                <field name="contract_clock" invisible="1"/>
+                <t t-if="record.contract_clock.raw_value">
+                    <i class="fa fa-clock-o text-danger"
+                       role="img"
+                       title="El contrato va a expirar."
+                       aria-label="El contrato va a expirar."/>
+                </t>
+            </xpath>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="hr_employee_view_form_inherit_timesheet">
         <field name="name">hr.employee.form.timesheet.tetrace</field>
         <field name="inherit_id" ref="hr_timesheet.hr_employee_view_form_inherit_timesheet"/>
