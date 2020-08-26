@@ -9,14 +9,6 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class Skill(models.Model):
-    _name = 'tetrace.skill'
-    _description = "Applications Skill"
-
-    name = fields.Char(required=True)
-    skill_type_id = fields.Many2one('hr.skill.type')
-
-
 class ApplicationSkill(models.Model):
     _name = 'tetrace.applicant.skill'
     _description = "Habilidades de un solicitud"
@@ -24,9 +16,9 @@ class ApplicationSkill(models.Model):
     _order = "skill_level_id"
 
     applicant_id = fields.Many2one('hr.applicant', required=True, ondelete='cascade')
-    skill_id = fields.Many2one('tetrace.skill', required=True)
-    skill_level_id = fields.Many2one('tetrace.skill.level', required=True)
-    skill_type_id = fields.Many2one('tetrace.skill.type', required=True)
+    skill_id = fields.Many2one('hr.skill', required=True)
+    skill_level_id = fields.Many2one('hr.skill.level', required=True)
+    skill_type_id = fields.Many2one('hr.skill.type', required=True)
     level_progress = fields.Integer(related='skill_level_id.level_progress')
 
     _sql_constraints = [
@@ -46,20 +38,19 @@ class ApplicationSkill(models.Model):
                 raise ValidationError(_("The skill level %s is not valid for skill type: %s ") % (record.skill_level_id.name, record.skill_type_id.name))
 
 
-class SkillLevel(models.Model):
-    _name = 'tetrace.skill.level'
-    _description = "Skill Level"
-    _order = "level_progress desc"
+class Skill(models.Model):
+    _inherit = 'hr.skill'
 
-    skill_type_id = fields.Many2one('tetrace.skill.type')
-    name = fields.Char(required=True)
-    level_progress = fields.Integer(string="Progreso", help="Progress from zero knowledge (0%) to fully mastered (100%).")
+    applicant_ids = fields.One2many('tetrace.applicant.skill', 'skill_id')
+
+
+class SkillLevel(models.Model):
+    _inherit = 'hr.skill.level'
+
+    applicant_ids = fields.One2many('tetrace.applicant.skill', 'skill_level_id')
 
 
 class SkillType(models.Model):
-    _name = 'tetrace.skill.type'
-    _description = "Skill Type"
+    _inherit = 'hr.skill.type'
 
-    name = fields.Char(required=True)
-    skill_ids = fields.One2many('tetrace.skill', 'skill_type_id', string="Habilidades", ondelete='cascade')
-    skill_level_ids = fields.One2many('tetrace.skill.level', 'skill_type_id', string="Niveles", ondelete='cascade')
+    applicant_ids = fields.One2many('tetrace.applicant.skill', 'skill_type_id')

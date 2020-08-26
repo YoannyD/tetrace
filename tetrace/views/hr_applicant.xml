@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="tetrace_resume_type_action" model="ir.actions.act_window">
-        <field name="name">Tipos de líneas currículum vitae</field>
-        <field name="res_model">tetrace.resume.line.type</field>
-        <field name="view_mode">tree,form</field>
-    </record>
-
-    <menuitem id="menu_human_resources_configuration_resume"
-              name="Currículum vitae"
-              parent="hr_recruitment.menu_hr_recruitment_configuration"
-              sequence="4"
-              groups="base.group_no_one"/>
-
-    <menuitem id="tetrace_resume_line_type_menu"
-              name="Tipos"
-              action="tetrace_resume_type_action"
-              parent="menu_human_resources_configuration_resume"
-              sequence="3"
-              groups="base.group_no_one"/>
-
     <record model="ir.ui.view" id="hr_applicant_view_form">
         <field name="name">Jobs - Recruitment Form tetrace</field>
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
