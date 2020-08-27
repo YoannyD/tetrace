@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="mail_activity_data_contrato_expirar" model="mail.activity.type">
+            <field name="name">El contrato va ha expirar</field>
+            <field name="icon">fa-exclamation-triangle</field>
+            <field name="sequence">10</field>
+        </record>
+    </data>
+</odoo>
