@@ -20,6 +20,7 @@ class Employee(models.Model):
     coste_hora = fields.Monetary('Coste hora')
     precio_hora = fields.Monetary('Precio hora')
     document_employee_count = fields.Integer('Documentos', compute="_compute_document_employee")
+    contract_clock = fields.Boolean(string='Contract Warning')
 
     def _compute_document_employee(self):
         for r in self:
