@@ -17,6 +17,7 @@
 
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="codigo_drive"/>
+                <field name="key_nomina"/>
             </xpath>
 
             <xpath expr="//field[@name='passport_id']" position="before">
