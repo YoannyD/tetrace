@@ -12,3 +12,4 @@ class Company(models.Model):
     _inherit = "res.company"
 
     tetrace_account_move_jorunal_id = fields.Many2one('account.journal', string='Diario de liquidaciones')
+    tetrace_nomina_jorunal_id = fields.Many2one('account.journal', string='Diario de liquidaciones (Nóminas)')

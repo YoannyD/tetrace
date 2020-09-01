@@ -17,6 +17,7 @@ from . import project
 from . import conexion_mysql
 from . import tetrace_skills
 from . import tetrace_tipo_contrato
+from . import tetrace_nomina
 from . import hr_contract
 from . import hr_resume
 from . import res_partner

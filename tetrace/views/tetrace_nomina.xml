@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="action_tetrace_nomina"
+                name="Nóminas"
+                view_mode="tree,form"
+                res_model="tetrace.nomina"/>
+
+    <menuitem action="action_tetrace_nomina"
+              id="menu_tetrace_nomina"
+              name="Nóminas"
+              parent="account.menu_finance_entries_accounting_miscellaneous"
+              sequence="25"/>
+
+    <record id="tetrace_nomina_form" model="ir.ui.view">
+        <field name="name">tetrace.nomina.form</field>
+        <field name="model">tetrace.nomina</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_importar_nominas"
+                            type="object"
+                            class="btn btn-primary"
+                            string="Importar nóminas"/>
+
+                    <button name="action_generar_asientos"
+                            type="object"
+                            class="btn btn-primary"
+                            string="Generar asientos"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="fecha"/>
+                        </group>
+                    </group>
+                    <group string="Nóminas Trabajadores">
+                        <field name="nomina_trabajador_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="id" invisible="1"/>
+                                <field name="fecha_inicio"/>
+                                <field name="fecha_fin"/>
+                                <field name="employee_id"/>
+                                <field name="account_id"/>
+                                <field name="descripcion"/>
+                                <field name="debe"/>
+                                <field name="haber"/>
+                                <field name="permitir_generar_analitica" invisible="1"/>
+                                <button name="mostrar_distribuciones_analiticas"
+                                        attrs="{'invisible':['|', ('id', '=', False), ('permitir_generar_analitica', '=', False)]}"
+                                        type="object"
+                                        icon="fa-external-link"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tetrace_nomina_tree" model="ir.ui.view">
+        <field name="name">tetrace.nomina.tree</field>
+        <field name="model">tetrace.nomina</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="fecha"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tetrace_nomina_search" model="ir.ui.view">
+        <field name="name">tetrace.nomina.search</field>
+        <field name="model">tetrace.nomina</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="fecha"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="tetrace_distribucion_analitica_trabajador_form" model="ir.ui.view">
+        <field name="name">tetrace.nomina.trabajador.form</field>
+        <field name="model">tetrace.nomina.trabajador</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <header>
+                    <button name="_action_generar_distribucion_analitica"
+                            attrs="{'invisible':[('id', '=', False)]}"
+                            type="object"
+                            class="oe_highlight"
+                            string="Recalcular"
+                            icon="fa-refresh"/>
+                </header>
+                <sheet>
+                    <field name="id" invisible="1"/>
+                    <field name="trabajador_analitica_ids" nolabel="1">
+                        <tree editable="bottom" create="0" edit="0" delete="0">
+                            <field name="analytic_account_id"/>
+                            <field name="horas"/>
+                            <field name="employee_id"/>
+                            <field name="porcentaje"/>
+                            <field name="importe"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
