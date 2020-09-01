@@ -21,6 +21,7 @@ class AccountMove(models.Model):
     incoterm_complemento = fields.Char('Complemento Incoterm')
     secuencia_num = fields.Integer('Número secuencia')
     secuencia = fields.Char('Secuencia')
+    nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
 
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:

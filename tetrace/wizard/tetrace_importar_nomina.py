@@ -68,7 +68,7 @@ class ImportarNonmina(models.TransientModel):
                 nomina_trabajador.write(values_nomina_trabajador)
             else:
                 nomina_trabajador = NominaTrabajador.create(values_nomina_trabajador)
-            nomina_trabajador.generar_distribucion_analitica()
+            # nomina_trabajador.generar_distribucion_analitica()
 
     def open_wizard(self, context=None):
         return {

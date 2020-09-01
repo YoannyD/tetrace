@@ -16,6 +16,7 @@ class Nomina(models.Model):
     name = fields.Char('Nombre')
     fecha = fields.Date('Fecha')
     nomina_trabajador_ids = fields.One2many('tetrace.nomina.trabajador', 'nomina_id')
+    move_ids = fields.One2many('account.move', 'nomina_id')
 
     def action_importar_nominas(self):
         self.ensure_one()
@@ -79,7 +80,7 @@ class NominaTrabajador(models.Model):
             analiticas = self.env['account.analytic.line'].search([
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
-                ('date', '=<', r.fecha_fin),
+                ('date', '<=', r.fecha_fin),
             ], limit=1)
 
             total_horas = 0
@@ -99,12 +100,12 @@ class NominaTrabajador(models.Model):
                 total_horas += analitica.unit_amount
 
             importe_nomina = 0
-            if r.nomina_id.debe > 0:
-                importe_nomina = r.nomina_id.debe
-            elif r.nomina_id.haber > 0:
-                importe_nomina = r.nomina_id.haber
+            if r.debe > 0:
+                importe_nomina = r.debe
+            elif r.haber > 0:
+                importe_nomina = r.haber
 
-            for key, values in analitica_data:
+            for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
                 importe = (importe_nomina * 100) / porcentaje
                 values.update({
