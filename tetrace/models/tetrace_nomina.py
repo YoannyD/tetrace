@@ -26,16 +26,19 @@ class Nomina(models.Model):
         for r in self:
             agrupar_por_trabajador = {}
             for nomina_trabajador in r.nomina_trabajador_ids:
+                if not nomina_trabajador.account_id:
+                    continue
+
                 key = '-1'
                 if nomina_trabajador.employee_id and nomina_trabajador.employee_id.address_home_id:
                     key = str(nomina_trabajador.employee_id.address_home_id.id)
 
                 if key not in agrupar_por_trabajador:
-                    agrupar_por_trabajador.update({str(nomina_trabajador.employee_id): {
+                    agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
                         'date': nomina_trabajador.fecha_fin,
                         'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
-                        'lines': []
+                        'line_ids': []
                     }})
 
                 partner_id = False
@@ -50,14 +53,36 @@ class Nomina(models.Model):
                     elif nomina_trabajador.haber > 0:
                         haber = analitica.importe
 
-                    agrupar_por_trabajador[key]['lines'].append({
-                        'account_id': r.account_id.id,
+                    agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
+                        'account_id': nomina_trabajador.account_id.id,
                         'partner_id': partner_id,
-                        'name': r.descripcion,
+                        'name': nomina_trabajador.descripcion,
                         'analytic_account_id': analitica.analytic_account_id.id,
                         'debit': debe,
                         'credit': haber
-                    })
+                    }))
+
+                if not nomina_trabajador.trabajador_analitica_ids:
+                    agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
+                        'account_id': nomina_trabajador.account_id.id,
+                        'partner_id': partner_id,
+                        'name': nomina_trabajador.descripcion,
+                        'debit': nomina_trabajador.debe,
+                        'credit': nomina_trabajador.haber
+                    }))
+
+            for key, values in agrupar_por_trabajador.items():
+                move = self.env['account.move'].search([
+                    ('nomina_id', '=', values['nomina_id']),
+                    ('date', '=', values['date']),
+                    ('journal_id', '=', values['journal_id'])
+                ])
+                if move:
+                    if move.state == 'draft':
+                        move.line_ids.unlink()
+                        move.write(values)
+                else:
+                    self.env['account.move'].create(values)
 
 
 class NominaTrabajador(models.Model):
@@ -77,6 +102,7 @@ class NominaTrabajador(models.Model):
     trabajador_analitica_ids = fields.One2many('tetrace.nomina.trabajador.analitica', 'nomina_trabajador_id')
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
+    texto_importado = fields.Text('Texto importado')
 
     @api.depends('employee_id', 'account_id')
     def _compute_permitir_generar_analitica(self):

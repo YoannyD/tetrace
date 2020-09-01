@@ -39,8 +39,10 @@ class ImportarNonmina(models.TransientModel):
             debe = importe if debe_haber == 'D' else 0
             haber = importe if debe_haber == 'H' else 0
 
+            employee = False
             key_trabajador = linea[58:66].strip()
-            employee = self.env['hr.employee'].search([('key_nomina', '=', key_trabajador)], limit=1)
+            if key_trabajador:
+                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:])], limit=1)
 
             NominaTrabajador = self.env['tetrace.nomina.trabajador']
             nomina_trabajador = NominaTrabajador.search([
@@ -62,6 +64,7 @@ class ImportarNonmina(models.TransientModel):
                 'descripcion': descripcion,
                 'debe': importe if debe_haber == 'D' else 0,
                 'haber': importe if debe_haber == 'H' else 0,
+                'texto_importado': linea
             }
 
             if nomina_trabajador:
