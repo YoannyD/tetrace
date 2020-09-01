@@ -47,9 +47,8 @@
                                 <field name="descripcion"/>
                                 <field name="debe"/>
                                 <field name="haber"/>
-                                <field name="permitir_generar_analitica" invisible="1"/>
                                 <button name="mostrar_distribuciones_analiticas"
-                                        attrs="{'invisible':['|', ('id', '=', False), ('permitir_generar_analitica', '=', False)]}"
+                                        attrs="{'invisible':[('id', '=', False)]}"
                                         type="object"
                                         icon="fa-external-link"/>
                             </tree>
