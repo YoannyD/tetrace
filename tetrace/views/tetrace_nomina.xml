@@ -91,7 +91,7 @@
         <field name="arch" type="xml">
             <form create="0">
                 <header>
-                    <button name="_action_generar_distribucion_analitica"
+                    <button name="action_generar_distribucion_analitica"
                             attrs="{'invisible':[('id', '=', False)]}"
                             type="object"
                             class="oe_highlight"

@@ -125,7 +125,7 @@ class NominaTrabajador(models.Model):
             'target': 'new',
         }
 
-    def _action_generar_distribucion_analitica(self):
+    def action_generar_distribucion_analitica(self):
         self.generar_distribucion_analitica()
         return self.mostrar_distribuciones_analiticas()
 
