@@ -3,8 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError, UserError
+from odoo import models, fields, api
 
 _logger = logging.getLogger(__name__)
 
@@ -25,7 +24,40 @@ class Nomina(models.Model):
 
     def action_generar_asientos(self):
         for r in self:
-            r.nomina_trabajador_ids.generar_asiento_contable()
+            agrupar_por_trabajador = {}
+            for nomina_trabajador in r.nomina_trabajador_ids:
+                key = '-1'
+                if nomina_trabajador.employee_id and nomina_trabajador.employee_id.address_home_id:
+                    key = str(nomina_trabajador.employee_id.address_home_id.id)
+
+                if key not in agrupar_por_trabajador:
+                    agrupar_por_trabajador.update({str(nomina_trabajador.employee_id): {
+                        'nomina_id': r.id,
+                        'date': nomina_trabajador.fecha_fin,
+                        'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
+                        'lines': []
+                    }})
+
+                partner_id = False
+                if int(key) > 0:
+                    partner_id = int(key)
+
+                for analitica in nomina_trabajador.trabajador_analitica_ids:
+                    debe = 0
+                    haber = 0
+                    if nomina_trabajador.debe > 0:
+                        debe = analitica.importe
+                    elif nomina_trabajador.haber > 0:
+                        haber = analitica.importe
+
+                    agrupar_por_trabajador[key]['lines'].append({
+                        'account_id': r.account_id.id,
+                        'partner_id': partner_id,
+                        'name': r.descripcion,
+                        'analytic_account_id': analitica.analytic_account_id.id,
+                        'debit': debe,
+                        'credit': haber
+                    })
 
 
 class NominaTrabajador(models.Model):
@@ -115,40 +147,6 @@ class NominaTrabajador(models.Model):
                 })
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
-
-    def generar_asiento_contable(self):
-        for r in self:
-            if not r.employee_id or not self.env.company.tetrace_nomina_jorunal_id or not r.account_id or \
-                not r.employee_id.address_home_id:
-                continue
-
-            values_lines = []
-            for analitica in r.trabajador_analitica_ids:
-                debe = 0
-                haber = 0
-                if r.debe > 0:
-                    debe = analitica.importe
-                elif r.haber > 0:
-                    haber = analitica.importe
-
-                values_lines.append((0, 0, {
-                    'account_id': r.account_id.id,
-                    'name': r.descripcion,
-                    'analytic_account_id': analitica.analytic_account_id.id,
-                    'debit': debe,
-                    'credit': haber
-                }))
-
-            try:
-                self.env['account.move'].create({
-                    'nomina_id': r.nomina_id.id,
-                    'partner_id': r.employee_id.address_home_id.id,
-                    'date': r.fecha_fin,
-                    'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
-                    'line_ids': values_lines
-                })
-            except Exception as e:
-                _logger.warning("La nómina del empleado %s ha dado error. %s" % (r.employee_id.name, str(e)))
 
 
 class NominaTrabajadorAnalitica(models.Model):
