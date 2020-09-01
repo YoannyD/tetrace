@@ -47,7 +47,7 @@
                                 <field name="descripcion"/>
                                 <field name="debe"/>
                                 <field name="haber"/>
-                                <field name="texto_importado"/>
+                                <field name="texto_importado" optional="hide"/>
                                 <button name="mostrar_distribuciones_analiticas"
                                         attrs="{'invisible':[('id', '=', False)]}"
                                         type="object"
