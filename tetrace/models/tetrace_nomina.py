@@ -118,24 +118,11 @@ class NominaTrabajador(models.Model):
 
     def generar_asiento_contable(self):
         for r in self:
-            if not r.employee_id:
+            if not r.employee_id or not self.env.company.tetrace_nomina_jorunal_id or not r.account_id or \
+                not r.employee_id.address_home_id:
                 continue
 
-            if not self.env.company.tetrace_nomina_jorunal_id:
-                raise UserError("La compañia %s no tiene configurado el diario." % self.env.company.name)
-
-            if not r.account_id:
-                raise UserError("Todas nóminas de trabajadores tienen que tener una cuenta.")
-
-            if not r.employee_id.address_home_id:
-                raise UserError("El empleado %s (ID:%s) no tiene ligado un contacto." % (r.employee_id.name, r.employee_id.id))
-
-            move = self.env['account.move'].create({
-                'partner_id': r.employee_id.address_home_id,
-                'date': r.fecha_fin,
-                'journal_id': self.env.company.tetrace_nomina_jorunal_id
-            })
-
+            values_lines = []
             for analitica in r.trabajador_analitica_ids:
                 debe = 0
                 haber = 0
@@ -144,14 +131,24 @@ class NominaTrabajador(models.Model):
                 elif r.haber > 0:
                     haber = analitica.importe
 
-                self.env['account.move.line'].create({
-                    'move_id': move.id,
+                values_lines.append((0, 0, {
                     'account_id': r.account_id.id,
                     'name': r.descripcion,
                     'analytic_account_id': analitica.analytic_account_id.id,
                     'debit': debe,
                     'credit': haber
+                }))
+
+            try:
+                self.env['account.move'].create({
+                    'nomina_id': r.nomina_id.id,
+                    'partner_id': r.employee_id.address_home_id.id,
+                    'date': r.fecha_fin,
+                    'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
+                    'line_ids': values_lines
                 })
+            except Exception as e:
+                _logger.warning("La nómina del empleado %s ha dado error. %s" % (r.employee_id.name, str(e)))
 
 
 class NominaTrabajadorAnalitica(models.Model):
