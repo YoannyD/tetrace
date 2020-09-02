@@ -103,6 +103,15 @@ class NominaTrabajador(models.Model):
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
+    incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+
+    @api.depends('employee_id', 'account_id', 'trabajador_analitica_ids')
+    def _compute_incorrecta(self):
+        for r in self:
+            incorrecta = False
+            if not r.employee_id or not r.account_id or (r.account_id and r.account_id.code[0] in ['6', '7']):
+                incorrecta = True
+            r.incorrecta = incorrecta
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -112,9 +121,9 @@ class NominaTrabajador(models.Model):
     @api.depends('employee_id', 'account_id')
     def _compute_permitir_generar_analitica(self):
         for r in self:
-            permitir = True
-            if not r.employee_id or not r.account_id or (r.account_id and r.account_id.code[0] in ['6', '7']):
-                permitir = False
+            permitir = False
+            if r.employee_id and r.account_id and r.account_id.code[0] in ['6', '7']:
+                permitir = True
             r.permitir_generar_analitica = permitir
 
     def mostrar_distribuciones_analiticas(self):

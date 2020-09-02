@@ -101,7 +101,8 @@
                 <sheet>
                     <field name="id" invisible="1"/>
                     <field name="trabajador_analitica_ids" nolabel="1">
-                        <tree editable="bottom">
+                        <tree editable="bottom" create="0" edit="0" delete="0" decoration-warning="incorrecta">
+                            <field name="incorrecta" invisible="1"/>
                             <field name="analytic_account_id"/>
                             <field name="horas"/>
                             <field name="employee_id"/>

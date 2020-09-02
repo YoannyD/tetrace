@@ -20,10 +20,11 @@ class ImportarNonmina(models.TransientModel):
     def action_import(self):
         self.ensure_one()
         data = base64.b64decode(self.file)
-        data_file = io.StringIO(data.decode("ISO-8859-1"))
+        data_file = io.StringIO(data.decode("UTF-8"))
         data_file.seek(0)
         lineas = data_file.readlines()
 
+        self.nomina_id.nomina_trabajador_ids.unlink()
         for linea in lineas:
             ano = linea[6:10]
             mes = linea[10:12]
@@ -44,7 +45,6 @@ class ImportarNonmina(models.TransientModel):
             if key_trabajador:
                 employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:])], limit=1)
 
-            self.nomina_id.nomina_trabajador_ids.unlink()
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
                 'fecha_inicio': fecha_inicio,
