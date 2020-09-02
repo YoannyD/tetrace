@@ -28,7 +28,8 @@
         'project',
         'analytic',
         'mis_builder',
-        'account_asset'
+        'account_asset',
+        'base_tier_validation'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -49,8 +50,10 @@
         'views/tetrace_skills.xml',
         'views/tetrace_nomina.xml',
         'views/tetrace_tipo_contrato.xml',
+        'views/tetrace_validacion.xml',
         'views/hr_contract.xml',
         'views/res_company.xml',
+        'views/res_users.xml',
         'views/project.xml',
         'views/documents.xml',
         'views/purchase.xml',

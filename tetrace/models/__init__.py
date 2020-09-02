@@ -22,6 +22,7 @@ from . import hr_contract
 from . import hr_resume
 from . import res_partner
 from . import res_company
+from . import res_users
 from . import sale_order
 from . import purchase
 from . import analytic_account
@@ -29,3 +30,4 @@ from . import stock_move
 from . import mis_report_instance
 from . import mis_report
 from . import aep
+from . import tetrace_validacion
