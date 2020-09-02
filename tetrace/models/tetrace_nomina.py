@@ -89,7 +89,7 @@ class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
     _description = 'Nóminas trabajadores'
 
-    nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", required=True)
+    nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", required=True, ondelete="cascade")
     employee_id = fields.Many2one('hr.employee', string="Empleado")
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
@@ -103,6 +103,11 @@ class NominaTrabajador(models.Model):
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        for r in self:
+            r.generar_distribucion_analitica()
 
     @api.depends('employee_id', 'account_id')
     def _compute_permitir_generar_analitica(self):
@@ -179,7 +184,8 @@ class NominaTrabajadorAnalitica(models.Model):
     _name = 'tetrace.nomina.trabajador.analitica'
     _description = 'Dristribuciones analíticas nomina trabajador'
 
-    nomina_trabajador_id = fields.Many2one('tetrace.nomina.trabajador', string="Nómina trabajador", required=True)
+    nomina_trabajador_id = fields.Many2one('tetrace.nomina.trabajador', string="Nómina trabajador", required=True,
+                                           ondelete="cascade")
     analytic_account_id = fields.Many2one('account.analytic.account', string="Cuenta analítica")
     horas = fields.Float('Horas')
     employee_id = fields.Many2one(related="nomina_trabajador_id.employee_id")

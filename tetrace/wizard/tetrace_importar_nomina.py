@@ -44,17 +44,7 @@ class ImportarNonmina(models.TransientModel):
             if key_trabajador:
                 employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:])], limit=1)
 
-            NominaTrabajador = self.env['tetrace.nomina.trabajador']
-            nomina_trabajador = NominaTrabajador.search([
-                ('nomina_id', '=', self.nomina_id.id),
-                ('employee_id', '=', employee.id if employee else None),
-                ('account_id', '=', account.id if account else None),
-                ('fecha_inicio', '=', fecha_inicio),
-                ('fecha_fin', '=', fecha_fin),
-                ('debe', '=', debe),
-                ('haber', '=', haber)
-            ])
-
+            self.nomina_id.nomina_trabajador_ids.unlink()
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
                 'fecha_inicio': fecha_inicio,
@@ -62,16 +52,13 @@ class ImportarNonmina(models.TransientModel):
                 'employee_id': employee.id if employee else None,
                 'account_id': account.id if account else None,
                 'descripcion': descripcion,
-                'debe': importe if debe_haber == 'D' else 0,
-                'haber': importe if debe_haber == 'H' else 0,
+                'debe': debe,
+                'haber': haber,
                 'texto_importado': linea
             }
 
-            if nomina_trabajador:
-                nomina_trabajador.write(values_nomina_trabajador)
-            else:
-                nomina_trabajador = NominaTrabajador.create(values_nomina_trabajador)
-            # nomina_trabajador.generar_distribucion_analitica()
+            nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values_nomina_trabajador)
+            nomina_trabajador.generar_distribucion_analitica()
 
     def open_wizard(self, context=None):
         return {
