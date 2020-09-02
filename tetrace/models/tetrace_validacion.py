@@ -26,5 +26,11 @@ class ValidacionUser(models.Model):
     _order = "sequence,id"
 
     sequence = fields.Integer('Secuencia')
+    name = fields.Char('Nombre', compute="_compute_name", store=True)
     validacion_id = fields.Many2one('tetrace.validacion', string="Validación")
     user_id = fields.Many2one('res.users', string="Usuario")
+
+    @api.depends('validacion_id.name', 'user_id.name')
+    def _compute_name(self):
+        for r in self:
+            r.name = "%s [%s]" % (r.validacion_id.name, r.user_id.name)
