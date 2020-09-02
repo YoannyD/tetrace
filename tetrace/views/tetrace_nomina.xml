@@ -40,7 +40,7 @@
                     </group>
                     <group string="Nóminas Trabajadores">
                         <field name="nomina_trabajador_ids" nolabel="1">
-                            <tree editable="bottom" create="0" decoration-error="incorrecta">
+                            <tree editable="bottom" create="0" decoration-danger="incorrecta">
                                 <field name="incorrecta" invisible="1"/>
                                 <field name="id" invisible="1"/>
                                 <field name="fecha_inicio" readonly="1"/>
