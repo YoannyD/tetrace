@@ -109,7 +109,8 @@ class NominaTrabajador(models.Model):
     def _compute_incorrecta(self):
         for r in self:
             incorrecta = False
-            if not r.employee_id or not r.account_id or (r.account_id and r.account_id.code[0] in ['6', '7']):
+            if not r.employee_id or not r.account_id or \
+                (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
                 incorrecta = True
             r.incorrecta = incorrecta
 
