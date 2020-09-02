@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +20,9 @@ class Nomina(models.Model):
 
     def action_importar_nominas(self):
         self.ensure_one()
+        if self.move_ids:
+            raise UserError("No se puede importar el fichero si existen asientos contables.")
+
         wizard = self.env['tetrace.importar_nomina'].create({'nomina_id': self.id})
         return wizard.open_wizard()
 
