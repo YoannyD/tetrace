@@ -10,34 +10,18 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    partner_user_id = fields.Many2one('res.users', compute="_compute_partner_user_id", store=True)
+    def _default_validacion_id(self):
+        validacion = self.env['tetrace.validacion_user'].search([
+            ('user_id', '=', self.env.user.id),
+            ('validacion_id', '!=', False)
+        ], limit=1)
+        if validacion:
+            return validacion.id
+        return None
+
     validation_user_ids = fields.Many2many('tetrace.validacion_user')
-    validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación")
-
-    @api.depends('partner_id')
-    def _compute_partner_user_id(self):
-        for r in self:
-            user_id = False
-            if r.partner_id:
-                user = self.env['res.users'].search([('partner_id', '=', r.partner_id.id)], limit=1)
-                if user:
-                    user_id = user.id
-            r.partner_user_id = user_id
-
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        for r in self:
-            if r.partner_user_id and r.partner_user_id.validacion_user_ids:
-                validacion_ids = []
-                validacion_id = None
-                for vu in r.partner_user_id.validacion_user_ids:
-                    validacion_id = vu.id
-                    validacion_ids.append(vu.id)
-
-                r.update({
-                    'validation_user_ids': [(6, 0, validacion_ids)],
-                    'validacion_id': validacion_id
-                })
+    validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
+                                    default=lambda self: self._default_validacion_id())
 
 
 class PurchaseOrderLine(models.Model):

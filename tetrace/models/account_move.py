@@ -15,6 +15,15 @@ class AccountMove(models.Model):
     _inherit = "account.move"
     _state_to = ["posted"]
 
+    def _default_validacion_id(self):
+        validacion = self.env['tetrace.validacion_user'].search([
+            ('user_id', '=', self.env.user.id),
+            ('validacion_id', '!=', False)
+        ], limit=1)
+        if validacion:
+            return validacion.id
+        return None
+
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
@@ -22,34 +31,8 @@ class AccountMove(models.Model):
     secuencia_num = fields.Integer('Número secuencia')
     secuencia = fields.Char('Secuencia')
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
-    partner_user_id = fields.Many2one('res.users', compute="_compute_partner_user_id", store=True)
-    validation_user_ids = fields.Many2many('tetrace.validacion_user')
-    validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación")
-
-    @api.depends('partner_id')
-    def _compute_partner_user_id(self):
-        for r in self:
-            user_id = False
-            if r.partner_id:
-                user = self.env['res.users'].search([('partner_id', '=', r.partner_id.id)], limit=1)
-                if user:
-                    user_id = user.id
-            r.partner_user_id = user_id
-
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        for r in self:
-            if r.partner_user_id and r.partner_user_id.validacion_user_ids:
-                validacion_ids = []
-                validacion_id = None
-                for vu in r.partner_user_id.validacion_user_ids:
-                    validacion_id = vu.id
-                    validacion_ids.append(vu.id)
-
-                r.update({
-                    'validation_user_ids': [(6, 0, validacion_ids)],
-                    'validacion_id': validacion_id
-                })
+    validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
+                                    default=lambda self: self._default_validacion_id())
 
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:
