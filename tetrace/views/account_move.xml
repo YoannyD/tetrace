@@ -36,8 +36,9 @@
             </xpath>
 
             <xpath expr="//field[@name='partner_id']" position="after">
-<!--                <field name="validation_user_ids" invisible="1"/>-->
+                <field name="create_uid" invisible="1"/>
                 <field name="validacion_id"
+                       domain="[('user_id', 'in', [create_uid, uid])]"
                        attrs="{'invisible': [('type', 'not in', ( 'in_invoice', 'in_refund', 'in_receipt'))]}"/>
             </xpath>
 
