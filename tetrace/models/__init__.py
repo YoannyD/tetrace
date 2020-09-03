@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # © 2020 Ingetive - <info@ingetive.com>
 
+from . import tetrace_validacion
 from . import account_financial_report
 from . import account_account
 from . import account_move
@@ -30,4 +31,3 @@ from . import stock_move
 from . import mis_report_instance
 from . import mis_report
 from . import aep
-from . import tetrace_validacion
