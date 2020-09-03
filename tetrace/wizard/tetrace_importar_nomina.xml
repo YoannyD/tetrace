@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_importar_nomina_form">
+        <field name="name">tetrace.importar_nomina</field>
+        <field name="model">tetrace.importar_nomina</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="file" filename="name"/>
+                </group>
+                <footer>
+                    <button name="action_import" string="Importar" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

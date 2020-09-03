@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='favicon']" position="after">
                 <field name="tetrace_account_move_jorunal_id"/>
+                <field name="tetrace_nomina_jorunal_id"/>
             </xpath>
         </field>
     </record>

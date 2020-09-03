@@ -15,12 +15,24 @@ class AccountMove(models.Model):
     _inherit = "account.move"
     _state_to = ["posted"]
 
+    def _default_validacion_id(self):
+        validacion = self.env['tetrace.validacion_user'].search([
+            ('user_id', '=', self.env.user.id),
+            ('validacion_id', '!=', False)
+        ], limit=1)
+        if validacion:
+            return validacion.id
+        return None
+
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
     incoterm_complemento = fields.Char('Complemento Incoterm')
     secuencia_num = fields.Integer('Número secuencia')
     secuencia = fields.Char('Secuencia')
+    nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
+    validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
+                                    default=lambda self: self._default_validacion_id())
 
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:

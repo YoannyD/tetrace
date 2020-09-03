@@ -12,10 +12,10 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    ref_proyecto = fields.Char('Referencia proyecto')
-    nombre_proyecto = fields.Char('Nombre proyecto')
-    descripcion_proyecto = fields.Char('Descripción proyecto')
-    cabecera_proyecto = fields.Html('Cabecera proyecto')
+    ref_proyecto = fields.Char('Referencia proyecto', copy=False)
+    nombre_proyecto = fields.Char('Nombre proyecto', copy=False)
+    descripcion_proyecto = fields.Char('Descripción proyecto', copy=False)
+    cabecera_proyecto = fields.Html('Cabecera proyecto', copy=False)
 
     _sql_constraints = [
         ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
