@@ -19,7 +19,14 @@ class PurchaseOrder(models.Model):
             return validacion.id
         return None
 
-    validation_user_ids = fields.Many2many('tetrace.validacion_user')
+    def _default_validation_user_ids(self):
+        return self.env['tetrace.validacion_user'].search([
+            ('user_id', '=', self.env.user.id),
+            ('validacion_id', '!=', False)
+        ]).ids
+
+    validation_user_ids = fields.Many2many('tetrace.validacion_user',
+                                           default=lambda self: self._default_validation_user_ids())
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
 
