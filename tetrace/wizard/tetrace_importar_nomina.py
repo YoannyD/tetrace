@@ -20,12 +20,14 @@ class ImportarNonmina(models.TransientModel):
     def action_import(self):
         self.ensure_one()
         data = base64.b64decode(self.file)
-        data_file = io.StringIO(data.decode("UTF-8"))
+        data_file = io.StringIO(data.decode('iso-8859-1'))
+        _logger.warning(data_file)
         data_file.seek(0)
         lineas = data_file.readlines()
 
         self.nomina_id.nomina_trabajador_ids.unlink()
         for linea in lineas:
+            linea = linea.encode('utf8').decode('utf8')
             ano = linea[6:10]
             mes = linea[10:12]
             dia = linea[12:14]
