@@ -187,7 +187,7 @@ class NominaTrabajador(models.Model):
 
             for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
-                importe = (importe_nomina * 100) / porcentaje
+                importe = (importe_nomina * porcentaje) / 100
                 values.update({
                     'nomina_trabajador_id': r.id,
                     'porcentaje': porcentaje,
