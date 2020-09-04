@@ -33,7 +33,7 @@ class ImportarAsientosContables(models.AbstractModel):
                 ('company_id', '=', company_id)
             ])
             if not journal:
-                print("Para el asiento %s no se ha econtrado un diario." % ref_asiento)
+                _logger.warning("Para el asiento %s no se ha econtrado un diario." % ref_asiento)
 
             values_asiento = {
                 'date': items[0]['fecha_asiento'].strftime("%Y-%m-%d"),
@@ -47,7 +47,7 @@ class ImportarAsientosContables(models.AbstractModel):
             for item in items:
                 account = self._buscar_cuenta(item['cuenta'], company_id)
                 if not account:
-                    print("La cuenta %s del asiento %s no se ha econtrado." % (item['cuenta'], ref_asiento))
+                    _logger.warning("La cuenta %s del asiento %s no se ha econtrado." % (item['cuenta'], ref_asiento))
                     sin_cuenta = True
                     break
 
