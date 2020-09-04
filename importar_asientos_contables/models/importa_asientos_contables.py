@@ -83,13 +83,9 @@ class ImportarAsientosContables(models.AbstractModel):
 
     def _buscar_cuenta(self, cuenta, company_id):
         cuenta = str(int(cuenta))
-        cuenta_buscar = cuenta
-        prefijo = cuenta[:4]
-        if prefijo in ['4000', '4100', '4300', ]:
-            cuenta_buscar = "%s0000000" % prefijo
 
         cuenta = self.env['account.account'].search([
-            ('code', '=', cuenta_buscar),
+            ('code', '=', cuenta),
             ('company_id', '=', company_id)
         ], limit=1)
         return cuenta
