@@ -28,6 +28,12 @@
                             class="btn btn-primary"
                             attrs="{'invisible': [('move_ids', '!=', [])]}"
                             string="Generar asientos"/>
+
+                    <button name="action_generar_distribucion_analitica"
+                            type="object"
+                            class="btn btn-primary"
+                            attrs="{'invisible': [('move_ids', '!=', [])]}"
+                            string="Actualizar distribución analítica"/>
                 </header>
                 <sheet>
                     <group>
