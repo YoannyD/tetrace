@@ -88,6 +88,9 @@ class Nomina(models.Model):
                 else:
                     self.env['account.move'].create(values)
 
+    def action_generar_distribucion_analitica(self):
+        for r in self:
+            r.nomina_trabajador_ids.generar_distribucion_analitica()
 
 class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
@@ -158,7 +161,7 @@ class NominaTrabajador(models.Model):
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
-            ], limit=1)
+            ])
 
             total_horas = 0
             analitica_data = {}
@@ -184,7 +187,7 @@ class NominaTrabajador(models.Model):
 
             for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
-                importe = (importe_nomina * 100) / porcentaje
+                importe = (importe_nomina * porcentaje) / 100
                 values.update({
                     'nomina_trabajador_id': r.id,
                     'porcentaje': porcentaje,
