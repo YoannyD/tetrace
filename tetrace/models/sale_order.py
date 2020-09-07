@@ -39,16 +39,25 @@ class SaleOrder(models.Model):
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
         if 'ref_proyecto' in vals or 'nombre_proyecto' in vals:
-            for r in self:
-                if r.project_ids:
-                    if not r.ref_proyecto or not r.nombre_proyecto:
-                        raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
-
-                    name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
-                    r.project_ids.write({'name': name})
-                    for p in r.project_ids:
-                        p.analytic_account_id.write({'name': r.ref_proyecto})
+            self.actualizar_datos_proyecto()
         return res
+
+    def _action_confirm(self):
+        res = super(SaleOrder, self)._action_confirm()
+        _logger.warning("fffffff")
+        self.actualizar_datos_proyecto()
+        return res
+
+    def actualizar_datos_proyecto(self):
+        for r in self:
+            if r.project_ids:
+                if not r.ref_proyecto or not r.nombre_proyecto:
+                    raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
+
+                name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
+                r.project_ids.write({'name': name})
+                for p in r.project_ids:
+                    p.analytic_account_id.write({'name': r.ref_proyecto})
 
 
 class SaleOrderLine(models.Model):

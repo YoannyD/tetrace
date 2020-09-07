@@ -37,8 +37,7 @@ class Project(models.Model):
                           sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
         # include the service SO line of SO sharing the same project
         sale_order = self.env['sale.order'].search([('project_id', 'in', self.ids)])
-        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda
-                                                                                    sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
+        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
             so_lines.mapped('order_id').ids) | set(sale_order.ids)
 
     def _table_get_line_values(self):
