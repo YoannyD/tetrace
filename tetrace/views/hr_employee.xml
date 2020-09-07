@@ -10,7 +10,7 @@
         <field name="name">P. Selección</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hr.applicant</field>
-        <field name="view_mode">form,tree</field>
+        <field name="view_mode">tree</field>
         <field name="domain">[('emp_id','=',active_id)]</field>
     </record>
 
@@ -24,7 +24,7 @@
                         type="action"
                         class="oe_stat_button"
                         icon="fa-file-text">
-                    <field name="applicant_count" widget="statinfo"/>
+                    <field name="applicant_count" string="P. Selección" widget="statinfo"/>
                 </button>
             </xpath>
 
