@@ -17,9 +17,11 @@
                 </button>
             </xpath>
 
+            <xpath expr="//field[@name='empl_id']" position="replace"/>
+
             <xpath expr="//group[1]" position="inside">
                 <group string="Empleado">
-                    <field name="employee_id"/>
+                    <field name="empl_id"/>
                 </group>
             </xpath>
 
