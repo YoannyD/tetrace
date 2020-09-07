@@ -17,6 +17,12 @@
                 </button>
             </xpath>
 
+            <xpath expr="//group[1]" position="inside">
+                <group string="Empleado">
+                    <field name="employee_id"/>
+                </group>
+            </xpath>
+
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="fecha_recepcion"/>
                 <field name="country_id"/>

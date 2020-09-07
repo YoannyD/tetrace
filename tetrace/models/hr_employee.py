@@ -4,7 +4,6 @@
 import logging
 
 from odoo import models, fields, api
-from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -22,6 +21,8 @@ class Employee(models.Model):
     document_employee_count = fields.Integer('Documentos', compute="_compute_document_employee")
     contract_clock = fields.Boolean(string='Contract Warning')
     key_nomina = fields.Char('Cláve nómina')
+    applicant_ids = fields.One2many('hr.applicant', 'employee_id')
+    applicant_count = fields.Integer('Número de procesos de selección', compute="_compute_applicant")
 
     def _compute_document_employee(self):
         for r in self:
@@ -30,3 +31,7 @@ class Employee(models.Model):
                 ('res_id', '=', r.id),
             ])
             r.document_employee_count = documents
+
+    def _compute_applicant(self):
+        for r in self:
+            r.applicant_count = len(r.applicant_ids)

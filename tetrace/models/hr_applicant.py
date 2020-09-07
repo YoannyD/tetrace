@@ -23,6 +23,7 @@ class Applicant(models.Model):
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
+    employee_id = fields.Many2one('hr.employee', string="Empleado")
 
     def _compute_document_applicant(self):
         for r in self:
