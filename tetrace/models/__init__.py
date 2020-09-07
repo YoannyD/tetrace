@@ -25,6 +25,7 @@ from . import res_partner
 from . import res_company
 from . import res_users
 from . import sale_order
+from . import tetrace_sale_order_version
 from . import purchase
 from . import analytic_account
 from . import stock_move

@@ -21,7 +21,6 @@ class ImportarNonmina(models.TransientModel):
         self.ensure_one()
         data = base64.b64decode(self.file)
         data_file = io.StringIO(data.decode('iso-8859-1'))
-        _logger.warning(data_file)
         data_file.seek(0)
         lineas = data_file.readlines()
 
