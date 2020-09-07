@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_crear_version_form">
+        <field name="name">tetrace.crear_version</field>
+        <field name="model">tetrace.crear_version</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="version" readonly="1"/>
+                    <field name="comentarios"/>
+                </group>
+                <footer>
+                    <button name="action_crear_version" string="Crear" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

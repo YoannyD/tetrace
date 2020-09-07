@@ -16,6 +16,8 @@ class SaleOrder(models.Model):
     nombre_proyecto = fields.Char('Nombre proyecto', copy=False)
     descripcion_proyecto = fields.Char('Descripción proyecto', copy=False)
     cabecera_proyecto = fields.Html('Cabecera proyecto', copy=False)
+    version_ids = fields.One2many('tetrace.sale_order_version', 'sale_order_id')
+    version_count = fields.Integer('Versiones', compute="_compute_version")
 
     _sql_constraints = [
         ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
@@ -36,6 +38,10 @@ class SaleOrder(models.Model):
                     except:
                         raise ValidationError(msg_error)
 
+    def _compute_version(self):
+        for r in self:
+            r.version_count = len(r.version_ids)
+
     def write(self, vals):
         res = super(SaleOrder, self).write(vals)
         if 'ref_proyecto' in vals or 'nombre_proyecto' in vals:
@@ -44,7 +50,6 @@ class SaleOrder(models.Model):
 
     def _action_confirm(self):
         res = super(SaleOrder, self)._action_confirm()
-        _logger.warning("fffffff")
         self.actualizar_datos_proyecto()
         return res
 
@@ -58,6 +63,14 @@ class SaleOrder(models.Model):
                 r.project_ids.write({'name': name})
                 for p in r.project_ids:
                     p.analytic_account_id.write({'name': r.ref_proyecto})
+
+    def action_crear_version(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.crear_version'].create({
+            'sale_order_id': self.id,
+            'version': self.env['tetrace.sale_order_version'].siguiente_version(self.id)
+        })
+        return wizard.open_wizard()
 
 
 class SaleOrderLine(models.Model):

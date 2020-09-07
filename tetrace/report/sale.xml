@@ -265,8 +265,8 @@
             <attribute name="style">padding-top:15px;padding-bottom:15px;</attribute>
         </xpath>
 
-        <xpath expr="//div[@t-field='o.partner_id']" position="attributes">
-            <attribute name="style">display:none</attribute>
-        </xpath>
+<!--        <xpath expr="//div[@t-field='o.partner_id']" position="attributes">-->
+<!--            <attribute name="style">display:none</attribute>-->
+<!--        </xpath>-->
     </template>
 </odoo>
