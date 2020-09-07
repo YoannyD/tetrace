@@ -11,7 +11,7 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hr.applicant</field>
         <field name="view_mode">form,tree</field>
-        <field name="domain">[('empl_id','=',active_id)]</field>
+        <field name="domain">[('emp_id','=',active_id)]</field>
     </record>
 
     <record model="ir.ui.view" id="view_employee_form">
