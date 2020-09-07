@@ -15,13 +15,18 @@
         <field name="name">tetrace.sale_order_version.form</field>
         <field name="model">tetrace.sale_order_version</field>
         <field name="arch" type="xml">
-            <form>
+            <form create="0">
                 <sheet>
                     <group>
-                        <field name="sale_order_id"/>
-                        <field name="version" readonly="1"/>
-                        <field name="comentarios"/>
-                        <field name="create_date" string="Fecha/Hora" readonly="1"/>
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="version" readonly="1"/>
+                            <field name="comentarios"/>
+                        </group>
+                        <group>
+                            <field name="create_date" string="Fecha/Hora" readonly="1"/>
+                            <field name="pdf" readonly="1"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
@@ -37,6 +42,7 @@
                 <field name="version"/>
                 <field name="create_date" string="Fecha/Hora"/>
                 <field name="comentarios"/>
+                <field name="pdf"/>
             </tree>
         </field>
     </record>

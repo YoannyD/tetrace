@@ -2,6 +2,7 @@
 # © 2020 Ingetive - <info@ingetive.com>
 
 import logging
+import base64
 
 from odoo import models, fields, api
 
@@ -11,8 +12,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrderVersion(models.Model):
     _name = 'tetrace.sale_order_version'
     _description = 'Versiones de presupuestos/pedidos de venta'
-    _order = "create_date, version desc"
-
+    _order = "version desc, create_date"
 
     name = fields.Char('Nombre', compute="_compute_name", store=True)
     version = fields.Integer('Versión')
@@ -28,12 +28,23 @@ class SaleOrderVersion(models.Model):
     @api.model
     def create(self, vals):
         version = self.siguiente_version(vals.get('sale_order_id'))
-        vals.update({'version': version})
+        pdf = self.crear_pdf(vals.get('sale_order_id'))
+
+        vals.update({
+            'version': version,
+            'pdf': pdf
+        })
         res = super(SaleOrderVersion, self).create(vals)
         return res
 
     def siguiente_version(self, order_id):
+        _logger.warning(order_id)
         version = self.search([('sale_order_id', '=', order_id)], limit=1)
         if version:
             return version.version + 1
         return 1
+
+    def crear_pdf(self, order_id):
+        report = self.env["ir.actions.report"]._get_report_from_name("sale.report_saleorder")
+        pdf_bin, _ = report.render_qweb_pdf(order_id)
+        return base64.b64encode(pdf_bin)
