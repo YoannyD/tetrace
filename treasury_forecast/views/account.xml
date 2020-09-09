@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record model="ir.ui.view" id="account_view_move_form_treasury">
+        <field name="name">account.view.move.form.treasury</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="invoice_payment_term_id" position="attributes">
+                <attribute name="attrs">{'invisible': False }</attribute>
+            </field>
+            <field name="invoice_date" position="after">
+                <field name="date_treasury" states="draft,proforma"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
