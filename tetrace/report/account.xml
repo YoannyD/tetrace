@@ -47,13 +47,11 @@
                 <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
                 <t t-if="o.type != 'out_invoice' or (o.type == 'out_invoice' and o.state != 'draft')">
                     <span t-if="o.name != '/'" t-field="o.name"/>
-                    <span t-if="o.name == '/'" t-field="o.secuencia"/>
                 </t>
             </h2>
             <h2 t-if="o.journal_id and o.journal_id.code == 'INVE'">
                 <span>Factura Nº</span> <br/>
                 <span t-if="o.name != '/'" t-field="o.name"/>
-                <span t-if="o.name == '/'" t-field="o.secuencia"/>
             </h2>
         </xpath>
 
