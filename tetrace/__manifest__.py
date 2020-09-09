@@ -37,7 +37,7 @@
         'data/project.xml',
         'data/mail_activity.xml',
         'report/sale.xml',
-        # 'report/account.xml',
+        'report/account.xml',
         'report/web.xml',
         'views/web.xml',
         'views/account_financial_report.xml',
