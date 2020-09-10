@@ -5,6 +5,7 @@ import logging
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
 
@@ -91,6 +92,7 @@ class Nomina(models.Model):
     def action_generar_distribucion_analitica(self):
         for r in self:
             r.nomina_trabajador_ids.generar_distribucion_analitica()
+
 
 class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
