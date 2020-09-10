@@ -195,7 +195,7 @@ class NominaTrabajador(models.Model):
                 values.update({
                     'nomina_trabajador_id': r.id,
                     'porcentaje': porcentaje,
-                    'importe': float_round(importe, precision_digits=2)
+                    'importe': importe
                 })
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
