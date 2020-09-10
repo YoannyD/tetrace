@@ -19,6 +19,7 @@ def status_response(status):
 class GoogleDrive(models.AbstractModel):
     STR_SERVICE = 'gdrive'
     _name = 'google.%s' % STR_SERVICE
+    _description = "Google Drive"
 
     MSG_ERROR_USER = 'El contacto no tiene ligado un usuario.'
     HEADERS_REQUEST = {'Content-type': 'application/json', 'Accept': 'text/plain'}

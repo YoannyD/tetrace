@@ -5,6 +5,7 @@ import logging
 
 from odoo import models, fields, api
 from odoo.exceptions import UserError
+from odoo.tools import float_round
 
 _logger = logging.getLogger(__name__)
 
@@ -112,8 +113,6 @@ class NominaTrabajador(models.Model):
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
-    importe_analitico = fields.Monetary('Importe analítico')
-
 
     @api.depends('employee_id', 'account_id', 'trabajador_analitica_ids')
     def _compute_incorrecta(self):
@@ -190,20 +189,16 @@ class NominaTrabajador(models.Model):
             elif r.haber > 0:
                 importe_nomina = r.haber
 
-            importe_analitico = 0
             for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
                 importe = (importe_nomina * porcentaje) / 100
                 values.update({
                     'nomina_trabajador_id': r.id,
                     'porcentaje': porcentaje,
-                    'importe': importe
+                    'importe': float_round(importe, precision_digits=2)
                 })
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
-                importe_analitico += importe
-
-            r.importe_analitico = importe_analitico
 
 
 class NominaTrabajadorAnalitica(models.Model):

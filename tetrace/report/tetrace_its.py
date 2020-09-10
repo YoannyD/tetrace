@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class ITS(models.AbstractModel):
     _name = 'report.tetrace.report_its'
+    _description = "Informe previsión de Tesoría (ITS)"
     _inherit = 'report.report_xlsx.abstract'
 
     def generate_xlsx_report(self, workbook, data, lines):

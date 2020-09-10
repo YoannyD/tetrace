@@ -160,7 +160,6 @@
                             <field name="currency_id" invisible="1"/>
                         </tree>
                     </field>
-                    <field name="importe_analitico"/>
                 </sheet>
             </form>
         </field>

@@ -12,8 +12,8 @@ _logger = logging.getLogger(__name__)
 class Attachment(models.Model):
     _inherit = "ir.attachment"
 
-    document_ids = fields.One2many('documents.document', 'attachment_id')
-    document_id = fields.Many2one('documents.document', compute='_compute_document_id')
+    document_ids = fields.One2many('documents.document', 'attachment_id', string="Documentos")
+    document_id = fields.Many2one('documents.document', compute='_compute_document_id', string="Documento")
 
     @api.depends('document_ids')
     def _compute_document_id(self):
