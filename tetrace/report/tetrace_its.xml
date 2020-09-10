@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report id="tetrace_its_xlsx"
+            model="account.move.line"
+            string="Tesorería Semanal (ITS)"
+            report_type="xlsx"
+            name="tetrace.report_its"
+            file="Informe Tesorería Semanal"
+            attachment_use="False"/>
+</odoo>

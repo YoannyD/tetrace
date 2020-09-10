@@ -16,7 +16,7 @@
             <xpath expr="//header[1]" position="inside">
                 <button name="action_crear_version"
                         type="object"
-                        string="Commit Version"/>
+                        string="Generar Version"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">

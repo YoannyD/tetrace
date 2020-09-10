@@ -171,12 +171,14 @@ class NominaTrabajador(models.Model):
 
                 key = str(analitica.project_id.analytic_account_id.id)
                 if key not in analitica_data:
-                    analitica_data.update({key: {}})
+                    analitica_data.update({
+                        key: {
+                            'analytic_account_id': analitica.project_id.analytic_account_id.id,
+                            'horas': 0
+                        }
+                    })
 
-                analitica_data[key].update({
-                    'analytic_account_id': analitica.project_id.analytic_account_id.id,
-                    'horas': analitica.unit_amount
-                })
+                analitica_data[key]['horas'] += analitica.unit_amount
                 total_horas += analitica.unit_amount
 
             importe_nomina = 0

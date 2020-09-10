@@ -29,7 +29,8 @@
         'analytic',
         'mis_builder',
         'account_asset',
-        'base_tier_validation'
+        'base_tier_validation',
+        'report_xlsx'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -39,6 +40,7 @@
         'report/sale.xml',
         'report/account.xml',
         'report/web.xml',
+        'report/tetrace_its.xml',
         'views/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
