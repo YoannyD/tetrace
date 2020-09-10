@@ -92,6 +92,7 @@ class Nomina(models.Model):
         for r in self:
             r.nomina_trabajador_ids.generar_distribucion_analitica()
 
+
 class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
     _description = 'Nóminas trabajadores'
@@ -111,6 +112,8 @@ class NominaTrabajador(models.Model):
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+    importe_analitico = fields.Monetary('Importe analítico')
+
 
     @api.depends('employee_id', 'account_id', 'trabajador_analitica_ids')
     def _compute_incorrecta(self):
@@ -187,6 +190,7 @@ class NominaTrabajador(models.Model):
             elif r.haber > 0:
                 importe_nomina = r.haber
 
+            importe_analitico = 0
             for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
                 importe = (importe_nomina * porcentaje) / 100
@@ -197,6 +201,9 @@ class NominaTrabajador(models.Model):
                 })
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
+                importe_analitico += importe
+
+            r.importe_analitico = importe_analitico
 
 
 class NominaTrabajadorAnalitica(models.Model):
