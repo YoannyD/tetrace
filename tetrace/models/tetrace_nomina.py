@@ -159,10 +159,11 @@ class NominaTrabajador(models.Model):
                 continue
 
             r.trabajador_analitica_ids.unlink()
-            analiticas = self.env['account.analytic.line'].search([
+            analiticas = self.env['account.analytic.line'].sudo().search([
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
+                '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
             ])
 
             total_horas = 0
