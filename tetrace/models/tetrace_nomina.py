@@ -190,9 +190,14 @@ class NominaTrabajador(models.Model):
             elif r.haber > 0:
                 importe_nomina = r.haber
 
+            importe_total = 0
             for key, values in analitica_data.items():
                 porcentaje = (values['horas'] * 100) / total_horas
-                importe = (importe_nomina * porcentaje) / 100
+                importe = "%.2f" % ((importe_nomina * porcentaje) / 100)
+                if float(importe) <= 0:
+                    continue
+
+                importe_total += float(importe)
                 values.update({
                     'nomina_trabajador_id': r.id,
                     'porcentaje': porcentaje,
@@ -200,6 +205,17 @@ class NominaTrabajador(models.Model):
                 })
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
+
+            if importe_total and importe_nomina != importe_total:
+                analitica = self.env['tetrace.nomina.trabajador.analitica'].search([
+                    ('nomina_trabajador_id', '=', r.id)
+                ], order="importe desc", limit=1)
+                if importe_nomina > importe_total:
+                    dif = importe_total - importe_nomina
+                    analitica.write({'importe': analitica['importe'] - dif})
+                else:
+                    dif = importe_nomina - importe_total
+                    analitica.write({'importe': analitica['importe'] + dif})
 
 
 class NominaTrabajadorAnalitica(models.Model):
