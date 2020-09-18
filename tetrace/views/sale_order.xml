@@ -38,8 +38,22 @@
                             </h1>
                         </div>
                         <div class="col-6">
-                            <h1>
-                                <field name="ref_proyecto"/>
+                            <h1 class="d-flex flex-row justify-content-between">
+                                <div>
+                                    P
+                                </div>
+                                <div>
+                                    <field name="ejercicio_proyecto"/>
+                                </div>
+                                <div>
+                                    <field name="tipo_proyecto_id"/>
+                                </div>
+                                <div>
+                                    .
+                                </div>
+                                <div>
+                                    <field name="num_proyecto"/>
+                                </div>
                             </h1>
                         </div>
                     </div>
@@ -52,6 +66,11 @@
             </xpath>
 
             <xpath expr="//group[1]/group[2]" position="inside">
+                <field name="ref_proyecto"/>
+                <field name="partner_siglas"/>
+                <field name="tipo_servicio_id"/>
+                <field name="proyecto_country_id"/>
+                <field name="detalle_proyecto"/>
                 <field name="nombre_proyecto"/>
             </xpath>
 
