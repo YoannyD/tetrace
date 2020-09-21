@@ -39,7 +39,7 @@ class AccountFinancialReportLine(models.Model):
         '''
         if currency_table:
             financial_report_aux = self._get_financial_report()
-            if financial_report_aux.informe_fecha_contable:
+            if financial_report_aux and financial_report_aux.informe_fecha_contable:
                 select = '''
                     COALESCE(SUM(ROUND(\"account_move_line\".balance * (%s / \"cr\".rate), %s)), 0) AS balance,
                     COALESCE(SUM(ROUND(\"account_move_line\".amount_residual * (%s / \"cr\".rate), %s)), 0) AS amount_residual,
@@ -94,7 +94,7 @@ class AccountFinancialReportLine(models.Model):
         tables, where_clause, where_params = aml_obj._query_get(domain=self._get_aml_domain())
 
         financial_report_aux = self._get_financial_report()
-        if financial_report_aux.informe_fecha_contable:
+        if financial_report_aux and financial_report_aux.informe_fecha_contable:
             tables += """,(
                 SELECT
                     ml.id,

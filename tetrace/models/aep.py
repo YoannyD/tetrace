@@ -4,6 +4,7 @@
 import logging
 
 from odoo import _, fields
+from datetime import datetime
 from collections import defaultdict
 from odoo.addons.mis_builder.models.aep import AccountingExpressionProcessor
 from odoo.addons.mis_builder.models.accounting_none import AccountingNone
@@ -43,6 +44,23 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
         self._account_model = self.env[account_model].with_context(active_test=False)
         self._informe_fecha_contable = informe_fecha_contable
 
+    def _get_company_rates(self, date):
+        # get exchange rates for each company with its rouding
+        company_rates = {}
+        # target_rate = self.currency.with_context(date=date).rate
+
+        for company in self.companies:
+            if company.currency_id != self.currency:
+                cr = self.currency._get_rates(company, date)
+                rate = 1.0
+                for key, value in cr.items():
+                    rate = value
+                    break
+            else:
+                rate = 1.0
+            company_rates[company.id] = (rate, company.currency_id.decimal_places)
+        return company_rates
+
     def do_queries(
         self,
         date_from,
@@ -81,12 +99,17 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
             if additional_move_line_filter:
                 domain.extend(additional_move_line_filter)
             # fetch sum of debit/credit, grouped by account_id
-            accs = aml_model.search_read(
+
+            accs = aml_model.with_context(lang="en_US").read_group(
                 domain,
-                ["debit", "credit", "account_id", "company_id", "date"]
+                ["debit", "credit", "account_id", "company_id", "date"],
+                ["account_id", "company_id", "date:day"],
+                lazy=False,
             )
+
             for acc in accs:
-                fecha_rate = acc["date"] if self._informe_fecha_contable else date_to
+                fecha_rate = datetime.strptime(acc["date:day"], "%d %b %Y")
+                fecha_rate = fecha_rate if self._informe_fecha_contable else date_to
                 company_rates = self._get_company_rates(fecha_rate)
                 rate, dp = company_rates[acc["company_id"][0]]
                 debit = acc["debit"] or 0.0
