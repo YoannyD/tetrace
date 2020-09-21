@@ -20,5 +20,6 @@ class TetraceAccount(models.Model):
     _description = "Cuentas Tetrace"
 
     name = fields.Char('Nombre', required=True)
+    code = fields.Char('Code')
     account_ids = fields.One2many('account.account', 'tetrace_account_id')
     account_move_line_ids = fields.One2many('account.account', 'tetrace_account_id')
