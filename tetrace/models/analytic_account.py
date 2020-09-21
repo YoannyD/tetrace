@@ -39,7 +39,7 @@ class AccountAnalyticLineRel(models.Model):
                                        ondelete='cascade')
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
-    ccount_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
+    account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
     currency_id = fields.Many2one(related="analytic_line_id.currency_id", store=True)
     date = fields.Date(related="analytic_line_id.date", store=True)
     company_id = fields.Many2one(related="analytic_line_id.company_id", store=True)
