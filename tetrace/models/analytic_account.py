@@ -25,6 +25,12 @@ class AccountAnalyticLine(models.Model):
         self._check_imputar_tiempos()
         return super(AccountAnalyticLine, self).write(vals)
 
+    def unlink(self):
+        for line in self:
+            line.line_rel_ids.unlink()
+        res = super(AccountAnalyticLine, self).unlink()
+        return res
+
     def _check_imputar_tiempos(self):
         for r in self:
             if r.task_id and r.task_id.stage_id and r.task_id.stage_id.bloquear_imputar_tiempos:
