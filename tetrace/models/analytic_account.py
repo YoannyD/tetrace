@@ -55,7 +55,7 @@ class AccountAnalyticLineRel(models.Model):
             if amount > 0:
                 credit = amount
             else:
-                debit = amount
+                debit = -amount
 
             r.update({
                 'credit': credit,
