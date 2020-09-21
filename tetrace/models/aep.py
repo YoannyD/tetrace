@@ -4,6 +4,7 @@
 import logging
 
 from odoo import _, fields
+from datetime import datetime
 from collections import defaultdict
 from odoo.addons.mis_builder.models.aep import AccountingExpressionProcessor
 from odoo.addons.mis_builder.models.accounting_none import AccountingNone
@@ -46,7 +47,6 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
         def _get_company_rates(self, date):
             # get exchange rates for each company with its rouding
             company_rates = {}
-            #         _logger.warning(date)
             # target_rate = self.currency.with_context(date=date).rate
 
             for company in self.companies:
@@ -99,12 +99,17 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
             if additional_move_line_filter:
                 domain.extend(additional_move_line_filter)
             # fetch sum of debit/credit, grouped by account_id
-            accs = aml_model.search_read(
+
+            accs = aml_model.read_group(
                 domain,
-                ["debit", "credit", "account_id", "company_id", "date"]
+                ["debit", "credit", "account_id", "company_id", "date"],
+                ["account_id", "company_id", "date:day"],
+                lazy=False,
             )
+
             for acc in accs:
-                fecha_rate = acc["date"] if self._informe_fecha_contable else date_to
+                fecha_rate = datetime.strptime(acc["date:day"], "%d %b %Y")
+                fecha_rate = fecha_rate if self._informe_fecha_contable else date_to
                 company_rates = self._get_company_rates(fecha_rate)
                 rate, dp = company_rates[acc["company_id"][0]]
                 debit = acc["debit"] or 0.0
