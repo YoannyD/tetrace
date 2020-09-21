@@ -43,6 +43,24 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
         self._account_model = self.env[account_model].with_context(active_test=False)
         self._informe_fecha_contable = informe_fecha_contable
 
+        def _get_company_rates(self, date):
+            # get exchange rates for each company with its rouding
+            company_rates = {}
+            #         _logger.warning(date)
+            # target_rate = self.currency.with_context(date=date).rate
+
+            for company in self.companies:
+                if company.currency_id != self.currency:
+                    cr = self.currency._get_rates(company, date)
+                    rate = 1.0
+                    for key, value in cr.items():
+                        rate = value
+                        break
+                else:
+                    rate = 1.0
+                company_rates[company.id] = (rate, company.currency_id.decimal_places)
+            return company_rates
+
     def do_queries(
         self,
         date_from,
