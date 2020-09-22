@@ -66,12 +66,12 @@
             </xpath>
 
             <xpath expr="//group[1]/group[2]" position="inside">
-                <field name="ref_proyecto"/>
+                <field name="ref_proyecto" invisible="1"/>
                 <field name="partner_siglas"/>
                 <field name="tipo_servicio_id"/>
                 <field name="proyecto_country_id"/>
                 <field name="detalle_proyecto"/>
-                <field name="nombre_proyecto"/>
+                <field name="nombre_proyecto" invisible="1"/>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">

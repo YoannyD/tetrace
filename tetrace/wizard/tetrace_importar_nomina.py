@@ -29,9 +29,21 @@ class ImportarNonmina(models.TransientModel):
             linea = linea.encode('utf8').decode('utf8')
             ano = linea[6:10]
             mes = linea[10:12]
-            dia = linea[12:14]
-            fecha_inicio = "%s-%s-01" % (ano, mes)
+            try:
+                dia = int(linea[12:14])
+            except:
+                dia = 0
+
             fecha_fin = "%s-%s-%s" % (ano, mes, dia)
+            dia_inicio = '01'
+            if dia >= 1 and dia <= 15:
+                dia_inicio = '01'
+            elif dia >= 16 and dia <= 22:
+                dia_inicio = 16
+            elif dia >= 23 and dia <= 31:
+                dia_inicio = 23
+
+            fecha_inicio = "%s-%s-%s" % (ano, mes, dia_inicio)
             cuenta = linea[15:23].strip()
             account = self.env['account.account'].search([('code', '=', cuenta)], limit=1)
 

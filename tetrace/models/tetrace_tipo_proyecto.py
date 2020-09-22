@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 class TipoProyecto(models.Model):
     _name = "tetrace.tipo_proyecto"
     _description = "Tipos de proyecto"
+    _rec_name = 'tipo'
 
     name = fields.Char('Nombre', required=True)
     tipo = fields.Char('Tipo', required=True)
