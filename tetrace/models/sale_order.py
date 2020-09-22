@@ -92,7 +92,7 @@ class SaleOrder(models.Model):
 
     def generar_nombre_proyecto(self):
         self.ensure_one()
-        return "%s%s%s%s" % (
+        return "%s %s %s %s" % (
                 self.partner_siglas or '',
                 self.tipo_servicio_id.name if self.tipo_servicio_id else '',
                 self.proyecto_country_id.code if self.proyecto_country_id else '',

@@ -67,10 +67,21 @@
 
             <xpath expr="//group[1]/group[2]" position="inside">
                 <field name="ref_proyecto" invisible="1"/>
-                <field name="partner_siglas"/>
-                <field name="tipo_servicio_id"/>
-                <field name="proyecto_country_id"/>
-                <field name="detalle_proyecto"/>
+                <label for="nombre_proyecto"/>
+                <div class="d-flex flex-row">
+                    <div style="padding-right:8px;">
+                        <field name="partner_siglas"/>
+                    </div>
+                    <div style="padding-right:8px;">
+                        <field name="tipo_servicio_id"/>
+                    </div>
+                    <div style="padding-right:8px;">
+                        <field name="proyecto_country_id"/>
+                    </div>
+                    <div>
+                        <field name="detalle_proyecto"/>
+                    </div>
+                </div>
                 <field name="nombre_proyecto" invisible="1"/>
             </xpath>
 
