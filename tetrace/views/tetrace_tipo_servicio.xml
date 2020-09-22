@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <act_window id="action_tetrace_tipo_servicio"
+                name="Tipos de servicio"
+                view_mode="tree,form"
+                res_model="tetrace.tipo_servicio" />
+
+    <menuitem action="action_tetrace_tipo_servicio"
+              id="menu_tetrace_tipo_servicio"
+              name="Tipos de servicio"
+              parent="sale.menu_sale_config"
+              sequence="3"/>
+
+    <record model="ir.ui.view" id="tetrace_tipo_servicio_form">
+        <field name="name">tetrace.tipo_servicio.form</field>
+        <field name="model">tetrace.tipo_servicio</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_tipo_servicio_tree">
+        <field name="name">tetrace.tipo_servicio.tree</field>
+        <field name="model">tetrace.tipo_servicio</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

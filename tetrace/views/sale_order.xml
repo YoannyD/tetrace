@@ -38,8 +38,22 @@
                             </h1>
                         </div>
                         <div class="col-6">
-                            <h1>
-                                <field name="ref_proyecto"/>
+                            <h1 class="d-flex flex-row">
+                                <div>
+                                    P
+                                </div>
+                                <div>
+                                    <field name="ejercicio_proyecto"/>
+                                </div>
+                                <div>
+                                    <field name="tipo_proyecto_id"/>
+                                </div>
+                                <div>
+                                    .
+                                </div>
+                                <div>
+                                    <field name="num_proyecto"/>
+                                </div>
                             </h1>
                         </div>
                     </div>
@@ -52,7 +66,23 @@
             </xpath>
 
             <xpath expr="//group[1]/group[2]" position="inside">
-                <field name="nombre_proyecto"/>
+                <field name="ref_proyecto" invisible="1"/>
+                <label for="nombre_proyecto"/>
+                <div class="d-flex flex-row">
+                    <div style="padding-right:8px;">
+                        <field name="partner_siglas"/>
+                    </div>
+                    <div style="padding-right:8px;">
+                        <field name="tipo_servicio_id"/>
+                    </div>
+                    <div style="padding-right:8px;">
+                        <field name="proyecto_country_id"/>
+                    </div>
+                    <div>
+                        <field name="detalle_proyecto"/>
+                    </div>
+                </div>
+                <field name="nombre_proyecto" invisible="1"/>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">

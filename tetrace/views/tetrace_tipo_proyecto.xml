@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <act_window id="action_tetrace_tipo_proyecto"
+                name="Tipos de proyecto"
+                view_mode="tree,form"
+                res_model="tetrace.tipo_proyecto" />
+
+    <menuitem action="action_tetrace_tipo_proyecto"
+              id="menu_tetrace_tipo_proyecto"
+              name="Tipos de proyecto"
+              parent="sale.menu_sale_config"
+              sequence="3"/>
+
+    <record model="ir.ui.view" id="tetrace_tipo_proyecto_form">
+        <field name="name">tetrace.tipo_proyecto.form</field>
+        <field name="model">tetrace.tipo_proyecto</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="tipo"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_tipo_proyecto_tree">
+        <field name="name">tetrace.tipo_proyecto.tree</field>
+        <field name="model">tetrace.tipo_proyecto</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="tipo"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
