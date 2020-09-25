@@ -30,6 +30,7 @@
 
             <xpath expr="//field[@name='mobile_phone']" position="before">
                 <field name="codigo_trabajador_A3"/>
+                <field name="nivel_validacion_compras_id"/>
             </xpath>
 
             <xpath expr="//field[@name='parent_id']" position="after">

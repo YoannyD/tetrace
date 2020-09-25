@@ -23,6 +23,8 @@ class Employee(models.Model):
     key_nomina = fields.Char('Cláve nómina')
     applicant_ids = fields.One2many('hr.applicant', 'emp_id')
     applicant_count = fields.Integer('Número de procesos de selección', compute="_compute_applicant")
+    nivel_validacion_compras_id = fields.Many2one('tier.definition', string='Validación compras', auto_join=True, tracking=True, domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]")
+
 
     def _compute_document_employee(self):
         for r in self:
