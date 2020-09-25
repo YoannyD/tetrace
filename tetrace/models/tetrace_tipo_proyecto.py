@@ -18,6 +18,15 @@ class TipoProyecto(models.Model):
     tipo = fields.Char('Tipo', required=True)
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
 
+    def name_get(self):
+        res=[]
+        for rec in self:
+            if self.env.context.get('mostrar_tipo_nombre', False):
+                res.append((rec.id, '%s %s' % (rec.tipo, rec.name)))
+            else:
+                res.append((rec.id, rec.tipo))
+        return res
+    
     @api.constrains("tipo")
     def _check_tipo(self):
         for r in self:
