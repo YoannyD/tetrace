@@ -33,7 +33,9 @@ class AccountMove(models.Model):
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
+    tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
 
+    
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:
             fecha_vencimiento_anticipo = None
