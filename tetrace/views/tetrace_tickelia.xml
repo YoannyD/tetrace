@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="action_tetrace_tickelia"
+                name="Tickelia"
+                view_mode="tree,form"
+                res_model="tetrace.tickelia"/>
+
+    <menuitem action="action_tetrace_tickelia"
+              id="menu_tetrace_tickelia"
+              name="Tickelia"
+              parent="account.menu_finance_entries_accounting_miscellaneous"
+              sequence="27"/>
+
+    <record id="tetrace_tickelia_form" model="ir.ui.view">
+        <field name="name">tetrace.tickelia.form</field>
+        <field name="model">tetrace.tickelia</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_importar_tickelia"
+                            type="object"
+                            class="btn btn-primary"
+                            attrs="{'invisible': [('move_ids', '!=', [])]}"
+                            string="Importar Tickelia"/>
+
+                    <button name="action_generar_asientos"
+                            type="object"
+                            class="btn btn-primary"
+                            attrs="{'invisible': [('move_ids', '!=', [])]}"
+                            string="Generar asientos"/>
+
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="fecha"/>
+                        </group>
+                    </group>
+                    <group string="Tickelia trabajadores">
+                        <field name="tickelia_trabajador_ids" nolabel="1">
+                            <tree editable="bottom" create="0" decoration-danger="incorrecta">
+                                <field name="incorrecta" invisible="1"/>
+                                <field name="id" invisible="1"/>
+                                <field name="fecha" readonly="1"/>
+                                <field name="employee_id"/>
+                                <field name="cuenta_gasto"/>
+                                <field name="cuenta_contrapartida"/>
+                                <field name="descripcion"/>
+                                <field name="importe" readonly="1"/>
+                                <field name="cuenta_analitica_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group string="Asientos contables">
+                        <field name="move_ids" nolabel="1" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="tetrace_tickelia_tree" model="ir.ui.view">
+        <field name="name">tetrace.tickelia.tree</field>
+        <field name="model">tetrace.tickelia</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="fecha"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tetrace_nomina_search" model="ir.ui.view">
+        <field name="name">tetrace.tickelia.search</field>
+        <field name="model">tetrace.tickelia</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="fecha"/>
+            </search>
+        </field>
+    </record>
+</odoo>
