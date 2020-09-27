@@ -44,6 +44,7 @@ class TickeliaTrabajador(models.Model):
     descripcion = fields.Char('Descripción')
     importe = fields.Monetary('Importe validado')
     cuenta_analitica_id = fields.Many2one('account.analytic.account', string="Cuenta analítica")
+    liquidacion = fields.Char('Liquidación')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
