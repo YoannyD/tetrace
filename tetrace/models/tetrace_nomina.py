@@ -42,7 +42,7 @@ class Nomina(models.Model):
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
                         'date': nomina_trabajador.fecha_fin,
-                        'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
+                        'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []
                     }})
 

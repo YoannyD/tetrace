@@ -53,6 +53,7 @@
                                     <field name="importe" readonly="1"/>
                                     <field name="cuenta_analitica_id"/>
                                     <field name="liquidacion" readonly="1"/>
+                                    <field name="fecha_liquidacion" readonly="1"/>
                                 </tree>
                             </field>
                         </page>

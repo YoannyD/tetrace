@@ -54,7 +54,8 @@ class ImportarTickelia(models.TransientModel):
                         'descripcion': line[11],
                         'importe': line[20],
                         'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=like', line[43])], limit=1).id,
-                        'liquidacion': line[31].split('.')[0]
+                        'liquidacion': line[31].split('.')[0],
+                        'fecha_liquidacion': datetime(*xlrd.xldate_as_tuple(float(line[32]),0)),
                     }
                     _logger.warning(values)
                     tickelia_trabajador = self.env['tetrace.tickelia.trabajador'].create(values)

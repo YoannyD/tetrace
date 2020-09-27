@@ -29,7 +29,73 @@ class Tickelia(models.Model):
 
     def action_generar_asientos(self):
         for r in self:
-            continue
+            gastos_agrupados = {}
+            for tickelia_trabajador in r.tickelia_trabajador_ids:
+                key = tickelia_trabajador.liquidacion
+                if key not in gastos_agrupados:
+                    gastos_agrupados.update({key: []})
+                gastos_agrupados[key].append(tickelia_trabajador)
+    
+            for key, gastos in gastos_agrupados.items():
+                if not gastos:
+                    continue      
+                    
+                ref = "Liquidación %s" % key
+                date = gastos[0].fecha_liquidacion
+                journal_id = self.env.company.tetrace_tickelia_journal_id.id
+                if not journal_id:
+                    raise ValidationError("Es necesario especificar un diario de liquidaciones de gato para la compañía")
+                company_id = self.env.company.id
+
+                values = {
+                    'ref': ref,
+                    'date': date,
+                    'journal_id': journal_id,
+                    'company_id': company_id,
+                    'tickelia_id': self.id
+                }
+
+                gastos_ids = []
+                line_ids = []
+                for gasto in gastos:
+                    name = gasto.descripcion
+                    cuenta_gasto = gasto.cuenta_gasto
+                    if not cuenta_gasto:
+                        raise ValidationError(gasto.cuenta_gasto)
+
+                    employee = gasto.employee_id
+                    partner_id = employee.address_home_id.id if employee and employee.address_home_id else None
+                    cuenta_analitica_id = gasto.cuenta_analitica_id
+                    currency = gasto.currency_id
+
+                    cuenta_contrapartida = gasto.cuenta_contrapartida
+                    if not cuenta_contrapartida:
+                        raise ValidationError(gasto.cuenta_gasto)
+
+                    debit = gasto.importe
+                    credit = gasto.importe
+
+                    line_ids.append((0, 0, {
+                        'name': name,
+                        'account_id': cuenta_gasto.id if cuenta_gasto else None,
+                        'partner_id': partner_id,
+                        'analytic_account_id': cuenta_analitica_id.id if cuenta_analitica_id else None,
+                        'debit': debit,
+                        'credit': 0
+                    }))
+
+                    line_ids.append((0, 0, {
+                        'name': name,
+                        'account_id': cuenta_contrapartida.id if cuenta_contrapartida else None,
+                        'partner_id': partner_id,
+                        'debit': 0,
+                        'credit': credit
+                    }))
+
+                    gastos_ids.append(gasto['id'])
+
+                values.update({'line_ids': line_ids})
+                self.env['account.move'].create(values)
 
 
 class TickeliaTrabajador(models.Model):
@@ -45,6 +111,7 @@ class TickeliaTrabajador(models.Model):
     importe = fields.Monetary('Importe validado')
     cuenta_analitica_id = fields.Many2one('account.analytic.account', string="Cuenta analítica")
     liquidacion = fields.Char('Liquidación')
+    fecha_liquidacion = fields.Date('Fecha liquidación')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
