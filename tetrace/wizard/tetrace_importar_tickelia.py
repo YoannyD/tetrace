@@ -19,6 +19,7 @@ class ImportarTickelia(models.TransientModel):
     _description = 'Importar Tickelia'
 
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia", ondelete="cascade", required=True)
+    company_id = fields.Many2one(related='tickelia_id.company_id')
     file = fields.Binary('XLXS File')
 
     def action_import_from_excel(self):
@@ -45,11 +46,11 @@ class ImportarTickelia(models.TransientModel):
                         'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', line[0])],limit=1).id,
                         'cuenta_gasto': self.env['account.account'].search([
                             ('code', '=', line[6]),
-                            ('company_id', '=', self.env.company.id)
+                            ('company_id', '=', self.company_id.id)
                         ], limit=1).id,
                         'cuenta_contrapartida': self.env['account.account'].search([
                             ('code', '=', cuenta_contrapartida),
-                            ('company_id', '=', self.env.company.id)
+                            ('company_id', '=', self.company_id.id)
                         ], limit=1).id,
                         'descripcion': line[11],
                         'importe': line[20],
