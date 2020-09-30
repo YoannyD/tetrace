@@ -35,7 +35,7 @@ class ImportarNonmina(models.TransientModel):
             fecha_fin = "%s-%s-%s" % (ano, mes, dia)
 
             cuenta = linea[15:23].strip()
-            account = self.env['account.account'].search([('code', '=', cuenta),('company_id', '=', company_id.id)], limit=1)
+            account = self.env['account.account'].search([('code', '=', cuenta),('company_id', '=', self.company_id.id)], limit=1)
 
             descripcion = linea[27:57].strip()
             debe_haber = linea[57:58].strip()
