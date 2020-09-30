@@ -55,11 +55,11 @@
                                     <field name="incorrecta_trabajador" invisible="1"/>
                                     <field name="aviso_concepto_descuento" invisible="1"/>
                                     <field name="id" invisible="1"/>
-                                    <field name="fecha_inicio" readonly="1"/>
+                                    <field name="fecha_inicio"/>
                                     <field name="fecha_fin" readonly="1"/>
                                     <field name="employee_id"/>
                                     <field name="account_id"/>
-                                    <field name="descripcion"/>
+                                    <field name="descripcion" readonly="1"/>
                                     <field name="debe" readonly="1"/>
                                     <field name="haber" readonly="1"/>
                                     <field name="texto_importado" optional="hide"  readonly="1"/>
