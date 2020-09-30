@@ -194,21 +194,15 @@ class NominaTrabajador(models.Model):
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
-#               '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
             ])
 
             total_horas = 0
             analitica_data = {}
             for analitica in analiticas:
-#                if not analitica.project_id or not analitica.project_id.analytic_account_id.id:
-#                   continue
-
-#                key = str(analitica.project_id.analytic_account_id.id)
                 key = str(analitica.account_id.id)
                 if key not in analitica_data:
                     analitica_data.update({
                         key: {
-#                            'analytic_account_id': analitica.project_id.analytic_account_id.id,
                             'analytic_account_id': key,
                             'horas': 0
                         }
