@@ -33,7 +33,9 @@ class AccountMove(models.Model):
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
+    tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
 
+    
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:
             fecha_vencimiento_anticipo = None
@@ -101,8 +103,8 @@ class AccountMove(models.Model):
                 date = datetime.strptime(fecha_aux, "%d/%m/%Y").strftime("%Y-%m-%d")
 
             journal_id = False
-            if self.env.company.tetrace_account_move_jorunal_id:
-                journal_id = self.env.company.tetrace_account_move_jorunal_id.id
+            if self.env.company.tetrace_tickelia_journal_id:
+                journal_id = self.env.company.tetrace_tickelia_journal_id.id
 
             company = self.env['res.company'].search([('vat', '=', "ES%s" % gastos[0]['NIF_Empresa'])], limit=1)
 

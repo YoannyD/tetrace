@@ -42,7 +42,7 @@ class Nomina(models.Model):
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
                         'date': nomina_trabajador.fecha_fin,
-                        'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
+                        'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []
                     }})
 
@@ -113,8 +113,10 @@ class NominaTrabajador(models.Model):
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+    incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
+    aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
 
-    @api.depends('employee_id', 'account_id', 'trabajador_analitica_ids')
+    @api.depends('account_id', 'trabajador_analitica_ids')
     def _compute_incorrecta(self):
         for r in self:
             incorrecta = False
@@ -122,7 +124,23 @@ class NominaTrabajador(models.Model):
                 (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
                 incorrecta = True
             r.incorrecta = incorrecta
-
+    
+    @api.depends('employee_id')
+    def _compute_incorrecta_trabajador(self):
+        for r in self:
+            incorrecta_trabajador = False
+            if not r.employee_id:
+                incorrecta_trabajador = True
+            r.incorrecta_trabajador = incorrecta_trabajador
+    
+    @api.depends('account_id','haber')
+    def _compute_aviso_concepto_descuento(self):
+        for r in self:
+            aviso_concepto_descuento = False
+            if r.account_id and r.account_id.code[0] in ['7'] and r.haber>0:
+                aviso_concepto_descuento = True
+            r.aviso_concepto_descuento = aviso_concepto_descuento
+            
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         for r in self:
