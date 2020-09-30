@@ -15,6 +15,7 @@ class ImportarNonmina(models.TransientModel):
     _description = 'Importar nóminas'
 
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", ondelete="cascade", required=True)
+    company_id = fields.Many2one(related='nomina_id.company_id')
     file = fields.Binary('File')
 
     def action_import(self):
@@ -34,7 +35,7 @@ class ImportarNonmina(models.TransientModel):
             fecha_fin = "%s-%s-%s" % (ano, mes, dia)
 
             cuenta = linea[15:23].strip()
-            account = self.env['account.account'].search([('code', '=', cuenta)], limit=1)
+            account = self.env['account.account'].search([('code', '=', cuenta),('company_id', '=', company_id.id)], limit=1)
 
             descripcion = linea[27:57].strip()
             debe_haber = linea[57:58].strip()
@@ -45,7 +46,7 @@ class ImportarNonmina(models.TransientModel):
             employee = False
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
-                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:])], limit=1)
+                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:]), ('company_id', '=', company_id.id)], limit=1)
 
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
