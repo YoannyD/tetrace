@@ -16,6 +16,7 @@ class Tickelia(models.Model):
 
     name = fields.Char('Nombre')
     fecha = fields.Date('Fecha')
+    company_id = fields.Many2one('res.company', required=True, default= lambda self: self.env.company)
     tickelia_trabajador_ids = fields.One2many('tetrace.tickelia.trabajador', 'tickelia_id')
     move_ids = fields.One2many('account.move', 'tickelia_id')
 
@@ -104,6 +105,7 @@ class TickeliaTrabajador(models.Model):
 
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia", required=True, ondelete="cascade")
     fecha= fields.Date('Fecha')
+    company_id = fields.Many2one(related='tickelia_id.company_id')
     employee_id = fields.Many2one('hr.employee', string="Empleado")
     cuenta_gasto = fields.Many2one('account.account')
     cuenta_contrapartida = fields.Many2one('account.account')
@@ -112,7 +114,6 @@ class TickeliaTrabajador(models.Model):
     cuenta_analitica_id = fields.Many2one('account.analytic.account', string="Cuenta analítica")
     liquidacion = fields.Char('Liquidación')
     fecha_liquidacion = fields.Date('Fecha liquidación')
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one(related='company_id.currency_id')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
 
