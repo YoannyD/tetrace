@@ -9,10 +9,30 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
+class AccountAnalyticAccount(models.Model):
+    _inherit = 'account.analytic.account'
+    _description = 'Analytic Account'
+
+    @api.constrains('company_id')
+    def _check_company_id(self):
+        for record in self:
+            _logger.warning("Anulamos?")
+
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
     line_rel_ids = fields.One2many('account.analytic.line.rel', 'analytic_line_id')
+
+    def _timesheet_preprocess(self, vals):
+        #Modificamos el comportamiento anterior mediante el cual si la cuenta analitica asociada a la proyecto
+        #no tenia indicada la compañia entonces saltaba un error; ahora si no hay compañia se toma la del entorno
+        #de esta manera permitimos que podamos compartir esa cuenta analitica entre las distintas compañías
+        _logger.warning(vals)
+        res = super(AccountAnalyticLine, self)._timesheet_preprocess(vals)
+        _logger.warning(res)
+        if res.get('company_id') == False:
+            res['company_id'] = self.env.company.id
+        return res
 
     @api.model
     def create(self, vals):
@@ -20,7 +40,7 @@ class AccountAnalyticLine(models.Model):
         res._check_imputar_tiempos()
         self.env['account.analytic.line.rel'].create({'analytic_line_id': res.id})
         return res
-
+                
     def write(self, vals):
         self._check_imputar_tiempos()
         return super(AccountAnalyticLine, self).write(vals)

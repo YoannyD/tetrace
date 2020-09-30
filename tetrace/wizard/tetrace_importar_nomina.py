@@ -46,7 +46,7 @@ class ImportarNonmina(models.TransientModel):
             employee = False
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
-                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:]), ('company_id', '=', company_id.id)], limit=1)
+                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:]), ('company_id', '=', self.company_id.id)], limit=1)
 
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
