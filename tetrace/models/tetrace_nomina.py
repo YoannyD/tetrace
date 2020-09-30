@@ -194,7 +194,7 @@ class NominaTrabajador(models.Model):
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
-               '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
+#               '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
             ])
 
             total_horas = 0
