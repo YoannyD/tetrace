@@ -21,6 +21,7 @@
         'account_due_list',
         'hr',
         'hr_recruitment',
+        'hr_timesheet',
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
