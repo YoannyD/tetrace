@@ -16,6 +16,7 @@ class Nomina(models.Model):
 
     name = fields.Char('Nombre')
     fecha = fields.Date('Fecha')
+    company_id = fields.Many2one('res.company', required=True, default= lambda self: self.env.company)
     nomina_trabajador_ids = fields.One2many('tetrace.nomina.trabajador', 'nomina_id')
     move_ids = fields.One2many('account.move', 'nomina_id')
 
@@ -99,16 +100,17 @@ class Nomina(models.Model):
 class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
     _description = 'Nóminas trabajadores'
+    _check_company_auto = True
 
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", required=True, ondelete="cascade")
-    employee_id = fields.Many2one('hr.employee', string="Empleado")
+    employee_id = fields.Many2one('hr.employee', string="Empleado", check_company=True) # Unrequired company
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
-    account_id = fields.Many2one('account.account')
+    account_id = fields.Many2one('account.account', check_company=True) # Unrequired company
     descripcion = fields.Char('Descripción')
     debe = fields.Monetary('Debe')
     haber = fields.Monetary('Haber')
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one(related='nomina_id.company_id')
     currency_id = fields.Many2one(related='company_id.currency_id')
     trabajador_analitica_ids = fields.One2many('tetrace.nomina.trabajador.analitica', 'nomina_trabajador_id')
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
@@ -192,20 +194,22 @@ class NominaTrabajador(models.Model):
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
-                '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
+               '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
             ])
 
             total_horas = 0
             analitica_data = {}
             for analitica in analiticas:
-                if not analitica.project_id or not analitica.project_id.analytic_account_id.id:
-                    continue
+#                if not analitica.project_id or not analitica.project_id.analytic_account_id.id:
+#                   continue
 
-                key = str(analitica.project_id.analytic_account_id.id)
+#                key = str(analitica.project_id.analytic_account_id.id)
+                key = str(analitica.account_id.id)
                 if key not in analitica_data:
                     analitica_data.update({
                         key: {
-                            'analytic_account_id': analitica.project_id.analytic_account_id.id,
+#                            'analytic_account_id': analitica.project_id.analytic_account_id.id,
+                            'analytic_account_id': key,
                             'horas': 0
                         }
                     })

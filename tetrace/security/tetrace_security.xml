@@ -7,4 +7,40 @@
     <record id="group_tetrace_publicar_facturas" model="res.groups">
         <field name="name">Publicar facturas</field>
     </record>
+    
+    <record model="ir.rule" id="tetrace_nomina_shared_company_rule">
+        <field name="name">Tetrace nomina: multi-company</field>
+        <field name="model_id" ref="model_tetrace_nomina"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        </field>
+    </record>
+
+    <record model="ir.rule" id="tetrace_nomina_trabajador_shared_company_rule">
+        <field name="name">Tetrace nomina trabajador: multi-company</field>
+        <field name="model_id" ref="model_tetrace_nomina_trabajador"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        </field>
+    </record>
+
+    <record model="ir.rule" id="tetrace_tickelia_shared_company_rule">
+        <field name="name">Tetrace tickelia: multi-company</field>
+        <field name="model_id" ref="model_tetrace_tickelia"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        </field>
+    </record>
+
+    <record model="ir.rule" id="tetrace_tickelia_trabajador_shared_company_rule">
+        <field name="name">Tetrace tickelia trabajador: multi-company</field>
+        <field name="model_id" ref="model_tetrace_tickelia_trabajador"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+            ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+        </field>
+    </record>
 </odoo>
