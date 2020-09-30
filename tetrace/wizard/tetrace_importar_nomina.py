@@ -40,9 +40,13 @@ class ImportarNonmina(models.TransientModel):
             descripcion = linea[27:57].strip()
             debe_haber = linea[57:58].strip()
             importe = linea[99:113].strip()
-            debe = importe if debe_haber == 'D' else 0
-            haber = importe if debe_haber == 'H' else 0
-
+            importe_calculo = float(importe)
+            if importe_calculo > 0:
+                debe = importe if debe_haber == 'D' else 0
+                haber = importe if debe_haber == 'H' else 0
+            elif importe_calculo < 0:
+                debe = str(abs(importe_calculo)) if debe_haber == 'H' else 0
+                haber = str(abs(importe_calculo)) if debe_haber == 'D' else 0
             employee = False
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
