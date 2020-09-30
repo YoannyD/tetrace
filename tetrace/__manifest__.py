@@ -30,7 +30,8 @@
         'mis_builder',
         'account_asset',
         'base_tier_validation',
-        'report_xlsx'
+        'report_xlsx',
+        'account_analytic_required'
     ],
     'data': [
         'security/tetrace_security.xml',
