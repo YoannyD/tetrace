@@ -43,33 +43,35 @@
                         <group>
                             <field name="fecha"/>
                         </group>
-                    </group>
-                    <group string="Nóminas Trabajadores">
-                        <field name="nomina_trabajador_ids" nolabel="1">
-                            <tree editable="bottom" create="0" decoration-danger="incorrecta_sin_distribucion" decoration-bf="incorrecta_contrato_multiple" decoration-warning="incorrecta_trabajador" decoration-primary="aviso_concepto_descuento">
-                                <field name="incorrecta_sin_distribucion" invisible="1"/>
-                                <field name="incorrecta_contrato_multiple" invisible="1"/>
-                                <field name="incorrecta_trabajador" invisible="1"/>
-                                <field name="aviso_concepto_descuento" invisible="1"/>
-                                <field name="id" invisible="1"/>
-                                <field name="fecha_inicio" readonly="1"/>
-                                <field name="fecha_fin" readonly="1"/>
-                                <field name="employee_id"/>
-                                <field name="account_id"/>
-                                <field name="descripcion"/>
-                                <field name="debe" readonly="1"/>
-                                <field name="haber" readonly="1"/>
-                                <field name="texto_importado" optional="hide"  readonly="1"/>
-                                <button name="mostrar_distribuciones_analiticas"
+                    </group>          
+                    <notebook>
+                        <page id="nomina_tab" string="Nóminas">
+                            <field name="nomina_trabajador_ids" mode="tree">
+                                <tree editable="bottom" create="0" decoration-danger="incorrecta_sin_distribucion" decoration-bf="incorrecta_contrato_multiple" decoration-warning="incorrecta_trabajador" decoration-primary="aviso_concepto_descuento">
+                                    <field name="incorrecta_sin_distribucion" invisible="1"/>
+                                    <field name="incorrecta_contrato_multiple" invisible="1"/>
+                                    <field name="incorrecta_trabajador" invisible="1"/>
+                                    <field name="aviso_concepto_descuento" invisible="1"/>
+                                    <field name="id" invisible="1"/>
+                                    <field name="fecha_inicio" readonly="1"/>
+                                    <field name="fecha_fin" readonly="1"/>
+                                    <field name="employee_id"/>
+                                    <field name="account_id"/>
+                                    <field name="descripcion"/>
+                                    <field name="debe" readonly="1"/>
+                                    <field name="haber" readonly="1"/>
+                                    <field name="texto_importado" optional="hide"  readonly="1"/>
+                                    <button name="mostrar_distribuciones_analiticas"
                                         attrs="{'invisible':[('id', '=', False)]}"
                                         type="object"
                                         icon="fa-external-link"/>
-                            </tree>
-                        </field>
-                    </group>
-                    <group string="Asientos contables">
-                        <field name="move_ids" nolabel="1" readonly="1"/>
-                    </group>
+                                </tree>
+                            </field>
+                        </page>
+                        <page id="nomina_asientos_tab" string="Asientos">
+                            <field name="move_ids" nolabel="1" readonly="1"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
