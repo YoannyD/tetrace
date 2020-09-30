@@ -41,6 +41,7 @@ class Nomina(models.Model):
                 if key not in agrupar_por_trabajador:
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
+                        'ref' : "Nómina %s" % (nomina_trabajador.employee_id.name),
                         'date': nomina_trabajador.fecha_fin,
                         'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []
@@ -79,6 +80,7 @@ class Nomina(models.Model):
             for key, values in agrupar_por_trabajador.items():
                 move = self.env['account.move'].search([
                     ('nomina_id', '=', values['nomina_id']),
+                    ('ref', '=', values['ref']),
                     ('date', '=', values['date']),
                     ('journal_id', '=', values['journal_id'])
                 ])
@@ -112,18 +114,27 @@ class NominaTrabajador(models.Model):
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
-    incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+    incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion", store=True)
+    incorrecta_contrato_multiple = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_multiple_contrato", store=True)
     incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
     aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
 
     @api.depends('account_id', 'trabajador_analitica_ids')
-    def _compute_incorrecta(self):
+    def _compute_incorrecta_sin_distribucion(self):
         for r in self:
-            incorrecta = False
-            if not r.employee_id or not r.account_id or \
-                (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
-                incorrecta = True
-            r.incorrecta = incorrecta
+            incorrecta_sin_distribucion = False
+            if (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
+                incorrecta_sin_distribucion = True
+            r.incorrecta_sin_distribucion = incorrecta_sin_distribucion
+    
+    @api.depends('employee_id')
+    def _compute_incorrecta_multiple_contrato(self):
+        for r in self:
+            incorrecta_contrato_multiple = False
+            existe = self.env['tetrace.nomina.trabajador'].search_count([('nomina_id','=',r.nomina_id.id),('employee_id','=',r.employee_id.id), ('account_id','=',r.account_id.id)])
+            if existe>1:
+                incorrecta_contrato_multiple = True
+            r.incorrecta_contrato_multiple = incorrecta_contrato_multiple
     
     @api.depends('employee_id')
     def _compute_incorrecta_trabajador(self):

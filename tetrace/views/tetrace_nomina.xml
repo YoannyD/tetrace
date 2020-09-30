@@ -46,8 +46,9 @@
                     </group>
                     <group string="Nóminas Trabajadores">
                         <field name="nomina_trabajador_ids" nolabel="1">
-                            <tree editable="bottom" create="0" decoration-danger="incorrecta" decoration-info="incorrecta_trabajador" decoration-warning="aviso_concepto_descuento">
-                                <field name="incorrecta" invisible="1"/>
+                            <tree editable="bottom" create="0" decoration-danger="incorrecta_sin_distribucion" decoration-bf="incorrecta_contrato_multiple" decoration-warning="incorrecta_trabajador" decoration-primary="aviso_concepto_descuento">
+                                <field name="incorrecta_sin_distribucion" invisible="1"/>
+                                <field name="incorrecta_contrato_multiple" invisible="1"/>
                                 <field name="incorrecta_trabajador" invisible="1"/>
                                 <field name="aviso_concepto_descuento" invisible="1"/>
                                 <field name="id" invisible="1"/>
