@@ -11,5 +11,5 @@ _logger = logging.getLogger(__name__)
 class Company(models.Model):
     _inherit = "res.company"
 
-    tetrace_account_move_jorunal_id = fields.Many2one('account.journal', string='Diario de liquidaciones')
-    tetrace_nomina_jorunal_id = fields.Many2one('account.journal', string='Diario de liquidaciones (Nóminas)')
+    tetrace_tickelia_journal_id = fields.Many2one('account.journal', string='Diario de liquidaciones Tickelia')
+    tetrace_nomina_journal_id = fields.Many2one('account.journal', string='Diario de liquidaciones (Nóminas)')

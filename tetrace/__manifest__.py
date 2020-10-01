@@ -21,6 +21,7 @@
         'account_due_list',
         'hr',
         'hr_recruitment',
+        'hr_timesheet',
         'sale_timesheet',
         'account_move_tier_validation',
         'documents',
@@ -30,7 +31,8 @@
         'mis_builder',
         'account_asset',
         'base_tier_validation',
-        'report_xlsx'
+        'report_xlsx',
+        'account_analytic_required'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -66,9 +68,11 @@
         'views/res_partner.xml',
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
+        'views/tetrace_tickelia.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',
+        'wizard/tetrace_importar_tickelia.xml',
     ],
     'demo': [],
     'installable': True,
