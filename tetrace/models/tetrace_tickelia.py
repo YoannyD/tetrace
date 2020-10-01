@@ -30,6 +30,10 @@ class Tickelia(models.Model):
 
     def action_generar_asientos(self):
         for r in self:
+            journal_id = r.company_id.tetrace_tickelia_journal_id.id
+            if not journal_id:
+                raise ValidationError("Es necesario especificar un diario de liquidaciones de gato para la compañía")
+            company_id = r.company_id.id
             gastos_agrupados = {}
             for tickelia_trabajador in r.tickelia_trabajador_ids:
                 key = tickelia_trabajador.liquidacion
@@ -43,10 +47,6 @@ class Tickelia(models.Model):
                     
                 ref = "Liquidación %s" % key
                 date = gastos[0].fecha_liquidacion
-                journal_id = self.env.company.tetrace_tickelia_journal_id.id
-                if not journal_id:
-                    raise ValidationError("Es necesario especificar un diario de liquidaciones de gato para la compañía")
-                company_id = self.env.company.id
 
                 values = {
                     'ref': ref,

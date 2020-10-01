@@ -25,6 +25,7 @@ class ImportarTickelia(models.TransientModel):
     def action_import_from_excel(self):
         self.ensure_one()
         self.tickelia_id.tickelia_trabajador_ids.unlink()
+        company_id = self.company_id.id
         fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
         fp.write(binascii.a2b_base64(self.file))
         fp.seek(0)
@@ -43,18 +44,18 @@ class ImportarTickelia(models.TransientModel):
                     values = {
                         'tickelia_id': self.tickelia_id.id,
                         'fecha': datetime(*xlrd.xldate_as_tuple(float(line[14]),0)),
-                        'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', line[0])],limit=1).id,
+                        'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', line[0]),('company_id','=',company_id)],limit=1).id,
                         'cuenta_gasto': self.env['account.account'].search([
                             ('code', '=', line[6]),
-                            ('company_id', '=', self.company_id.id)
+                            ('company_id', '=', company_id)
                         ], limit=1).id,
                         'cuenta_contrapartida': self.env['account.account'].search([
                             ('code', '=', cuenta_contrapartida),
-                            ('company_id', '=', self.company_id.id)
+                            ('company_id', '=', company_id)
                         ], limit=1).id,
                         'descripcion': line[11],
                         'importe': line[20],
-                        'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=like', line[43])], limit=1).id,
+                        'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=like', line[43]),'|', ('company_id', '=', False), ('company_id', '=', company_id)], limit=1).id,
                         'liquidacion': line[31].split('.')[0],
                         'fecha_liquidacion': datetime(*xlrd.xldate_as_tuple(float(line[32]),0)),
                     }
