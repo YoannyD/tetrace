@@ -16,6 +16,7 @@ class Nomina(models.Model):
 
     name = fields.Char('Nombre')
     fecha = fields.Date('Fecha')
+    company_id = fields.Many2one('res.company', required=True, default= lambda self: self.env.company)
     nomina_trabajador_ids = fields.One2many('tetrace.nomina.trabajador', 'nomina_id')
     move_ids = fields.One2many('account.move', 'nomina_id')
 
@@ -41,8 +42,9 @@ class Nomina(models.Model):
                 if key not in agrupar_por_trabajador:
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
+                        'ref' : "Nómina %s" % (nomina_trabajador.employee_id.name),
                         'date': nomina_trabajador.fecha_fin,
-                        'journal_id': self.env.company.tetrace_nomina_jorunal_id.id,
+                        'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []
                     }})
 
@@ -79,6 +81,7 @@ class Nomina(models.Model):
             for key, values in agrupar_por_trabajador.items():
                 move = self.env['account.move'].search([
                     ('nomina_id', '=', values['nomina_id']),
+                    ('ref', '=', values['ref']),
                     ('date', '=', values['date']),
                     ('journal_id', '=', values['journal_id'])
                 ])
@@ -97,32 +100,60 @@ class Nomina(models.Model):
 class NominaTrabajador(models.Model):
     _name = 'tetrace.nomina.trabajador'
     _description = 'Nóminas trabajadores'
+    _check_company_auto = True
 
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", required=True, ondelete="cascade")
-    employee_id = fields.Many2one('hr.employee', string="Empleado")
+    employee_id = fields.Many2one('hr.employee', string="Empleado", check_company=True) # Unrequired company
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
-    account_id = fields.Many2one('account.account')
+    account_id = fields.Many2one('account.account', check_company=True) # Unrequired company
     descripcion = fields.Char('Descripción')
     debe = fields.Monetary('Debe')
     haber = fields.Monetary('Haber')
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    company_id = fields.Many2one(related='nomina_id.company_id')
     currency_id = fields.Many2one(related='company_id.currency_id')
     trabajador_analitica_ids = fields.One2many('tetrace.nomina.trabajador.analitica', 'nomina_trabajador_id')
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
-    incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+    incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion", store=True)
+    incorrecta_contrato_multiple = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_multiple_contrato", store=True)
+    incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
+    aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
 
-    @api.depends('employee_id', 'account_id', 'trabajador_analitica_ids')
-    def _compute_incorrecta(self):
+    @api.depends('account_id', 'trabajador_analitica_ids')
+    def _compute_incorrecta_sin_distribucion(self):
         for r in self:
-            incorrecta = False
-            if not r.employee_id or not r.account_id or \
-                (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
-                incorrecta = True
-            r.incorrecta = incorrecta
-
+            incorrecta_sin_distribucion = False
+            if (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
+                incorrecta_sin_distribucion = True
+            r.incorrecta_sin_distribucion = incorrecta_sin_distribucion
+    
+    @api.depends('employee_id')
+    def _compute_incorrecta_multiple_contrato(self):
+        for r in self:
+            incorrecta_contrato_multiple = False
+            existe = self.env['tetrace.nomina.trabajador'].search_count([('nomina_id','=',r.nomina_id.id),('employee_id','=',r.employee_id.id), ('account_id','=',r.account_id.id)])
+            if existe>1:
+                incorrecta_contrato_multiple = True
+            r.incorrecta_contrato_multiple = incorrecta_contrato_multiple
+    
+    @api.depends('employee_id')
+    def _compute_incorrecta_trabajador(self):
+        for r in self:
+            incorrecta_trabajador = False
+            if not r.employee_id:
+                incorrecta_trabajador = True
+            r.incorrecta_trabajador = incorrecta_trabajador
+    
+    @api.depends('account_id','haber')
+    def _compute_aviso_concepto_descuento(self):
+        for r in self:
+            aviso_concepto_descuento = False
+            if r.account_id and r.account_id.code[0] in ['7'] and r.haber>0:
+                aviso_concepto_descuento = True
+            r.aviso_concepto_descuento = aviso_concepto_descuento
+            
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         for r in self:
@@ -163,20 +194,16 @@ class NominaTrabajador(models.Model):
                 ('employee_id', '=', r.employee_id.id),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
-                '|', ('company_id', '=', False), ('company_id', 'in', self.env.user.company_ids.ids)
             ])
 
             total_horas = 0
             analitica_data = {}
             for analitica in analiticas:
-                if not analitica.project_id or not analitica.project_id.analytic_account_id.id:
-                    continue
-
-                key = str(analitica.project_id.analytic_account_id.id)
+                key = str(analitica.account_id.id)
                 if key not in analitica_data:
                     analitica_data.update({
                         key: {
-                            'analytic_account_id': analitica.project_id.analytic_account_id.id,
+                            'analytic_account_id': key,
                             'horas': 0
                         }
                     })

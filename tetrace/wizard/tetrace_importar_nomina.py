@@ -15,6 +15,7 @@ class ImportarNonmina(models.TransientModel):
     _description = 'Importar nóminas'
 
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", ondelete="cascade", required=True)
+    company_id = fields.Many2one(related='nomina_id.company_id')
     file = fields.Binary('File')
 
     def action_import(self):
@@ -29,34 +30,27 @@ class ImportarNonmina(models.TransientModel):
             linea = linea.encode('utf8').decode('utf8')
             ano = linea[6:10]
             mes = linea[10:12]
-            try:
-                dia = int(linea[12:14])
-            except:
-                dia = 0
-
+            dia = int(linea[12:14])
+            fecha_inicio = "%s-%s-01" % (ano, mes)
             fecha_fin = "%s-%s-%s" % (ano, mes, dia)
-            dia_inicio = '01'
-            if dia >= 1 and dia <= 15:
-                dia_inicio = '01'
-            elif dia >= 16 and dia <= 22:
-                dia_inicio = 16
-            elif dia >= 23 and dia <= 31:
-                dia_inicio = 23
 
-            fecha_inicio = "%s-%s-%s" % (ano, mes, dia_inicio)
             cuenta = linea[15:23].strip()
-            account = self.env['account.account'].search([('code', '=', cuenta)], limit=1)
+            account = self.env['account.account'].search([('code', '=', cuenta),('company_id', '=', self.company_id.id)], limit=1)
 
             descripcion = linea[27:57].strip()
             debe_haber = linea[57:58].strip()
             importe = linea[99:113].strip()
-            debe = importe if debe_haber == 'D' else 0
-            haber = importe if debe_haber == 'H' else 0
-
+            importe_calculo = float(importe)
+            if importe_calculo > 0:
+                debe = importe if debe_haber == 'D' else 0
+                haber = importe if debe_haber == 'H' else 0
+            elif importe_calculo < 0:
+                debe = str(abs(importe_calculo)) if debe_haber == 'H' else 0
+                haber = str(abs(importe_calculo)) if debe_haber == 'D' else 0
             employee = False
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
-                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:])], limit=1)
+                employee = self.env['hr.employee'].search([('codigo_trabajador_A3', '=', key_trabajador[-6:]), ('company_id', '=', self.company_id.id)], limit=1)
 
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
