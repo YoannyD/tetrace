@@ -151,7 +151,7 @@ class NominaTrabajador(models.Model):
     def _compute_aviso_concepto_descuento(self):
         for r in self:
             aviso_concepto_descuento = False
-            if r.account_id and r.account_id.code[0] in ['7'] and r.haber>0:
+            if r.account_id and r.account_id.code[0] in ['6'] and r.haber>0:
                 aviso_concepto_descuento = True
             r.aviso_concepto_descuento = aviso_concepto_descuento
             
