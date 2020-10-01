@@ -46,12 +46,12 @@
                                     <field name="incorrecta" invisible="1"/>
                                     <field name="id" invisible="1"/>
                                     <field name="fecha" readonly="1"/>
-                                    <field name="employee_id"/>
+                                    <field name="employee_id" readonly="1"/>
                                     <field name="cuenta_gasto"/>
                                     <field name="cuenta_contrapartida"/>
-                                    <field name="descripcion"/>
+                                    <field name="descripcion" readonly="1"/>
                                     <field name="importe" readonly="1"/>
-                                    <field name="cuenta_analitica_id"/>
+                                    <field name="cuenta_analitica_id" readonly="1"/>
                                     <field name="liquidacion" readonly="1"/>
                                     <field name="fecha_liquidacion" readonly="1"/>
                                 </tree>
