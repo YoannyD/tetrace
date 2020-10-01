@@ -37,7 +37,7 @@ class Nomina(models.Model):
 
                 key = '-1'
                 if nomina_trabajador.employee_id and nomina_trabajador.employee_id.address_home_id:
-                    key = str(nomina_trabajador.employee_id.address_home_id.id)
+                    key = "%s:%s" % (str(nomina_trabajador.employee_id.address_home_id.id), nomina_trabajador.fecha_fin.strftime("%D/%M/%Y"))
 
                 if key not in agrupar_por_trabajador:
                     agrupar_por_trabajador.update({key: {
@@ -49,8 +49,9 @@ class Nomina(models.Model):
                     }})
 
                 partner_id = False
-                if int(key) > 0:
-                    partner_id = int(key)
+                key_partner_id = key.split(':')[0]
+                if int(key_partner_id) > 0:
+                    partner_id = int(key_partner_id)
 
                 for analitica in nomina_trabajador.trabajador_analitica_ids:
                     debe = 0
