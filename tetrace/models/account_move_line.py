@@ -23,7 +23,7 @@ class AccountMoveLine(models.Model):
     @api.constrains("analytic_account_id", "account_id", "debit", "credit")
     def _check_analytic_required(self):
         res = super(AccountMoveLine, self)._check_analytic_required()
-        if rec.move_id.journal_id.id !=4:
+        if self.move_id.journal_id.id !=4:
             return res
     
     @api.depends("account_id.tetrace_account_id")
