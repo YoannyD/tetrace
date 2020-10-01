@@ -43,7 +43,7 @@
                                     P
                                 </div>
                                 <div>
-                                    <field name="ejercicio_proyecto"/>
+                                    <field name="ejercicio_proyecto" readonly="1"/>
                                 </div>
                                 <div>
                                     <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre' : 1}"/>
