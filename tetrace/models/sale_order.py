@@ -13,7 +13,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
 
     ref_proyecto = fields.Char('Referencia proyecto', copy=False)
-    ejercicio_proyecto = fields.Integer('Ejercicio', readonly=1, default=fields.Date.today().strftime("%y"), copy=False)
+    ejercicio_proyecto = fields.Integer('Ejercicio', default=fields.Date.today().strftime("%y"), copy=False)
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False)
     num_proyecto = fields.Char('Nº proyecto', copy=False)
     partner_siglas = fields.Char(related="partner_id.siglas")
