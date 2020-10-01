@@ -118,7 +118,7 @@ class NominaTrabajador(models.Model):
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado')
     incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion", store=True)
-    incorrecta_contrato_multiple = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_multiple_contrato", store=True)
+    incorrecta_contrato_multiple = fields.Boolean('Incorrecta contrato', compute="_compute_incorrecta_multiple_contrato", store=True)
     incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
     aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
 
