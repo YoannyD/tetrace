@@ -13,3 +13,4 @@ class Company(models.Model):
 
     tetrace_tickelia_journal_id = fields.Many2one('account.journal', string='Diario de liquidaciones Tickelia')
     tetrace_nomina_journal_id = fields.Many2one('account.journal', string='Diario de liquidaciones (Nóminas)')
+    tetrace_cuenta_analitica_diferencia_cambio = fields.Many2one('account.analytic.account', string='Cuenta anlítica apuntes diferencias de cambio')

@@ -182,3 +182,20 @@ class AccountMove(models.Model):
 
             values.update({'line_ids': line_ids})
             self.create(values)
+
+class AccountPartialReconcile(models.Model):
+    _inherit = "account.partial.reconcile"
+    
+    @api.model
+    def create_exchange_rate_entry(self, aml_to_fix, move):
+        # Añadir al asiento de diferencia de cambio generado automaticamente
+        # la cuenta analitica establecida en los parametros de la compañía
+        res = super(AccountPartialReconcile, self).create_exchange_rate_entry(aml_to_fix, move)  
+        for apunte in move.line_ids:
+            # Si el tipo de cuenta del apunte es:
+            # 13: Ingreso
+            # 15: Gastos
+            # Indicamos la cuenta analitica establecida en la compañía para estos casos
+            if apunte.account_id.user_type_id.id == 13 or apunte.account_id.user_type_id.id ==15:
+                apunte.write({'analytic_account_id' : apunte.company_id.tetrace_cuenta_analitica_diferencia_cambio.id})
+        return res
