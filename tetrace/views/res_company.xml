@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='favicon']" position="after">
                 <field name="tetrace_tickelia_journal_id"/>
                 <field name="tetrace_nomina_journal_id"/>
+                <field name="tetrace_cuenta_analitica_diferencia_cambio"/>
             </xpath>
         </field>
     </record>

@@ -19,12 +19,6 @@ class AccountMoveLine(models.Model):
     asiento_anticipo_fecha_vencimiento = fields.Date("Fecha vencimiento anticipo",
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
-
-    @api.constrains("analytic_account_id", "account_id", "debit", "credit")
-    def _check_analytic_required(self):
-        res = super(AccountMoveLine, self)._check_analytic_required()
-        if self.move_id.journal_id.id !=4:
-            return res
     
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
