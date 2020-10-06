@@ -31,6 +31,39 @@ class Applicant(models.Model):
                 ('res_id', '=', r.id),
             ])
             r.document_applicant_count = documents
+            
+    def create_employee_from_applicant(self):
+        res = super(Applicant, self).create_employee_from_applicant()
+        
+        for applicant in self:
+            if applicant.emp_id and applicant.emp_id.id == res['res_id']:
+                values = {}
+                for line in applicant.resume_line_ids:
+                    if 'resume_line_ids' not in values:
+                        values.update({'resume_line_ids': []})
+                        
+                    values['resume_line_ids'].append((0, 0, {
+                        'name': line.name,
+                        'date_start': line.date_start,
+                        'date_end': line.date_end,
+                        'description': line.description,
+                        'line_type_id': line.line_type_id.id if line.line_type_id else None,
+                        'display_type': line.display_type,
+                    }))
+                    
+                for skill in applicant.applicant_skill_ids:
+                    if 'employee_skill_ids' not in values:
+                        values.update({'employee_skill_ids': []})
+                        
+                    values['employee_skill_ids'].append((0, 0, {
+                        'skill_id': skill.skill_id.id if skill.skill_id else None,
+                        'skill_level_id': skill.skill_level_id.id if skill.skill_level_id else None,
+                        'skill_type_id': skill.skill_type_id.id if skill.skill_type_id else None,
+                    }))
+                if 'resume_line_ids' in values:
+                    applicant.emp_id.resume_line_ids.unlink()
+                applicant.emp_id.write(values)
+        return res
 
 
 class ApplicationResumeLine(models.Model):
