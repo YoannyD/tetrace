@@ -5,7 +5,7 @@
     'summary': """""",
     'description': """""",
     'author': "Ingetive",
-    'website': "http://ingetive.com",
+    'website': "https://ingetive.com",
     'category': 'Uncategorized',
     'version': '13.0.1.0.1',
     'depends': [
