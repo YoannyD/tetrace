@@ -63,7 +63,33 @@ class Applicant(models.Model):
                 if 'resume_line_ids' in values:
                     applicant.emp_id.resume_line_ids.unlink()
                 applicant.emp_id.write(values)
+                applicant.traspasar_adjuntos_a_empleado()
         return res
+    
+    def traspasar_adjuntos_a_empleado(self):
+        for r in self:
+            if not r.emp_id:
+                continue
+                
+            documents = self.env['documents.document'].search([
+                ('res_model', '=', 'hr.applicant'),
+                ('res_id', '=', r.id),
+            ])
+            for document in documents:
+                folder_id = False
+                if document.name == 'CV_%s' % r.emp_id.name:
+                    folder_id = 7 #carpeta Datos personales
+                elif document.name in ['PROPUESTA LABORAL_V1_%s' % r.emp_id.name, 
+                                       'PROPUESTA LABORAL_V2_%s' % r.emp_id.name]:
+                    folder_id = 10 #carpeta Datos laborales
+                    
+                if folder_id:
+                    document.copy({
+                        'res_model': 'hr.employee',
+                        'res_id': r.emp_id.id,
+                        'folder_id': folder_id,
+                        'datas': document.datas
+                    })
 
 
 class ApplicationResumeLine(models.Model):
