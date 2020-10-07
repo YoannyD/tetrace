@@ -20,6 +20,16 @@ class AccountMoveLine(models.Model):
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
     
+    @api.constrains("analytic_account_id", "account_id", "debit", "credit")	
+    def _check_analytic_required(self):
+        #Evitamos la restricción de la cuenta/etiqueta analitica si se trata apuntes sobre el diario de diferencia
+        #de cambio de la compañía
+        if self.move_id.journal_id.id != self.env.company.currency_exchange_journal_id.id:	
+            res = super(AccountMoveLine, self)._check_analytic_required()		
+            return res
+        else:
+            return None  
+    
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
         for r in self:
