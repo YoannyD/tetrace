@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # © 2020 Ingetive - <info@ingetive.com>
 
+import re
 import logging
 
 from odoo import models, fields, api
@@ -39,6 +40,12 @@ class SaleOrder(models.Model):
                 if len(r.num_proyecto) != 4:
                     raise ValidationError("El Nº de proyecto tiene que ser de 4 caracteres.")
 
+    @api.constrains("referencia_proyecto_antigua")
+    def _check_referencia_proyecto_antigua(self):
+        for r in self:
+            if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
+                raise ValidationError("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999.")
+                    
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
