@@ -125,26 +125,12 @@ class SaleOrder(models.Model):
     def actualizar_datos_proyecto(self):
         for r in self:
             if r.project_ids:
-                # El proyecto debe tomar como referencia y nombre, 
-                # [1] ref_proyecto + ' ' + nombre_proyecto 
-                # o, en el caso de que no este indicada la ref_proyecto
-                # [2] referencia_proyecto_antigua + ' ' + nombre_proyecto 
-                nombre_proyecto = ""
-                referencia_proyecto = ""
-                if not r.nombre_proyecto:
-                    raise ValidationError('El nombre de proyecto es obligatorio.')
-                if r.ref_proyecto:
-                    nombre_proyecto = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
-                    referencia_proyecto = r.ref_proyecto
-                elif r.eferencia_proyecto_antigua:
-                    nombre_proyecto = "%s %s" % (r.referencia_proyecto_antigua, r.nombre_proyecto)
-                    referencia_proyecto = r.referencia_proyecto_antigua
-                else:
-                    raise ValidationError('La referencia del proyecto es obligatoria.')
-                                          
-                r.project_ids.write({'name': nombre_proyecto})
+                if not r.ref_proyecto or not r.nombre_proyecto:
+                    raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
+                name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
+                r.project_ids.write({'name': name})
                 for p in r.project_ids:
-                    p.analytic_account_id.write({'name': referencia_proyecto})
+                    p.analytic_account_id.write({'name': r.ref_proyecto})
 
     def action_crear_version(self):
         self.ensure_one()
