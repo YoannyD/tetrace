@@ -43,6 +43,12 @@ class AccountMove(models.Model):
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
 
+    @api.onchange('ref')
+    def _onchange_ref_invoice(self):
+        for r in self:
+            if r.journal_id.type == 'purchase':
+                r.invoice_payment_ref = r.ref 
+                
     def _compute_fecha_vencimiento_anticipo(self):
         for r in self:
             fecha_vencimiento_anticipo = None
