@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # © 2020 Ingetive - <info@ingetive.com>
 
+import re
 import logging
 
 from odoo import models, fields, api
@@ -12,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    ref_proyecto = fields.Char('Referencia proyecto', copy=False)
+    ref_proyecto = fields.Char('Referencia proyecto', required=True, copy=False)
     ejercicio_proyecto = fields.Integer('Ejercicio', default=fields.Date.today().strftime("%y"), copy=False)
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False)
     num_proyecto = fields.Char('Nº proyecto', copy=False)
@@ -25,10 +26,12 @@ class SaleOrder(models.Model):
     cabecera_proyecto = fields.Html('Cabecera proyecto', copy=False)
     version_ids = fields.One2many('tetrace.sale_order_version', 'sale_order_id')
     version_count = fields.Integer('Versiones', compute="_compute_version")
+    referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
 
-    _sql_constraints = [
-        ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!"),
-    ]
+    
+    sql_constraints = [
+    ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!")]
+
 
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):
@@ -37,11 +40,17 @@ class SaleOrder(models.Model):
                 if len(r.num_proyecto) != 4:
                     raise ValidationError("El Nº de proyecto tiene que ser de 4 caracteres.")
 
+    @api.constrains("referencia_proyecto_antigua")
+    def _check_referencia_proyecto_antigua(self):
+        for r in self:
+            if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
+                raise ValidationError("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999.")
+                    
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
 
-    @api.onchange('ejercicio_proyecto', 'tipo_proyecto_id', 'num_proyecto')
+    @api.onchange('ejercicio_proyecto', 'tipo_proyecto_id', 'num_proyecto','referencia_proyecto_antigua')
     def _onchange_ref_proyecto(self):
         for r in self:
             r.ref_proyecto = r.generar_ref_proyecto()
@@ -69,6 +78,9 @@ class SaleOrder(models.Model):
         if 'nombre_proyecto' in vals and not self.env.context.get('cambiar_nombre_proyecto'):
             vals.pop('nombre_proyecto')
 
+        if 'referencia_proyecto_antigua' in vals and vals.get('referencia_proyecto_antigua'):
+            vals.update({'ref_proyecto' : vals.get('referencia_proyecto_antigua')})
+            
         res = super(SaleOrder, self).write(vals)
 
         if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals:
@@ -82,13 +94,19 @@ class SaleOrder(models.Model):
                 r.with_context(cambiar_nombre_proyecto=True).write({'nombre_proyecto': nombre_proyecto})
 
         if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals or \
-            'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals:
+            'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals \
+            or 'referencia_proyecto_antigua' in vals:
             self.actualizar_datos_proyecto()
         return res
 
     def generar_ref_proyecto(self):
         self.ensure_one()
-        return "P%s%s.%s" % (self.ejercicio_proyecto, self.tipo_proyecto_id.tipo if self.tipo_proyecto_id else '', self.num_proyecto)
+        if self.ejercicio_proyecto and self.tipo_proyecto_id and self.num_proyecto:
+            return "P%s%s.%s" % (self.ejercicio_proyecto, self.tipo_proyecto_id.tipo if self.tipo_proyecto_id else '', self.num_proyecto)            
+        elif self.referencia_proyecto_antigua:
+            return self.referencia_proyecto_antigua     
+        else:
+            return None
 
     def generar_nombre_proyecto(self):
         self.ensure_one()
@@ -109,7 +127,6 @@ class SaleOrder(models.Model):
             if r.project_ids:
                 if not r.ref_proyecto or not r.nombre_proyecto:
                     raise ValidationError('La referencia y el nombre de proyecto son obligatorios.')
-
                 name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
                 r.project_ids.write({'name': name})
                 for p in r.project_ids:
