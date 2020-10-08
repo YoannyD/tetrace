@@ -116,6 +116,7 @@ class TickeliaTrabajador(models.Model):
     fecha_liquidacion = fields.Date('Fecha liquidación')
     currency_id = fields.Many2one(related='company_id.currency_id')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
+    original = fields.Char("Oríginal")
 
     @api.depends('fecha', 'importe', 'employee_id', 'cuenta_gasto', 'cuenta_contrapartida', 'cuenta_analitica_id')
     def _compute_incorrecta(self):
