@@ -4,7 +4,8 @@
 import logging
 
 from odoo import models, fields, api
-from datetime import datetime
+from datetime import datetime, timedelta
+
 from odoo.exceptions import ValidationError
 from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
 
@@ -42,6 +43,7 @@ class AccountMove(models.Model):
                                     default=lambda self: self._default_validacion_id())
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
+    fecha_servicio = fields.Date("Fecha servicio")
 
     @api.onchange('ref')
     def _onchange_ref_invoice(self):
@@ -59,6 +61,14 @@ class AccountMove(models.Model):
                         fecha_vencimiento_anticipo = line.date_maturity
                         break
             r.fecha_vencimiento_anticipo = fecha_vencimiento_anticipo
+
+    @api.onchange('invoice_date')
+    def _onchange_fecha_servicio(self):
+        for r in self:
+            if r.type == 'out_invoice' and r.invoice_date:
+                fecha_servicio_primer_dia_mes = r.invoice_date.replace(day=1)
+                fecha_servicio_ultimo_dia_mes_anterior = fecha_servicio_primer_dia_mes - timedelta(days=1)
+                r.fecha_servicio = fecha_servicio_ultimo_dia_mes_anterior
 
     @api.model
     def create(self, vals):
