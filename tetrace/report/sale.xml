@@ -22,8 +22,8 @@
         <t t-call="web.external_layout">
             <t t-set="informe_proyecto" t-value="True"/>
             <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
-            <div style="width:104%;height:100vh;background-color:#872292;padding:0;margin-left:-2%;">
-                <div style="width:101%;height:100vh;background-color:white;margin-left:-4%;padding-bottom:200px;">
+            <div style="width:104%;height:100vh;padding:0;margin-left:-2%;">
+                <div style="width:101%;height:100vh;background-color:white;margin-left:-39px;">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="cab_proyecto">
