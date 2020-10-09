@@ -40,24 +40,27 @@ class ImportarTickelia(models.TransientModel):
                         sheet.row(row_no)))
 
                 if len(line) == 66:
-                    cuenta_contrapartida = line[63] if line[63]!='' else line[64]
+                    cuenta_contrapartida = str(line[63]) if str(line[63])!='' else str(line[64])
+                    original = 'Empleado: '  + str(line[1]) + ' DNI: ' + str(line[0]) + ' Cuenta gasto: ' + str(line[6]) \
+                        + ' Cuenta contrapartida:' + cuenta_contrapartida + ' Cuenta analítica: ' + str(line[43])
                     values = {
                         'tickelia_id': self.tickelia_id.id,
                         'fecha': datetime(*xlrd.xldate_as_tuple(float(line[14]),0)),
-                        'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', line[0]),('company_id','=',company_id)],limit=1).id,
+                        'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', str(line[0])),('company_id','=',company_id)],limit=1).id,
                         'cuenta_gasto': self.env['account.account'].search([
-                            ('code', '=', line[6]),
+                            ('code', '=', str(line[6])),
                             ('company_id', '=', company_id)
                         ], limit=1).id,
                         'cuenta_contrapartida': self.env['account.account'].search([
                             ('code', '=', cuenta_contrapartida),
                             ('company_id', '=', company_id)
                         ], limit=1).id,
-                        'descripcion': line[11],
+                        'descripcion': str(line[11]),
                         'importe': line[20],
-                        'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=like', line[43]),'|', ('company_id', '=', False), ('company_id', '=', company_id)], limit=1).id,
+                        'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=', str(line[43])),'|', ('company_id', '=', False), ('company_id', '=', company_id)], limit=1).id,
                         'liquidacion': line[31].split('.')[0],
                         'fecha_liquidacion': datetime(*xlrd.xldate_as_tuple(float(line[32]),0)),
+                        'original': original,
                     }
                     _logger.warning(values)
                     tickelia_trabajador = self.env['tetrace.tickelia.trabajador'].create(values)
