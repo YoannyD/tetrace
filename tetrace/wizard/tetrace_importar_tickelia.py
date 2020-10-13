@@ -40,15 +40,18 @@ class ImportarTickelia(models.TransientModel):
                         sheet.row(row_no)))
 
                 if len(line) == 66:
-                    cuenta_contrapartida = str(line[63]) if str(line[63])!='' else str(line[64])
-                    original = 'Empleado: '  + str(line[1]) + ' DNI: ' + str(line[0]) + ' Cuenta gasto: ' + str(line[6]) \
+                    cuenta_gasto = str(line[6]).split('.',1)[0]
+                    cuenta_contrapartida_63 = str(line[63]).split('.',1)[0]
+                    cuenta_contrapartida_64 = str(line[64]).split('.',1)[0]
+                    cuenta_contrapartida = cuenta_contrapartida_63 if cuenta_contrapartida_63!='' else cuenta_contrapartida_64
+                    original = 'Empleado: '  + str(line[1]) + ' DNI: ' + str(line[0]) + ' Cuenta gasto: ' + cuenta_gasto \
                         + ' Cuenta contrapartida:' + cuenta_contrapartida + ' Cuenta analítica: ' + str(line[43])
                     values = {
                         'tickelia_id': self.tickelia_id.id,
                         'fecha': datetime(*xlrd.xldate_as_tuple(float(line[14]),0)),
                         'employee_id': self.env['hr.employee'].sudo().search([('identification_id', '=', str(line[0])),('company_id','=',company_id)],limit=1).id,
                         'cuenta_gasto': self.env['account.account'].search([
-                            ('code', '=', str(line[6])),
+                            ('code', '=', cuenta_gasto),
                             ('company_id', '=', company_id)
                         ], limit=1).id,
                         'cuenta_contrapartida': self.env['account.account'].search([
@@ -62,7 +65,6 @@ class ImportarTickelia(models.TransientModel):
                         'fecha_liquidacion': datetime(*xlrd.xldate_as_tuple(float(line[32]),0)),
                         'original': original,
                     }
-                    _logger.warning(values)
                     tickelia_trabajador = self.env['tetrace.tickelia.trabajador'].create(values)
                 elif len(line) > 66:
                     raise Warning(_('Your File has extra column please refer sample file'))
