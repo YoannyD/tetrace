@@ -34,6 +34,7 @@
         'report_xlsx',
         'account_analytic_required',
         'account_facturx',
+        'l10n_es_vat_book',
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -70,6 +71,7 @@
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
         'views/tetrace_tickelia.xml',
+        'views/tetrace_vat_book.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',

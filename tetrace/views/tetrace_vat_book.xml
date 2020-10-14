@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_l10n_es_vat_book_form_tetrace">
+        <field name="name">l10n_es.vat.book.form.tetrace</field>
+        <field name="inherit_id" ref="l10n_es_vat_book.view_l10n_es_vat_book_form"/>
+        <field name="model">l10n.es.vat.book</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='invoices_issued']" position="replace">            
+                <page string="Issued Invoices" name="invoices_issued">
+                    <group string="Issued Invoices" name="issued_invoices"/>
+                    <field name="issued_line_ids" nolabel="1"/>
+                    <group string="Issued Refund Invoices" name="issued_rectification_invoices"/>
+                    <field name="received_line_ids" nolabel="1"/>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='received_invoices']" position="replace">
+                <page string="Received Invoices" name="received_invoices">
+                    <group string="Received Invoices" name="received_invoices"/>
+                    <field name="issued_line_ids" nolabel="1"/>
+                    <group string="Received Refund Invoices" name="received_rectification_invoices"/>
+                    <field name="rectification_received_line_ids" nolabel="1"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
