@@ -4,7 +4,9 @@
 import logging
 
 from odoo import models, fields, api
+from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_repr
 from datetime import datetime, timedelta
+from odoo.tests.common import Form
 
 from odoo.exceptions import ValidationError
 from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
@@ -18,6 +20,7 @@ CODIGOS_SII = [
     ('61', 'Nota de crédito electrónica')
 ]
 
+DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -45,6 +48,209 @@ class AccountMove(models.Model):
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
     fecha_servicio = fields.Date("Fecha servicio")
 
+
+    def _import_facturx_invoice(self, tree):
+    ###################################################
+    ##################Ingetive#########################
+    ###################################################
+    #Modificamos original odoo/addons/account_facturx##
+    #Añadimos cuenta analítica por defecto del partner#
+    ###################################################
+    ##################Ingetive#########################
+    ###################################################
+        ''' Extract invoice values from the Factur-x xml tree passed as parameter.
+
+        :param tree: The tree of the Factur-x xml file.
+        :return: A dictionary containing account.invoice values to create/update it.
+        '''
+        amount_total_import = None
+
+        default_type = False
+        if self._context.get('default_journal_id'):
+            journal = self.env['account.journal'].browse(self.env.context['default_journal_id'])
+            default_type = 'out_invoice' if journal.type == 'sale' else 'in_invoice'
+        elif self._context.get('default_type'):
+            default_type = self._context['default_type']
+        elif self.type in self.env['account.move'].get_invoice_types(include_receipts=True):
+            # in case an attachment is saved on a draft invoice previously created, we might
+            # have lost the default value in context but the type was already set
+            default_type = self.type
+
+        if not default_type:
+            raise UserError(_("No information about the journal or the type of invoice is passed"))
+        if default_type == 'entry':
+            return
+
+        # Total amount.
+        elements = tree.xpath('//ram:GrandTotalAmount', namespaces=tree.nsmap)
+        total_amount = elements and float(elements[0].text) or 0.0
+
+        # Refund type.
+        # There is two modes to handle refund in Factur-X:
+        # a) type_code == 380 for invoice, type_code == 381 for refund, all positive amounts.
+        # b) type_code == 380, negative amounts in case of refund.
+        # To handle both, we consider the 'a' mode and switch to 'b' if a negative amount is encountered.
+        elements = tree.xpath('//rsm:ExchangedDocument/ram:TypeCode', namespaces=tree.nsmap)
+        type_code = elements[0].text
+
+        default_type.replace('_refund', '_invoice')
+        if type_code == '381':
+            default_type = 'out_refund' if default_type == 'out_invoice' else 'in_refund'
+            refund_sign = -1
+        else:
+            # Handle 'b' refund mode.
+            if total_amount < 0:
+                default_type = 'out_refund' if default_type == 'out_invoice' else 'in_refund'
+            refund_sign = -1 if 'refund' in default_type else 1
+
+        # Write the type as the journal entry is already created.
+        self.type = default_type
+
+        # self could be a single record (editing) or be empty (new).
+        with Form(self.with_context(default_type=default_type)) as invoice_form:
+            # Partner (first step to avoid warning 'Warning! You must first select a partner.').
+            partner_type = invoice_form.journal_id.type == 'purchase' and 'SellerTradeParty' or 'BuyerTradeParty'
+            elements = tree.xpath('//ram:'+partner_type+'/ram:SpecifiedTaxRegistration/ram:ID', namespaces=tree.nsmap)
+            partner = elements and self.env['res.partner'].search([('vat', '=', elements[0].text)], limit=1)
+            if not partner:
+                elements = tree.xpath('//ram:'+partner_type+'/ram:Name', namespaces=tree.nsmap)
+                partner_name = elements and elements[0].text
+                partner = elements and self.env['res.partner'].search([('name', 'ilike', partner_name)], limit=1)
+            if not partner:
+                elements = tree.xpath('//ram:'+partner_type+'//ram:URIID[@schemeID=\'SMTP\']', namespaces=tree.nsmap)
+                partner = elements and self.env['res.partner'].search([('email', '=', elements[0].text)], limit=1)
+            if partner:
+                invoice_form.partner_id = partner
+
+            # Reference.
+            elements = tree.xpath('//rsm:ExchangedDocument/ram:ID', namespaces=tree.nsmap)
+            if elements:
+                invoice_form.ref = elements[0].text
+
+            # Name.
+            elements = tree.xpath('//ram:BuyerOrderReferencedDocument/ram:IssuerAssignedID', namespaces=tree.nsmap)
+            if elements:
+                invoice_form.invoice_payment_ref = elements[0].text
+
+            # Comment.
+            elements = tree.xpath('//ram:IncludedNote/ram:Content', namespaces=tree.nsmap)
+            if elements:
+                invoice_form.narration = elements[0].text
+
+            # Total amount.
+            elements = tree.xpath('//ram:GrandTotalAmount', namespaces=tree.nsmap)
+            if elements:
+
+                # Currency.
+                if elements[0].attrib.get('currencyID'):
+                    currency_str = elements[0].attrib['currencyID']
+                    currency = self.env.ref('base.%s' % currency_str.upper(), raise_if_not_found=False)
+                    if currency != self.env.company.currency_id and currency.active:
+                        invoice_form.currency_id = currency
+
+                    # Store xml total amount.
+                    amount_total_import = total_amount * refund_sign
+
+            # Date.
+            elements = tree.xpath('//rsm:ExchangedDocument/ram:IssueDateTime/udt:DateTimeString', namespaces=tree.nsmap)
+            if elements:
+                date_str = elements[0].text
+                date_obj = datetime.strptime(date_str, DEFAULT_FACTURX_DATE_FORMAT)
+                invoice_form.invoice_date = date_obj.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+            # Due date.
+            elements = tree.xpath('//ram:SpecifiedTradePaymentTerms/ram:DueDateDateTime/udt:DateTimeString', namespaces=tree.nsmap)
+            if elements:
+                date_str = elements[0].text
+                date_obj = datetime.strptime(date_str, DEFAULT_FACTURX_DATE_FORMAT)
+                invoice_form.invoice_date_due = date_obj.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+            # Invoice lines.
+            elements = tree.xpath('//ram:IncludedSupplyChainTradeLineItem', namespaces=tree.nsmap)
+            if elements:
+                for element in elements:
+                    with invoice_form.invoice_line_ids.new() as invoice_line_form:
+
+                        # Sequence.
+                        line_elements = element.xpath('.//ram:AssociatedDocumentLineDocument/ram:LineID', namespaces=tree.nsmap)
+                        if line_elements:
+                            invoice_line_form.sequence = int(line_elements[0].text)
+
+                        # Product.
+                        line_elements = element.xpath('.//ram:SpecifiedTradeProduct/ram:Name', namespaces=tree.nsmap)
+                        if line_elements:
+                            invoice_line_form.name = line_elements[0].text
+                        line_elements = element.xpath('.//ram:SpecifiedTradeProduct/ram:SellerAssignedID', namespaces=tree.nsmap)
+                        if line_elements and line_elements[0].text:
+                            product = self.env['product.product'].search([('default_code', '=', line_elements[0].text)])
+                            if product:
+                                invoice_line_form.product_id = product
+                        if not invoice_line_form.product_id:
+                            line_elements = element.xpath('.//ram:SpecifiedTradeProduct/ram:GlobalID', namespaces=tree.nsmap)
+                            if line_elements and line_elements[0].text:
+                                product = self.env['product.product'].search([('barcode', '=', line_elements[0].text)])
+                                if product:
+                                    invoice_line_form.product_id = product
+
+                        # Quantity.
+                        line_elements = element.xpath('.//ram:SpecifiedLineTradeDelivery/ram:BilledQuantity', namespaces=tree.nsmap)
+                        if line_elements:
+                            invoice_line_form.quantity = float(line_elements[0].text)
+
+                        # Price Unit.
+                        line_elements = element.xpath('.//ram:GrossPriceProductTradePrice/ram:ChargeAmount', namespaces=tree.nsmap)
+                        if line_elements:
+                            quantity_elements = element.xpath('.//ram:GrossPriceProductTradePrice/ram:BasisQuantity', namespaces=tree.nsmap)
+                            if quantity_elements:
+                                invoice_line_form.price_unit = float(line_elements[0].text) / float(quantity_elements[0].text)
+                            else:
+                                invoice_line_form.price_unit = float(line_elements[0].text)
+                        else:
+                            line_elements = element.xpath('.//ram:NetPriceProductTradePrice/ram:ChargeAmount', namespaces=tree.nsmap)
+                            if line_elements:
+                                quantity_elements = element.xpath('.//ram:NetPriceProductTradePrice/ram:BasisQuantity', namespaces=tree.nsmap)
+                                if quantity_elements:
+                                    invoice_line_form.price_unit = float(line_elements[0].text) / float(quantity_elements[0].text)
+                                else:
+                                    invoice_line_form.price_unit = float(line_elements[0].text)
+                        # Discount.
+                        line_elements = element.xpath('.//ram:AppliedTradeAllowanceCharge/ram:CalculationPercent', namespaces=tree.nsmap)
+                        if line_elements:
+                            invoice_line_form.discount = float(line_elements[0].text)
+
+                        # Taxes
+                        line_elements = element.xpath('.//ram:SpecifiedLineTradeSettlement/ram:ApplicableTradeTax/ram:RateApplicablePercent', namespaces=tree.nsmap)
+                        
+                        invoice_line_form.tax_ids.clear()
+                        for tax_element in line_elements:
+                            percentage = float(tax_element.text)
+
+                            tax = self.env['account.tax'].search([
+                                ('company_id', '=', invoice_form.company_id.id),
+                                ('amount_type', '=', 'percent'),
+                                ('type_tax_use', '=', invoice_form.journal_id.type),
+                                ('amount', '=', percentage),
+                            ], limit=1)
+
+                            if tax:
+                                invoice_line_form.tax_ids.add(tax)
+                        
+                        ###################################################
+                        ##################Ingetive#########################
+                        ###################################################
+                        #Añadimos cuenta analítica por defecto del partner#
+                        invoice_line_form.analytic_account_id = invoice_line_form.partner_id.cuenta_analitica_defecto_id
+                        
+                        
+            elif amount_total_import:
+                # No lines in BASICWL.
+                with invoice_form.invoice_line_ids.new() as invoice_line_form:
+                    invoice_line_form.name = invoice_form.comment or '/'
+                    invoice_line_form.quantity = 1
+                    invoice_line_form.price_unit = amount_total_import
+
+        return invoice_form.save()
+                        
     @api.onchange('ref')
     def _onchange_ref_invoice(self):
         for r in self:

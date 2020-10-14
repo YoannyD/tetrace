@@ -8,6 +8,9 @@
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="siglas"/>
             </xpath>
+            <xpath expr="//field[@name='property_account_payable_id']" position="after">
+                <field name="cuenta_analitica_defecto_id"/>
+            </xpath>
         </field>
     </record>
 </odoo>

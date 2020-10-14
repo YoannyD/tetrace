@@ -32,7 +32,8 @@
         'account_asset',
         'base_tier_validation',
         'report_xlsx',
-        'account_analytic_required'
+        'account_analytic_required',
+        'account_facturx',
     ],
     'data': [
         'security/tetrace_security.xml',

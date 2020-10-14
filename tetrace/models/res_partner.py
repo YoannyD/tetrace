@@ -12,6 +12,10 @@ class Partner(models.Model):
     _inherit = "res.partner"
 
     siglas = fields.Char('Siglas')
+    #cuenta_analitica_defecto_id se utiliza ser asignada a cada una de las lineas de una factura de compra CARGADA
+    cuenta_analitica_defecto_id = fields.Many2one('account.analytic.account', string="Cuenta analitica por defecto", \
+                                                  help="Cuenta analítica que tomarán las lineas de sus facturas cargadas", \
+                                                  company_dependent=True)
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
