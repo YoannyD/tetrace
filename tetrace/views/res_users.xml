@@ -15,6 +15,9 @@
                         </tree>
                     </field>
                 </group>
+                <group string="Rango validaciones">
+                    <field name="rango_validaciones"/>
+                </group>
             </xpath>
         </field>
     </record>
