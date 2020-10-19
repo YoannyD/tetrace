@@ -12,4 +12,4 @@ class User(models.Model):
     _inherit = "res.users"
 
     validacion_user_ids = fields.One2many('tetrace.validacion_user', 'user_id')
-    rango_validaciones = fields.Integer("Rango")
+    rango_validaciones = fields.Integer("Rango", default= 6)
