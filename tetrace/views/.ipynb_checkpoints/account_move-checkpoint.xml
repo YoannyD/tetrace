@@ -33,6 +33,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_post']" position="attributes">
                 <attribute name="groups">tetrace.group_tetrace_publicar_facturas</attribute>
+                <attribute name="class">oe_highlight oe_edit_only</attribute>
             </xpath>
 
             <xpath expr="//field[@name='partner_id']" position="after">
@@ -46,6 +47,10 @@
                 <attribute name="context">{'res_partner_search_mode': (context.get('default_type', 'entry') in ('out_invoice', 'out_refund', 'out_receipt') and 'customer') or (context.get('default_type', 'entry') in ('in_invoice', 'in_refund', 'in_receipt') and 'supplier') or False, 'show_address': 1, 'default_is_company': True, 'show_vat': True, 'solo_company': 1}</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="fecha_servicio" attrs="{'invisible': [('type', '!=', 'out_invoice')]}"/>
+            </xpath>
+            
             <xpath expr="//group[@name='sale_info_group']" position="inside">
                 <field name="asiento_anticipo_id"/>
             </xpath>
@@ -95,10 +100,6 @@
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="model">account.move</field>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='company_id']" position="before">
-                <field name="partner_id"/>
-                <field name="invoice_date"/>
-            </xpath>
 
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="asiento_anticipo_id"/>
@@ -107,7 +108,9 @@
 
             <xpath expr="//field[@name='name']" position="after">
                 <field name="secuencia"/>
+                <field name="fecha_servicio"/>
             </xpath>
+
         </field>
     </record>
 </odoo>
