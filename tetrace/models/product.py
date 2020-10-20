@@ -29,7 +29,7 @@ class Product(models.Model):
         return super(Product, self)._name_search(name, args, operator, limit, name_get_uid)
 
     def get_product_multiline_description_sale(self):
-        name = ''
+        name = self.name
         if self.description_sale:
             return self.description_sale
         return name
