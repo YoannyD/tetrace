@@ -13,7 +13,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    ref_proyecto = fields.Char('Referencia proyecto', required=True, copy=False)
+    ref_proyecto = fields.Char('Referencia proyecto', copy=False)
     ejercicio_proyecto = fields.Integer('Ejercicio', default=fields.Date.today().strftime("%y"), copy=False)
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False)
     num_proyecto = fields.Char('Nº proyecto', copy=False)
@@ -28,10 +28,9 @@ class SaleOrder(models.Model):
     version_count = fields.Integer('Versiones', compute="_compute_version")
     referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
 
-    
     sql_constraints = [
-    ('ref_proyecto_uniq', 'unique (ref_proyecto)', "¡La referencia de proyecto tiene que ser única!")]
-
+        ('ref_proyecto_uniq', 'check(1=1)', "No error")
+    ]
 
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):
@@ -87,6 +86,12 @@ class SaleOrder(models.Model):
             for r in self:
                 ref_proyecto = r.generar_ref_proyecto()
                 r.with_context(cambiar_ref_proyecto=True).write({'ref_proyecto': ref_proyecto})
+                    
+        if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals or \
+            'state' in vals:
+            for r in self:
+                if r.state == 'sale' and not r.ref_proyecto:
+                    raise ValidationError("¡La referencia de proyecto tiene que ser única!")
 
         if 'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals:
             for r in self:
@@ -97,6 +102,7 @@ class SaleOrder(models.Model):
             'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals \
             or 'referencia_proyecto_antigua' in vals:
             self.actualizar_datos_proyecto()
+
         return res
 
     def generar_ref_proyecto(self):
