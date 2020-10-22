@@ -12,14 +12,14 @@
         <xpath expr="//div[@t-attf-class='footer o_standard_footer o_company_#{company.id}_layout']" position="after">
             <div t-if="informe_proyecto" t-attf-class="footer o_standard_footer" style="border-top: 4px solid #872292;">
                 <div class="text-center">
-                    <div class="row" style="margin:10px auto;max-width:80%;padding-left:20px;padding-top:16px;">
+                    <div class="row" style="margin:0 auto;max-width:80%;padding-left:20px;">
                         <div class="col-12">
                             <div style="float:left">
                                 <t t-set="base_url" t-value="request.env['ir.config_parameter'].get_param('web.base.url')"/>
-                                <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="240px;"/>
+                                <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="200px;"/>
                             </div>
 
-                            <div style="float:right;width:50%;text-align:right;padding-top:7px;">
+                            <div style="float:right;width:50%;text-align:right;">
                                 <span t-field="company.name"/>
                                 <t t-if="company.vat">
                                     | CIF: <span t-field="company.vat"/>
