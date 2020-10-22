@@ -27,6 +27,7 @@ class Report(models.Model):
     _inherit = "ir.actions.report"
 
     pdf_watermark = fields.Binary("Watermark")
+    pdf_cabecera = fields.Binary("Cabecera")
     pdf_watermark_expression = fields.Char(
         "Watermark expression",
         help="An expression yielding the base64 "
@@ -72,50 +73,106 @@ class Report(models.Model):
             if watermark:
                 watermark = b64decode(watermark)
 
-        if not watermark:
-            return result
-
-        pdf = PdfFileWriter()
-        pdf_watermark = None
-        try:
-            pdf_watermark = PdfFileReader(BytesIO(watermark))
-        except PdfReadError:
-            # let's see if we can convert this with pillow
+        cabecera = None
+        if self.pdf_cabecera:
+            cabecera = b64decode(self.pdf_cabecera)
+        
+        if watermark or cabecera:
+            pdf = PdfFileWriter()
+        
+        valid_pdf_watermark = False
+        if watermark:
+            valid_pdf_watermark = True
+            pdf_watermark = None
             try:
-                Image.init()
-                image = Image.open(BytesIO(watermark))
-                pdf_buffer = BytesIO()
-                if image.mode != "RGB":
-                    image = image.convert("RGB")
-                resolution = image.info.get("dpi", self.paperformat_id.dpi or 90)
-                if isinstance(resolution, tuple):
-                    resolution = resolution[0]
-                image.save(pdf_buffer, "pdf", resolution=resolution)
-                pdf_watermark = PdfFileReader(pdf_buffer)
-            except Exception:
-                logger.exception("Failed to load watermark")
+                pdf_watermark = PdfFileReader(BytesIO(watermark))
+            except PdfReadError:
+                # let's see if we can convert this with pillow
+                try:
+                    Image.init()
+                    image = Image.open(BytesIO(watermark))
+                    pdf_buffer = BytesIO()
+                    if image.mode != "RGB":
+                        image = image.convert("RGB")
+                    resolution = image.info.get("dpi", self.paperformat_id.dpi or 90)
+                    if isinstance(resolution, tuple):
+                        resolution = resolution[0]
+                    image.save(pdf_buffer, "pdf", resolution=resolution)
+                    pdf_watermark = PdfFileReader(pdf_buffer)
+                except Exception:
+                    logger.exception("Failed to load watermark")
 
-        if not pdf_watermark:
-            logger.error("No usable watermark found, got %s...", watermark[:100])
-            return result
+            if not pdf_watermark:
+                logger.error("No usable watermark found, got %s...", watermark[:100])
+                valid_pdf_watermark = False
 
-        if pdf_watermark.numPages < 1:
-            logger.error("Your watermark pdf does not contain any pages")
-            return result
-        if pdf_watermark.numPages > 1:
-            logger.debug(
-                "Your watermark pdf contains more than one page, "
-                "all but the first one will be ignored"
-            )
+            if valid_pdf_watermark and pdf_watermark.numPages < 1:
+                valid_pdf_watermark = False
+                logger.error("Your watermark pdf does not contain any pages")
+            
+            if valid_pdf_watermark and pdf_watermark.numPages > 1:
+                valid_pdf_watermark = False
+                logger.debug(
+                    "Your watermark pdf contains more than one page, "
+                    "all but the first one will be ignored"
+                )
+            
+        valid_pdf_cabecera = False
+        if cabecera:
+            valid_pdf_cabecera = True
+            pdf_cabecera = None
+            try:
+                pdf_cabecera = PdfFileReader(BytesIO(cabecera))
+            except PdfReadError:
+                # let's see if we can convert this with pillow
+                try:
+                    Image.init()
+                    image = Image.open(BytesIO(cabecera))
+                    pdf_buffer = BytesIO()
+                    if image.mode != "RGB":
+                        image = image.convert("RGB")
+                    resolution = image.info.get("dpi", self.paperformat_id.dpi or 90)
+                    if isinstance(resolution, tuple):
+                        resolution = resolution[0]
+                    image.save(pdf_buffer, "pdf", resolution=resolution)
+                    pdf_cabecera = PdfFileReader(pdf_buffer)
+                except Exception:
+                    logger.exception("Failed to load watermark")
 
-        for page in PdfFileReader(BytesIO(result)).pages:
-            watermark_page = pdf.addBlankPage(
-                page.mediaBox.getWidth(), page.mediaBox.getHeight()
-            )
-            watermark_page.mergePage(pdf_watermark.getPage(0))
-            watermark_page.mergePage(page)
+            if not pdf_cabecera:
+                logger.error("No usable watermark found, got")
+                valid_pdf_cabecera = False
 
-        pdf_content = BytesIO()
-        pdf.write(pdf_content)
+            if valid_pdf_cabecera and pdf_cabecera.numPages < 1:
+                valid_pdf_cabecera = False
+                logger.error("Your watermark pdf does not contain any pages")
+            
+            if valid_pdf_cabecera and pdf_cabecera.numPages > 1:
+                valid_pdf_cabecera = False
+                logger.debug(
+                    "Your watermark pdf contains more than one page, "
+                    "all but the first one will be ignored"
+                )
+            
+        if valid_pdf_watermark or valid_pdf_cabecera:
+            i = 0
+            for page in PdfFileReader(BytesIO(result)).pages:
+                watermark_page = pdf.addBlankPage(
+                    page.mediaBox.getWidth(), page.mediaBox.getHeight()
+                )
+                
+                if i == 0 and valid_pdf_cabecera:
+                    watermark_page.mergePage(pdf_cabecera.getPage(0))
+                
+                if (valid_pdf_cabecera and i > 0 and valid_pdf_watermark) or \
+                    (not valid_pdf_cabecera and valid_pdf_watermark):
+                    watermark_page.mergePage(pdf_watermark.getPage(0))
+  
+                watermark_page.mergePage(page)
+                i += 1
 
-        return pdf_content.getvalue()
+            pdf_content = BytesIO()
+            pdf.write(pdf_content)
+
+            return pdf_content.getvalue()
+        return result
