@@ -33,7 +33,7 @@
         <field name="arch" type="xml">
             <xpath expr="//button[@name='action_post']" position="attributes">
                 <attribute name="groups">tetrace.group_tetrace_publicar_facturas</attribute>
-                <attribute name="class">oe_highlight oe_edit_only</attribute>
+                <attribute name="class">oe_highlight oe_read_only</attribute>
             </xpath>
 
             <xpath expr="//field[@name='partner_id']" position="after">

@@ -91,13 +91,15 @@
                                         </t>
 
                                         <t t-if="line.display_type not in ['line_section', 'line_note']">
-                                            <div style="font-weight:bold;white-space: nowrap; text-overflow: ellipsis;margin-top:8px;border-bottom:1px solid #000;">
-                                                <span t-field="line.name"/>
-
+                                            <div style="margin-top:8px;border-bottom:1px solid #000;">
+                                                <div style="overflow:hidden;font-weight:bold;white-space: nowrap; text-overflow: ellipsis;display:inline-block;max-width:75%;">
+                                                    <span t-field="line.name"/>
+                                                </div>
                                                 <t t-if="line.price_subtotal == 0">
-                                                    INCLUIDO
+                                                    <div style="display:inline-block;float:right">
+                                                        INCLUIDO
+                                                    </div>
                                                 </t>
-
                                                 <t t-if="line.price_subtotal &gt; 0">
                                                     <div style="display:inline-block;float:right">
                                                         <span t-field="line.price_subtotal"/> / <span t-field="line.product_uom"/>
