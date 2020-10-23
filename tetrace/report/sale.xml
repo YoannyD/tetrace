@@ -187,9 +187,9 @@
                         </t>
                         <p style="page-break-before:always;"> </p>
                         
-                        <div t-if="doc.note" class="row" style="margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;font-size:.9em;">
+                        <div t-if="doc.note" class="row" style="margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
                             <div class="col-md-12">
-                                <h3>Especificaciones</h3> <br/>
+                                <h3>ESPECIFICACIONES</h3> <br/>
                                 <span t-field="doc.note"/>
                             </div>
                         </div>

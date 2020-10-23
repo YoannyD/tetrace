@@ -19,6 +19,7 @@ class AccountMoveLine(models.Model):
     asiento_anticipo_fecha_vencimiento = fields.Date("Fecha vencimiento anticipo",
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
+    account_move_fecha_servicio = fields.Date(related="move_id.fecha_servicio")
     
     @api.constrains("analytic_account_id", "account_id", "debit", "credit")	
     def _check_analytic_required(self):
@@ -140,3 +141,12 @@ class AccountMoveLine(models.Model):
             name = product.partner_ref
 
         return name
+    
+    def _prepare_analytic_line(self):
+        res = super(AccountMoveLine, self)._prepare_analytic_line()
+        for values in res:
+            move_line = self.env['account.move.line'].browse(values['move_id'])
+            values.update({
+                'company_id': move_line.move_id.company_id.id or move_line.analytic_account_id.company_id.id or self.env.company.id
+            })
+        return res
