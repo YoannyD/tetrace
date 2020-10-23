@@ -106,7 +106,7 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
                 ["account_id", "company_id", "date:day"],
                 lazy=False,
             )
-
+            
             for acc in accs:
                 fecha_rate = datetime.strptime(acc["date:day"], "%d %b %Y")
                 fecha_rate = fecha_rate if self._informe_fecha_contable else date_to

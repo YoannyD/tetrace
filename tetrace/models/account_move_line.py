@@ -140,3 +140,12 @@ class AccountMoveLine(models.Model):
             name = product.partner_ref
 
         return name
+    
+    def _prepare_analytic_line(self):
+        res = super(AccountMoveLine, self)._prepare_analytic_line()
+        for values in res:
+            move_line = self.env['account.move.line'].browse(values['move_id'])
+            values.update({
+                'company_id': move_line.analytic_account_id.company_id.id or move_line.move_id.company_id.id or self.env.company.id
+            })
+        return res
