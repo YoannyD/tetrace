@@ -147,6 +147,6 @@ class AccountMoveLine(models.Model):
         for values in res:
             move_line = self.env['account.move.line'].browse(values['move_id'])
             values.update({
-                'company_id': move_line.analytic_account_id.company_id.id or move_line.move_id.company_id.id or self.env.company.id
+                'company_id': move_line.move_id.company_id.id or move_line.analytic_account_id.company_id.id or self.env.company.id
             })
         return res
