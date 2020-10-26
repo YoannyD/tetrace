@@ -189,7 +189,7 @@
                         
                         <div t-if="doc.note" class="row" style="margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
                             <div class="col-md-12">
-                                <h3>ESPECIFICACIONES</h3> <br/>
+                                <div style="font-size:1.2em;margin-bottom:12px;">ESPECIFICACIONES</div>
                                 <span t-field="doc.note"/>
                             </div>
                         </div>
