@@ -79,7 +79,7 @@
                                 <div class="col-md-12">
                                     <t t-foreach="doc.order_line" t-as="line">
                                         <t t-if="line.display_type == 'line_section'">
-                                            <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;">
+                                            <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;font-size:1.2em;">
                                                 <span t-field="line.name"/>
                                             </div>
                                         </t>
