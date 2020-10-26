@@ -122,7 +122,7 @@ class ImportarAsientosContables(models.AbstractModel):
             ('analytic_account_id', '=', False),
             ('analytic_tag_ids', '=', False),
             ('move_id.ref', '!=', False),
-            ('company_id', '=', 1)
+            ('company_id', '=', 1),
             '|',
             ('l10n_pe_group_id', 'like', '6%'),
             ('l10n_pe_group_id', 'like', '7%'),
