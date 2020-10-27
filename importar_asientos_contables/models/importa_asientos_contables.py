@@ -149,7 +149,11 @@ class ImportarAsientosContables(models.AbstractModel):
                     `APUNTES_CONTABLES` INNER JOIN ANALITICA on 
                     APUNTES_CONTABLES.FECHA_APUNTE = ANALITICA.FECHA_ASIENTO and 
                     APUNTES_CONTABLES.REFERENCIA_ASIENTO = ANALITICA.REFERENCIA_ASIENTO 
-                where 
+                where
+                    (APUNTES_CONTABLES.CUENTA LIKE '6%'
+                    or
+                    APUNTES_CONTABLES.CUENTA LIKE '7%')
+                    and
                     APUNTES_CONTABLES.ASIENTO = """ + str(ref) 
             
             data = self.execute(db_name, db_user, db_pass, db_host, sql)
