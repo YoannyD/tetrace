@@ -159,25 +159,26 @@ class ImportarAsientosContables(models.AbstractModel):
             _logger.warning("con itmes")
             values = [(2, r.id)]  
             for item in data:
-                analytic_account = self.env['account.analytic.account'].search([
-                    ('code', '=', item['DISTRIBUCIÓN_ASIGNADA'])
-                ], limit=1)
-                debe = 0
-                haber = 0
-                if r.debit > 0:
-                    debe = item['IMPORTE']
-                else:
-                    haber = item['IMPORTE']
+                if str(int(item['CUENTA'])) == r.account_id.code:
+                    analytic_account = self.env['account.analytic.account'].search([
+                        ('code', '=', item['DISTRIBUCIÓN_ASIGNADA'])
+                    ], limit=1)
+                    debe = 0
+                    haber = 0
+                    if r.debit > 0:
+                        debe = item['IMPORTE']
+                    else:
+                        haber = item['IMPORTE']
                 
-                values.append((0, 0, {
-                    'account_id': r.account_id.id,
-                    'partner_id': r.partner_id.id if r.partner_id else None,
-                    'company_id': r.company_id.id if r.company_id else None,
-                    'analytic_account_id': analytic_account.id if analytic_account else None,
-                    'name': r.name,
-                    'debit': abs(float(debe)),
-                    'credit': abs(float(haber))
-                }))
+                    values.append((0, 0, {
+                        'account_id': r.account_id.id,
+                        'partner_id': r.partner_id.id if r.partner_id else None,
+                        'company_id': r.company_id.id if r.company_id else None,
+                        'analytic_account_id': analytic_account.id if analytic_account else None,
+                        'name': r.name,
+                        'debit': abs(float(debe)),
+                        'credit': abs(float(haber))
+                    }))  
             
             try:
                 r.move_id.button_draft()
