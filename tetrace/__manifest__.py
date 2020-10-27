@@ -72,6 +72,7 @@
         'views/mis_report_instance.xml',
         'views/tetrace_tickelia.xml',
         'views/tetrace_vat_book.xml',
+        'views/tetrace_linea_analitica_rel.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',

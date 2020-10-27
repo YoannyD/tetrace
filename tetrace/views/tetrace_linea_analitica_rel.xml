@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="action_tetrace_account_analytic_line_rel"
+                name="Linea analitica"
+                view_mode="tree,form"
+                res_model="account.analytic.line.rel"/>
+    
+    <record id="tetrace_account_analytic_line_rel_tree" model="ir.ui.view">
+        <field name="name">tetrace.account.analytic.line.rel.tree</field>
+        <field name="model">account.analytic.line.rel</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="account_id"/>
+                <field name="analytic_account_id"/>
+                <field name="balance" sum="Total balance"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="tetrace_account_analytic_line_rel_search" model="ir.ui.view">
+        <field name="name">tetrace.account.analytic.line.rel.search</field>
+        <field name="model">account.analytic.line.rel</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="account_id"/>
+                <field name="analytic_account_id"/>
+            </search>
+        </field>
+    </record>
+</odoo>
