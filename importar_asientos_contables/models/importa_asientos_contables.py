@@ -160,7 +160,10 @@ class ImportarAsientosContables(models.AbstractModel):
             values = [(2, r.id)]  
             for item in data:
                 analytic_account = self.env['account.analytic.account'].search([
-                    ('code', '=', item['DISTRIBUCIÓN_ASIGNADA'])
+                    ('code', '=', item['DISTRIBUCIÓN_ASIGNADA']),
+                    '|',
+                    ('company_id','=', False),
+                    ('company_id','=', 1),
                 ], limit=1)
                 debe = 0
                 haber = 0
