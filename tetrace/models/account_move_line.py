@@ -154,3 +154,4 @@ class AccountMoveLine(models.Model):
                 
             values.update({'company_id': company_id})
         return res
+            

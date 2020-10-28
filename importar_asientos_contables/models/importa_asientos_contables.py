@@ -114,6 +114,81 @@ class ImportarAsientosContables(models.AbstractModel):
         query = "UPDATE %s SET traspaso = %s where numero_asiento = %s;" % (db_table, traspasado, ref_asiento)
         self.execute(db_name, db_user, db_pass, db_host, query, commit=True)
 
+    @api.model
+    def actualizar_apuntes_desde_mysql(self, db_name, db_user, db_pass, db_host, db_table, company_id, offset=0, limit=100000, where='', order=''):
+        rs = self.env['account.move.line'].search([
+            ('date', '>=', '2020-01-01'),
+            ('date', '<=', '2020-12-31'),
+            ('analytic_account_id', '=', False),
+            ('analytic_tag_ids', '=', False),
+            ('move_id.ref', '!=', False),
+            ('company_id', '=', 1),
+            '|',
+            ('l10n_pe_group_id', 'like', '6%'),
+            ('l10n_pe_group_id', 'like', '7%'),
+#             ('ref', '=', '1'),
+        ], limit=100)
+        
+        for r in rs:
+            try:
+                ref = int(r.move_id.ref)
+            except:
+#                 _logger.warning(r.move_id.ref)
+                continue
+                
+            sql = """
+                SELECT 
+                    APUNTES_CONTABLES.FECHA_APUNTE, 
+                    APUNTES_CONTABLES.ASIENTO,
+                    APUNTES_CONTABLES.CUENTA, 
+                    ANALITICA.DISTRIBUCIÓN_ASIGNADA, 
+                    ANALITICA.DEBE_HABER,
+                    ANALITICA.IMPORTE, 
+                    ANALITICA.PORCENTAJE_REP 
+                FROM 
+                    `APUNTES_CONTABLES` INNER JOIN ANALITICA on 
+                    APUNTES_CONTABLES.FECHA_APUNTE = ANALITICA.FECHA_ASIENTO and 
+                    APUNTES_CONTABLES.REFERENCIA_ASIENTO = ANALITICA.REFERENCIA_ASIENTO 
+                where
+                    APUNTES_CONTABLES.ASIENTO = """ + str(ref) 
+            
+            data = self.execute(db_name, db_user, db_pass, db_host, sql)
+#             _logger.warning(sql)
+            if not data:
+                continue
+            _logger.warning("con itmes")
+            values = [(2, r.id)]  
+            for item in data:
+                analytic_account = self.env['account.analytic.account'].search([
+                    ('code', '=', item['DISTRIBUCIÓN_ASIGNADA']),
+                    '|',
+                    ('company_id','=', False),
+                    ('company_id','=', 1),
+                ], limit=1)
+                debe = 0
+                haber = 0
+                if r.debit > 0:
+                    debe = item['IMPORTE']
+                else:
+                    haber = item['IMPORTE']
+                
+                values.append((0, 0, {
+                    'account_id': r.account_id.id,
+                    'partner_id': r.partner_id.id if r.partner_id else None,
+                    'company_id': r.company_id.id if r.company_id else None,
+                    'analytic_account_id': analytic_account.id if analytic_account else None,
+                    'name': r.name,
+                    'debit': abs(float(debe)),
+                    'credit': abs(float(haber))
+                }))            
+            try:
+                r.move_id.button_draft()
+                r.move_id.write({'line_ids': values})
+            except:
+                _logger.warning(sql)
+                _logger.warning("Referencia erronea %s" % ref)
+                
+        
     def execute(self, db_name, db_user, db_pass, db_host, query, params=None, commit=False):
         data = []
         try:
