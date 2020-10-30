@@ -286,8 +286,21 @@ class AccountMove(models.Model):
                 'secuencia_num': secuencia,
                 'secuencia': name
             })
+        if 'asiento_anticipo_id' in vals:
+            res.actualizar_fecha_vencimiento_asiento_anticipo()
+        return res
+    
+    def write(self, vals):
+        res = super(AccountMove, self).write(vals)
+        if 'asiento_anticipo_id' in vals:
+            self.actualizar_fecha_vencimiento_asiento_anticipo()
         return res
 
+    def actualizar_fecha_vencimiento_asiento_anticipo(self):
+        for r in self:
+            if r.asiento_anticipo_id and r.invoice_date_due:
+                r.asiento_anticipo_id.line_ids.write({'date_maturity': r.invoice_date_due})
+    
     def generar_secuencia(self):
         self.ensure_one()
         secuencia_num = 1
