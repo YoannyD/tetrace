@@ -299,7 +299,7 @@ class AccountMove(models.Model):
     def actualizar_fecha_vencimiento_asiento_anticipo(self):
         for r in self:
             if r.asiento_anticipo_id and r.invoice_date_due:
-                r.asiento_anticipo_id.line_ids.write({'date_maturity': r.invoice_date_due})
+                r.asiento_anticipo_id.line_ids.filtered(lambda x: not x.date_maturity).write({'date_maturity': r.invoice_date_due})
     
     def generar_secuencia(self):
         self.ensure_one()
