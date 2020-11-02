@@ -45,6 +45,7 @@
         'report/account.xml',
         'report/web.xml',
         'report/tetrace_its.xml',
+        'report/mis_report_instance_xlsx_multi_tab.xml',
         'views/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="xls_export_multi_tab" model="ir.actions.report">
+        <field name="name">MIS report instance XLS report multi tab</field>
+        <field name="model">mis.report.instance</field>
+        <field name="type">ir.actions.report</field>
+        <field name="report_name">tetrace.mis_report_instance_xlsx_multi_tab</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_file">mis_report_instance</field>
+    </record>
+</odoo>
