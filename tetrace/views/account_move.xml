@@ -113,5 +113,16 @@
 
         </field>
     </record>
+    
+    <record model="ir.ui.view" id="invoice_form_inherit_account_intrastat">
+        <field name="name">account.move.form.inherit.account.intrastat.tetrace</field>
+        <field name="inherit_id" ref="account_intrastat.invoice_form_inherit_account_intrastat"/>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='intrastat_transport_mode_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>
 

@@ -66,7 +66,7 @@
                  t-if="o.journal_id and o.journal_id.code == 'INVE' and o.invoice_incoterm_id"
                  name="incoterm">
                 <strong>Incoterm:</strong>
-                <p class="m-0" t-field="o.invoice_incoterm_id"/>
+                <p class="m-0" t-if="o.invoice_incoterm_id" t-field="o.invoice_incoterm_id.code"/>
             </div>
 
             <div class="col-auto mw-100 mb-2"
@@ -87,16 +87,17 @@
 
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_quantity']" position="replace"/>
-
-        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_priceunit']" position="after">
+        
+        <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_price_unit']" position="after">
             <th name="th_quantity" class="text-right"><span>Quantity</span></th>
         </xpath>
-
-<!--        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']//span[@t-field='line.l10n_latam_price_unit']/.." position="replace"/>-->
-
-        <xpath expr="//table[@name='invoice_line_table']/tbody//t[@name='account_invoice_line_accountable']//span[@t-field='line.quantity']/.." position="before">
-            <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
-                <span t-field="line.l10n_latam_price_unit"/>
+        
+        <xpath expr="//t[@name='account_invoice_line_accountable']/td[2]" position="replace"/>
+        
+        <xpath expr="//t[@name='account_invoice_line_accountable']/td[@t-if='display_discount']" position="after">
+            <td class="text-right">
+                <span t-field="line.quantity"/>
+                <span t-field="line.product_uom_id" groups="uom.group_uom"/>
             </td>
         </xpath>
 
@@ -108,6 +109,9 @@
                 <th>
                     Código arancelario
                 </th>
+                <th>
+                    Origen
+                </th>
             </t>
         </xpath>
 
@@ -118,6 +122,10 @@
                 </td>
                 <td>
                     <span t-if="line.product_id.intrastat_id" t-field="line.product_id.intrastat_id.code"/>
+                </td>
+                <td>
+                    
+                    <span t-field="line.product_id.intrastat_origin_country_id"/>
                 </td>
             </t>
         </xpath>
