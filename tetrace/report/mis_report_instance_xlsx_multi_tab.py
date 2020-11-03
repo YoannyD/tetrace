@@ -54,8 +54,10 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
             if hay_datos:
                 break
             for cell in row.iter_cells():
-                if not cell or cell.val is AccountingNone:
+                if not cell or cell.val is None or cell.val is AccountingNone or cell.val == 0.0:
                     continue
+                    
+                _logger.warning(cell.val)
                 hay_datos = True
                 break
                 
