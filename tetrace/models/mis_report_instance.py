@@ -18,6 +18,7 @@ class MisReportInstance(models.Model):
     _inherit = 'mis.report.instance'
 
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
+    informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
 
     def _compute_matrix(self):
         self.ensure_one()
@@ -40,3 +41,17 @@ class MisReportInstance(models.Model):
         kpi_matrix.compute_comparisons()
         kpi_matrix.compute_sums()
         return kpi_matrix
+    
+    def export_xls(self):
+        self.ensure_one()
+        context = dict(self._context_with_filters())
+        if self.informe_con_cuentas_analiticas:
+            report = self.env.ref("tetrace.xls_export_multi_tab")
+        else:
+            report = self.env.ref("mis_builder.xls_export")
+        
+        return (
+            report
+            .with_context(context)
+            .report_action(self, data=dict(dummy=True))  # required to propagate context
+        )
