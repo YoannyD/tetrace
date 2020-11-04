@@ -32,7 +32,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
         
-        analitycs = self.env['account.analytic.account'].search([])
+        analitycs = self.env['account.analytic.account'].search([], limit=50)
         
         for analityc in analitycs:
             condition = {
@@ -79,13 +79,11 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         header_format = workbook.add_format(
             {"bold": True, "align": "center", "bg_color": "#F0EEEE"}
         )
-        sheet.write(row_pos, 0, nombre_pestana, bold)
-        row_pos += 2
 
         # filters
         if not objects.hide_analytic_filters:
             for filter_description in objects.get_filter_descriptions_from_context():
-                sheet.write(row_pos, 0, filter_description)
+                sheet.write(row_pos, 0, filter_description, bold)
                 row_pos += 1
             row_pos += 1
 
