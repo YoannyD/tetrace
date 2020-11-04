@@ -32,7 +32,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
         
-        analitycs = self.env['account.analytic.account'].search([], limit=50)
+        analitycs = self.env['account.analytic.account'].search([])
         
         for analityc in analitycs:
             condition = {
