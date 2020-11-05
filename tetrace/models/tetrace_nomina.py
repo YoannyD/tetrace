@@ -239,14 +239,16 @@ class NominaTrabajador(models.Model):
 
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
                 lineas = lineas + 1
-                if analitica_data!= False and lineas== 0:
-                    self.env['tetrace.nomina.trabajador.analitica'].create({
-                        'nomina_trabajador_id': r.id,
-                        'analytic_account_id': max_analytic,
-                        'horas': max_horas,
-                        'porcentaje': 100,
-                        'importe': importe_nomina ,
-                    })
+                
+            if analitica_data and lineas== 0:
+                self.env['tetrace.nomina.trabajador.analitica'].create({
+                    'nomina_trabajador_id': r.id,
+                    'analytic_account_id': max_analytic,
+                    'horas': max_horas,
+                    'porcentaje': 100,
+                    'importe': importe_nomina ,
+                })
+                    
             if importe_total and importe_nomina != importe_total:
                 analitica = self.env['tetrace.nomina.trabajador.analitica'].search([
                     ('nomina_trabajador_id', '=', r.id)
