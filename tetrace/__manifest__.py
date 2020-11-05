@@ -35,6 +35,7 @@
         'account_analytic_required',
         'account_facturx',
         'l10n_es_vat_book',
+        'l10n_es_aeat_mod303'
     ],
     'data': [
         'security/tetrace_security.xml',
