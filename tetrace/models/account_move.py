@@ -48,6 +48,14 @@ class AccountMove(models.Model):
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
     fecha_servicio = fields.Date("Fecha servicio")
 
+    def extraer_numero_factura(self):
+    #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
+        for r in self:
+            for line in r.line_ids:
+                resultado = re.search(r"[0-9]{4}/[0-9]{3}", line.name)
+                if resultado:
+                    return resultado.group(0)
+                    break    
 
     def _import_facturx_invoice(self, tree):
     ###################################################
