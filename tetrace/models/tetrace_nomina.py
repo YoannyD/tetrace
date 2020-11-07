@@ -211,7 +211,10 @@ class NominaTrabajador(models.Model):
 
                 analitica_data[key]['horas'] += analitica.unit_amount
                 total_horas += analitica.unit_amount
-
+           
+            if total_horas == 0:
+                break
+                
             importe_nomina = 0
             if r.debe > 0:
                 importe_nomina = r.debe
