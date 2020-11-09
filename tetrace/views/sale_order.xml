@@ -84,6 +84,8 @@
                 </div>
                 <field name="nombre_proyecto" invisible="1"/>
                 <field name="referencia_proyecto_antigua"/>
+                <field name="coordinador_proyecto_id"/>
+                <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
@@ -106,6 +108,7 @@
                 <field name="ref_proyecto"/>
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
+                <field name="coordinador_proyecto_id"/>
             </xpath>
         </field>
     </record>
@@ -119,6 +122,13 @@
                 <field name="ref_proyecto"/>
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
+            </xpath>
+            
+            <xpath expr="//group[1]" position="inside">
+                <filter string="Coordinadores proyecto" 
+                        name="group_coordinador_proyecto_id" 
+                        domain="[]" 
+                        context="{'group_by': 'coordinador_proyecto_id'}"/>
             </xpath>
         </field>
     </record>
