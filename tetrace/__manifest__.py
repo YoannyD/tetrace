@@ -55,6 +55,7 @@
         'views/hr_applicant.xml',
         'views/hr_employee.xml',
         'views/product_category.xml',
+        'views/product_template.xml',
         'views/tetrace_skills.xml',
         'views/tetrace_nomina.xml',
         'views/tetrace_tipo_contrato.xml',

@@ -28,6 +28,7 @@ class Project(models.Model):
     estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True,
                                 index=True, group_expand='_read_group_estado_ids',
                                 copy=False, default=lambda self: self._default_estado_id())
+    product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
 
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
@@ -79,6 +80,12 @@ class Project(models.Model):
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
 
+    
+class ProjectTask(models.Model):
+    _inherit = 'project.task'
+    
+    tarea_seleccion = fields.Boolean("Tarea Selección")
+    
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'

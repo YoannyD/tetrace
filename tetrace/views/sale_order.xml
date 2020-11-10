@@ -14,6 +14,12 @@
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
             <xpath expr="//header[1]" position="inside">
+                <button name="action_generar_proyecto"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        string="Generar Proyecto"/>
+                
                 <button name="action_crear_version"
                         type="object"
                         string="Generar Version"/>
