@@ -12,3 +12,5 @@ class Job(models.Model):
     _inherit = "hr.job"
 
     applicant_id = fields.Many2one('hr.applicant', string="Solicitud")
+    task_ids = fields.One2many('project.task', 'job_id')
+    sale_order_line_ids = fields.One2many('sale.order.line', 'job_id')

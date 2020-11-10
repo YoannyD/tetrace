@@ -164,6 +164,8 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
+    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
         if self.order_id.coordinador_proyecto_id:
@@ -184,7 +186,8 @@ class SaleOrderLine(models.Model):
         project.write(values)
 
         if self.order_id.seguidor_proyecto_ids:
-            project.with_context(add_followers=True).message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
+            project.with_context(add_followers=True)\
+                .message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
         
         return project
     
@@ -221,3 +224,8 @@ class SaleOrderLine(models.Model):
             project.message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
         
         return project
+    
+    def _timesheet_create_task_prepare_values(self, project):
+        values = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)
+        values.update({'job_id': self.job_id.id})
+        return values

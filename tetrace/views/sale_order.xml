@@ -94,6 +94,10 @@
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
             </xpath>
 
+            <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
+                <field name="job_id" optional="hide"/>
+            </xpath>
+            
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Datos proyecto" attrs="{'invisible': [('project_ids', '=', [])]}">
                     <group>

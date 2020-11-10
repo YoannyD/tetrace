@@ -14,6 +14,7 @@ class MailThread(models.AbstractModel):
     _inherit = 'mail.thread'
     
     def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        if self.env.context.get("add_followers"):
+        auto_add_follower = self.env['ir.config_parameter'].sudo().get_param('auto_add_followers', default=False)
+        if auto_add_follower:
             return super(MailThread, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
         return True

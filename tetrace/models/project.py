@@ -85,6 +85,9 @@ class ProjectTask(models.Model):
     _inherit = 'project.task'
     
     tarea_seleccion = fields.Boolean("Tarea Selección")
+    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    applicant_ids = fields.Many2many('hr.applicant')
+    contract_ids = fields.Many2many('hr.contract')
     
 
 class ProjectTaskType(models.Model):
