@@ -60,8 +60,8 @@
                                     <field name="employee_id" readonly="1"/>
                                     <field name="account_id"/>
                                     <field name="descripcion" readonly="1"/>
-                                    <field name="debe" readonly="1"/>
-                                    <field name="haber" readonly="1"/>
+                                    <field name="debe"/>
+                                    <field name="haber"/>
                                     <field name="texto_importado" optional="hide"  readonly="1"/>
                                     <button name="mostrar_distribuciones_analiticas"
                                         attrs="{'invisible':[('id', '=', False)]}"
