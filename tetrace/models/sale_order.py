@@ -28,7 +28,9 @@ class SaleOrder(models.Model):
     version_count = fields.Integer('Versiones', compute="_compute_version")
     referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
     coordinador_proyecto_id = fields.Many2one("res.users", string="Coordinador proyecto")
-    seguidor_proyecto_ids = fields.Many2many("res.partner", string="Seguidores proyecto")
+    seguidor_proyecto_ids = fields.Many2many("res.users", string="Seguidores proyecto")
+    visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,
+                                                  compute="_compute_visible_btn_generar_proyecto")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -51,6 +53,16 @@ class SaleOrder(models.Model):
         for r in self:
             r.version_count = len(r.version_ids)
 
+    @api.depends("order_line.product_id", "order_line.product_id.project_template_diseno_id")
+    def _compute_visible_btn_generar_proyecto(self):
+        for r in self:
+            visible = False
+            for line in r.order_line:
+                if line.product_id and line.product_id.project_template_diseno_id:
+                    visible = True
+                    break
+            r.update({'visible_btn_generar_proyecto': visible})
+             
     @api.onchange('ejercicio_proyecto', 'tipo_proyecto_id', 'num_proyecto','referencia_proyecto_antigua')
     def _onchange_ref_proyecto(self):
         for r in self:
@@ -153,12 +165,18 @@ class SaleOrder(models.Model):
         if not self.ref_proyecto or not self.nombre_proyecto:
             raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
         
+        # Crear el proyecto con la plantilla diseño del primer producto que la tenga
         project = None
         for line in self.order_line:
-            if line.product_id and line.product_id.project_template_diseno_id:
-                if not project:
-                    project = line._timesheet_create_project_diseno()
-                line._timesheet_create_task(project)
+            if line.product_id.project_template_diseno_id:
+                project = line._timesheet_create_project_diseno()
+                break
+        
+        if not project:
+            return
+        
+        for line in self.order_line:
+            line._timesheet_create_task(project)
                       
 
 class SaleOrderLine(models.Model):
@@ -184,10 +202,15 @@ class SaleOrderLine(models.Model):
             "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto)
         }
         project.write(values)
-
-        if self.order_id.seguidor_proyecto_ids:
+        
+        partner_seguidores_ids = []
+        for user in self.order_id.seguidor_proyecto_ids:
+            if user.partner_id:
+                partner_seguidores_ids.append(user.partner_id.id)
+                
+        if partner_seguidores_ids:   
             project.with_context(add_followers=True)\
-                .message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
+                .message_subscribe(partner_ids=partner_seguidores_ids)
         
         return project
     
@@ -206,10 +229,8 @@ class SaleOrderLine(models.Model):
                 'partner_id': self.order_id.partner_id.id,
                 'email_from': self.order_id.partner_id.email,
             })
-            # duplicating a project doesn't set the SO on sub-tasks
-            project.tasks.filtered(lambda task: task.parent_id != False).write({
-                'sale_line_id': self.id,
-            })
+            
+            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': self.id})
         else:
             project = self.env['project.project'].create(values)
 
@@ -225,7 +246,19 @@ class SaleOrderLine(models.Model):
         
         return project
     
+    def _timesheet_create_task(self, project):
+        task = super(SaleOrderLine, self)._timesheet_create_task(project)
+        if self.order_id.state == 'draft' and self.job_id:
+            self.write({'task_id': None})
+        return task
+    
     def _timesheet_create_task_prepare_values(self, project):
         values = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)
         values.update({'job_id': self.job_id.id})
+        if self.order_id.state == 'draft' and self.job_id:
+            values.update({
+                'name': "Selección %s" % self.job_id.name,
+                'tarea_seleccion': True,
+                'sale_line_id': False
+            })
         return values

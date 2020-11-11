@@ -8,16 +8,21 @@
         <field name="domain">[('sale_order_id','=',active_id)]</field>
     </record>
 
+    <menuitem id="sale.menu_sale_order" 
+              parent="sale.sale_order_menu"
+              action="sale.action_quotations_with_onboarding"/>
+    
     <record model="ir.ui.view" id="view_order_form">
         <field name="name">sale.order.form.tetrace</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
             <xpath expr="//header[1]" position="inside">
+                <field name="visible_btn_generar_proyecto" invisible="1"/>
                 <button name="action_generar_proyecto"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': [('state', '!=', 'draft')]}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('visible_btn_generar_proyecto', '=', False)]}"
                         string="Generar Proyecto"/>
                 
                 <button name="action_crear_version"
