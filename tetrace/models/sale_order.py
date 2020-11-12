@@ -151,6 +151,7 @@ class SaleOrder(models.Model):
     def _action_confirm(self):
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
+        self.send_mail_seguidores()
         return res
 
     def actualizar_datos_proyecto(self):
@@ -228,6 +229,15 @@ class SaleOrder(models.Model):
             'res_model': 'project.project',
         }
         return action
+    
+    def send_mail_seguidores(self):
+        for r in self:
+            template = self.env['mail.template'].browse(self.env.ref('tetrace.email_template_confirm_sale_order').id)
+            for seguidor in r.seguidor_proyecto_ids:
+                if not seguidor.login:
+                    continue
+                template.email_to = seguidor.login
+                template.send_mail(r.id, force_send=True)
                       
 
 class SaleOrderLine(models.Model):

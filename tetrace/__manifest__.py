@@ -42,6 +42,7 @@
         'security/ir.model.access.csv',
         'data/project.xml',
         'data/mail_activity.xml',
+        'data/mail_sale_order.xml',
         'report/sale.xml',
         'report/account.xml',
         'report/web.xml',
