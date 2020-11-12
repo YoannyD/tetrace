@@ -105,6 +105,17 @@ class Project(models.Model):
         action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_applicant')
         action.update({'domain': [('project_id', '=', self.id)]})
         return action
+    
+    def action_view_project(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
+        view_form_id = self.env.ref('project.edit_project').id
+        action.update({
+            'views': [(view_form_id, 'form')],
+            'view_mode': 'form,kanban',
+            'res_id': self.id
+        })
+        return action
 
     
 class ProjectTask(models.Model):

@@ -252,6 +252,7 @@ class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    no_imprimir = fields.Boolean("No imprimir")
     
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()

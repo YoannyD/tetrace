@@ -99,6 +99,14 @@
                 <field name="job_id" optional="hide"/>
             </xpath>
             
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_subtotal']" position="after">
+                <field name="no_imprimir" optional="hide"/>
+            </xpath>
+            
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Datos proyecto" attrs="{'invisible': [('project_ids', '=', [])]}">
                     <group>
