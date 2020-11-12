@@ -14,3 +14,4 @@ class TipoServicio(models.Model):
 
     name = fields.Char('Nombre', required=True)
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
+    color = fields.Integer(string='Color Index')

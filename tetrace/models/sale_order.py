@@ -4,7 +4,7 @@
 import re
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -53,14 +53,25 @@ class SaleOrder(models.Model):
         for r in self:
             r.version_count = len(r.version_ids)
 
-    @api.depends("order_line.product_id", "order_line.product_id.project_template_diseno_id")
+    @api.depends('order_line.product_id.project_id')
+    def _compute_tasks_ids(self):
+        for order in self:
+            task_ids = []
+            for project in order.project_ids:
+                task_ids += project.task_ids.ids
+            order.tasks_ids = self.env['project.task'].browse(task_ids)
+            order.tasks_count = len(order.tasks_ids)
+            
+    @api.depends("order_line.product_id", "order_line.product_id.project_template_diseno_id", 
+                'order_line.product_id', 'order_line.project_id')
     def _compute_visible_btn_generar_proyecto(self):
         for r in self:
             visible = False
-            for line in r.order_line:
-                if line.product_id and line.product_id.project_template_diseno_id:
-                    visible = True
-                    break
+            if not r.project_ids:
+                for line in r.order_line:
+                    if line.product_id and line.product_id.project_template_diseno_id:
+                        visible = True
+                        break
             r.update({'visible_btn_generar_proyecto': visible})
              
     @api.onchange('ejercicio_proyecto', 'tipo_proyecto_id', 'num_proyecto','referencia_proyecto_antigua')
@@ -162,13 +173,18 @@ class SaleOrder(models.Model):
     
     def action_generar_proyecto(self):
         self.ensure_one()
+        if self.project_ids:
+            return
+        
         if not self.ref_proyecto or not self.nombre_proyecto:
             raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
         
         # Crear el proyecto con la plantilla diseño del primer producto que la tenga
         project = None
+        project_template_diseno_ids = []
         for line in self.order_line:
             if line.product_id.project_template_diseno_id:
+                project_template_diseno_ids.append(line.product_id.project_template_diseno_id.id)
                 project = line._timesheet_create_project_diseno()
                 break
         
@@ -176,7 +192,42 @@ class SaleOrder(models.Model):
             return
         
         for line in self.order_line:
+            if line.product_id.project_template_diseno_id and \
+                line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
+                for task in line.product_id.project_template_diseno_id.tasks:
+                    task.copy({
+                        'project_id': project.id,
+                        'sale_line_id': line.id,
+                        'partner_id': line.order_id.partner_id.id,
+                        'email_from': line.order_id.partner_id.email,
+                    })
             line._timesheet_create_task(project)
+            
+    def action_view_task(self):
+        action = super(SaleOrder, self).action_view_task()
+        action['context'].pop('search_default_sale_order_id', None)
+        action['context'].pop('search_default_my_tasks', None)
+        
+        projects = []
+        for task in self.tasks_ids:
+            projects.append(task.project_id.id)
+            
+        action['context'].update({'search_default_project_id': projects})
+        return action
+    
+    def action_view_project_ids(self):
+        self.ensure_one()
+        view_form_id = self.env.ref('project.edit_project').id
+        view_kanban_id = self.env.ref('project.view_project_kanban').id
+        action = {
+            'type': 'ir.actions.act_window',
+            'res_id': self.project_ids[0].id,
+            'views': [(view_form_id, 'form'),(view_kanban_id, 'kanban')],
+            'view_mode': 'form,kanban',
+            'name': _('Projects'),
+            'res_model': 'project.project',
+        }
+        return action
                       
 
 class SaleOrderLine(models.Model):
@@ -186,10 +237,10 @@ class SaleOrderLine(models.Model):
     
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
-        if self.order_id.coordinador_proyecto_id:
-            values.update({
-                'user_id': self.order_id.coordinador_proyecto_id.id
-            })
+        values.update({
+            'user_id': self.order_id.coordinador_proyecto_id.id,
+            'partner_shipping_id': self.order_id.partner_shipping_id.id
+        })
         return values
     
     def _timesheet_create_project(self):
@@ -247,6 +298,9 @@ class SaleOrderLine(models.Model):
         return project
     
     def _timesheet_create_task(self, project):
+        if self.order_id.state == 'draft' and not self.job_id:
+            return None
+        
         task = super(SaleOrderLine, self)._timesheet_create_task(project)
         if self.order_id.state == 'draft' and self.job_id:
             self.write({'task_id': None})

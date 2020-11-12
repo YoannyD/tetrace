@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="project.open_view_project_all" model="ir.actions.act_window">
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_estado_id': 1}</field>
+        <field name="view_mode">kanban,tree,form,map</field>
     </record>
 
     <record model="ir.ui.view" id="view_project">
@@ -26,12 +27,63 @@
                        options="{'clickable': '1'}"
                        groups="tetrace.group_tetrace_project_estado"/>
             </xpath>
+            
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_responsables_tree" 
+                        string="Responsables"
+                        icon="fa-male"/>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_tecnicos_tree" 
+                        string="Técnicos"
+                        icon="fa-users"/>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_procesos_seleccion_tree" 
+                        string="Procesos de selección"
+                        icon="fa-user-circle-o"/>
+            </xpath>
 
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="partner_shipping_id"/>
+            </xpath>
+            
             <xpath expr="//page[@name='settings']" position="inside">
                 <group>
                     <field name="descripcion"/>
                 </group>
             </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_project_kanban">
+        <field name="name">project.project.kanban.tetrace</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_project_kanban_boxes')][1]/a[1]" position="before">
+                <a style="width:0;" type="edit"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_project_map_tetrace">
+        <field name="name">project.project.map.tetrace</field>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <map res_partner="partner_shipping_id">
+                <marker-popup>
+                    <field name="name" string="Proyecto"/>
+                    <field name="partner_shipping_id" string="Entrega"/>
+                    <field name="partner_shipping_street" string="Address"/>
+                    <field name="partner_shipping_zip" string=""/>
+                    <field name="partner_shipping_city" string=""/>
+                </marker-popup>
+            </map>
         </field>
     </record>
 
@@ -40,6 +92,22 @@
         <field name="inherit_id" ref="project.view_project_project_filter"/>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
+            <xpath expr="//filter[1]" position="before">
+                <filter string="Diseño" 
+                        name="filter_estado_id_diseno" 
+                        domain="[('estado_id', '=', 3)]"/>
+                <filter string="En proceso" 
+                        name="filter_estado_id_en_proceso" 
+                        domain="[('estado_id', '=', 1)]"/>
+                <filter string="Terminado" 
+                        name="filter_estado_id_terminado" 
+                        domain="[('estado_id', '=', 2)]"/>
+                <filter string="Cancelado" 
+                        name="filter_estado_id_cancelado" 
+                        domain="[('estado_id', '=', 4)]"/>
+                <separator/>
+            </xpath>
+            
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="estado_id"/>
             </xpath>
@@ -53,7 +121,7 @@
     <record id="action_tetrace_project_state" model="ir.actions.act_window">
         <field name="name">Estados proyectos</field>
         <field name="res_model">tetrace.project_state</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree,kanban,form</field>
     </record>
 
     <menuitem action="action_tetrace_project_state"

@@ -22,7 +22,7 @@
                 <button name="action_generar_proyecto"
                         type="object"
                         class="oe_highlight"
-                        attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('visible_btn_generar_proyecto', '=', False)]}"
+                        attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('visible_btn_generar_proyecto', '=', False)]}"
                         string="Generar Proyecto"/>
                 
                 <button name="action_crear_version"

@@ -2,7 +2,7 @@
 <odoo>
     <act_window id="action_tetrace_tipo_servicio"
                 name="Tipos de servicio"
-                view_mode="tree,form"
+                view_mode="tree,kanban,form"
                 res_model="tetrace.tipo_servicio" />
 
     <menuitem action="action_tetrace_tipo_servicio"
@@ -32,6 +32,38 @@
             <tree>
                 <field name="name"/>
             </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_tipo_servicio_kanban">
+        <field name="name">tetrace.tipo_servicio.kanban</field>
+        <field name="model">tetrace.tipo_servicio</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="color"/>
+                <field name="name"/>
+                <templates>
+                <t t-name="kanban-box">
+                    <div t-attf-class="{{'oe_kanban_color_' + kanban_getcolor(record.color.raw_value)}} oe_kanban_card oe_kanban_global_click">
+                        <div class="oe_kanban_content">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="o_dropdown_kanban dropdown">
+                            <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" data-display="static" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                <span class="fa fa-ellipsis-v"/>
+                            </a>
+                            <div class="dropdown-menu" role="menu">
+                                <ul class="oe_kanban_colorpicker" data-field="color"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+                </templates>
+            </kanban>
         </field>
     </record>
 </odoo>

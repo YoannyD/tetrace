@@ -29,13 +29,17 @@ class Project(models.Model):
                                 index=True, group_expand='_read_group_estado_ids',
                                 copy=False, default=lambda self: self._default_estado_id())
     product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
-
+    partner_shipping_id = fields.Many2one("res.partner", string="Dirección de entrega")
+    partner_shipping_street = fields.Char(related="partner_shipping_id.street")
+    partner_shipping_zip = fields.Char(related="partner_shipping_id.zip")
+    partner_shipping_city = fields.Char(related="partner_shipping_id.city")
+    color = fields.Integer(related="sale_order_id.tipo_servicio_id.color")
+                
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \
             .mapped('sale_line_id.order_id.order_line') \
-            .filtered(lambda
-                          sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
+            .filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
         # include the service SO line of SO sharing the same project
         sale_order = self.env['sale.order'].search([('project_id', 'in', self.ids)])
         return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
@@ -79,6 +83,28 @@ class Project(models.Model):
     @api.model
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
+    
+    def view_responsables_tree(self):
+        self.ensure_one()
+        ctx = dict(self._context)
+        ctx.update({'search_default_project_id': self.id})
+        ctx.update({'search_default_user': True})
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
+        action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
+        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
+        return dict(action, context=ctx)
+    
+    def view_tecnicos_tree(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_contract')
+        action.update({'domain': [('project_id', '=', self.id)]})
+        return action
+    
+    def view_procesos_seleccion_tree(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_applicant')
+        action.update({'domain': [('project_id', '=', self.id)]})
+        return action
 
     
 class ProjectTask(models.Model):
@@ -86,8 +112,8 @@ class ProjectTask(models.Model):
     
     tarea_seleccion = fields.Boolean("Tarea Selección")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    applicant_ids = fields.Many2many('hr.applicant')
-    contract_ids = fields.Many2many('hr.contract')
+    applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
+    contract_ids = fields.Many2many('hr.contract', 'task_contract_rel', 'task_id', 'contract_id')
     
 
 class ProjectTaskType(models.Model):
