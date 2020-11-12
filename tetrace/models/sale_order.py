@@ -128,6 +128,14 @@ class SaleOrder(models.Model):
             or 'referencia_proyecto_antigua' in vals:
             self.actualizar_datos_proyecto()
 
+        if vals.get('coordinador_proyecto_id'):
+            for r in self:
+                r.project_ids.write({'user_id': r.coordinador_proyecto_id.id})
+                
+        if vals.get('partner_shipping_id'):
+            for r in self:
+                r.project_ids.write({'partner_shipping_id': r.partner_shipping_id.id})
+            
         return res
 
     def generar_ref_proyecto(self):
