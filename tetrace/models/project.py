@@ -29,11 +29,10 @@ class Project(models.Model):
                                 index=True, group_expand='_read_group_estado_ids',
                                 copy=False, default=lambda self: self._default_estado_id())
     product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
-    partner_shipping_id = fields.Many2one("res.partner", string="Dirección de entrega")
-    partner_shipping_street = fields.Char(related="partner_shipping_id.street")
-    partner_shipping_zip = fields.Char(related="partner_shipping_id.zip")
-    partner_shipping_city = fields.Char(related="partner_shipping_id.city")
     color = fields.Integer(related="sale_order_id.tipo_servicio_id.color")
+    partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
+    partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
+    partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
                 
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
@@ -79,7 +78,7 @@ class Project(models.Model):
             'header': result['header'],
             'rows': table_rows
         }
-
+    
     @api.model
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
@@ -94,6 +93,31 @@ class Project(models.Model):
         action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
         return dict(action, context=ctx)
     
+    def create(self, vals):
+        res = super(Project, self).write(vals)
+        res.actualizar_geo_partner()
+        return res
+    
+    def write(self, vals):
+        res = super(Project, self).write(vals)
+        if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
+            self.actualizar_geo_partner()
+        return res
+    
+    def actualizar_geo_partner(self):
+        for r in self:
+            values = {
+                'name': "Geolocalización %s" % r.name,
+                'partner_latitude': r.partner_latitude,
+                'partner_longitude': r.partner_longitude,
+            }
+            
+            if not r.partner_geo_id:
+                values.update({'project_geo_ids': [(6, 0, [r.id])]})
+                self.env['res.partner'].with_context(no_actualizar=True).create(values)
+            else:
+                r.partner_geo_id.with_context(no_actualizar=True).write(values)
+                
     def view_tecnicos_tree(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_contract')

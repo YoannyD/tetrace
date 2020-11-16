@@ -115,6 +115,40 @@
                     </group>
                 </page>
             </xpath>
+            
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Prev. facturación">
+                    <button name="action_generar_prevision_facturacion" 
+                           type="object"
+                           string="Generar previsión"
+                           class="btn-primary"/>
+                    
+                    <field name="prevision_facturacion_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="importe"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="facturado" readonly="1"/>
+                            <field name="vencido" readonly="1"/>
+                        </tree>
+                    </field>
+                    
+                    <group name="note_group" col="6">
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="prevision_total">
+                            <field name="total_previsto" 
+                                   widget="monetary" 
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_facturado" 
+                                   widget="monetary" 
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_vencido" 
+                                   widget="monetary" 
+                                   options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <div class="oe_clear"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 

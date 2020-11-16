@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_generar_prevision_facturacion_form">
+        <field name="name">tetrace.generar_prevision_facturacion</field>
+        <field name="model">tetrace.generar_prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="fecha" required="1"/>
+                    <field name="num_meses" required="1"/>
+                    <field name="importe" required="1"/>
+                    <field name="currency_id" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_generar" string="Generar" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

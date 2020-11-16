@@ -47,9 +47,10 @@
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
             </xpath>
-
+            
             <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="partner_shipping_id"/>
+                <field name="partner_latitude"/>
+                <field name="partner_longitude"/>
             </xpath>
             
             <xpath expr="//page[@name='settings']" position="inside">
@@ -75,13 +76,9 @@
         <field name="name">project.project.map.tetrace</field>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-            <map res_partner="partner_shipping_id">
+            <map res_partner="partner_geo_id">
                 <marker-popup>
                     <field name="name" string="Proyecto"/>
-                    <field name="partner_shipping_id" string="Entrega"/>
-                    <field name="partner_shipping_street" string="Address"/>
-                    <field name="partner_shipping_zip" string=""/>
-                    <field name="partner_shipping_city" string=""/>
                 </marker-popup>
             </map>
         </field>

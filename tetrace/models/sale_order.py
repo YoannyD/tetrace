@@ -6,6 +6,7 @@ import logging
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -31,6 +32,10 @@ class SaleOrder(models.Model):
     seguidor_proyecto_ids = fields.Many2many("res.users", string="Seguidores proyecto")
     visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,
                                                   compute="_compute_visible_btn_generar_proyecto")
+    prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
+    total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion")
+    total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion")
+    total_vencido = fields.Monetary("Total vencido", compute="_compute_prevision_facturacion")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -53,6 +58,28 @@ class SaleOrder(models.Model):
         for r in self:
             r.version_count = len(r.version_ids)
 
+    @api.depends("prevision_facturacion_ids")
+    def _compute_prevision_facturacion(self):
+        for r in self:
+            previsto = 0
+            facturado = 0
+            vencido = 0
+            for prevision in r.prevision_facturacion_ids:
+                if prevision.facturado:
+                    facturado += prevision.importe
+                
+                if prevision.vencido:
+                    vencido += prevision.importe
+                    
+                if not prevision.facturado and not prevision.vencido:
+                    previsto += prevision.importe
+                    
+            r.update({
+                'total_previsto': previsto,
+                'total_facturado': facturado,
+                'total_vencido': vencido
+            })
+            
     @api.depends('order_line.product_id.project_id')
     def _compute_tasks_ids(self):
         for order in self:
@@ -135,9 +162,17 @@ class SaleOrder(models.Model):
         if vals.get('partner_shipping_id'):
             for r in self:
                 r.project_ids.write({'partner_shipping_id': r.partner_shipping_id.id})
+                
+        if vals.get('partner_id'):
+            for r in self:
+                r.project_ids.write({'partner_id': r.partner_id.id})
+         
+        if 'prevision_facturacion_ids' in vals or 'invoice_ids' in vals:
+            for r in self:
+                r.prevision_facturacion_ids.actualizar_prevision()
             
         return res
-
+    
     def generar_ref_proyecto(self):
         self.ensure_one()
         if self.ejercicio_proyecto and self.tipo_proyecto_id and self.num_proyecto:
@@ -160,6 +195,7 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
         self.send_mail_seguidores()
+        self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
         return res
 
     def actualizar_datos_proyecto(self):
@@ -241,18 +277,27 @@ class SaleOrder(models.Model):
     def send_mail_seguidores(self):
         for r in self:
             template = self.env['mail.template'].browse(self.env.ref('tetrace.email_template_confirm_sale_order').id)
+            if r.coordinador_proyecto_id:
+                template.email_to = r.coordinador_proyecto_id.login
+                template.send_mail(r.id, force_send=True)
+            
             for seguidor in r.seguidor_proyecto_ids:
                 if not seguidor.login:
                     continue
                 template.email_to = seguidor.login
                 template.send_mail(r.id, force_send=True)
+     
+    def action_generar_prevision_facturacion(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.generar_prevision_facturacion'].create({'order_id': self.id})
+        return wizard.open_wizard()
                       
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    no_imprimir = fields.Boolean("No imprimir")
+    no_imprimir = fields.Boolean("Archivado")
     
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
@@ -335,3 +380,40 @@ class SaleOrderLine(models.Model):
                 'sale_line_id': False
             })
         return values
+    
+    
+class PrevisionFacturacion(models.Model):
+    _name = "tetrace.prevision_facturacion"
+    _description = "Previsión facturación"
+    
+    order_id = fields.Many2one("sale.order", string="Pedido Venta")
+    fecha = fields.Date('Fecha')
+    importe = fields.Monetary("Importe previsto")
+    currency_id = fields.Many2one(related='order_id.currency_id')
+    facturado = fields.Boolean("Facturado")
+    vencido = fields.Boolean("Vencido")
+    
+    def actualizar_prevision(self):
+        vencidos = []
+        for r in self:
+            f_inicial = r.fecha - timedelta(days=5)
+            f_final = r.fecha + timedelta(days=5)
+
+            facturado = False
+            for invoice in r.order_id.invoice_ids:
+                if not facturado and invoice.invoice_date >= f_inicial and invoice.invoice_date <= f_final:
+                    facturado = True
+
+            if facturado:
+                vencidos.append({'order_id': r.order_id, 'fecha': f_inicial})
+                r.write({'facturado': True})
+
+        for v in vencidos:
+            previsiones = self.search([
+                ('order_id', '=', v['order_id']),
+                ('fecha', '<=', v['fecha']),
+                ('vencido', '=', False)
+            ])
+            if previsiones:
+                previsiones.write({'vencido': True})
+

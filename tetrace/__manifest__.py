@@ -84,6 +84,7 @@
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',
         'wizard/tetrace_importar_tickelia.xml',
+        'wizard/tetrace_generar_prevision_facturacion.xml',
     ],
     'demo': [],
     'installable': True,
