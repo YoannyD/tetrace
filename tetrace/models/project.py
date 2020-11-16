@@ -94,7 +94,7 @@ class Project(models.Model):
         return dict(action, context=ctx)
     
     def create(self, vals):
-        res = super(Project, self).write(vals)
+        res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
         return res
     

@@ -159,10 +159,6 @@ class SaleOrder(models.Model):
             for r in self:
                 r.project_ids.write({'user_id': r.coordinador_proyecto_id.id})
                 
-        if vals.get('partner_shipping_id'):
-            for r in self:
-                r.project_ids.write({'partner_shipping_id': r.partner_shipping_id.id})
-                
         if vals.get('partner_id'):
             for r in self:
                 r.project_ids.write({'partner_id': r.partner_id.id})
@@ -206,7 +202,10 @@ class SaleOrder(models.Model):
                 name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
                 r.project_ids.write({'name': name})
                 for p in r.project_ids:
-                    p.analytic_account_id.write({'name': r.ref_proyecto})
+                    p.analytic_account_id.write({
+                        'name': r.ref_proyecto,
+                        'company_id': False
+                    })
 
     def action_crear_version(self):
         self.ensure_one()
@@ -228,7 +227,7 @@ class SaleOrder(models.Model):
         project = None
         project_template_diseno_ids = []
         for line in self.order_line:
-            if line.product_id.project_template_diseno_id:
+            if line.product_id.service_tracking == 'task_in_project' and line.product_id.project_template_diseno_id:
                 project_template_diseno_ids.append(line.product_id.project_template_diseno_id.id)
                 project = line._timesheet_create_project_diseno()
                 break
@@ -299,12 +298,32 @@ class SaleOrderLine(models.Model):
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     no_imprimir = fields.Boolean("Archivado")
     
+    def _timesheet_service_generation(self):
+        # Compruebo que el pedido tenga o no proyectos
+        project_sale = []
+        for r in self:
+            if r.order_id.project_ids:
+                project_sale.append(r.order_id.id)
+            
+        super(SaleOrderLine, self)._timesheet_service_generation()
+        
+        project_template_ids = []
+        for r in self:
+            if r.product_id.service_tracking == 'task_in_project' and \
+                r.product_id.project_template_id and r.order_id.id in project_sale and \
+                r.product_id.project_template_id.id not in project_template_ids:
+                project_template_ids.append(r.product_id.project_template_id.id)
+                for task in r.product_id.project_template_id.tasks:
+                    task.copy({
+                        'project_id': r.order_id.project_ids[0].id,
+                        'sale_line_id': r.id,
+                        'partner_id': r.order_id.partner_id.id,
+                        'email_from': r.order_id.partner_id.email,
+                    })
+                
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
-        values.update({
-            'user_id': self.order_id.coordinador_proyecto_id.id,
-            'partner_shipping_id': self.order_id.partner_shipping_id.id
-        })
+        values.update({'user_id': self.order_id.coordinador_proyecto_id.id})
         return values
     
     def _timesheet_create_project(self):
@@ -365,7 +384,23 @@ class SaleOrderLine(models.Model):
         if self.order_id.state == 'draft' and not self.job_id:
             return None
         
-        task = super(SaleOrderLine, self)._timesheet_create_task(project)
+        task = None
+        if self.order_id.state == 'draft' and self.job_id:
+            task = self.env['project.task'].search([
+                ('project_id', '=', project.id),
+                ('job_id', '=', False),
+                ('tarea_seleccion', '=', True),
+            ], limit=1)
+            
+            task.write({
+                'job_id': self.job_id.id,
+                'name': "Selección %s" % self.job_id.name,
+                'sale_line_id': False
+            })
+        
+        if not task:
+            task = super(SaleOrderLine, self)._timesheet_create_task(project)
+            
         if self.order_id.state == 'draft' and self.job_id:
             self.write({'task_id': None})
         return task
