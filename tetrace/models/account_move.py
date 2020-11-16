@@ -304,6 +304,22 @@ class AccountMove(models.Model):
             
         if 'asiento_anticipo_id' in vals:
             self.actualizar_fecha_vencimiento_asiento_anticipo()
+  
+        if 'invoice_date' in vals:
+            for r in self:
+                for il in r.invoice_line_ids:
+                    order_ids = []
+                    for line in il.sale_line_ids:
+                        order_ids.append(line.order_id.id)
+
+                    orders = self.env['sale.order'].search([
+                        ('prevision_facturacion_ids', '!=', False),
+                        ('id', 'in', order_ids)
+                    ])
+
+                    for order in orders:
+                        order.prevision_facturacion_ids.actualizar_prevision()
+
         return res
 
     def actualizar_fecha_vencimiento_asiento_anticipo(self):

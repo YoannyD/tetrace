@@ -423,6 +423,7 @@ class SaleOrderLine(models.Model):
 class PrevisionFacturacion(models.Model):
     _name = "tetrace.prevision_facturacion"
     _description = "Previsión facturación"
+    _order = "fecha desc"
     
     order_id = fields.Many2one("sale.order", string="Pedido Venta")
     fecha = fields.Date('Fecha')
@@ -432,7 +433,7 @@ class PrevisionFacturacion(models.Model):
     vencido = fields.Boolean("Vencido")
     
     def actualizar_prevision(self):
-        vencidos = []
+        order_ids = []
         for r in self:
             f_inicial = r.fecha - timedelta(days=5)
             f_final = r.fecha + timedelta(days=5)
@@ -443,13 +444,14 @@ class PrevisionFacturacion(models.Model):
                     facturado = True
 
             if facturado:
-                vencidos.append({'order_id': r.order_id, 'fecha': f_inicial})
                 r.write({'facturado': True})
+            
+            order_ids.append(r.order_id.id)
 
-        for v in vencidos:
+        if order_ids:
             previsiones = self.search([
-                ('order_id', '=', v['order_id']),
-                ('fecha', '<=', v['fecha']),
+                ('order_id', 'in', order_ids),
+                ('fecha', '<=', fields.Date.today() - timedelta(days=5)),
                 ('vencido', '=', False)
             ])
             if previsiones:
