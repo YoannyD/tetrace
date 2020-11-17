@@ -35,7 +35,6 @@ class SaleOrder(models.Model):
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
     total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion")
     total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion")
-    total_vencido = fields.Monetary("Total vencido", compute="_compute_prevision_facturacion")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -63,21 +62,13 @@ class SaleOrder(models.Model):
         for r in self:
             previsto = 0
             facturado = 0
-            vencido = 0
             for prevision in r.prevision_facturacion_ids:
                 if prevision.facturado:
                     facturado += prevision.importe
-                
-                if prevision.vencido:
-                    vencido += prevision.importe
-                    
-                if not prevision.facturado and not prevision.vencido:
-                    previsto += prevision.importe
                     
             r.update({
                 'total_previsto': previsto,
-                'total_facturado': facturado,
-                'total_vencido': vencido
+                'total_facturado': facturado
             })
             
     @api.depends('order_line.product_id.project_id')
@@ -164,10 +155,6 @@ class SaleOrder(models.Model):
             for r in self:
                 r.project_ids.write({'partner_id': r.partner_id.id})
          
-        if 'prevision_facturacion_ids' in vals or 'invoice_ids' in vals:
-            for r in self:
-                r.prevision_facturacion_ids.actualizar_prevision()
-            
         return res
     
     def generar_ref_proyecto(self):
@@ -426,34 +413,11 @@ class PrevisionFacturacion(models.Model):
     _order = "fecha desc"
     
     order_id = fields.Many2one("sale.order", string="Pedido Venta")
+    order_date_order = fields.Datetime(related="order_id.date_order")
+    order_partner_id = fields.Many2one(related="order_id.partner_id")
+    order_amount_total = fields.Monetary(realted="order_id.partner_id")
     fecha = fields.Date('Fecha')
     importe = fields.Monetary("Importe previsto")
     currency_id = fields.Many2one(related='order_id.currency_id')
     facturado = fields.Boolean("Facturado")
-    vencido = fields.Boolean("Vencido")
-    
-    def actualizar_prevision(self):
-        order_ids = []
-        for r in self:
-            f_inicial = r.fecha - timedelta(days=5)
-            f_final = r.fecha + timedelta(days=5)
-
-            facturado = False
-            for invoice in r.order_id.invoice_ids:
-                if not facturado and invoice.invoice_date >= f_inicial and invoice.invoice_date <= f_final:
-                    facturado = True
-
-            if facturado:
-                r.write({'facturado': True})
-            
-            order_ids.append(r.order_id.id)
-
-        if order_ids:
-            previsiones = self.search([
-                ('order_id', 'in', order_ids),
-                ('fecha', '<=', fields.Date.today() - timedelta(days=5)),
-                ('vencido', '=', False)
-            ])
-            if previsiones:
-                previsiones.write({'vencido': True})
 

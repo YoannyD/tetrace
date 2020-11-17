@@ -8,6 +8,17 @@
         <field name="domain">[('sale_order_id','=',active_id)]</field>
     </record>
     
+    <act_window id="action_tetrace_prevision_facturacion"
+                name="Previsión facturación"
+                view_mode="tree,form"
+                res_model="tetrace.prevision_facturacion"/>
+
+    <menuitem action="action_tetrace_prevision_facturacion"
+              id="menu_tetrace_prevision_facturacion"
+              name="Previsión facturación"
+              parent="sale.sale_menu_root"
+              sequence="3"/>
+    
     <record model="ir.ui.view" id="view_order_form">
         <field name="name">sale.order.form.tetrace</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
@@ -128,8 +139,7 @@
                             <field name="fecha"/>
                             <field name="importe"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="facturado" readonly="1"/>
-                            <field name="vencido" readonly="1"/>
+                            <field name="facturado"/>
                         </tree>
                     </field>
                     
@@ -139,9 +149,6 @@
                                    widget="monetary" 
                                    options="{'currency_field': 'currency_id'}"/>
                             <field name="total_facturado" 
-                                   widget="monetary" 
-                                   options="{'currency_field': 'currency_id'}"/>
-                            <field name="total_vencido" 
                                    widget="monetary" 
                                    options="{'currency_field': 'currency_id'}"/>
                         </group>
@@ -183,6 +190,45 @@
                         domain="[]" 
                         context="{'group_by': 'coordinador_proyecto_id'}"/>
             </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_form">
+        <field name="name">tetrace_prevision_facturacion</field>
+        <field name="model">tetrace.prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="fecha"/>
+                        </group>
+                        <group>
+                            <field name="importe"/>
+                            <field name="facturado"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_tree">
+        <field name="name">tetrace_prevision_facturacion</field>
+        <field name="model">tetrace.prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_id"/>
+                <field name="order_partner_id"/>
+                <field name="order_date_order"/>
+                <field name="order_amount_total"/>
+                <field name="fecha"/>
+                <field name="importe"/>
+                <field name="facturado"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
         </field>
     </record>
 </odoo>
