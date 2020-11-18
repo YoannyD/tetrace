@@ -12,6 +12,8 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     secuencia_default_code = fields.Integer('Secuencia Ref. Interna', copy=False)
+    project_template_id = fields.Many2one("project.project", string="Plantilla proyecto confirmado")
+    project_template_diseno_id = fields.Many2one("project.project", string="Plantilla proyecto preliminar")
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):

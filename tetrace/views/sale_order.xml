@@ -7,13 +7,31 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[('sale_order_id','=',active_id)]</field>
     </record>
+    
+    <act_window id="action_tetrace_prevision_facturacion"
+                name="Previsión facturación"
+                view_mode="tree,form"
+                res_model="tetrace.prevision_facturacion"/>
 
+    <menuitem action="action_tetrace_prevision_facturacion"
+              id="menu_tetrace_prevision_facturacion"
+              name="Previsión facturación"
+              parent="sale.sale_menu_root"
+              sequence="3"/>
+    
     <record model="ir.ui.view" id="view_order_form">
         <field name="name">sale.order.form.tetrace</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
             <xpath expr="//header[1]" position="inside">
+                <field name="visible_btn_generar_proyecto" invisible="1"/>
+                <button name="action_generar_proyecto"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('state', '!=', 'draft'), ('visible_btn_generar_proyecto', '=', False)]}"
+                        string="Generar Proyecto"/>
+                
                 <button name="action_crear_version"
                         type="object"
                         string="Generar Version"/>
@@ -84,13 +102,55 @@
                 </div>
                 <field name="nombre_proyecto" invisible="1"/>
                 <field name="referencia_proyecto_antigua"/>
+                <field name="coordinador_proyecto_id"/>
+                <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
             </xpath>
 
+            <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
+                <field name="job_id" optional="hide"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_unit']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_subtotal']" position="after">
+                <field name="no_imprimir" optional="hide"/>
+            </xpath>
+            
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Datos proyecto" attrs="{'invisible': [('project_ids', '=', [])]}">
                     <group>
                         <field name="descripcion_proyecto"/>
                         <field name="cabecera_proyecto"/>
+                    </group>
+                </page>
+            </xpath>
+            
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Prev. facturación">
+                    <button name="action_generar_prevision_facturacion" 
+                           type="object"
+                           string="Generar previsión"
+                           class="btn-primary"/>
+                    
+                    <field name="prevision_facturacion_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="feedbak"/>
+                            <field name="importe"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="facturado"/>
+                        </tree>
+                    </field>
+                    
+                    <group name="note_group" col="6">
+                        <group class="oe_subtotal_footer oe_right" colspan="2" name="prevision_total">
+                            <field name="total_previsto" 
+                                   widget="monetary" 
+                                   options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <div class="oe_clear"/>
                     </group>
                 </page>
             </xpath>
@@ -106,6 +166,7 @@
                 <field name="ref_proyecto"/>
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
+                <field name="coordinador_proyecto_id"/>
             </xpath>
         </field>
     </record>
@@ -120,6 +181,73 @@
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
             </xpath>
+            
+            <xpath expr="//group[1]" position="inside">
+                <filter string="Coordinadores proyecto" 
+                        name="group_coordinador_proyecto_id" 
+                        domain="[]" 
+                        context="{'group_by': 'coordinador_proyecto_id'}"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_form">
+        <field name="name">tetrace.prevision_facturacion.form</field>
+        <field name="model">tetrace.prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="order_id" readonly="1"/>
+                            <field name="order_partner_id" readonly="1"/>
+                            <field name="order_date_order" readonly="1"/>
+                            <field name="order_amount_total" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="fecha" readonly="1"/>
+                            <field name="feedbak" readonly="1"/>
+                            <field name="importe" readonly="1"/>
+                            <field name="facturado" readonly="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_tree">
+        <field name="name">tetrace.prevision_facturacion.tree</field>
+        <field name="model">tetrace.prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="order_id"/>
+                <field name="order_partner_id"/>
+                <field name="order_date_order"/>
+                <field name="order_amount_total"/>
+                <field name="fecha"/>
+                <field name="feedbak"/>
+                <field name="importe"/>
+                <field name="facturado"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_search">
+        <field name="name">tetrace.prevision_facturacion.search</field>
+        <field name="model">tetrace.prevision_facturacion</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter string="Facturado" name="filter_facturado" domain="[('facturado', '=', True)]"/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_order_id" string="Pedidos" context="{'group_by': 'order_id'}"/>
+                    <filter name="group_partner_id" string="Clientes" context="{'group_by': 'order_partner_id'}"/>
+                    <filter name="group_order_date_order" string="Fecha pedido" context="{'group_by': 'order_date_order'}"/>
+                    <filter name="group_fecha" string="Fecha prevista" context="{'group_by': 'fecha'}"/>
+                </group>
+            </search>
         </field>
     </record>
 </odoo>

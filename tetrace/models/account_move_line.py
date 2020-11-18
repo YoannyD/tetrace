@@ -46,7 +46,7 @@ class AccountMoveLine(models.Model):
                         fecha_vencimiento = line.date_maturity
                         break
             r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
-
+            
     def _sale_create_reinvoice_sale_line(self):
         sale_order_map = self._sale_determine_order()
 

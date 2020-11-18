@@ -16,6 +16,7 @@ class Partner(models.Model):
     cuenta_analitica_defecto_id = fields.Many2one('account.analytic.account', string="Cuenta analitica por defecto", \
                                                   help="Cuenta analítica que tomarán las lineas de sus facturas cargadas", \
                                                   company_dependent=True)
+    project_geo_ids = fields.One2many("project.project", "partner_geo_id")
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
@@ -26,3 +27,13 @@ class Partner(models.Model):
             args = [('is_company', '=', True)]
 
         return super(Partner, self)._name_search(name, args, operator=operator, limit=limit, name_get_uid=name_get_uid)
+    
+    def write(self, vals):
+        res = super(Partner, self).write(vals)
+        if not self.env.context.get('no_actualizar') and ('partner_latitude' in vals or 'partner_longitude' in vals):
+            for r in self:
+                r.project_geo_ids.write({
+                    'partner_latitude': r.partner_latitude,
+                    'partner_longitude': r.partner_longitude
+                })
+        return res

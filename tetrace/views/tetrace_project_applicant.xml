@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="open_view_project_applicant" model="ir.actions.act_window">
+        <field name="name">Procesos de selección</field>
+        <field name="res_model">tetrace.project_applicant</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <record id="tetrace_project_applicant_tree" model="ir.ui.view">
+        <field name="name">tetrace.project_applicant.tree</field>
+        <field name="model">tetrace.project_applicant</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="applicant_id"/>
+                <field name="task_id"/>
+                <field name="project_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

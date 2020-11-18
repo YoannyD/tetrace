@@ -3,12 +3,13 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_repr
 from datetime import datetime, timedelta
 from odoo.tests.common import Form
+from odoo.tools import exception_to_unicode
 
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
 
 _logger = logging.getLogger(__name__)
@@ -300,8 +301,10 @@ class AccountMove(models.Model):
     
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
+            
         if 'asiento_anticipo_id' in vals:
             self.actualizar_fecha_vencimiento_asiento_anticipo()
+  
         return res
 
     def actualizar_fecha_vencimiento_asiento_anticipo(self):

@@ -85,3 +85,13 @@
 	path = OCA/bank-statement-import
 	url = git@github.com:OCA/bank-statement-import.git
 	branch = 13.0
+
+[submodule "OCA/social"]
+	path = OCA/social
+	url = git@github.com:OCA/social.git
+	branch = 13.0
+
+[submodule "OCA/geospatial"]
+	path = OCA/geospatial
+	url = git@github.com:OCA/geospatial.git
+	branch = 13.0

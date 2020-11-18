@@ -13,3 +13,4 @@ class User(models.Model):
 
     validacion_user_ids = fields.One2many('tetrace.validacion_user', 'user_id')
     rango_validaciones = fields.Integer("Rango", default= 6)
+    sale_order_coordinador_ids = fields.One2many("sale.order", "coordinador_proyecto_id")
