@@ -34,7 +34,6 @@ class SaleOrder(models.Model):
                                                   compute="_compute_visible_btn_generar_proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
     total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion")
-    total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -61,15 +60,11 @@ class SaleOrder(models.Model):
     def _compute_prevision_facturacion(self):
         for r in self:
             previsto = 0
-            facturado = 0
             for prevision in r.prevision_facturacion_ids:
-                if prevision.facturado:
-                    facturado += prevision.importe
+                if not prevision.facturado:
+                    previsto += prevision.importe
                     
-            r.update({
-                'total_previsto': previsto,
-                'total_facturado': facturado
-            })
+            r.update({'total_previsto': previsto})
             
     @api.depends('order_line.product_id.project_id')
     def _compute_tasks_ids(self):
@@ -413,11 +408,12 @@ class PrevisionFacturacion(models.Model):
     _order = "fecha desc"
     
     order_id = fields.Many2one("sale.order", string="Pedido Venta")
-    order_date_order = fields.Datetime(related="order_id.date_order")
-    order_partner_id = fields.Many2one(related="order_id.partner_id")
-    order_amount_total = fields.Monetary(realted="order_id.partner_id")
+    order_date_order = fields.Datetime(related="order_id.date_order", store=True)
+    order_partner_id = fields.Many2one(related="order_id.partner_id", store=True)
+    order_amount_total = fields.Monetary(realted="order_id.partner_id", store=True)
     fecha = fields.Date('Fecha')
     importe = fields.Monetary("Importe previsto")
     currency_id = fields.Many2one(related='order_id.currency_id')
     facturado = fields.Boolean("Facturado")
+    feedbak = fields.Text("Feedbak")
 
