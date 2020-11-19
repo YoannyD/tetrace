@@ -2,6 +2,7 @@
 # © 2020 Ingetive - <info@ingetive.com>
 
 import logging
+import re
 
 from odoo import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, float_repr
