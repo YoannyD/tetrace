@@ -139,7 +139,7 @@ class SaleOrder(models.Model):
 
         if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals or \
             'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals \
-            or 'referencia_proyecto_antigua' in vals:
+            or 'referencia_proyecto_antigua' in vals or 'partner_id' in vals:
             self.actualizar_datos_proyecto()
 
         if vals.get('coordinador_proyecto_id'):
@@ -187,7 +187,8 @@ class SaleOrder(models.Model):
                 r.project_ids.write({'name': name})
                 for p in r.project_ids:
                     p.analytic_account_id.write({
-                        'name': r.ref_proyecto,
+                        'name': name,
+                        'partner_id': r.partner_id.id,
                         'company_id': None
                     })
 
@@ -300,6 +301,7 @@ class SaleOrderLine(models.Model):
                 project_template_ids.append(r.product_id.project_template_id.id)
                 for task in r.product_id.project_template_id.tasks:
                     task.copy({
+                        'name': task.name,
                         'project_id': r.order_id.project_ids[0].id,
                         'sale_line_id': r.id,
                         'partner_id': r.order_id.partner_id.id,
@@ -315,6 +317,9 @@ class SaleOrderLine(models.Model):
         self.ensure_one()
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
+        
+        if self.order_id.project_ids and self.product_id.service_tracking in ['task_global_project', 'task_in_project']:
+            return self.order_id.project_ids[0]
 
         project = super(SaleOrderLine, self)._timesheet_create_project()
         values = {
