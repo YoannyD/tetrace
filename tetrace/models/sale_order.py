@@ -442,4 +442,5 @@ class PrevisionFacturacion(models.Model):
     facturado = fields.Boolean("Facturado")
     feedbak = fields.Text("Feedbak")
     observaciones = fields.Text("Observaciones")
+    importe_factura = fields.Monetary("Importe factura")
 
