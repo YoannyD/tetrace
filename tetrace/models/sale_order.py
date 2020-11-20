@@ -33,7 +33,10 @@ class SaleOrder(models.Model):
     visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,
                                                   compute="_compute_visible_btn_generar_proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
-    total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion")
+    total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion", store=True)
+    total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion", store=True)
+    project_estado_id = fields.Many2one("tetrace.project_state", compute="_compute_project_estado_id", 
+                                        string="Estado proyecto", store=True)
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -45,26 +48,40 @@ class SaleOrder(models.Model):
             if r.num_proyecto:
                 if len(r.num_proyecto) != 4:
                     raise ValidationError("El Nº de proyecto tiene que ser de 4 caracteres.")
-
+                    
     @api.constrains("referencia_proyecto_antigua")
     def _check_referencia_proyecto_antigua(self):
         for r in self:
             if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
                 raise ValidationError("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999.")
                     
+    @api.depends("project_ids.estado_id")
+    def _compute_project_estado_id(self):
+        for r in self:
+            if r.project_ids:
+                r.project_estado_id = r.project_ids[0].estado_id.id
+            else:
+                r.project_estado_id = None
+                    
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
 
-    @api.depends("prevision_facturacion_ids")
+    @api.depends("prevision_facturacion_ids.facturado")
     def _compute_prevision_facturacion(self):
         for r in self:
             previsto = 0
+            facturado = 0
             for prevision in r.prevision_facturacion_ids:
-                if not prevision.facturado:
+                if prevision.facturado:
+                    facturado += prevision.importe
+                else:
                     previsto += prevision.importe
                     
-            r.update({'total_previsto': previsto})
+            r.update({
+                'total_facturado': facturado,
+                'total_previsto': previsto
+            })
             
     @api.depends('order_line.product_id.project_id')
     def _compute_tasks_ids(self):
@@ -409,16 +426,20 @@ class SaleOrderLine(models.Model):
     
 class PrevisionFacturacion(models.Model):
     _name = "tetrace.prevision_facturacion"
-    _description = "Previsión facturación"
+    _description = "Gestion facturación"
     _order = "fecha desc"
     
     order_id = fields.Many2one("sale.order", string="Pedido Venta")
     order_date_order = fields.Datetime(related="order_id.date_order", store=True)
     order_partner_id = fields.Many2one(related="order_id.partner_id", store=True)
     order_amount_total = fields.Monetary(realted="order_id.partner_id", store=True)
+    order_nombre_proyecto = fields.Char(related="order_id.nombre_proyecto", store=True)
+    order_project_estado_id = fields.Many2one("tetrace.project_state", 
+                                              related="order_id.project_estado_id", store=True)
     fecha = fields.Date('Fecha')
     importe = fields.Monetary("Importe previsto")
     currency_id = fields.Many2one(related='order_id.currency_id')
     facturado = fields.Boolean("Facturado")
     feedbak = fields.Text("Feedbak")
+    observaciones = fields.Text("Observaciones")
 
