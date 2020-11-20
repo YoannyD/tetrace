@@ -139,6 +139,7 @@
                             <field name="fecha"/>
                             <field name="feedbak"/>
                             <field name="observaciones"/>
+                            <field name="importe_factura"/>
                             <field name="importe"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="facturado"/>
@@ -209,6 +210,7 @@
                             <field name="fecha" readonly="1"/>
                             <field name="feedbak" readonly="1"/>
                             <field name="observaciones" readonly="1"/>
+                            <field name="importe_factura" readonly="1"/>
                             <field name="importe" readonly="1"/>
                             <field name="facturado" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
@@ -230,6 +232,7 @@
                 <field name="order_project_estado_id"/>
                 <field name="fecha"/>
                 <field name="feedbak"/>
+                <field name="importe_factura"/>
                 <field name="importe"/>
                 <field name="facturado"/>
                 <field name="currency_id" invisible="1"/>
