@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_merge_analytic_account_form">
+        <field name="name">tetrace.merge_analytic_account.form</field>
+        <field name="model">tetrace.merge_analytic_account</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="analytic_account_id" options="{'no_create_edit': True}" string="Mergear en"/>
+                </group>
+                <footer>
+                    <button name="action_merge_lines" string="Mergear" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

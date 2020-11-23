@@ -85,6 +85,7 @@
         'wizard/tetrace_crear_version.xml',
         'wizard/tetrace_importar_tickelia.xml',
         'wizard/tetrace_generar_prevision_facturacion.xml',
+        'wizard/tetrace_merge_analytic_account.xml',
     ],
     'demo': [],
     'installable': True,

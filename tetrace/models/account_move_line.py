@@ -25,11 +25,9 @@ class AccountMoveLine(models.Model):
     def _check_analytic_required(self):
         #Evitamos la restricción de la cuenta/etiqueta analitica si se trata apuntes sobre el diario de diferencia
         #de cambio de la compañía
-        if self.move_id.journal_id.id != self.env.company.currency_exchange_journal_id.id:	
-            res = super(AccountMoveLine, self)._check_analytic_required()		
-            return res
-        else:
-            return None  
+        for r in self:
+            if r.move_id.journal_id.id != self.env.company.currency_exchange_journal_id.id:	
+                super(AccountMoveLine, self)._check_analytic_required() 
     
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
