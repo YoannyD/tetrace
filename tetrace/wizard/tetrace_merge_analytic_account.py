@@ -24,15 +24,15 @@ class MergeAnalyticAccount(models.TransientModel):
         analytic_account_ids = [l.account_analytic_id.id for l in lines]
         
         companies = self.env['res.company'].search([])
-        move_lines = self.env['account.move.line'].with_context(allowed_company_ids=companies.ids).search([
-            ('move_id.state', 'in', ['posted', 'draft']),
-            ('analytic_account_id', 'in', analytic_account_ids)
+        analytic_lines = self.env['account.analytic.line'].with_context(allowed_company_ids=companies.ids).search([
+            ('account_id', 'in', analytic_account_ids)
         ])
         
-        for ml in move_lines:
-            ml.write({'analytic_account_id': self.analytic_account_id.account_analytic_id.id})
-            ml.analytic_line_ids.write({'account_id': self.analytic_account_id.account_analytic_id.id})
-
+        for al in analytic_lines:
+            al.write({'account_id': self.analytic_account_id.account_analytic_id.id})
+            if al.move_id:
+                al.move_id.write({'analytic_account_id': self.analytic_account_id.account_analytic_id.id})
+                
         return {'type': 'ir.actions.act_window_close'}
     
     def open_wizard(self, context=None):
