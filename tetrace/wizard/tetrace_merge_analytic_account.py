@@ -19,36 +19,19 @@ class MergeAnalyticAccount(models.TransientModel):
         self.ensure_one()
         if not self.analytic_account_id:
             raise ValidationError('Debe seleccionar una cuenta analítica.')
-            
+
         lines = self.env['tetrace.merge_analytic_account_line'].search([])
         analytic_account_ids = [l.account_analytic_id.id for l in lines]
         
         companies = self.env['res.company'].search([])
         move_lines = self.env['account.move.line'].with_context(allowed_company_ids=companies.ids).search([
-            ('move_id.type', '=', 'entry'),
+            ('move_id.state', 'in', ['posted', 'draft']),
             ('analytic_account_id', 'in', analytic_account_ids)
         ])
         
-        move_ids = [m.move_id.id for m in move_lines]
-        moves = self.env['account.move'].with_context(allowed_company_ids=companies.ids).browse(move_ids)
-        move_with_states = {}
-        for m in moves:
-            move_with_states.update({
-                str(m.id): {
-                    'move': m,
-                    'state': m.state
-                }
-            })
-            if m.state != 'draft':
-                m.button_draft()
-
-        move_lines.write({'analytic_account_id': self.analytic_account_id.account_analytic_id.id})
-        
-        for id, value in move_with_states.items():
-            if value['state'] == 'posted':
-                value['move'].action_post()
-            elif value['state'] == 'cancel':
-                value['move'].button_cancel()
+        for ml in move_lines:
+            ml.write({'analytic_account_id': self.analytic_account_id.account_analytic_id.id})
+            ml.analytic_line_ids.write({'account_id': self.analytic_account_id.account_analytic_id.id})
 
         return {'type': 'ir.actions.act_window_close'}
     

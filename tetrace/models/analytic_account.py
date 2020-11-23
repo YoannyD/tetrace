@@ -27,9 +27,7 @@ class AccountAnalyticLine(models.Model):
         #Modificamos el comportamiento anterior mediante el cual si la cuenta analitica asociada a la proyecto
         #no tenia indicada la compañia entonces saltaba un error; ahora si no hay compañia se toma la del entorno
         #de esta manera permitimos que podamos compartir esa cuenta analitica entre las distintas compañías
-        _logger.warning(vals)
         res = super(AccountAnalyticLine, self)._timesheet_preprocess(vals)
-        _logger.warning(res)
         if res.get('company_id') == False:
             res['company_id'] = self.env.company.id
         return res
