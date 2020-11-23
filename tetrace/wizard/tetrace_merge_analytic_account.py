@@ -30,7 +30,7 @@ class MergeAnalyticAccount(models.TransientModel):
         
         for al in analytic_lines:
             al.write({'account_id': self.analytic_account_id.account_analytic_id.id})
-            if al.move_id:
+            if al.move_id and not al.move_id.analytic_tag_ids:
                 al.move_id.write({'analytic_account_id': self.analytic_account_id.account_analytic_id.id})
                 
         return {'type': 'ir.actions.act_window_close'}
