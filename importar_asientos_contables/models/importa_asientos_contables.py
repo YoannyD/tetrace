@@ -25,12 +25,8 @@ class ImportarAsientosContables(models.AbstractModel):
         data = self.execute(db_name, db_user, db_pass, db_host, query)
         if not data:
             return
-        
-        nums_asiento = [item['numero_asiento'] for item in data]
-        where2 = " where numero_asiento IN (%s)" % ','.join(str(a) for a in nums_asiento)
-        query = self._create_query(db_table, where=where2)
+
         data = self.execute(db_name, db_user, db_pass, db_host, query)
-        
         asientos_agrupados = self._agrupar_registros_por_asiento(data)
 
         for asiento, items in asientos_agrupados.items():
@@ -52,7 +48,10 @@ class ImportarAsientosContables(models.AbstractModel):
 
             sin_cuenta = False
             values_lines = []
+            item_ids = []
+            balanceo = 0
             for item in items:
+                item_ids.append(item["id"])
                 account = self._buscar_cuenta(item['cuenta'], company_id)
                 if not account:
                     _logger.warning("La cuenta %s del asiento %s no se ha econtrado." % (item['cuenta'], ref_asiento))
@@ -76,18 +75,66 @@ class ImportarAsientosContables(models.AbstractModel):
                     'credit': abs(float(item['haber']))
                 })
                 values_lines.append(values_apunte)
+                balanceo += float(item['debe'])
+                balanceo -= float(item['haber'])
 
             if sin_cuenta:
-                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, ref_asiento, 2)
+                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, 2)
                 continue
 
-            values_asiento.update({'line_ids': values_lines})
+            _logger.warning(balanceo)
+            debit_balanceo = 0
+            credit_balanceo = 0
+            if balanceo != 0:
+                if balanceo > 0:
+                    debit_balanceo = 0
+                    credit_balanceo = abs(balanceo)
+                else:
+                    debit_balanceo = abs(balanceo)
+                    credit_balanceo = 0
+                values_lines.append((0, 0, {
+                    'account_id': account.id,
+                    'company_id': company_id,
+                    'name': "Cuadrar balance",
+                    'debit': debit_balanceo,
+                    'credit': credit_balanceo,
+                    'cuadrar_blanceo': True
+                }))
+                
+
             try:
-                asiento = self.env['account.move'].create(values_asiento)
-                traspasado = 1 if asiento else 3
-                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, ref_asiento, traspasado)
+                asiento = self.env['account.move'].search([
+                    ('ref', '=', ref_asiento),
+                    ('company_id', '=', company_id)
+                ], limit=1)
+                if asiento:
+                    asiento.write({'line_ids': values_lines})
+                else:
+                    values_asiento.update({'line_ids': values_lines})
+                    asiento = self.env['account.move'].create(values_asiento)
+
+                if asiento:
+                    traspasado = 1
+                    apuntes_balanceo = self.env['account.move.line'].search([
+                        ('cuadrar_blanceo', '=', True),
+                        ('move_id', '=', asiento.id)
+                    ])
+
+                    if apuntes_balanceo:
+                        values_lines = []
+                        total_balanceo = 0
+                        for apunte in apuntes_balanceo:
+                            total_balanceo += apunte.credit - apunte.debit
+                            values_lines.append((2, apunte.id))
+
+                        if total_balanceo == 0:
+                            asiento.write({'line_ids': values_lines})
+                else:
+                    traspasado = 3
+                
+                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, traspasado)
             except:
-                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, ref_asiento, 3)
+                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, 3)
 
     def _buscar_cuenta(self, cuenta, company_id):
         cuenta = cuenta
@@ -118,8 +165,8 @@ class ImportarAsientosContables(models.AbstractModel):
             asientos_agrupados[key].append(item)
         return asientos_agrupados
 
-    def _marcar_registro(self, db_name, db_user, db_pass, db_host, db_table, ref_asiento, traspasado):
-        query = "UPDATE %s SET traspaso = %s where numero_asiento = %s;" % (db_table, traspasado, ref_asiento)
+    def _marcar_registro(self, db_name, db_user, db_pass, db_host, db_table, ids, traspasado):
+        query = "UPDATE %s SET traspaso = %s where id in (%s);" % (db_table, traspasado, ",".join(str(id) for id in ids))
         self.execute(db_name, db_user, db_pass, db_host, query, commit=True)
 
     @api.model
