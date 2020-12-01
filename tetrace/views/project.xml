@@ -170,6 +170,18 @@
                 <page name="jobs" string="Procesos de selección" attrs="{'invisible': [('job_id', '=', False)]}">
                     <field name="applicant_ids" nolabel="1"/>
                 </page>
+                
+                <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">
+                    <field name="producto_entrega" invisible="1"/>
+                    <field name="desde_plantilla" invisible="1"/>
+                    <field name="entrega_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="name"/>
+                            <field name="entregado" sum="total"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>

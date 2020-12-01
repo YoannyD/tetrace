@@ -149,9 +149,54 @@ class ProjectTask(models.Model):
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
     contract_ids = fields.Many2many('hr.contract', 'task_contract_rel', 'task_id', 'contract_id')
+    entrega_ids = fields.One2many('project.task.entrega', 'task_id')
+    entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
+    producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
+    desde_plantilla = fields.Boolean("Creada desde plantilla")
+    
+    @api.depends("entrega_ids.entregado")
+    def _compute_entrega_total(self):
+        for r in self:
+            total = 0
+            if not r.desde_plantilla and r.producto_entrega:
+                for entrega in r.entrega_ids:
+                    total += entrega.entregado
+            r.entrega_total = total
+    
+    def write(self, vals):
+        entregas = {}
+        for r in self:
+            entregas.update({
+                str(r.id): {
+                    'registro': r,
+                    'total': r.entrega_total
+                }
+            })
+            
+        res = super(ProjectTask, self).write(vals)
+        
+        for r in self:
+            if not r.desde_plantilla and r.producto_entrega and entregas[str(r.id)]['total'] != r.entrega_total:
+                r.sale_line_id.write({'qty_delivered': r.entrega_total})
+                body = "<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s" % (entregas[str(r.id)]['total'], r.entrega_total)
+                r.message_post(body=body, subject="Entrega")
+        return res
     
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
 
     bloquear_imputar_tiempos = fields.Boolean('Bloquear imputación de tiempos')
+    
+    
+class ProjectTaskEntrega(models.Model):
+    _name = 'project.task.entrega'
+    _description = "Entregas (Tareas)"
+
+    name = fields.Char("Observaciones")
+    fecha = fields.Date("Fecha")
+    entregado = fields.Float("Entregado")
+    task_id = fields.Many2one("project.task")
+    
+    
+    

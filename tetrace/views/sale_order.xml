@@ -108,6 +108,11 @@
 
             <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
                 <field name="job_id" optional="hide"/>
+                <field name="product_entregado" invisible="1"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line']//tree[1]/field[@name='qty_delivered']" position="attributes">
+                <attribute name="attrs">{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])],'readonly': ['|', ('product_entregado', '=', True), ('qty_delivered_method', '!=', 'manual')]}</attribute>
             </xpath>
             
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_unit']" position="attributes">
