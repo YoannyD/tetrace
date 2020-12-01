@@ -210,16 +210,15 @@
                         </group>
                     </page>
                     <page string="Partner records">
-                        <group name="summary_partner_records" string="Summary">
+                        <group name="summary_partner_records" string="Summary"/>
                             <field name="partner_record_ids" nolabel="1" />
-                        </group>
                         <group
                             name="detail_partner_records"
                             string="Details"
                             create="0"
-                        >
+                        />
                             <field name="partner_record_detail_ids" nolabel="1" />
-                        </group>
+
                     </page>
                     <page string="Refunds from other periods">
                         <group name="summary_refund_records" string="Summary">

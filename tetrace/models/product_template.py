@@ -14,7 +14,16 @@ class ProductTemplate(models.Model):
     secuencia_default_code = fields.Integer('Secuencia Ref. Interna', copy=False)
     project_template_id = fields.Many2one("project.project", string="Plantilla proyecto confirmado")
     project_template_diseno_id = fields.Many2one("project.project", string="Plantilla proyecto preliminar")
+    producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega")
 
+    def _compute_producto_entrega(self):
+        for r in self:
+            if r.service_policy == 'delivered_manual' and \
+                r.service_tracking == 'task_in_project':
+                r.producto_entrega = True
+            else:
+                r.producto_entrega = False
+    
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         self = self.with_context(force_company=19)

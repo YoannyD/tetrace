@@ -300,6 +300,7 @@ class SaleOrderLine(models.Model):
 
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     no_imprimir = fields.Boolean("Archivado")
+    product_entregado = fields.Boolean(related="product_id.producto_entrega")
     
     def _timesheet_service_generation(self):
         # Compruebo que el pedido tenga o no proyectos
@@ -323,6 +324,7 @@ class SaleOrderLine(models.Model):
                         'sale_line_id': r.id,
                         'partner_id': r.order_id.partner_id.id,
                         'email_from': r.order_id.partner_id.email,
+                        'desde_plantilla': True
                     })
                 
     def _timesheet_create_project_prepare_values(self):
@@ -369,6 +371,7 @@ class SaleOrderLine(models.Model):
                 'sale_line_id': self.id,
                 'partner_id': self.order_id.partner_id.id,
                 'email_from': self.order_id.partner_id.email,
+                'desde_plantilla': True
             })
             
             project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': self.id})
