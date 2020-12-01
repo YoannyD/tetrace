@@ -23,10 +23,18 @@ class ImportarAsientosContables(models.AbstractModel):
 
         query = self._create_query(db_table, offset, limit, where, order)
         data = self.execute(db_name, db_user, db_pass, db_host, query)
+        if not data:
+            return
+        
+        nums_asiento = [item['numero_asiento'] for item in data]
+        where2 = " where numero_asiento IN (%s)" % ','.join(str(a) for a in nums_asiento)
+        query = self._create_query(db_table, where=where2)
+        data = self.execute(db_name, db_user, db_pass, db_host, query)
+        
         asientos_agrupados = self._agrupar_registros_por_asiento(data)
 
         for asiento, items in asientos_agrupados.items():
-            ref_asiento = int(items[0]['numero_asiento'])
+            ref_asiento = items[0]['numero_asiento']
 
             journal = self.env['account.journal'].search([
                 ('name', '=', items[0]['diario']),
@@ -82,7 +90,7 @@ class ImportarAsientosContables(models.AbstractModel):
                 self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, ref_asiento, 3)
 
     def _buscar_cuenta(self, cuenta, company_id):
-        cuenta = str(int(cuenta))
+        cuenta = cuenta
 
         cuenta = self.env['account.account'].search([
             ('code', '=', cuenta),
@@ -130,12 +138,8 @@ class ImportarAsientosContables(models.AbstractModel):
         ], limit=100)
         
         for r in rs:
-            try:
-                ref = int(r.move_id.ref)
-            except:
-#                 _logger.warning(r.move_id.ref)
-                continue
-                
+            ref = r.move_id.ref
+
             sql = """
                 SELECT 
                     APUNTES_CONTABLES.FECHA_APUNTE, 
@@ -156,7 +160,7 @@ class ImportarAsientosContables(models.AbstractModel):
 #             _logger.warning(sql)
             if not data:
                 continue
-            _logger.warning("con itmes")
+            _logger.warning("con items")
             values = [(2, r.id)]  
             for item in data:
                 analytic_account = self.env['account.analytic.account'].search([

@@ -437,6 +437,7 @@ class AccountMove(models.Model):
             values.update({'line_ids': line_ids})
             self.create(values)
 
+            
 class AccountPartialReconcile(models.Model):
     _inherit = "account.partial.reconcile"
     
