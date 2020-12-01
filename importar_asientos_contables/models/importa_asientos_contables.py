@@ -82,7 +82,6 @@ class ImportarAsientosContables(models.AbstractModel):
                 self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, 2)
                 continue
 
-            _logger.warning(balanceo)
             debit_balanceo = 0
             credit_balanceo = 0
             if balanceo != 0:
@@ -107,6 +106,7 @@ class ImportarAsientosContables(models.AbstractModel):
                     ('ref', '=', ref_asiento),
                     ('company_id', '=', company_id)
                 ], limit=1)
+
                 if asiento:
                     asiento.write({'line_ids': values_lines})
                 else:
@@ -131,8 +131,8 @@ class ImportarAsientosContables(models.AbstractModel):
                             asiento.write({'line_ids': values_lines})
                 else:
                     traspasado = 3
-                
-                self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, traspasado)
+
+                    self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, traspasado)
             except:
                 self._marcar_registro(db_name, db_user, db_pass, db_host, db_table, item_ids, 3)
 
