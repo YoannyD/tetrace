@@ -54,7 +54,7 @@ class AccountMove(models.Model):
     #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
         for r in self:
             for line in r.line_ids:
-                resultado = re.search(r"[0-9]{4}/[0-9]{3}", line.name)
+                resultado = re.search(r"[A-Z]*[0-9]{4}/[0-9]{3}", line.name)
                 if resultado:
                     return resultado.group(0)
                     break    
