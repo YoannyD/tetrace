@@ -61,6 +61,7 @@ class AccountAnalyticLineRel(models.Model):
 
     analytic_line_id = fields.Many2one('account.analytic.line', string="Línea analítica", required=True,
                                        ondelete='cascade')
+    asiento_id = fields.Many2one(related="analytic_line_id.move_id.move_id", string="Asiento contable")
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
     account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
