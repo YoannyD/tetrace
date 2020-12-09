@@ -76,6 +76,7 @@
         'views/mis_report_instance.xml',
         'views/tetrace_tickelia.xml',
         'views/tetrace_vat_book.xml',
+        'views/account_analytic_account.xml',
         'views/res_config_settings.xml',
         'views/tetrace_linea_analitica_rel.xml',
         'views/tetrace_project_contract.xml',
