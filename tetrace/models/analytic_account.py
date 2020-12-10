@@ -12,12 +12,15 @@ _logger = logging.getLogger(__name__)
 class AccountAnalyticAccount(models.Model):
     _inherit = 'account.analytic.account'
     _description = 'Analytic Account'
+    
+    estructurales = fields.Boolean(string='Estructurales', default=False)
 
     @api.constrains('company_id')
     def _check_company_id(self):
         for record in self:
             _logger.warning("Anulamos?")
 
+            
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
@@ -61,6 +64,7 @@ class AccountAnalyticLineRel(models.Model):
 
     analytic_line_id = fields.Many2one('account.analytic.line', string="Línea analítica", required=True,
                                        ondelete='cascade')
+    asiento_id = fields.Many2one(related="analytic_line_id.move_id.move_id", string="Asiento contable")
     debit = fields.Monetary('Debit', compute="_compute_debit_credit", store=True)
     credit = fields.Monetary('Credit', compute="_compute_debit_credit", store=True)
     account_id = fields.Many2one(related="analytic_line_id.general_account_id", store=True)
@@ -69,6 +73,7 @@ class AccountAnalyticLineRel(models.Model):
     company_id = fields.Many2one(related="analytic_line_id.company_id", store=True)
     balance = fields.Monetary('Balance', compute="_compute_debit_credit", store=True)
     analytic_account_id = fields.Many2one(related="analytic_line_id.account_id", store=True)
+    estructurales = fields.Boolean(related="analytic_line_id.account_id.estructurales", store=True)
 
     @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):

@@ -19,7 +19,17 @@ class MisReportInstance(models.Model):
 
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
     informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
+    estructurales = fields.Boolean("Incluir estructurales")
 
+    def _add_analytic_filters_to_context(self, context):
+        self.ensure_one()
+        super(MisReportInstance, self)._add_analytic_filters_to_context(context)
+        if not self.estructurales:
+            context["mis_report_filters"]["analytic_account_id.estructurales"] = {
+                "value": False,
+                "operator": "=",
+            }
+    
     def _compute_matrix(self):
         self.ensure_one()
         aep = self.report_id._prepare_aep(self.query_company_ids, self.currency_id, self.informe_fecha_contable)
