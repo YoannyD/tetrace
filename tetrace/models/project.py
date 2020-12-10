@@ -93,6 +93,7 @@ class Project(models.Model):
         action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
         return dict(action, context=ctx)
     
+    @api.model
     def create(self, vals):
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
