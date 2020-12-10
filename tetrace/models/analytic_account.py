@@ -13,13 +13,14 @@ class AccountAnalyticAccount(models.Model):
     _inherit = 'account.analytic.account'
     _description = 'Analytic Account'
     
-    estructurales = fields.Boolean(string='Estructurales', default = False)
+    estructurales = fields.Boolean(string='Estructurales', default=False)
 
     @api.constrains('company_id')
     def _check_company_id(self):
         for record in self:
             _logger.warning("Anulamos?")
 
+            
 class AccountAnalyticLine(models.Model):
     _inherit = 'account.analytic.line'
 
