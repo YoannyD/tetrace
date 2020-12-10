@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    name = fields.Char(compute="_compute_name", store=True)
     ref_proyecto = fields.Char('Referencia proyecto', copy=False)
     ejercicio_proyecto = fields.Integer('Ejercicio', default=fields.Date.today().strftime("%y"), copy=False)
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False)
@@ -37,6 +38,7 @@ class SaleOrder(models.Model):
     total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion", store=True)
     project_estado_id = fields.Many2one("tetrace.project_state", compute="_compute_project_estado_id", 
                                         string="Estado proyecto", store=True)
+    rfq = fields.Char("RFQ")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -54,6 +56,14 @@ class SaleOrder(models.Model):
         for r in self:
             if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
                 raise ValidationError("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999.")
+                    
+    @api.depends("rfq", "ref_proyecto")
+    def _compute_name(self):
+        for r in self:
+            if r.ref_proyecto:
+                r.name = r.ref_proyecto
+            elif r.rfq:
+                r.name = r.rfq
                     
     @api.depends("project_ids.estado_id")
     def _compute_project_estado_id(self):
