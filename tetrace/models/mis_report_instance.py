@@ -19,7 +19,7 @@ class MisReportInstance(models.Model):
 
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
     informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
-    estructurales = fields.Boolean("Estructurales")
+    estructurales = fields.Boolean("Incluir estructurales")
 
     def _add_analytic_filters_to_context(self, context):
         self.ensure_one()
