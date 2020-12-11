@@ -31,8 +31,11 @@ class AccountAnalyticLine(models.Model):
         #no tenia indicada la compañia entonces saltaba un error; ahora si no hay compañia se toma la del entorno
         #de esta manera permitimos que podamos compartir esa cuenta analitica entre las distintas compañías
         res = super(AccountAnalyticLine, self)._timesheet_preprocess(vals)
-        if res.get('company_id') == False:
+        if not res.get('company_id'):
             res['company_id'] = self.env.company.id
+            
+        if 'product_uom_id' not in vals:
+            vals['product_uom_id'] = self.env.company.project_time_mode_id.id
         return res
 
     @api.model
