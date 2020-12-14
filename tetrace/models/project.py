@@ -3,7 +3,9 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from datetime import datetime, timedelta
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -18,6 +20,16 @@ class Estado(models.Model):
     project_ids = fields.One2many('project.project', 'estado_id')
 
 
+class MotivoCancelacion(models.Model):
+    _name = 'tetrace.motivo_cancelacion'
+    _description = "Motivos cancelación"
+    _order = "sequence,name"
+
+    sequence = fields.Integer("Secuencia")
+    name = fields.Char('Motivo')
+    project_ids = fields.One2many("project.project", "motivo_cancelacion_id")
+    
+    
 class Project(models.Model):
     _inherit = 'project.project'
 
@@ -33,7 +45,20 @@ class Project(models.Model):
     partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
+    url_proyecto = fields.Char("URL proyecto")
+    fecha_inicio = fields.Date("Fecha inicio")
+    fecha_cancelacion = fields.Date("Fecha cancelación")
+    fecha_finalizacion = fields.Date("Fecha finalización")
+    motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
+    offset_deadline_activacion = fields.Integer("Offset Dead Line tareas activación (Días)")
+    offset_deadline_desactivacion = fields.Integer("Offset Dead Line tareas desactivación (Días)")
                 
+    @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
+    def _check_motivo_cancelacion_id(self):
+        for r in self:
+            if r.fecha_cancelacion and not r.motivo_cancelacion_id:
+                raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
+        
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \
@@ -93,17 +118,49 @@ class Project(models.Model):
         action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
         return dict(action, context=ctx)
     
+    def view_sale_order_form(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('sale', 'action_quotations_with_onboarding')
+        view_form_id = self.env.ref('sale.view_order_form').id
+        action.update({
+            'views': [(view_form_id, 'form')],
+            'view_mode': 'form,tree',
+            'res_id': self.sale_order_id.id
+        })
+        return action
+    
     @api.model
     def create(self, vals):
+        vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
+        if "offset_deadline_activacion" in vals:
+            res.actualizar_deadline_tareas_activacion('activacion')
+            
+        if "offset_deadline_desactivacion" in vals:
+            res.actualizar_deadline_tareas_activacion('desactivacion')
         return res
     
     def write(self, vals):
         res = super(Project, self).write(vals)
+        vals = self.actualizar_vals(vals)
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
         return res
+    
+    @api.model
+    def actualizar_vals(self, vals):
+        if "estado_id" in vals and vals.get("estado_id") != 4:
+            vals.update({"motivo_cancelacion_id": False})
+        return vals
+    
+    def actualizar_deadline_tareas_activacion(self, tipo_tarea):
+        for r in self:
+            if tipo_tarea == 'activacion':
+                dias = r.offset_deadline_activacion
+            elif tipo_tarea == 'desactivacion':
+                dias = r.offset_deadline_desactivacion
+            r.task_ids.actualizar_deadline(tipo_tarea, dias)
     
     def actualizar_geo_partner(self):
         for r in self:
@@ -154,6 +211,9 @@ class ProjectTask(models.Model):
     entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
     desde_plantilla = fields.Boolean("Creada desde plantilla")
+    tipo = fields.Selection([('activacion', 'Activación'), ('desactivacion', 'Desactivacion')], 
+                            default="desactivacion", string="Tipo tarea")
+    tarea_individual = fields.Boolean("Tarea individual")
     
     @api.depends("entrega_ids.entregado")
     def _compute_entrega_total(self):
@@ -163,8 +223,21 @@ class ProjectTask(models.Model):
                 for entrega in r.entrega_ids:
                     total += entrega.entregado
             r.entrega_total = total
+            
+    @api.onchange("tarea_seleccion")
+    def _onchange_tarea_seleccion(self):
+        for r in self:
+            if r.tarea_seleccion:
+                r.tarea_individual = True
+    
+    @api.model
+    def create(self, vals):
+        vals = self.actualizar_vals(vals)
+        return super(ProjectTask, self).create(vals)
     
     def write(self, vals):
+        vals = self.actualizar_vals(vals)
+        
         entregas = {}
         for r in self:
             entregas.update({
@@ -182,6 +255,29 @@ class ProjectTask(models.Model):
                 body = "<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s" % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
         return res
+    
+    @api.model
+    def actualizar_vals(self, vals):
+        if vals.get("tipo"):
+            vals.update({'tarea_seleccion': False})
+            
+        if vals.get("tarea_seleccion"):
+            vals.update({'tarea_individual': True})
+        return vals
+    
+    def actualizar_deadline(self, tipo_tarea, dias=0):
+        if dias <= 0:
+            return
+        
+        fecha_actual = fields.Date.today() - timedelta(days=dias)
+        for r in self:
+            if r.tipo_tarea == tipo_tarea:
+                r.write({'date_deadline': fecha_actual})
+            tasks = self.env['project.task'].search([
+                ('parent_id', '=', r.id),
+                (tipo_tarea, '=', tipo_tarea)
+            ])
+            tasks.actualizar_deadline(tipo_tarea, dias)
     
 
 class ProjectTaskType(models.Model):
