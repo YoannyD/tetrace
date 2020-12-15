@@ -67,11 +67,10 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion"/>
                 <field name="fecha_finalizacion"/>
-                <field name="offset_deadline_activacion"/>
-                <field name="offset_deadline_desactivacion"/>
+                <field name="offset_deadline_activacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
+                <field name="offset_deadline_desactivacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
-                <field name="fecha_finalizacion"/>
             </xpath>
             
             <xpath expr="//page[@name='settings']" position="inside">
@@ -98,11 +97,10 @@
         <field name="inherit_id" ref="sale_timesheet_enterprise.project_view_form_inherit"/>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
-<!--             <xpath expr="//field[name='allow_timesheet_timer']" position="attributes">
+            <xpath expr="//field[@name='allow_timesheet_timer']/../.." position="attributes">
                 <attribute name="invisible">1</attribute>
-                <attribute name="attrs">{}</attribute>
             </xpath>
-             -->
+            
             <xpath expr="//div[@id='allow_billable_container']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>

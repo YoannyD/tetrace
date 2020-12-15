@@ -134,10 +134,10 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
-        if "offset_deadline_activacion" in vals:
+        if "offset_deadline_activacion" in vals or vals.get("fecha_finalizacion"):
             res.actualizar_deadline_tareas_activacion('activacion')
             
-        if "offset_deadline_desactivacion" in vals:
+        if "offset_deadline_desactivacion" in vals or vals.get("fecha_finalizacion"):
             res.actualizar_deadline_tareas_activacion('desactivacion')
         return res
     
@@ -146,6 +146,12 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
+            
+        if "offset_deadline_activacion" in vals or vals.get("fecha_finalizacion"):
+            self.actualizar_deadline_tareas_activacion('activacion')
+            
+        if "offset_deadline_desactivacion" in vals or vals.get("fecha_finalizacion"):
+            self.actualizar_deadline_tareas_activacion('desactivacion')
         return res
     
     @api.model
@@ -269,14 +275,21 @@ class ProjectTask(models.Model):
         if dias <= 0:
             return
         
-        fecha_actual = fields.Date.today() - timedelta(days=dias)
         for r in self:
-            if r.tipo_tarea == tipo_tarea:
-                r.write({'date_deadline': fecha_actual})
-            tasks = self.env['project.task'].search([
-                ('parent_id', '=', r.id),
-                (tipo_tarea, '=', tipo_tarea)
-            ])
+            fecha_limite = None
+            if r.project_id and (r.project_id.fecha_finalizacion or r.project_id.fecha_cancelacion):
+                if r.project_id.fecha_finalizacion:
+                    fecha_limite = r.project_id.fecha_finalizacion
+                    
+                if r.project_id.fecha_cancelacion and r.project_id.fecha_cancelacion < fecha_limite:
+                    fecha_limite = r.project_id.fecha_cancelacion
+                    
+                fecha_limite = fields.Date.from_string(fecha_limite) - timedelta(days=dias)
+                
+            if r.tipo == tipo_tarea and fecha_limite:
+                r.write({'date_deadline': fecha_limite})
+                
+            tasks = self.env['project.task'].search([('parent_id', '=', r.id)])
             tasks.actualizar_deadline(tipo_tarea, dias)
     
 
