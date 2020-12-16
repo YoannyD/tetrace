@@ -15,7 +15,7 @@
             </xpath>
         </field>
     </record>
-
+    
     <record model="ir.ui.view" id="edit_project">
         <field name="name">project.project.form.tetrace</field>
         <field name="inherit_id" ref="project.edit_project"/>
@@ -26,6 +26,15 @@
                        widget="statusbar" 
                        options="{'clickable': '1'}"
                        groups="tetrace.group_tetrace_project_estado"/>
+            </xpath>
+            
+            <xpath expr="//div[@name='button_box']/button" position="before">
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_sale_order_form"
+                        string="Presupuesto"
+                        attrs="{'invisible':[('sale_order_id', '=', False)]}"
+                        icon="fa-file-text-o"/>
             </xpath>
             
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -51,12 +60,49 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="partner_latitude"/>
                 <field name="partner_longitude"/>
+                <field name="url_proyecto" widget="url"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="fecha_inicio"/>
+                <field name="fecha_cancelacion"/>
+                <field name="fecha_finalizacion"/>
+                <field name="offset_deadline_activacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
+                <field name="offset_deadline_desactivacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
+                <field name="motivo_cancelacion_id"
+                       attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
             </xpath>
             
             <xpath expr="//page[@name='settings']" position="inside">
                 <group>
                     <field name="descripcion"/>
                 </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_invoice_form_timesheet_tetrace">
+        <field name="name">Inherit project form : Invoicing Data Tetrace</field>
+        <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='timesheet_settings']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_view_form_inherit_timesheet_tetrace">
+        <field name="name">project.view.form.inherit.timesheet.tetrace</field>
+        <field name="inherit_id" ref="sale_timesheet_enterprise.project_view_form_inherit"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allow_timesheet_timer']/../.." position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//div[@id='allow_billable_container']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
@@ -159,7 +205,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="job_id"/>
-                <field name="tarea_seleccion"/>
+                <field name="tipo"/>
+                <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
+                <field name="tarea_individual"/>
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">
@@ -205,6 +253,43 @@
             <xpath expr="//field[@name='fold']" position="after">
                 <field name="bloquear_imputar_tiempos"/>
             </xpath>
+        </field>
+    </record>
+    
+    <record id="action_tetrace_motivo_cancelacion" model="ir.actions.act_window">
+        <field name="name">Motivos cancelación</field>
+        <field name="res_model">tetrace.motivo_cancelacion</field>
+        <field name="view_mode">tree,kanban,form</field>
+    </record>
+
+    <menuitem action="action_tetrace_motivo_cancelacion"
+              id="menu_tetrace_motivo_cancelacion"
+              name="Motivos cancelación"
+              parent="project.menu_project_config"
+              sequence="8"/>
+
+    <record model="ir.ui.view" id="tetrace_motivo_cancelacion_form">
+        <field name="name">tetrace.motivo_cancelacion.form</field>
+        <field name="model">tetrace.motivo_cancelacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_motivo_cancelacion_tree">
+        <field name="name">tetrace.motivo_cancelacion.form</field>
+        <field name="model">tetrace.motivo_cancelacion</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
         </field>
     </record>
 </odoo>

@@ -404,21 +404,32 @@ class SaleOrderLine(models.Model):
         if self.order_id.state == 'draft' and not self.job_id:
             return None
         
-        task = None
+        task_seleccion = None
+        tasks_individual = None
         if self.order_id.state == 'draft' and self.job_id:
-            task = self.env['project.task'].search([
+            task_seleccion = self.env['project.task'].search([
                 ('project_id', '=', project.id),
                 ('job_id', '=', False),
                 ('tarea_seleccion', '=', True),
             ], limit=1)
             
-            task.write({
+            task_seleccion.write({
                 'job_id': self.job_id.id,
                 'name': "Selección %s" % self.job_id.name,
                 'sale_line_id': False
             })
+            
+            if int(self.product_uom_qty) > 1:
+                tasks_individual = self.env['project.task'].search([
+                    ('project_id', '=', project.id),
+                    ('tarea_individual', '=', True),
+                ])
+
+                for task in tasks_individual:
+                    for i in range(1, int(self.product_uom_qty)):
+                        task.copy({'name': task.name})
         
-        if not task:
+        if not task_seleccion and not tasks_individual:
             task = super(SaleOrderLine, self)._timesheet_create_task(project)
             
         if self.order_id.state == 'draft' and self.job_id:
