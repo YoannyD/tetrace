@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api
+from odoo.addons.l10n_es_aeat_mod303.models.mod303 import _ACCOUNT_PATTERN_MAP
 
 _logger = logging.getLogger(__name__)
 
