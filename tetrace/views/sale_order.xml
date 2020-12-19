@@ -171,6 +171,7 @@
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
+                <field name="rfq"/>
                 <field name="ref_proyecto"/>
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
@@ -185,6 +186,7 @@
         <field name="model">sale.order</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
+                <field name="rfq"/>
                 <field name="ref_proyecto"/>
                 <field name="nombre_proyecto"/>
                 <field name="referencia_proyecto_antigua"/>
