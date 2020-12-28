@@ -99,11 +99,14 @@ class SaleOrder(models.Model):
             task_ids = []
             for project in order.project_ids:
                 task_ids += project.task_ids.ids
-            tasks_count = self.env['project.task'].search_count([
+            tasks = self.env['project.task'].search([
                 ('id', 'in', task_ids),
                 ('activada', '=', True)
             ])
-            order.tasks_count = tasks_count
+            order.update({
+                'tasks_ids': [(6, 0, tasks.ids)],
+                'tasks_count': len(tasks)
+            })
             
     @api.depends("order_line.product_id", "order_line.product_id.project_template_diseno_id", 
                 'order_line.product_id', 'order_line.project_id')

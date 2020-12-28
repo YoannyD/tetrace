@@ -44,6 +44,7 @@
         'data/project.xml',
         'data/mail_activity.xml',
         'data/mail_sale_order.xml',
+        'data/mail_tetrace_viaje.xml',
         'report/sale.xml',
         'report/account.xml',
         'report/web.xml',

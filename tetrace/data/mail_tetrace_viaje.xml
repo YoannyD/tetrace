@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <!-- Mail template are declared in a NOUPDATE block
+         so users can freely customize/delete them -->
+    <data noupdate="0">
+        <!--Email template -->
+        <record id="email_template_notificar_nuevo_viaje" model="mail.template">
+            <field name="name">Nuevo viaje</field>
+            <field name="model_id" ref="tetrace.model_tetrace_viaje"/>
+            <field name="email_to">${ctx['email_to']|safe}</field>
+            <field name="subject">Nuevo viaje ${object.name}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Nuevo viaje creado: <br/>
+        <strong>Fecha:</strong> ${object.fecha} <br/>
+        <strong>Origen:</strong> ${object.origen} <br/>
+        <strong>Destino:</strong> ${object.destino} <br/>
+        <strong>Contratado:</strong> ${'Sí' if object.contratado else 'No'} <br/>
+        <strong>Realizado:</strong> ${'Sí' if object.realizado else 'No'} <br/>
+        <strong>Empleado:</strong> ${object.employee_id.name} <br/>
+    </p>
+</div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

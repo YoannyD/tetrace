@@ -242,6 +242,19 @@
                         </group>
                     </group>
                 </page>
+                
+                <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">
+                    <field name="viaje_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="origen"/>
+                            <field name="destino"/>
+                            <field name="contratado"/>
+                            <field name="realizado"/>
+                            <field name="employee_id"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>

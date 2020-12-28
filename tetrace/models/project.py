@@ -232,9 +232,10 @@ class ProjectTask(models.Model):
     ], default="desactivacion", string="Tipo tarea")
     tarea_individual = fields.Boolean("Individual")
     viajes = fields.Boolean("Viajes")
+    viaje_ids = fields.One2many("tetrace.viaje", "task_id")
     activada = fields.Boolean("Activada")
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
-    
+
     @api.depends("entrega_ids.entregado")
     def _compute_entrega_total(self):
         for r in self:
@@ -278,7 +279,7 @@ class ProjectTask(models.Model):
     
     @api.model
     def actualizar_vals(self, vals):
-        if vals.get("tipo"):
+        if "tipo" in vals and vals.get("tipo") != 'activacion':
             vals.update({'tarea_seleccion': False})
             
         if vals.get("tarea_seleccion"):
