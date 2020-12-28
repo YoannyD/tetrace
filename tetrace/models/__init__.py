@@ -40,3 +40,4 @@ from . import tetrace_project_contract
 from . import tetrace_project_applicant
 from . import mod303
 from . import mail_thread
+from . import documents

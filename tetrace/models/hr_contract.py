@@ -12,3 +12,16 @@ class Contract(models.Model):
     _inherit = "hr.contract"
 
     tipo_contrato_id = fields.Many2one('tetrace.tipo_contrato', string="Tipo de contrato")
+    
+    def write(self, vals):
+        res = super(Contract, self).write(vals)
+        self.actualizar_nombre_adjunto_a_documento()
+        return res
+    
+    def actualizar_nombre_adjunto_a_documento(self):
+        for r in self:
+            documents = self.env['documents.document'].search([
+                ('res_model', '=', 'hr.contract'),
+                ('res_id', '=', r.id)
+            ])
+            documents._compute_res_name()
