@@ -246,6 +246,17 @@
         </field>
     </record>
     
+    <record model="ir.ui.view" id="view_task_search_form">
+        <field name="name">project.task.search.form.tetrace</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <filter string="Desactivadas" name="no_activada" domain="[('activada', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.ui.view" id="task_type_edit">
         <field name="name">project.task.type.form.tetrace</field>
         <field name="model">project.task.type</field>

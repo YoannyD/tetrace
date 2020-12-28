@@ -285,6 +285,13 @@ class ProjectTask(models.Model):
             vals.update({'tarea_individual': True})
         return vals
     
+    @api.model
+    def _where_calc(self, domain, active_test=True):
+        if 'activada' in self._fields and active_test and self._context.get('active_test', True):
+            if not any(item[0] == 'activada' for item in domain):
+                domain = [('activada', '=', 1)] + domain
+        return super(ProjectTask, self)._where_calc(domain, active_test)
+    
     def actualizar_deadline(self, tipo_tarea, dias=0):
         if dias <= 0:
             return
