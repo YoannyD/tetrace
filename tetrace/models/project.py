@@ -9,6 +9,15 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+OPCIONES_DESACTIVACION = [
+    ('viaje', 'Viaje'),
+    ('baja', 'Baja'),
+    ('informatica', 'Informática'),
+    ('equipos', 'Equipos'),
+    ('reubicacion', 'Reubicación'),
+    ('facturacion', 'Facturación'),
+]
+
 
 class Estado(models.Model):
     _name = 'tetrace.project_state'
@@ -217,9 +226,14 @@ class ProjectTask(models.Model):
     entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
     desde_plantilla = fields.Boolean("Creada desde plantilla")
-    tipo = fields.Selection([('activacion', 'Activación'), ('desactivacion', 'Desactivacion')], 
-                            default="desactivacion", string="Tipo tarea")
-    tarea_individual = fields.Boolean("Tarea individual")
+    tipo = fields.Selection([
+        ('activacion', 'Activación'), 
+        ('desactivacion', 'Desactivacion')
+    ], default="desactivacion", string="Tipo tarea")
+    tarea_individual = fields.Boolean("Individual")
+    viajes = fields.Boolean("Viajes")
+    activada = fields.Boolean("Activada")
+    opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
     
     @api.depends("entrega_ids.entregado")
     def _compute_entrega_total(self):

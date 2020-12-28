@@ -206,8 +206,6 @@
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="job_id"/>
                 <field name="tipo"/>
-                <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
-                <field name="tarea_individual"/>
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">
@@ -229,6 +227,20 @@
                             <field name="entregado" sum="total"/>
                         </tree>
                     </field>
+                </page>
+                
+                <page name="opciones" string="Opciones">
+                    <group>
+                        <group>
+                            <field name="tarea_individual"/>
+                            <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
+                            <field name="viajes"/>
+                            <field name="activada"/>
+                        </group>
+                        <group>
+                            <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>
+                        </group>
+                    </group>
                 </page>
             </xpath>
         </field>
