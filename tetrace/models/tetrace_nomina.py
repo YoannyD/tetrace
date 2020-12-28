@@ -191,8 +191,22 @@ class NominaTrabajador(models.Model):
                 continue
 
             r.trabajador_analitica_ids.unlink()
+            
+            companies = self.env['res.company'].search([])
+            employee_ids = []
+            if r.employee_id.user_id:
+                employees = self.env['hr.employee'].sudo().search([
+                    ('company_id', 'in', companies.ids),
+                    ('user_id', '=', r.employee_id.user_id.id)
+                ])
+                if employees:
+                    employee_ids = employees.ids
+            else:
+                employee_ids.append(r.employee_id.id)
+            
             analiticas = self.env['account.analytic.line'].sudo().search([
-                ('employee_id', '=', r.employee_id.id),
+                ('company_id', 'in', companies.ids),
+                ('employee_id', 'in', employee_ids),
                 ('date', '>=', r.fecha_inicio),
                 ('date', '<=', r.fecha_fin),
             ])
