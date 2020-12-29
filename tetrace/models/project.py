@@ -213,6 +213,11 @@ class Project(models.Model):
             'res_id': self.id
         })
         return action
+    
+    def action_activar_tareas(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
+        return wizard.open_wizard()
 
     
 class ProjectTask(models.Model):
