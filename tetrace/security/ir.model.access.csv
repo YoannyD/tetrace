@@ -22,3 +22,4 @@ access_tetrace_prevision_facturacion,access_tetrace_prevision_facturacion,model_
 access_project_task_entrega,access_project_task_entrega,model_project_task_entrega,base.group_user,1,1,1,1
 access_tetrace_motivo_cancelacion,access_tetrace_motivo_cancelacion,model_tetrace_motivo_cancelacion,base.group_user,1,1,1,1
 access_tetrace_viaje,access_tetrace_viaje,model_tetrace_viaje,base.group_user,1,1,1,1
+access_tetrace_ref_producto,access_tetrace_ref_producto,model_tetrace_ref_producto,base.group_user,1,1,1,1

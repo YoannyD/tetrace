@@ -35,6 +35,10 @@
                 <button name="action_crear_version"
                         type="object"
                         string="Generar Version"/>
+                
+                <button name="action_importar_productos"
+                        type="object"
+                        string="Importar productos"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -161,6 +165,14 @@
                         </group>
                         <div class="oe_clear"/>
                     </group>
+                </page>
+                
+                <page name="ref_fuera_catalogo" string="Fuera de catálogo" attrs="{'invisible': [('ref_producto_ids', '=', False)]}">
+                    <field name="ref_producto_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="name"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
         </field>

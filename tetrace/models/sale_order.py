@@ -39,6 +39,7 @@ class SaleOrder(models.Model):
     project_estado_id = fields.Many2one("tetrace.project_state", compute="_compute_project_estado_id", 
                                         string="Estado proyecto", store=True)
     rfq = fields.Char("RFQ")
+    ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -310,6 +311,11 @@ class SaleOrder(models.Model):
         wizard = self.env['tetrace.generar_prevision_facturacion'].create({'order_id': self.id})
         return wizard.open_wizard()
                       
+    def action_importar_productos(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.importar_producto_pv'].create({"order_id": self.id})
+        return wizard.open_wizard()
+    
 
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
@@ -497,4 +503,12 @@ class PrevisionFacturacion(models.Model):
     feedbak = fields.Text("Feedbak")
     observaciones = fields.Text("Observaciones")
     importe_factura = fields.Monetary("Importe factura")
+    
+    
+class RefProducto(models.Model):
+    _name = "tetrace.ref_producto"
+    _description = "Referencias fuera de catalogo"
+    
+    name = fields.Char("Referencia")
+    order_id = fields.Many2one("sale.order", string="Pedido de venta")
 
