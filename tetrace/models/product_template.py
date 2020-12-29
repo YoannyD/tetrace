@@ -15,6 +15,7 @@ class ProductTemplate(models.Model):
     project_template_id = fields.Many2one("project.project", string="Plantilla proyecto confirmado")
     project_template_diseno_id = fields.Many2one("project.project", string="Plantilla proyecto preliminar")
     producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega")
+    individual = fields.Boolean("Individual")
 
     def _compute_producto_entrega(self):
         for r in self:

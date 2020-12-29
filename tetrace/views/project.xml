@@ -210,6 +210,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="job_id"/>
+                <field name="employee_id" attrs="{'invisible': [('tarea_individual', '=', False)]}"/>
                 <field name="tipo"/>
             </xpath>
             
@@ -237,7 +238,7 @@
                 <page name="opciones" string="Opciones">
                     <group>
                         <group>
-                            <field name="tarea_individual"/>
+                            <field name="tarea_individual" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
                             <field name="activada"/>

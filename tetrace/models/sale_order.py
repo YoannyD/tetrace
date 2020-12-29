@@ -317,6 +317,14 @@ class SaleOrderLine(models.Model):
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     no_imprimir = fields.Boolean("Archivado")
     product_entregado = fields.Boolean(related="product_id.producto_entrega")
+    individual = fields.Boolean("Individual")
+    
+    @api.onchange('product_id')
+    def product_id_change(self):
+        if not self.product_id:
+            return
+        self.individual = self.product_id.individual
+        return super(SaleOrderLine, self).product_id_change()
     
     def _timesheet_service_generation(self):
         # Compruebo que el pedido tenga o no proyectos
@@ -407,40 +415,56 @@ class SaleOrderLine(models.Model):
         return project
     
     def _timesheet_create_task(self, project):
-        if self.order_id.state == 'draft' and not self.job_id:
-            return None
+        if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
+            return False
         
-        task_seleccion = None
-        tasks_individual = None
-        if self.order_id.state == 'draft' and self.job_id:
-            task_seleccion = self.env['project.task'].search([
-                ('project_id', '=', project.id),
-                ('job_id', '=', False),
-                ('tarea_seleccion', '=', True),
-            ], limit=1)
+        tasks = self._timesheet_create_task_seleccion(project) + self._timesheet_create_task_individual(project)
+        return tasks
+    
+    def _timesheet_create_task_seleccion(self, project):
+        if int(self.product_uom_qty) <= 0:
+            return []
+        
+        task_seleccion = self.env['project.task'].search([
+            ('project_id', '=', project.id),
+            ('job_id', '=', False),
+            ('tarea_seleccion', '=', True),
+        ], limit=1)
             
-            task_seleccion.write({
+        values = {'sale_line_id': False}
+        
+        if self.job_id:
+            values.update({
                 'job_id': self.job_id.id,
-                'name': "Selección %s" % self.job_id.name,
-                'sale_line_id': False
+                'name': "Seleccionar: %s" % self.job_id.name,
             })
             
-            if int(self.product_uom_qty) > 1:
-                tasks_individual = self.env['project.task'].search([
-                    ('project_id', '=', project.id),
-                    ('tarea_individual', '=', True),
-                ])
-
-                for task in tasks_individual:
-                    for i in range(1, int(self.product_uom_qty)):
-                        task.copy({'name': task.name})
+        tasks = []
+        for i in range(1, int(self.product_uom_qty)):
+            if i == 1:
+                task = task_seleccion.write(values)
+            else:
+                task = task_seleccion.copy(values)
+            tasks.append(task)
+        self.write({'task_id': None})
+        return tasks
+                
+    def _timesheet_create_task_individual(self, project):
+        if int(self.product_uom_qty) <= 0 or not self.individual:
+            return []
         
-        if not task_seleccion and not tasks_individual:
-            task = super(SaleOrderLine, self)._timesheet_create_task(project)
-            
-        if self.order_id.state == 'draft' and self.job_id:
-            self.write({'task_id': None})
-        return task
+        tasks_individual = self.env['project.task'].search([
+            ('project_id', '=', project.id),
+            ('tarea_individual', '=', True),
+        ])
+        
+        tasks = []
+        for task in tasks_individual:
+            for i in range(1, int(self.product_uom_qty)):
+                new_task = task.copy({'name': task.name})
+                tasks.append(new_task)
+        self.write({'task_id': None})
+        return tasks
     
     def _timesheet_create_task_prepare_values(self, project):
         values = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)

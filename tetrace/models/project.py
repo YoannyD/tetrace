@@ -223,6 +223,10 @@ class Project(models.Model):
 class ProjectTask(models.Model):
     _inherit = 'project.task'
     
+    @api.model
+    def _default_sale_line_id(self):
+        return False
+    
     tarea_seleccion = fields.Boolean("Tarea Selección")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
@@ -234,13 +238,24 @@ class ProjectTask(models.Model):
     tipo = fields.Selection([
         ('activacion', 'Activación'), 
         ('desactivacion', 'Desactivacion')
-    ], default="desactivacion", string="Tipo tarea")
+    ], string="Tipo tarea")
     tarea_individual = fields.Boolean("Individual")
     viajes = fields.Boolean("Viajes")
     viaje_ids = fields.One2many("tetrace.viaje", "task_id")
     activada = fields.Boolean("Activada")
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
+    sale_line_id = fields.Many2one('sale.order.line', default=_default_sale_line_id)
+    employee_id = fields.Many2one('hr.employee', string="Empleado")
 
+    @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
+    def _check_tipos_tareas(self):
+        for r in self:
+            if r.tarea_individual and r.tipo != 'activacion':
+                raise ValidationError("Para ser una una tarea de individual tiene que ser del tipo activación.")
+                
+            if r.tarea_seleccion and not r.tarea_individual:
+                raise ValidationError("Si es tarea de selección tiene que ser tarea individual")
+    
     @api.depends("entrega_ids.entregado")
     def _compute_entrega_total(self):
         for r in self:
@@ -250,20 +265,19 @@ class ProjectTask(models.Model):
                     total += entrega.entregado
             r.entrega_total = total
             
+    @api.onchange('project_id')
+    def _onchange_project(self):
+        result = super(ProjectTask, self)._onchange_project()
+        self.sale_line_id = False
+        return result
+            
     @api.onchange("tarea_seleccion")
     def _onchange_tarea_seleccion(self):
         for r in self:
             if r.tarea_seleccion:
                 r.tarea_individual = True
     
-    @api.model
-    def create(self, vals):
-        vals = self.actualizar_vals(vals)
-        return super(ProjectTask, self).create(vals)
-    
     def write(self, vals):
-        vals = self.actualizar_vals(vals)
-        
         entregas = {}
         for r in self:
             entregas.update({
@@ -281,15 +295,6 @@ class ProjectTask(models.Model):
                 body = "<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s" % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
         return res
-    
-    @api.model
-    def actualizar_vals(self, vals):
-        if "tipo" in vals and vals.get("tipo") != 'activacion':
-            vals.update({'tarea_seleccion': False})
-            
-        if vals.get("tarea_seleccion"):
-            vals.update({'tarea_individual': True})
-        return vals
     
     @api.model
     def _where_calc(self, domain, active_test=True):
