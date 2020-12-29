@@ -51,6 +51,7 @@
         'report/tetrace_its.xml',
         'report/mis_report_instance_xlsx_multi_tab.xml',
         'report/purchase.xml',
+        'report/l10n_ar.xml',
         'views/web.xml',
         'views/account_financial_report.xml',
         'views/account_move_line.xml',
