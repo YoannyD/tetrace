@@ -21,6 +21,9 @@ class ImportarProductoPV(models.TransientModel):
     
     def action_importar(self):
         self.ensure_one()
+        if not self.order_id.partner_id:
+            return {'type': 'ir.actions.act_window_close'}
+        
         fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
         fp.write(binascii.a2b_base64(self.file))
         fp.seek(0)
