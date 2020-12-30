@@ -32,6 +32,9 @@ class ImportarProductoPV(models.TransientModel):
         for row_no in range(sheet.nrows):
             line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
             
+            if not line[0]:
+                continue
+            
             ref_producto = self.env["product.customerinfo"].search([
                 ('company_id', '=', self.order_id.company_id.id),
                 ('name', '=', self.order_id.partner_id.id),

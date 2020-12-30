@@ -208,6 +208,10 @@
                             </group>
                         </form>
                     </field>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="imputacion_total">
+                        <field name="total_imputacion_variable" string="Total"/>
+                    </group>
+                    <div class="oe_clear"/>
                 </page>
             </xpath>
         </field>

@@ -41,6 +41,7 @@ class SaleOrder(models.Model):
     rfq = fields.Char("RFQ")
     ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
     imputacion_variable_ids = fields.One2many('tetrace.imputacion_variable', 'order_id')
+    total_imputacion_variable = fields.Monetary("Total imputaciones", compute="_compute_total_imputacion_variable")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -78,6 +79,14 @@ class SaleOrder(models.Model):
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
+            
+    @api.depends("imputacion_variable_ids.coste")
+    def _compute_total_imputacion_variable(self):
+        for r in self:
+            total = 0
+            for imputacion in r.imputacion_variable_ids:
+                total += imputacion.coste
+            r.total_imputacion_variable = total
 
     @api.depends("prevision_facturacion_ids.facturado")
     def _compute_prevision_facturacion(self):
