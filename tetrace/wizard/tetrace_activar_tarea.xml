@@ -6,6 +6,8 @@
         <field name="arch" type="xml">
             <form>
                 <group>
+                    <field name="accion" required="1"/>
+                    <field name="motivo_cancelacion_id" attrs="{'invisible': [('accion', '!=', 'cancelar')], 'required': [('accion', '=', 'cancelar')]}"/>
                     <field name="project_id" invisible="1"/>
                     <field name="fecha_fin" required="1"/>
                     <field name="viaje"/>

@@ -25,7 +25,7 @@
                 <button class="oe_stat_button" 
                         type="object" 
                         name="action_activar_tareas"
-                        string="Activar tareas"/>
+                        string="Finalizar proyecto"/>
                 
                 <field name="estado_id" 
                        widget="statusbar" 

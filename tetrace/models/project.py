@@ -242,7 +242,7 @@ class ProjectTask(models.Model):
     tarea_individual = fields.Boolean("Individual")
     viajes = fields.Boolean("Viajes")
     viaje_ids = fields.One2many("tetrace.viaje", "task_id")
-    activada = fields.Boolean("Activada")
+    activada = fields.Boolean("Activada", default=True)
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
     sale_line_id = fields.Many2one('sale.order.line', default=_default_sale_line_id)
     employee_id = fields.Many2one('hr.employee', string="Empleado")

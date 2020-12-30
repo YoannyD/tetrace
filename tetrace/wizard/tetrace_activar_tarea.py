@@ -19,6 +19,7 @@ class ActivarTarea(models.TransientModel):
     _name = 'tetrace.activar_tarea'
     _description = "Activar tareas"
     
+    accion = fields.Selection(ACCIONES, string="Acción")
     fecha_fin = fields.Date("Fecha fin")
     viaje = fields.Boolean("¿Necesita viaje?")
     baja_tecnico = fields.Boolean("Damos de baja técnico")
@@ -27,6 +28,7 @@ class ActivarTarea(models.TransientModel):
     facturacion = fields.Boolean("Cerrar facturación")
     reubicacion_puesto = fields.Boolean("Reubicación puesto")
     project_id = fields.Many2one("project.project", string="Proyecto", ondelete="cascade")
+    motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
     
     def action_activar_tareas(self):
         self.ensure_one()
@@ -49,6 +51,19 @@ class ActivarTarea(models.TransientModel):
             'activada': True,
             'date_deadline': fields.Date.from_string(self.fecha_fin) - timedelta(days=self.project_id.offset_deadline_activacion)
         })
+
+        values_project = {}
+        if self.accion == 'cancelar':
+            values_project = {
+                'estado_id': 4, # Estado cancelado
+                'motivo_cancelacion_id': self.motivo_cancelacion_id.id
+            }
+        elif self.accion == 'terminar':
+            values_project = {
+                'estado_id': 2, # Estado terminado
+            }
+        
+        self.project_id.write(values_project)
 
     def open_wizard(self, context=None):
         return {
