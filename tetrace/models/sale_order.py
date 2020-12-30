@@ -40,6 +40,7 @@ class SaleOrder(models.Model):
                                         string="Estado proyecto", store=True)
     rfq = fields.Char("RFQ")
     ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
+    imputacion_variable_ids = fields.One2many('tetrace.imputacion_variable', 'order_id')
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -316,7 +317,56 @@ class SaleOrder(models.Model):
         wizard = self.env['tetrace.importar_producto_pv'].create({"order_id": self.id})
         return wizard.open_wizard()
     
-
+    def action_imputar_variables(self):
+        self.ensure_one()
+        ImputacionLine = self.env["tetrace.imputacion_variable_line"]
+        porcentajes_lineas = self.porcentajes_incremeto_imputacion()
+        for imputacion in self.imputacion_variable_ids:
+            for line_id, porcentaje in porcentajes_lineas.items():
+                # Eliminar lineas que ya no existan en el las lineas del pedido de venta
+                imputaciones_line_borrar = ImputacionLine.search([
+                    ('imputacion_id', '=', imputacion.id),
+                    ('order_line_id', 'not in', self.order_line.ids)
+                ])
+                imputaciones_line_borrar.unlink()
+                
+                imputacion_line = ImputacionLine.search([
+                    ('imputacion_id', '=', imputacion.id),
+                    ('order_line_id', '=', int(line_id))
+                ], limit=1)
+                incremento_antiguo = imputacion_line.incremento if imputacion_line else 0
+                
+                line = self.env['sale.order.line'].search([('id', '=', int(line_id))], limit=1)
+                incremento = (imputacion.coste * porcentaje) / 100
+                if imputacion_line:
+                    imputacion_line.write({
+                        'incremento': incremento,
+                        'porcentaje': porcentaje
+                    })
+                else:
+                    ImputacionLine.create({
+                        'imputacion_id': imputacion.id,
+                        'order_line_id': int(line_id),
+                        'incremento': incremento,
+                        'porcentaje': porcentaje
+                    })
+                    
+                line.write({'price_unit': line.price_unit + incremento - incremento_antiguo})
+            
+    def porcentajes_incremeto_imputacion(self):
+        self.ensure_one()
+        total = 0
+        for line in self.order_line:
+            total += line.price_unit
+            
+        porcentajes = {}
+        for line in self.order_line:
+            porcentaje_linea = (100 * line.price_unit) / total if total else 0
+            porcentajes.update({str(line.id): porcentaje_linea})
+        
+        return porcentajes
+           
+    
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
@@ -324,6 +374,7 @@ class SaleOrderLine(models.Model):
     no_imprimir = fields.Boolean("Archivado")
     product_entregado = fields.Boolean(related="product_id.producto_entrega")
     individual = fields.Boolean("Individual")
+    imputacion_variable_line_ids = fields.One2many('tetrace.imputacion_variable_line', 'order_line_id')
     
     @api.onchange('product_id')
     def product_id_change(self):

@@ -174,6 +174,41 @@
                         </tree>
                     </field>
                 </page>
+                
+                <page name="imputaciones_variables" string="Imputaciones variables">
+                    <button name="action_imputar_variables"
+                            type="object"
+                            class="oe_highlight"
+                            string="Imputar"/>
+                    
+                    <field name="imputacion_variable_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="coste"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                        
+                        <form>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="coste"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Repartición en las líneas del pedido">
+                                <field name="line_ids" readonly="1" nolabel="1">
+                                    <tree>
+                                        <field name="order_line_id"/>
+                                        <field name="order_line_product_id"/>
+                                        <field name="incremento"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                </page>
             </xpath>
         </field>
     </record>

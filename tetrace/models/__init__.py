@@ -39,6 +39,7 @@ from . import tetrace_tickelia
 from . import tetrace_project_contract
 from . import tetrace_project_applicant
 from . import tetrace_viaje
+from . import tetrace_imputacion_variable
 from . import mod303
 from . import mail_thread
 from . import mail_followers
