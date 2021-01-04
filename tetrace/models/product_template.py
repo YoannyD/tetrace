@@ -14,9 +14,10 @@ class ProductTemplate(models.Model):
     secuencia_default_code = fields.Integer('Secuencia Ref. Interna', copy=False)
     project_template_id = fields.Many2one("project.project", string="Plantilla proyecto confirmado")
     project_template_diseno_id = fields.Many2one("project.project", string="Plantilla proyecto preliminar")
-    producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega")
+    producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega", store=True)
     individual = fields.Boolean("Individual")
 
+    @api.depends("service_policy", "service_tracking")
     def _compute_producto_entrega(self):
         for r in self:
             if r.service_policy == 'delivered_manual' and \

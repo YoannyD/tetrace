@@ -275,7 +275,7 @@ class SaleOrder(models.Model):
                         'partner_id': line.order_id.partner_id.id,
                         'email_from': line.order_id.partner_id.email,
                     })
-            line._timesheet_create_task(project)
+            line._timesheet_create_task_desde_diseno(project)
         self.actualizar_datos_proyecto()
             
     def action_view_task(self):
@@ -491,7 +491,7 @@ class SaleOrderLine(models.Model):
         
         return project
     
-    def _timesheet_create_task(self, project):
+    def _timesheet_create_task_desde_diseno(self, project):
         if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
             return False
         
@@ -502,7 +502,7 @@ class SaleOrderLine(models.Model):
         if int(self.product_uom_qty) <= 0:
             return []
         
-        task_seleccion = self.env['project.task'].search([
+        tasks_seleccion = self.env['project.task'].search([
             ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('job_id', '=', False),
             ('tarea_seleccion', '=', True),
@@ -517,15 +517,15 @@ class SaleOrderLine(models.Model):
                 'job_id': self.job_id.id,
                 'name': "Seleccionar: %s" % self.job_id.name,
             })
-        else:
-            values.update({
-                'name': task_seleccion.name
-            })
             
         tasks = []
-        for i in range(0, int(self.product_uom_qty)):
-            task = task_seleccion.copy(values)
-            tasks.append(task)
+        for task in tasks_seleccion:
+            if not self.job_id:
+                values.update({'name': task.name})
+                
+            for i in range(0, int(self.product_uom_qty)):
+                new_task = task.copy(values)
+                tasks.append(new_task)
         self.write({'task_id': None})
         return tasks
                 
@@ -542,7 +542,7 @@ class SaleOrderLine(models.Model):
         for task in tasks_individual:
             for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy({
-                    'name': "%s indi" % task.name,
+                    'name': task.name,
                     'project_id': project.id,
                 })
                 tasks.append(new_task)
