@@ -269,6 +269,7 @@ class SaleOrder(models.Model):
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 for task in line.product_id.project_template_diseno_id.tasks:
                     task.copy({
+                        'name': task.name,
                         'project_id': project.id,
                         'sale_line_id': line.id,
                         'partner_id': line.order_id.partner_id.id,
@@ -454,15 +455,25 @@ class SaleOrderLine(models.Model):
         
         # create the project or duplicate one
         values = self._timesheet_create_project_prepare_values()
+        
         if self.product_id.project_template_diseno_id:
-            values['name'] = "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto)
+            values = {
+                "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
+                "tasks": None
+            }
             project = self.product_id.project_template_diseno_id.copy(values)
-            project.tasks.write({
-                'sale_line_id': self.id,
-                'partner_id': self.order_id.partner_id.id,
-                'email_from': self.order_id.partner_id.email,
-                'desde_plantilla': True
-            })
+            for task in self.product_id.project_template_diseno_id.tasks:
+                if task.tarea_seleccion or task.tarea_individual:
+                    continue
+                    
+                task.copy({
+                    'name': task.name,
+                    'sale_line_id': self.id,
+                    'partner_id': self.order_id.partner_id.id,
+                    'email_from': self.order_id.partner_id.email,
+                    'desde_plantilla': True,
+                    'project_id': project.id
+                })
             
             project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': self.id})
         else:
@@ -492,25 +503,28 @@ class SaleOrderLine(models.Model):
             return []
         
         task_seleccion = self.env['project.task'].search([
-            ('project_id', '=', project.id),
+            ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('job_id', '=', False),
             ('tarea_seleccion', '=', True),
-        ], limit=1)
+        ])
             
-        values = {'sale_line_id': False}
-        
+        values = {
+            'project_id': project.id,
+            'sale_line_id': False
+        }
         if self.job_id:
             values.update({
                 'job_id': self.job_id.id,
                 'name': "Seleccionar: %s" % self.job_id.name,
             })
+        else:
+            values.update({
+                'name': task_seleccion.name
+            })
             
         tasks = []
-        for i in range(1, int(self.product_uom_qty)):
-            if i == 1:
-                task = task_seleccion.write(values)
-            else:
-                task = task_seleccion.copy(values)
+        for i in range(0, int(self.product_uom_qty)):
+            task = task_seleccion.copy(values)
             tasks.append(task)
         self.write({'task_id': None})
         return tasks
@@ -520,28 +534,20 @@ class SaleOrderLine(models.Model):
             return []
         
         tasks_individual = self.env['project.task'].search([
-            ('project_id', '=', project.id),
+            ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('tarea_individual', '=', True),
         ])
         
         tasks = []
         for task in tasks_individual:
-            for i in range(1, int(self.product_uom_qty)):
-                new_task = task.copy({'name': task.name})
+            for i in range(0, int(self.product_uom_qty)):
+                new_task = task.copy({
+                    'name': "%s indi" % task.name,
+                    'project_id': project.id,
+                })
                 tasks.append(new_task)
         self.write({'task_id': None})
         return tasks
-    
-    def _timesheet_create_task_prepare_values(self, project):
-        values = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)
-        values.update({'job_id': self.job_id.id})
-        if self.order_id.state == 'draft' and self.job_id:
-            values.update({
-                'name': "Selección %s" % self.job_id.name,
-                'tarea_seleccion': True,
-                'sale_line_id': False
-            })
-        return values
     
     
 class PrevisionFacturacion(models.Model):

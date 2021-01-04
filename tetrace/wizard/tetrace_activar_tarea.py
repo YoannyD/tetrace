@@ -33,12 +33,7 @@ class ActivarTarea(models.TransientModel):
     def action_activar_tareas(self):
         self.ensure_one()
 
-        domain = [
-            ('project_id', '=', self.project_id.id),
-            ('tipo', '=', 'desactivacion'),
-            ('activada', '=', False)
-        ]
-        
+        domain = [('project_id', '=', self.project_id.id)]
         if self.viaje: domain += [('opciones_desactivacion', '=', 'viaje')]
         if self.baja_tecnico: domain += [('opciones_desactivacion', '=', 'baja')]
         if self.baja_it: domain += [('opciones_desactivacion', '=', 'informatica')]
@@ -56,15 +51,17 @@ class ActivarTarea(models.TransientModel):
         if self.accion == 'cancelar':
             values_project = {
                 'estado_id': 4, # Estado cancelado
-                'motivo_cancelacion_id': self.motivo_cancelacion_id.id
+                'motivo_cancelacion_id': self.motivo_cancelacion_id.id,
+                'fecha_cancelacion': self.fecha_fin
             }
         elif self.accion == 'terminar':
             values_project = {
                 'estado_id': 2, # Estado terminado
+                'fecha_finalizacion': self.fecha_fin
             }
         
         self.project_id.write(values_project)
-
+        
     def open_wizard(self, context=None):
         return {
             'type': 'ir.actions.act_window',
