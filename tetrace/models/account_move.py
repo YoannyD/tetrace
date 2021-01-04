@@ -49,7 +49,8 @@ class AccountMove(models.Model):
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
     fecha_servicio = fields.Date("Fecha servicio")
-    importe_validacion_euros = fields.Monetary("Importe validación en euros", compute="_compute_importe_validacion_euros")
+    importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
+                                               compute="_compute_importe_validacion_euros")
 
     def extraer_numero_factura(self):
     #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
