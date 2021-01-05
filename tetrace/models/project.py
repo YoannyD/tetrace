@@ -59,8 +59,6 @@ class Project(models.Model):
     fecha_cancelacion = fields.Date("Fecha cancelación")
     fecha_finalizacion = fields.Date("Fecha finalización")
     motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
-    offset_deadline_activacion = fields.Integer("Offset Dead Line tareas activación (Días)")
-    offset_deadline_desactivacion = fields.Integer("Offset Dead Line tareas desactivación (Días)")
                 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -143,11 +141,7 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
-        if "offset_deadline_activacion" in vals or vals.get("fecha_finalizacion"):
-            res.actualizar_deadline_tareas_activacion('activacion')
-            
-        if "offset_deadline_desactivacion" in vals or vals.get("fecha_finalizacion"):
-            res.actualizar_deadline_tareas_activacion('desactivacion')
+        res.actualizar_deadline_tareas()
         return res
     
     def write(self, vals):
@@ -156,26 +150,27 @@ class Project(models.Model):
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
             
-        if "offset_deadline_activacion" in vals or vals.get("fecha_finalizacion"):
-            self.actualizar_deadline_tareas_activacion('activacion')
-            
-        if "offset_deadline_desactivacion" in vals or vals.get("fecha_finalizacion"):
-            self.actualizar_deadline_tareas_activacion('desactivacion')
+        if 'fecha_inicio' in vals:
+            self.actualizar_deadline_tareas()
         return res
+    
+    def actualizar_deadline_tareas(self):
+        for r in self:
+            if not r.fecha_inicio:
+                continue
+                
+            for task in r.tasks:
+                if task.tipo != 'activacion' or task.date_deadline:
+                    continue
+                
+                date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
+                task.write({'date_deadline': date_deadline})
     
     @api.model
     def actualizar_vals(self, vals):
         if "estado_id" in vals and vals.get("estado_id") != 4:
             vals.update({"motivo_cancelacion_id": False})
         return vals
-    
-    def actualizar_deadline_tareas_activacion(self, tipo_tarea):
-        for r in self:
-            if tipo_tarea == 'activacion':
-                dias = r.offset_deadline_activacion
-            elif tipo_tarea == 'desactivacion':
-                dias = r.offset_deadline_desactivacion
-            r.task_ids.actualizar_deadline(tipo_tarea, dias)
     
     def actualizar_geo_partner(self):
         for r in self:
@@ -219,6 +214,13 @@ class Project(models.Model):
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
         return wizard.open_wizard()
 
+    def view_analitica_tree(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('analytic', 'account_analytic_line_action')
+        action["domain"] = [('account_id', '=', self.analytic_account_id.id)]
+        action["context"] = {'search_default_group_date': 1, 'default_account_id': self.analytic_account_id.id}
+        return action
+    
     
 class ProjectTask(models.Model):
     _inherit = 'project.task'
@@ -246,6 +248,8 @@ class ProjectTask(models.Model):
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
     sale_line_id = fields.Many2one('sale.order.line', default=_default_sale_line_id)
     employee_id = fields.Many2one('hr.employee', string="Empleado")
+    deadline_inicio = fields.Integer("Deadline inicio")
+    deadline_fin = fields.Integer("Deadline fin")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
@@ -303,26 +307,30 @@ class ProjectTask(models.Model):
                 domain = [('activada', '=', 1)] + domain
         return super(ProjectTask, self)._where_calc(domain, active_test)
     
-    def actualizar_deadline(self, tipo_tarea, dias=0):
-        if dias <= 0:
+    def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
+        if self.env.context.get("default_res_model") == 'project.project':
             return
+        return super(ProjectTask, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
+    
+    def message_unsubscribe(self, partner_ids=None, channel_ids=None):
+        if not partner_ids and not channel_ids:
+            return True
         
-        for r in self:
-            fecha_limite = None
-            if r.project_id and (r.project_id.fecha_finalizacion or r.project_id.fecha_cancelacion):
-                if r.project_id.fecha_finalizacion:
-                    fecha_limite = r.project_id.fecha_finalizacion
-                    
-                if r.project_id.fecha_cancelacion and r.project_id.fecha_cancelacion < fecha_limite:
-                    fecha_limite = r.project_id.fecha_cancelacion
-                    
-                fecha_limite = fields.Date.from_string(fecha_limite) - timedelta(days=dias)
-                
-            if r.tipo == tipo_tarea and fecha_limite:
-                r.write({'date_deadline': fecha_limite})
-                
-            tasks = self.env['project.task'].search([('parent_id', '=', r.id)])
-            tasks.actualizar_deadline(tipo_tarea, dias)
+        user_pid = self.env.user.partner_id.id
+        if not channel_ids and set(partner_ids) == set([user_pid]):
+            self.check_access_rights('read')
+            self.check_access_rule('read')
+        else:
+            self.check_access_rights('write')
+            self.check_access_rule('write')
+            
+        self.env['mail.followers'].sudo().search([
+            ('res_model', '=', self._name),
+            ('res_id', 'in', self.ids),
+            '|',
+            ('partner_id', 'in', partner_ids or []),
+            ('channel_id', 'in', channel_ids or [])
+        ]).unlink()
     
 
 class ProjectTaskType(models.Model):

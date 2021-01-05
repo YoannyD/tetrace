@@ -24,13 +24,12 @@ class MailThread(models.AbstractModel):
             })
         else:
             context.update({"add_follower": True})
-            
+
         self = self.with_context(context)
         return super(MailThread, self).create(vals)
     
     def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        auto_add_follower = self.env['ir.config_parameter'].sudo().get_param('auto_add_followers', default=False)
         context = dict(self.env.context)
         context.update({"add_follower": True})
-        self = self.with_context(context)  
+        self = self.with_context(context)
         return super(MailThread, self).message_subscribe(partner_ids, channel_ids, subtype_ids)

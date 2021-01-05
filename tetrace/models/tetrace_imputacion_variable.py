@@ -14,7 +14,7 @@ class ImputacionVariable(models.Model):
 
     name = fields.Char('Descripción')
     order_id = fields.Many2one('sale.order', string="Pedido de venta")
-    product_id = fields.Many2one("product.product", string="Servicio")
+    product_id = fields.Many2one("product.product", domain=[('type', '=', 'service')], string="Servicio")
     coste = fields.Monetary('Coste')
     currency_id = fields.Many2one('res.currency', related="order_id.currency_id")
     line_ids = fields.One2many("tetrace.imputacion_variable_line", "imputacion_id")

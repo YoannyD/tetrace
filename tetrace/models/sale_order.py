@@ -31,6 +31,8 @@ class SaleOrder(models.Model):
     referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
     coordinador_proyecto_id = fields.Many2one("res.users", string="Coordinador proyecto")
     seguidor_proyecto_ids = fields.Many2many("res.users", string="Seguidores proyecto")
+    seguidor_partner_proyecto_ids = fields.Many2many("res.partner", string="Contactos seguidores proyecto", 
+                                                     compute="_compute_seguidor_partner_proyecto_ids")
     visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,
                                                   compute="_compute_visible_btn_generar_proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
@@ -75,6 +77,15 @@ class SaleOrder(models.Model):
                 r.project_estado_id = r.project_ids[0].estado_id.id
             else:
                 r.project_estado_id = None
+                    
+    @api.depends("seguidor_proyecto_ids")
+    def _compute_seguidor_partner_proyecto_ids(self):
+        for r in self:
+            partner_seguidores_ids = []
+            for user in r.seguidor_proyecto_ids:
+                if user.partner_id:
+                    partner_seguidores_ids.append(user.partner_id.id)
+            r.update({'seguidor_partner_proyecto_ids': [(6, 0, partner_seguidores_ids)]}) 
                     
     def _compute_version(self):
         for r in self:
@@ -268,13 +279,19 @@ class SaleOrder(models.Model):
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 for task in line.product_id.project_template_diseno_id.tasks:
+                    if task.tarea_individual and not task.tarea_seleccion:
+                        continue
+                        
                     task.copy({
                         'name': task.name,
                         'project_id': project.id,
-                        'sale_line_id': line.id,
+                        'sale_line_id': None,
                         'partner_id': line.order_id.partner_id.id,
                         'email_from': line.order_id.partner_id.email,
                     })
+                    
+                    if task.message_partner_ids:
+                        task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
             line._timesheet_create_task_desde_diseno(project)
         self.actualizar_datos_proyecto()
             
@@ -436,15 +453,9 @@ class SaleOrderLine(models.Model):
             "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto)
         }
         project.write(values)
-        
-        partner_seguidores_ids = []
-        for user in self.order_id.seguidor_proyecto_ids:
-            if user.partner_id:
-                partner_seguidores_ids.append(user.partner_id.id)
                 
-        if partner_seguidores_ids:   
-            project.with_context(add_followers=True)\
-                .message_subscribe(partner_ids=partner_seguidores_ids)
+        if self.order_id.seguidor_partner_proyecto_ids:   
+            project.with_context(add_follower=True).message_subscribe(self.order_id.seguidor_partner_proyecto_ids.ids, [])
         
         return project
     
@@ -453,29 +464,31 @@ class SaleOrderLine(models.Model):
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
         
+        project_follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
         # create the project or duplicate one
         values = self._timesheet_create_project_prepare_values()
-        
         if self.product_id.project_template_diseno_id:
-            values = {
+            values.update({
                 "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
                 "tasks": None
-            }
+            })
+            
+            project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
             project = self.product_id.project_template_diseno_id.copy(values)
             for task in self.product_id.project_template_diseno_id.tasks:
-                if task.tarea_seleccion or task.tarea_individual:
-                    continue
-                    
-                task.copy({
+                new_task = task.copy({
                     'name': task.name,
-                    'sale_line_id': self.id,
+                    'sale_line_id': None,
                     'partner_id': self.order_id.partner_id.id,
                     'email_from': self.order_id.partner_id.email,
                     'desde_plantilla': True,
                     'project_id': project.id
                 })
+                
+                if task.message_partner_ids:
+                    new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
             
-            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': self.id})
+            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': None})
         else:
             project = self.env['project.project'].create(values)
 
@@ -486,8 +499,8 @@ class SaleOrderLine(models.Model):
         # link project as generated by current so line
         self.write({'project_id': project.id})
         
-        if self.order_id.seguidor_proyecto_ids:
-            project.message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
+        if project_follower_ids:   
+            project.with_context(add_follower=True).message_subscribe(project_follower_ids, [])
         
         return project
     
@@ -499,7 +512,7 @@ class SaleOrderLine(models.Model):
         return tasks
     
     def _timesheet_create_task_seleccion(self, project):
-        if int(self.product_uom_qty) <= 0:
+        if not self.job_id or int(self.product_uom_qty) <= 0:
             return []
         
         tasks_seleccion = self.env['project.task'].search([
@@ -520,9 +533,6 @@ class SaleOrderLine(models.Model):
             
         tasks = []
         for task in tasks_seleccion:
-            if not self.job_id:
-                values.update({'name': task.name})
-                
             for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy(values)
                 tasks.append(new_task)
@@ -536,11 +546,12 @@ class SaleOrderLine(models.Model):
         tasks_individual = self.env['project.task'].search([
             ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('tarea_individual', '=', True),
+            ('tarea_seleccion', '=', False),
         ])
         
         tasks = []
         for task in tasks_individual:
-            for i in range(0, int(self.product_uom_qty)):
+            for i in range(1, int(self.product_uom_qty)):
                 new_task = task.copy({
                     'name': task.name,
                     'project_id': project.id,

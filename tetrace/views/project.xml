@@ -60,6 +60,13 @@
                         name="view_procesos_seleccion_tree" 
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_analitica_tree" 
+                        string="Analítica"
+                        attrs="{'invisible':[('analytic_account_id', '=', False)]}"
+                        icon="fa-usd"/>
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="after">
@@ -72,8 +79,6 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion"/>
                 <field name="fecha_finalizacion"/>
-                <field name="offset_deadline_activacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
-                <field name="offset_deadline_desactivacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
             </xpath>
@@ -238,10 +243,12 @@
                 <page name="opciones" string="Opciones">
                     <group>
                         <group>
-                            <field name="tarea_individual" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
+                            <field name="tarea_individual"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
                             <field name="activada"/>
+                            <field name="deadline_inicio"/>
+                            <field name="deadline_fin"/>
                         </group>
                         <group>
                             <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>

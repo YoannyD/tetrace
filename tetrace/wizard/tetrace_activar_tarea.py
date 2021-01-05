@@ -33,7 +33,11 @@ class ActivarTarea(models.TransientModel):
     def action_activar_tareas(self):
         self.ensure_one()
 
-        domain = [('project_id', '=', self.project_id.id)]
+        domain = [
+            ('project_id', '=', self.project_id.id),
+            ('date_deadline', '=', False),
+            ('tipo', '=', 'desactivacion')
+        ]
         if self.viaje: domain += [('opciones_desactivacion', '=', 'viaje')]
         if self.baja_tecnico: domain += [('opciones_desactivacion', '=', 'baja')]
         if self.baja_it: domain += [('opciones_desactivacion', '=', 'informatica')]
@@ -42,10 +46,11 @@ class ActivarTarea(models.TransientModel):
         if self.facturacion: domain += [('opciones_desactivacion', '=', 'facturacion')]
             
         tasks = self.env['project.task'].search(domain)
-        tasks.write({
-            'activada': True,
-            'date_deadline': fields.Date.from_string(self.fecha_fin) - timedelta(days=self.project_id.offset_deadline_activacion)
-        })
+        for task in tasks:
+            tasks.write({
+                'activada': True,
+                'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+            })
 
         values_project = {}
         if self.accion == 'cancelar':
