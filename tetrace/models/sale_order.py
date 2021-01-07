@@ -282,7 +282,7 @@ class SaleOrder(models.Model):
                     if task.tarea_individual and not task.tarea_seleccion:
                         continue
                         
-                    task.copy({
+                    new_task = task.copy({
                         'name': task.name,
                         'project_id': project.id,
                         'sale_line_id': None,
@@ -291,7 +291,9 @@ class SaleOrder(models.Model):
                     })
                     
                     if task.message_partner_ids:
-                        task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
+                        new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
+                        new_task.notificar_asignacion_seguidores()
+                        
             line._timesheet_create_task_desde_diseno(project)
         self.actualizar_datos_proyecto()
             
@@ -437,6 +439,7 @@ class SaleOrderLine(models.Model):
                     
                     if task.message_partner_ids:
                         new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
+                        new_task.notificar_asignacion_seguidores()
                 
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
@@ -469,8 +472,8 @@ class SaleOrderLine(models.Model):
 
                 if task.message_partner_ids:
                     new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
-                    
-            # duplicating a project doesn't set the SO on sub-tasks
+                    new_task.notificar_asignacion_seguidores()
+
             project.tasks.filtered(lambda task: task.parent_id != False).write({
                 'sale_line_id': self.id,
             })
@@ -517,6 +520,7 @@ class SaleOrderLine(models.Model):
                 
                 if task.message_partner_ids:
                     new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
+                    new_task.notificar_asignacion_seguidores()
             
             project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': None})
         else:

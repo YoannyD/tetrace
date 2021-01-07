@@ -331,7 +331,28 @@ class ProjectTask(models.Model):
             ('partner_id', 'in', partner_ids or []),
             ('channel_id', 'in', channel_ids or [])
         ]).unlink()
-    
+        
+    def notificar_asignacion_seguidores(self):
+        view = self.env['ir.ui.view'].browse(self.env['ir.model.data'].xmlid_to_res_id("mail.message_user_assigned"))
+        for r in self:
+            if not r.message_partner_ids:
+                continue
+                
+            values = {
+                'object': r,
+                'model_description': r.display_name,
+            }
+            assignation_msg = view.render(values, engine='ir.qweb', minimal_qcontext=True)
+            assignation_msg = self.env['mail.thread']._replace_local_links(assignation_msg)
+            r.message_notify(
+                subject=_('You have been assigned to %s') % r.display_name,
+                body=assignation_msg,
+                partner_ids=r.message_partner_ids.ids,
+                record_name=r.display_name,
+                email_layout_xmlid='mail.mail_notification_light',
+                model_description=r.name,
+            )
+
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
