@@ -27,9 +27,3 @@ class MailThread(models.AbstractModel):
 
         self = self.with_context(context)
         return super(MailThread, self).create(vals)
-    
-    def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        context = dict(self.env.context)
-        context.update({"add_follower": True})
-        self = self.with_context(context)
-        return super(MailThread, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
