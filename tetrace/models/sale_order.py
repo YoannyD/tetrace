@@ -31,6 +31,8 @@ class SaleOrder(models.Model):
     referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
     coordinador_proyecto_id = fields.Many2one("res.users", string="Coordinador proyecto")
     seguidor_proyecto_ids = fields.Many2many("res.users", string="Seguidores proyecto")
+    seguidor_partner_proyecto_ids = fields.Many2many("res.partner", string="Contactos seguidores proyecto", 
+                                                     compute="_compute_seguidor_partner_proyecto_ids")
     visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,
                                                   compute="_compute_visible_btn_generar_proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
@@ -39,6 +41,9 @@ class SaleOrder(models.Model):
     project_estado_id = fields.Many2one("tetrace.project_state", compute="_compute_project_estado_id", 
                                         string="Estado proyecto", store=True)
     rfq = fields.Char("RFQ")
+    ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
+    imputacion_variable_ids = fields.One2many('tetrace.imputacion_variable', 'order_id')
+    total_imputacion_variable = fields.Monetary("Total imputaciones", compute="_compute_total_imputacion_variable")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -73,9 +78,26 @@ class SaleOrder(models.Model):
             else:
                 r.project_estado_id = None
                     
+    @api.depends("seguidor_proyecto_ids")
+    def _compute_seguidor_partner_proyecto_ids(self):
+        for r in self:
+            partner_seguidores_ids = []
+            for user in r.seguidor_proyecto_ids:
+                if user.partner_id:
+                    partner_seguidores_ids.append(user.partner_id.id)
+            r.update({'seguidor_partner_proyecto_ids': [(6, 0, partner_seguidores_ids)]}) 
+                    
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
+            
+    @api.depends("imputacion_variable_ids.coste")
+    def _compute_total_imputacion_variable(self):
+        for r in self:
+            total = 0
+            for imputacion in r.imputacion_variable_ids:
+                total += imputacion.coste
+            r.total_imputacion_variable = total
 
     @api.depends("prevision_facturacion_ids.facturado")
     def _compute_prevision_facturacion(self):
@@ -99,8 +121,14 @@ class SaleOrder(models.Model):
             task_ids = []
             for project in order.project_ids:
                 task_ids += project.task_ids.ids
-            order.tasks_ids = self.env['project.task'].browse(task_ids)
-            order.tasks_count = len(order.tasks_ids)
+            tasks = self.env['project.task'].search([
+                ('id', 'in', task_ids),
+                ('activada', '=', True)
+            ])
+            order.update({
+                'tasks_ids': [(6, 0, tasks.ids)],
+                'tasks_count': len(tasks)
+            })
             
     @api.depends("order_line.product_id", "order_line.product_id.project_template_diseno_id", 
                 'order_line.product_id', 'order_line.project_id')
@@ -251,13 +279,20 @@ class SaleOrder(models.Model):
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 for task in line.product_id.project_template_diseno_id.tasks:
+                    if task.tarea_individual and not task.tarea_seleccion:
+                        continue
+                        
                     task.copy({
+                        'name': task.name,
                         'project_id': project.id,
-                        'sale_line_id': line.id,
+                        'sale_line_id': None,
                         'partner_id': line.order_id.partner_id.id,
                         'email_from': line.order_id.partner_id.email,
                     })
-            line._timesheet_create_task(project)
+                    
+                    if task.message_partner_ids:
+                        task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
+            line._timesheet_create_task_desde_diseno(project)
         self.actualizar_datos_proyecto()
             
     def action_view_task(self):
@@ -304,13 +339,76 @@ class SaleOrder(models.Model):
         wizard = self.env['tetrace.generar_prevision_facturacion'].create({'order_id': self.id})
         return wizard.open_wizard()
                       
-
+    def action_importar_productos(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.importar_producto_pv'].create({"order_id": self.id})
+        return wizard.open_wizard()
+    
+    def action_imputar_variables(self):
+        self.ensure_one()
+        ImputacionLine = self.env["tetrace.imputacion_variable_line"]
+        porcentajes_lineas = self.porcentajes_incremeto_imputacion()
+        for imputacion in self.imputacion_variable_ids:
+            for line_id, porcentaje in porcentajes_lineas.items():
+                # Eliminar lineas que ya no existan en el las lineas del pedido de venta
+                imputaciones_line_borrar = ImputacionLine.search([
+                    ('imputacion_id', '=', imputacion.id),
+                    ('order_line_id', 'not in', self.order_line.ids)
+                ])
+                imputaciones_line_borrar.unlink()
+                
+                imputacion_line = ImputacionLine.search([
+                    ('imputacion_id', '=', imputacion.id),
+                    ('order_line_id', '=', int(line_id))
+                ], limit=1)
+                incremento_antiguo = imputacion_line.incremento if imputacion_line else 0
+                
+                line = self.env['sale.order.line'].search([('id', '=', int(line_id))], limit=1)
+                incremento = (imputacion.coste * porcentaje) / 100
+                if imputacion_line:
+                    imputacion_line.write({
+                        'incremento': incremento,
+                        'porcentaje': porcentaje
+                    })
+                else:
+                    ImputacionLine.create({
+                        'imputacion_id': imputacion.id,
+                        'order_line_id': int(line_id),
+                        'incremento': incremento,
+                        'porcentaje': porcentaje
+                    })
+                    
+                line.write({'price_unit': line.price_unit + incremento - incremento_antiguo})
+            
+    def porcentajes_incremeto_imputacion(self):
+        self.ensure_one()
+        total = 0
+        for line in self.order_line:
+            total += line.price_unit
+            
+        porcentajes = {}
+        for line in self.order_line:
+            porcentaje_linea = (100 * line.price_unit) / total if total else 0
+            porcentajes.update({str(line.id): porcentaje_linea})
+        
+        return porcentajes
+           
+    
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     no_imprimir = fields.Boolean("Archivado")
     product_entregado = fields.Boolean(related="product_id.producto_entrega")
+    individual = fields.Boolean("Individual")
+    imputacion_variable_line_ids = fields.One2many('tetrace.imputacion_variable_line', 'order_line_id')
+    
+    @api.onchange('product_id')
+    def product_id_change(self):
+        if not self.product_id:
+            return
+        self.individual = self.product_id.individual
+        return super(SaleOrderLine, self).product_id_change()
     
     def _timesheet_service_generation(self):
         # Compruebo que el pedido tenga o no proyectos
@@ -355,15 +453,9 @@ class SaleOrderLine(models.Model):
             "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto)
         }
         project.write(values)
-        
-        partner_seguidores_ids = []
-        for user in self.order_id.seguidor_proyecto_ids:
-            if user.partner_id:
-                partner_seguidores_ids.append(user.partner_id.id)
                 
-        if partner_seguidores_ids:   
-            project.with_context(add_followers=True)\
-                .message_subscribe(partner_ids=partner_seguidores_ids)
+        if self.order_id.seguidor_partner_proyecto_ids:   
+            project.with_context(add_follower=True).message_subscribe(self.order_id.seguidor_partner_proyecto_ids.ids, [])
         
         return project
     
@@ -372,19 +464,31 @@ class SaleOrderLine(models.Model):
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
         
+        project_follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
         # create the project or duplicate one
         values = self._timesheet_create_project_prepare_values()
         if self.product_id.project_template_diseno_id:
-            values['name'] = "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto)
-            project = self.product_id.project_template_diseno_id.copy(values)
-            project.tasks.write({
-                'sale_line_id': self.id,
-                'partner_id': self.order_id.partner_id.id,
-                'email_from': self.order_id.partner_id.email,
-                'desde_plantilla': True
+            values.update({
+                "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
+                "tasks": None
             })
             
-            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': self.id})
+            project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
+            project = self.product_id.project_template_diseno_id.copy(values)
+            for task in self.product_id.project_template_diseno_id.tasks:
+                new_task = task.copy({
+                    'name': task.name,
+                    'sale_line_id': None,
+                    'partner_id': self.order_id.partner_id.id,
+                    'email_from': self.order_id.partner_id.email,
+                    'desde_plantilla': True,
+                    'project_id': project.id
+                })
+                
+                if task.message_partner_ids:
+                    new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
+            
+            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': None})
         else:
             project = self.env['project.project'].create(values)
 
@@ -395,57 +499,66 @@ class SaleOrderLine(models.Model):
         # link project as generated by current so line
         self.write({'project_id': project.id})
         
-        if self.order_id.seguidor_proyecto_ids:
-            project.message_subscribe(partner_ids=self.order_id.seguidor_proyecto_ids.ids)
+        if project_follower_ids:   
+            project.with_context(add_follower=True).message_subscribe(project_follower_ids, [])
         
         return project
     
-    def _timesheet_create_task(self, project):
-        if self.order_id.state == 'draft' and not self.job_id:
-            return None
+    def _timesheet_create_task_desde_diseno(self, project):
+        if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
+            return False
         
-        task_seleccion = None
-        tasks_individual = None
-        if self.order_id.state == 'draft' and self.job_id:
-            task_seleccion = self.env['project.task'].search([
-                ('project_id', '=', project.id),
-                ('job_id', '=', False),
-                ('tarea_seleccion', '=', True),
-            ], limit=1)
-            
-            task_seleccion.write({
-                'job_id': self.job_id.id,
-                'name': "Selección %s" % self.job_id.name,
-                'sale_line_id': False
-            })
-            
-            if int(self.product_uom_qty) > 1:
-                tasks_individual = self.env['project.task'].search([
-                    ('project_id', '=', project.id),
-                    ('tarea_individual', '=', True),
-                ])
-
-                for task in tasks_individual:
-                    for i in range(1, int(self.product_uom_qty)):
-                        task.copy({'name': task.name})
-        
-        if not task_seleccion and not tasks_individual:
-            task = super(SaleOrderLine, self)._timesheet_create_task(project)
-            
-        if self.order_id.state == 'draft' and self.job_id:
-            self.write({'task_id': None})
-        return task
+        tasks = self._timesheet_create_task_seleccion(project) + self._timesheet_create_task_individual(project)
+        return tasks
     
-    def _timesheet_create_task_prepare_values(self, project):
-        values = super(SaleOrderLine, self)._timesheet_create_task_prepare_values(project)
-        values.update({'job_id': self.job_id.id})
-        if self.order_id.state == 'draft' and self.job_id:
+    def _timesheet_create_task_seleccion(self, project):
+        if not self.job_id or int(self.product_uom_qty) <= 0:
+            return []
+        
+        tasks_seleccion = self.env['project.task'].search([
+            ('project_id', '=', self.product_id.project_template_diseno_id.id),
+            ('job_id', '=', False),
+            ('tarea_seleccion', '=', True),
+        ])
+            
+        values = {
+            'project_id': project.id,
+            'sale_line_id': False
+        }
+        if self.job_id:
             values.update({
-                'name': "Selección %s" % self.job_id.name,
-                'tarea_seleccion': True,
-                'sale_line_id': False
+                'job_id': self.job_id.id,
+                'name': "Seleccionar: %s" % self.job_id.name,
             })
-        return values
+            
+        tasks = []
+        for task in tasks_seleccion:
+            for i in range(0, int(self.product_uom_qty)):
+                new_task = task.copy(values)
+                tasks.append(new_task)
+        self.write({'task_id': None})
+        return tasks
+                
+    def _timesheet_create_task_individual(self, project):
+        if int(self.product_uom_qty) <= 0 or not self.individual:
+            return []
+        
+        tasks_individual = self.env['project.task'].search([
+            ('project_id', '=', self.product_id.project_template_diseno_id.id),
+            ('tarea_individual', '=', True),
+            ('tarea_seleccion', '=', False),
+        ])
+        
+        tasks = []
+        for task in tasks_individual:
+            for i in range(1, int(self.product_uom_qty)):
+                new_task = task.copy({
+                    'name': task.name,
+                    'project_id': project.id,
+                })
+                tasks.append(new_task)
+        self.write({'task_id': None})
+        return tasks
     
     
 class PrevisionFacturacion(models.Model):
@@ -467,4 +580,12 @@ class PrevisionFacturacion(models.Model):
     feedbak = fields.Text("Feedbak")
     observaciones = fields.Text("Observaciones")
     importe_factura = fields.Monetary("Importe factura")
+    
+    
+class RefProducto(models.Model):
+    _name = "tetrace.ref_producto"
+    _description = "Referencias fuera de catalogo"
+    
+    name = fields.Char("Referencia")
+    order_id = fields.Many2one("sale.order", string="Pedido de venta")
 

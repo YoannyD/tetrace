@@ -22,6 +22,11 @@
         <field name="model">project.project</field>
         <field name="arch" type="xml">
             <xpath expr="//header[1]" position="inside">
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_activar_tareas"
+                        string="Finalizar proyecto"/>
+                
                 <field name="estado_id" 
                        widget="statusbar" 
                        options="{'clickable': '1'}"
@@ -55,6 +60,13 @@
                         name="view_procesos_seleccion_tree" 
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_analitica_tree" 
+                        string="Analítica"
+                        attrs="{'invisible':[('analytic_account_id', '=', False)]}"
+                        icon="fa-usd"/>
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="after">
@@ -67,8 +79,6 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion"/>
                 <field name="fecha_finalizacion"/>
-                <field name="offset_deadline_activacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
-                <field name="offset_deadline_desactivacion" attrs="{'invisible': [('fecha_finalizacion', '=', False), ('fecha_cancelacion', '=', False)]}"/>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
             </xpath>
@@ -205,9 +215,8 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="job_id"/>
+                <field name="employee_id" attrs="{'invisible': [('tarea_individual', '=', False)]}"/>
                 <field name="tipo"/>
-                <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
-                <field name="tarea_individual"/>
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">
@@ -230,6 +239,46 @@
                         </tree>
                     </field>
                 </page>
+                
+                <page name="opciones" string="Opciones">
+                    <group>
+                        <group>
+                            <field name="tarea_individual"/>
+                            <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
+                            <field name="viajes"/>
+                            <field name="activada"/>
+                            <field name="deadline_inicio"/>
+                            <field name="deadline_fin"/>
+                        </group>
+                        <group>
+                            <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">
+                    <field name="viaje_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="origen"/>
+                            <field name="destino"/>
+                            <field name="contratado"/>
+                            <field name="realizado"/>
+                            <field name="employee_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_task_search_form">
+        <field name="name">project.task.search.form.tetrace</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <filter string="Desactivadas" name="no_activada" domain="[('activada', '=', False)]"/>
             </xpath>
         </field>
     </record>

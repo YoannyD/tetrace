@@ -49,6 +49,8 @@ class AccountMove(models.Model):
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
     fecha_servicio = fields.Date("Fecha servicio")
+    importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
+                                               compute="_compute_importe_validacion_euros")
 
     def extraer_numero_factura(self):
     #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
@@ -260,7 +262,23 @@ class AccountMove(models.Model):
                     invoice_line_form.price_unit = amount_total_import
 
         return invoice_form.save()
-                        
+
+    @api.depends("amount_untaxed_signed", "invoice_date")
+    def _compute_importe_validacion_euros(self):
+        for r in self:
+            rate = 0
+            if r.invoice_date:
+                euro = self.env['res.currency.rate'].search([
+                    ('company_id', '=', r.company_id.id),
+                    ('currency_id', '=', 1),
+                    ('name', '<=', r.invoice_date.strftime('%Y-%m-%d'))
+                ], limit = 1)
+                if euro:
+                    rate = euro.rate
+            importe_original = r.amount_untaxed_signed
+            r.update({'importe_validacion_euros': importe_original * rate})
+            # Si no tasa para Euro el importe_validacion_euros sera igual a 0
+
     @api.onchange('ref')
     def _onchange_ref_invoice(self):
         for r in self:

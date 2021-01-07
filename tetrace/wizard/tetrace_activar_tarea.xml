@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_activar_tarea_form">
+        <field name="name">tetrace.activar_tarea</field>
+        <field name="model">tetrace.activar_tarea</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="accion" required="1"/>
+                    <field name="motivo_cancelacion_id" attrs="{'invisible': [('accion', '!=', 'cancelar')], 'required': [('accion', '=', 'cancelar')]}"/>
+                    <field name="project_id" invisible="1"/>
+                    <field name="fecha_fin" required="1"/>
+                    <field name="viaje"/>
+                    <field name="baja_tecnico"/>
+                    <field name="baja_it"/>
+                    <field name="recogida_equipos"/>
+                    <field name="facturacion"/>
+                    <field name="reubicacion_puesto"/>
+                </group>
+                <footer>
+                    <button name="action_activar_tareas" string="Aceptar" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

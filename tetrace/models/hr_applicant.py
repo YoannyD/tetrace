@@ -31,7 +31,20 @@ class Applicant(models.Model):
                 ('res_id', '=', r.id),
             ])
             r.document_applicant_count = documents
-            
+    
+    def write(self, vals):
+        res = super(Applicant, self).write(vals)
+        self.actualizar_nombre_adjunto_a_documento()
+        return res
+    
+    def actualizar_nombre_adjunto_a_documento(self):
+        for r in self:
+            documents = self.env['documents.document'].search([
+                ('res_model', '=', 'hr.applicant'),
+                ('res_id', '=', r.id)
+            ])
+            documents._compute_res_name()
+    
     def create_employee_from_applicant(self):
         res = super(Applicant, self).create_employee_from_applicant()
         

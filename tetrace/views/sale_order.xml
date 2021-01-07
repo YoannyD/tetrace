@@ -35,6 +35,10 @@
                 <button name="action_crear_version"
                         type="object"
                         string="Generar Version"/>
+                
+                <button name="action_importar_productos"
+                        type="object"
+                        string="Importar productos"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -109,6 +113,7 @@
 
             <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
                 <field name="job_id" optional="hide"/>
+                <field name="individual" optional="hide"/>
                 <field name="product_entregado" invisible="1"/>
             </xpath>
             
@@ -160,6 +165,53 @@
                         </group>
                         <div class="oe_clear"/>
                     </group>
+                </page>
+                
+                <page name="ref_fuera_catalogo" string="Fuera de catálogo" attrs="{'invisible': [('ref_producto_ids', '=', False)]}">
+                    <field name="ref_producto_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="name"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page name="imputaciones_variables" string="Imputaciones variables">
+                    <button name="action_imputar_variables"
+                            type="object"
+                            class="oe_highlight"
+                            string="Imputar"/>
+                    
+                    <field name="imputacion_variable_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="name"/>
+                            <field name="coste"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                        
+                        <form>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="name"/>
+                                <field name="coste"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                            <group string="Repartición en las líneas del pedido">
+                                <field name="line_ids" readonly="1" nolabel="1">
+                                    <tree>
+                                        <field name="order_line_id"/>
+                                        <field name="order_line_product_id"/>
+                                        <field name="incremento"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </form>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="imputacion_total">
+                        <field name="total_imputacion_variable" string="Total"/>
+                    </group>
+                    <div class="oe_clear"/>
                 </page>
             </xpath>
         </field>
