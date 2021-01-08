@@ -332,6 +332,14 @@ class ProjectTask(models.Model):
             ('channel_id', 'in', channel_ids or [])
         ]).unlink()
         
+    def copy(self, default=None):
+        self.ensure_one()
+        new_task = super(ProjectTask, self).copy(default)
+        if self.message_partner_ids:
+            new_task.with_context(add_follower=True).message_subscribe(self.message_partner_ids.ids, [])
+            new_task.notificar_asignacion_seguidores()
+        return new_task
+        
     def notificar_asignacion_seguidores(self):
         view = self.env['ir.ui.view'].browse(self.env['ir.model.data'].xmlid_to_res_id("mail.message_user_assigned"))
         for r in self:

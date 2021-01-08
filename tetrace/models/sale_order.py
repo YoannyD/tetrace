@@ -560,13 +560,11 @@ class SaleOrderLine(models.Model):
             'sale_line_id': False
         }
         if self.job_id:
-            values.update({
-                'job_id': self.job_id.id,
-                'name': "Seleccionar: %s" % self.job_id.name,
-            })
+            values.update({'job_id': self.job_id.id,})
             
         tasks = []
         for task in tasks_seleccion:
+            values.update({'name': "%s (%s)" % (task.name, self.job_id.name)})
             for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy(values)
                 tasks.append(new_task)
@@ -585,9 +583,14 @@ class SaleOrderLine(models.Model):
         
         tasks = []
         for task in tasks_individual:
+            if self.job_id:
+                name = "%s (%s)" % (task.name, self.job_id.name)
+            else:
+                name = task.name
+            
             for i in range(1, int(self.product_uom_qty)):
                 new_task = task.copy({
-                    'name': task.name,
+                    'name': name,
                     'project_id': project.id,
                 })
                 tasks.append(new_task)
