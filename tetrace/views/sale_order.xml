@@ -171,6 +171,7 @@
                     <field name="ref_producto_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="name"/>
+                            <field name="cantidad"/>
                         </tree>
                     </field>
                 </page>

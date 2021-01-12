@@ -652,4 +652,5 @@ class RefProducto(models.Model):
     
     name = fields.Char("Referencia")
     order_id = fields.Many2one("sale.order", string="Pedido de venta")
+    cantidad = fields.Float("Cantidad")
 

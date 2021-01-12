@@ -40,7 +40,12 @@ class ImportarProductoPV(models.TransientModel):
                 ('name', '=', self.order_id.partner_id.id),
                 ('product_code', '=', line[0])
             ])
-
+            
+            try:
+                cantidad = float(line[1])
+            except:
+                cantidad = 0.0
+            
             product = False
             if ref_producto:
                 if ref_producto.product_id:
@@ -53,7 +58,7 @@ class ImportarProductoPV(models.TransientModel):
                     'order_id': self.order_id.id,
                     'product_id': product.id,
                     'product_uom': product.uom_id.id,
-                    'product_uom_qty': ref_producto.min_qty,
+                    'product_uom_qty': cantidad,
                     'price_unit': ref_producto.price,
                     'name': ref_producto.product_name
                 })
@@ -63,11 +68,14 @@ class ImportarProductoPV(models.TransientModel):
                     ('order_id', '=', self.order_id.id),
                     ('name', '=', line[0])
                 ], limit=1)
+                values = {'cantidad': cantidad}
                 if not ref_producto:
                     RefProducto.create({
                         'order_id': self.order_id.id,
-                        'name': line[0]
+                        'name': line[0],
                     })
+                else:
+                    ref_producto.write(values)
 
         return {'type': 'ir.actions.act_window_close'}
         
