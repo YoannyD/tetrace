@@ -20,6 +20,7 @@ class Viaje(models.Model):
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
     task_id = fields.Many2one("project.task", string="Tarea")
+    observaciones = fields.Text("Observaciones")
     
     @api.depends("fecha", "origen", "destino")
     def _compute_name(self):

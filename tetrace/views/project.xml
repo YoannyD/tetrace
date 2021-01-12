@@ -264,8 +264,23 @@
                             <field name="destino"/>
                             <field name="contratado"/>
                             <field name="realizado"/>
-                            <field name="employee_id"/>
+                            
                         </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="fecha"/>
+                                    <field name="origen"/>
+                                    <field name="destino"/>
+                                    <field name="contratado"/>
+                                    <field name="realizado"/>
+                                </group>
+                                <group>
+                                    <field name="employee_id"/>
+                                    <field name="observaciones"/>
+                                </group>
+                            </group>
+                        </form>
                     </field>
                 </page>
             </xpath>

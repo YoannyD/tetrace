@@ -279,7 +279,7 @@ class SaleOrder(models.Model):
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 for task in line.product_id.project_template_diseno_id.tasks:
-                    if task.tarea_individual and not task.tarea_seleccion:
+                    if task.tarea_individual or task.tarea_seleccion:
                         continue
                         
                     new_task = task.copy({
@@ -509,6 +509,9 @@ class SaleOrderLine(models.Model):
             project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
             project = self.product_id.project_template_diseno_id.copy(values)
             for task in self.product_id.project_template_diseno_id.tasks:
+                if task.tarea_individual or task.tarea_seleccion:
+                    continue
+                
                 new_task = task.copy({
                     'name': task.name,
                     'sale_line_id': None,
@@ -588,7 +591,7 @@ class SaleOrderLine(models.Model):
             else:
                 name = task.name
             
-            for i in range(1, int(self.product_uom_qty)):
+            for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy({
                     'name': name,
                     'project_id': project.id,
