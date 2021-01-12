@@ -254,9 +254,6 @@ class ProjectTask(models.Model):
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
         for r in self:
-            if r.tarea_individual and r.tipo != 'activacion':
-                raise ValidationError("Para ser una una tarea de individual tiene que ser del tipo activación.")
-                
             if r.tarea_seleccion and not r.tarea_individual:
                 raise ValidationError("Si es tarea de selección tiene que ser tarea individual")
     

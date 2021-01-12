@@ -278,7 +278,13 @@ class SaleOrder(models.Model):
         for line in self.order_line:
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
-                for task in line.product_id.project_template_diseno_id.tasks:
+                template_tasks = self.env['project.task'].search([
+                    ('project_id', '=', line.product_id.project_template_diseno_id.id),
+                    '|',
+                    ('activada', '=', True),
+                    ('activada', '=', False),
+                ])
+                for task in template_tasks:
                     if task.tarea_individual or task.tarea_seleccion:
                         continue
                         
@@ -427,7 +433,13 @@ class SaleOrderLine(models.Model):
                 r.product_id.project_template_id and r.order_id.id in project_sale and \
                 r.product_id.project_template_id.id not in project_template_ids:
                 project_template_ids.append(r.product_id.project_template_id.id)
-                for task in r.product_id.project_template_id.tasks:
+                template_tasks = self.env['project.task'].search([
+                    ('project_id', '=', r.product_id.project_template_id.id),
+                    '|',
+                    ('activada', '=', True),
+                    ('activada', '=', False),
+                ])
+                for task in template_tasks:
                     new_task = task.copy({
                         'name': task.name,
                         'project_id': r.order_id.project_ids[0].id,
@@ -461,7 +473,13 @@ class SaleOrderLine(models.Model):
                 "tasks": None
             })
             project = self.product_id.project_template_id.copy(values)
-            for task in self.product_id.project_template_id.tasks:
+            project_tasks = self.env['project.task'].search([
+                ('project_id', '=', self.product_id.project_template_id.id),
+                '|',
+                ('activada', '=', True),
+                ('activada', '=', False),
+            ])
+            for task in project_tasks:
                 new_task = task.copy({
                     'name': task.name,
                     'sale_line_id': self.id,
@@ -556,6 +574,9 @@ class SaleOrderLine(models.Model):
             ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('job_id', '=', False),
             ('tarea_seleccion', '=', True),
+            '|',
+            ('activada', '=', True),
+            ('activada', '=', False),
         ])
             
         values = {
@@ -582,6 +603,9 @@ class SaleOrderLine(models.Model):
             ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('tarea_individual', '=', True),
             ('tarea_seleccion', '=', False),
+            '|',
+            ('activada', '=', True),
+            ('activada', '=', False),
         ])
         
         tasks = []

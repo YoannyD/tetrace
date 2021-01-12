@@ -36,7 +36,8 @@ class ActivarTarea(models.TransientModel):
         domain = [
             ('project_id', '=', self.project_id.id),
             ('date_deadline', '=', False),
-            ('tipo', '=', 'desactivacion')
+            ('tipo', '=', 'desactivacion'),
+            ('activada', '=', False)
         ]
         if self.viaje: domain += [('opciones_desactivacion', '=', 'viaje')]
         if self.baja_tecnico: domain += [('opciones_desactivacion', '=', 'baja')]
@@ -47,7 +48,7 @@ class ActivarTarea(models.TransientModel):
             
         tasks = self.env['project.task'].search(domain)
         for task in tasks:
-            tasks.write({
+            task.write({
                 'activada': True,
                 'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
             })
