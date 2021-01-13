@@ -226,6 +226,8 @@ class SaleOrder(models.Model):
             )
 
     def _action_confirm(self):
+        for order in self:
+            order.action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
         self.send_mail_seguidores()
