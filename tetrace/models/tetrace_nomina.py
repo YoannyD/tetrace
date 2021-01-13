@@ -42,7 +42,7 @@ class Nomina(models.Model):
                 if key not in agrupar_por_trabajador:
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
-                        'ref' : _("Nómina %s)" % (nomina_trabajador.employee_id.name),
+                        'ref' : _("Nómina %s") % (nomina_trabajador.employee_id.name),
                         'date': nomina_trabajador.fecha_fin,
                         'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []

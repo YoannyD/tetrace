@@ -63,9 +63,14 @@
                 
                 <button class="oe_stat_button" 
                         type="object" 
-                        name="view_analitica_tree" 
-                        string="Analítica"
-                        attrs="{'invisible':[('analytic_account_id', '=', False)]}"
+                        name="action_gastos" 
+                        string="Gastos"
+                        icon="fa-usd"/>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_ingresos" 
+                        string="Ingresos"
                         icon="fa-usd"/>
             </xpath>
             
@@ -285,7 +290,7 @@
                     </field>
                 </page>
                 
-                <page name="alquiler_vehiculos" string="Alquiler vehículos">
+                <page name="alquiler_vehiculos" string="Alquiler vehículos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alquiler_vehiculo_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="fecha_inicio"/>
@@ -300,7 +305,7 @@
                     </field>
                 </page>
                 
-                <page name="alojamientos" string="Alojamientos">
+                <page name="alojamientos" string="Alojamientos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alojamiento_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="fecha"/>

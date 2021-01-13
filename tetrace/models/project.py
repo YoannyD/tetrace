@@ -221,6 +221,32 @@ class Project(models.Model):
         action["context"] = {'search_default_group_date': 1, 'default_account_id': self.analytic_account_id.id}
         return action
     
+    def action_gastos(self):
+        self.ensure_one()
+        return {
+            'name': _('Gastos'),
+            'view_mode': 'tree,form',
+            'res_model': 'account.move.line',
+            'type': 'ir.actions.act_window',
+            'domain': [
+                ('analytic_account_id', '=', self.analytic_account_id.id),
+                ('move_id.type', 'in', ['in_invoice', 'in_refund', 'in_receipt'])
+            ]
+        }
+        
+    def action_ingresos(self):
+        self.ensure_one()
+        return {
+            'name': _('Ingresos'),
+            'view_mode': 'tree,form',
+            'res_model': 'account.move.line',
+            'type': 'ir.actions.act_window',
+            'domain': [
+                ('analytic_account_id', '=', self.analytic_account_id.id),
+                ('move_id.type', 'in', ['out_invoice', 'out_refund', 'out_receipt'])
+            ]
+        }
+    
     
 class ProjectTask(models.Model):
     _inherit = 'project.task'

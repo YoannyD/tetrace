@@ -46,3 +46,4 @@ from . import mod303
 from . import mail_thread
 from . import mail_followers
 from . import documents
+from . import tier_validation
