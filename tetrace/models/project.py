@@ -242,7 +242,7 @@ class ProjectTask(models.Model):
         ('desactivacion', 'Desactivacion')
     ], string="Tipo tarea")
     tarea_individual = fields.Boolean("Individual")
-    viajes = fields.Boolean("Viajes")
+    viajes = fields.Boolean("Trips")
     viaje_ids = fields.One2many("tetrace.viaje", "task_id")
     activada = fields.Boolean("Activada", default=True)
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
@@ -250,6 +250,8 @@ class ProjectTask(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Empleado")
     deadline_inicio = fields.Integer("Deadline inicio")
     deadline_fin = fields.Integer("Deadline fin")
+    alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
+    alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):

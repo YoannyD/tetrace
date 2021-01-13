@@ -24,6 +24,8 @@ class Employee(models.Model):
     applicant_ids = fields.One2many('hr.applicant', 'emp_id')
     applicant_count = fields.Integer('Número de procesos de selección', compute="_compute_applicant")
     nivel_validacion_compras_ids = fields.Many2many('tier.definition', string="Validación compras", domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]", check_company=True)
+    alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "employee_id")
+    alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
 
     def _compute_document_employee(self):
         for r in self:

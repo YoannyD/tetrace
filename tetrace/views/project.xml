@@ -264,7 +264,8 @@
                             <field name="destino"/>
                             <field name="contratado"/>
                             <field name="realizado"/>
-                            
+                            <field name="employee_id"/>
+                            <field name="observaciones"/>
                         </tree>
                         <form>
                             <group>
@@ -281,6 +282,34 @@
                                 </group>
                             </group>
                         </form>
+                    </field>
+                </page>
+                
+                <page name="alquiler_vehiculos" string="Alquiler vehículos">
+                    <field name="alquiler_vehiculo_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                            <field name="recogida"/>
+                            <field name="entrega"/>
+                            <field name="completado"/>
+                            <field name="realizado"/>
+                            <field name="employee_id"/>
+                            <field name="observaciones"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page name="alojamientos" string="Alojamientos">
+                    <field name="alojamiento_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="fecha"/>
+                            <field name="ciudad"/>
+                            <field name="completado"/>
+                            <field name="realizado"/>
+                            <field name="employee_id"/>
+                            <field name="observaciones"/>
+                        </tree>
                     </field>
                 </page>
             </xpath>
