@@ -4,7 +4,7 @@
 import logging
 
 from datetime import datetime
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class MergeAnalyticAccount(models.TransientModel):
     def action_merge_lines(self):
         self.ensure_one()
         if not self.analytic_account_id:
-            raise ValidationError('Debe seleccionar una cuenta analítica.')
+            raise ValidationError(_('Debe seleccionar una cuenta analítica.'))
 
         lines = self.env['tetrace.merge_analytic_account_line'].search([])
         analytic_account_ids = [l.account_analytic_id.id for l in lines]

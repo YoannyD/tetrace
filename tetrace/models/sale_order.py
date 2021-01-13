@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
     proyecto_country_id = fields.Many2one('res.country', string="País", copy=False)
     nombre_proyecto = fields.Char('Nombre proyecto', copy=False)
     detalle_proyecto = fields.Char('Detalle proyecto', copy=False)
-    descripcion_proyecto = fields.Char('Descripción proyecto', copy=False)
+    descripcion_proyecto = fields.Char('Descripción proyecto', copy=False, translate=True)
     cabecera_proyecto = fields.Html('Cabecera proyecto', copy=False)
     version_ids = fields.One2many('tetrace.sale_order_version', 'sale_order_id')
     version_count = fields.Integer('Versiones', compute="_compute_version")
@@ -54,13 +54,13 @@ class SaleOrder(models.Model):
         for r in self:
             if r.num_proyecto:
                 if len(r.num_proyecto) != 4:
-                    raise ValidationError("El Nº de proyecto tiene que ser de 4 caracteres.")
+                    raise ValidationError(_("El Nº de proyecto tiene que ser de 4 caracteres."))
                     
     @api.constrains("referencia_proyecto_antigua")
     def _check_referencia_proyecto_antigua(self):
         for r in self:
             if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
-                raise ValidationError("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999.")
+                raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
                     
     @api.depends("rfq", "ref_proyecto")
     def _compute_name(self):
@@ -263,7 +263,7 @@ class SaleOrder(models.Model):
             return
         
         if not self.ref_proyecto or not self.nombre_proyecto:
-            raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
+            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
         
         # Crear el proyecto con la plantilla diseño del primer producto que la tenga
         project = None
@@ -463,7 +463,7 @@ class SaleOrderLine(models.Model):
     def _timesheet_create_project(self):
         self.ensure_one()
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
-            raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
+            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
         
         if self.order_id.project_ids and self.product_id.service_tracking in ['task_global_project', 'task_in_project']:
             return self.order_id.project_ids[0]
@@ -515,7 +515,7 @@ class SaleOrderLine(models.Model):
     def _timesheet_create_project_diseno(self):
         self.ensure_one()
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
-            raise ValidationError("Para crear el proyecto es obligatorio indicar el nombre y la referencia.")
+            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
         
         project_follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
         # create the project or duplicate one
@@ -643,8 +643,8 @@ class PrevisionFacturacion(models.Model):
     importe = fields.Monetary("Importe previsto")
     currency_id = fields.Many2one(related='order_id.currency_id')
     facturado = fields.Boolean("Facturado")
-    feedbak = fields.Text("Feedbak")
-    observaciones = fields.Text("Observaciones")
+    feedbak = fields.Text("Feedbak", translate=True)
+    observaciones = fields.Text("Observaciones", translate=True)
     importe_factura = fields.Monetary("Importe factura")
     
     

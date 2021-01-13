@@ -16,10 +16,10 @@ from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
 _logger = logging.getLogger(__name__)
 
 CODIGOS_SII = [
-    ('33', 'Factura electrónica'),
-    ('34', 'Factura no afecta o exenta electrónica'),
-    ('56', 'Nota de débito electrónica'),
-    ('61', 'Nota de crédito electrónica')
+    ('33', _('Factura electrónica')),
+    ('34', _('Factura no afecta o exenta electrónica')),
+    ('56', _('Nota de débito electrónica')),
+    ('61', _('Nota de crédito electrónica'))
 ]
 
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
@@ -40,7 +40,7 @@ class AccountMove(models.Model):
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
-    incoterm_complemento = fields.Char('Complemento Incoterm')
+    incoterm_complemento = fields.Char('Complemento Incoterm', translate=True)
     secuencia_num = fields.Integer('Número secuencia')
     secuencia = fields.Char('Secuencia')
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")

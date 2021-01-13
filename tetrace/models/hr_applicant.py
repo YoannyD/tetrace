@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -111,13 +111,13 @@ class ApplicationResumeLine(models.Model):
     _order = "line_type_id, date_end desc, date_start desc"
 
     applicant_id = fields.Many2one('hr.applicant', required=True, ondelete='cascade')
-    name = fields.Char(required=True)
-    date_start = fields.Date(required=True)
-    date_end = fields.Date()
-    description = fields.Text(string="Description")
+    name = fields.Char("Nombre", required=True, translate=True)
+    date_start = fields.Date("Fecha inicio", required=True)
+    date_end = fields.Date("Fecha fin")
+    description = fields.Text("Description", translate=True)
     line_type_id = fields.Many2one('hr.resume.line.type', string="Tipo")
     display_type = fields.Selection([('classic', 'Classic')], string="Display Type", default='classic')
 
     _sql_constraints = [
-        ('date_check', "CHECK ((date_start <= date_end OR date_end = NULL))", "The start date must be anterior to the end date."),
+        ('date_check', "CHECK ((date_start <= date_end OR date_end = NULL))", _("The start date must be anterior to the end date.")),
     ]

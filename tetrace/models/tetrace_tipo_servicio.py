@@ -12,6 +12,6 @@ class TipoServicio(models.Model):
     _name = "tetrace.tipo_servicio"
     _description = "Tipos de servicio"
 
-    name = fields.Char('Nombre', required=True)
+    name = fields.Char('Nombre', required=True, translate=True)
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
     color = fields.Integer(string='Color Index')

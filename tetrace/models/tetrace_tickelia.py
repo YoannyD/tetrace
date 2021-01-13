@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_round
 
@@ -14,7 +14,7 @@ class Tickelia(models.Model):
     _name = 'tetrace.tickelia'
     _description = 'Tickelia'
 
-    name = fields.Char('Nombre')
+    name = fields.Char('Nombre', translate=True)
     fecha = fields.Date('Fecha')
     company_id = fields.Many2one('res.company', required=True, default= lambda self: self.env.company)
     tickelia_trabajador_ids = fields.One2many('tetrace.tickelia.trabajador', 'tickelia_id')
@@ -23,7 +23,7 @@ class Tickelia(models.Model):
     def action_importar_tickelia(self):
         self.ensure_one()
         if self.move_ids:
-            raise UserError("No se puede importar el fichero si existen asientos contables.")
+            raise UserError(_("No se puede importar el fichero si existen asientos contables."))
 
         wizard = self.env['tetrace.importar_tickelia'].create({'tickelia_id': self.id})
         return wizard.open_wizard()
@@ -32,7 +32,7 @@ class Tickelia(models.Model):
         for r in self:
             journal_id = r.company_id.tetrace_tickelia_journal_id.id
             if not journal_id:
-                raise ValidationError("Es necesario especificar un diario de liquidaciones de gato para la compañía")
+                raise ValidationError(_("Es necesario especificar un diario de liquidaciones de gato para la compañía"))
             company_id = r.company_id.id
             gastos_agrupados = {}
             for tickelia_trabajador in r.tickelia_trabajador_ids:
@@ -45,7 +45,7 @@ class Tickelia(models.Model):
                 if not gastos:
                     continue      
                     
-                ref = "Liquidación %s" % key
+                ref = _("Liquidación %s") % key
                 date = gastos[0].fecha_liquidacion
 
                 values = {
@@ -109,14 +109,14 @@ class TickeliaTrabajador(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Empleado")
     cuenta_gasto = fields.Many2one('account.account')
     cuenta_contrapartida = fields.Many2one('account.account')
-    descripcion = fields.Char('Descripción')
+    descripcion = fields.Char('Descripción', translate=True)
     importe = fields.Monetary('Importe validado')
     cuenta_analitica_id = fields.Many2one('account.analytic.account', string="Cuenta analítica")
-    liquidacion = fields.Char('Liquidación')
+    liquidacion = fields.Char('Liquidación', translate=True)
     fecha_liquidacion = fields.Date('Fecha liquidación')
     currency_id = fields.Many2one(related='company_id.currency_id')
     incorrecta = fields.Boolean('Incorrecta', compute="_compute_incorrecta", store=True)
-    original = fields.Char("Oríginal")
+    original = fields.Char("Oríginal", translate=True)
 
     @api.depends('fecha', 'importe', 'employee_id', 'cuenta_gasto', 'cuenta_contrapartida', 'cuenta_analitica_id')
     def _compute_incorrecta(self):

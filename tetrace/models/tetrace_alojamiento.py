@@ -13,9 +13,9 @@ class Alojamiento(models.Model):
     _description = "Alojamientos"
     
     fecha = fields.Date("Fecha")
-    ciudad = fields.Char("Ciudad")
+    ciudad = fields.Char("Ciudad", translate=True)
     completado = fields.Boolean("Completado")
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
-    observaciones = fields.Text("Observaciones")
+    observaciones = fields.Text("Observaciones", translate=True)
     task_id = fields.Many2one("project.task", string="Tarea")

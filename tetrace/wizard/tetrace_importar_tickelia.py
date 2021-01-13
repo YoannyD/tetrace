@@ -44,8 +44,8 @@ class ImportarTickelia(models.TransientModel):
                     cuenta_contrapartida_63 = str(line[63]).split('.',1)[0]
                     cuenta_contrapartida_64 = str(line[64]).split('.',1)[0]
                     cuenta_contrapartida = cuenta_contrapartida_63 if cuenta_contrapartida_63!='' else cuenta_contrapartida_64
-                    original = 'Empleado: '  + str(line[1]) + ' DNI: ' + str(line[0]) + ' Cuenta gasto: ' + cuenta_gasto \
-                        + ' Cuenta contrapartida:' + cuenta_contrapartida + ' Cuenta analítica: ' + str(line[43])
+                    original = _("Empleado: %s DNI: %s Cuenta gasto: %s Cuenta contrapartida: % Cuenta analítica: %s") % \
+                        (str(line[1]), str(line[0]), cuenta_gasto, cuenta_contrapartida, str(line[43]))
                     values = {
                         'tickelia_id': self.tickelia_id.id,
                         'fecha': datetime(*xlrd.xldate_as_tuple(float(line[14]),0)),
@@ -60,7 +60,12 @@ class ImportarTickelia(models.TransientModel):
                         ], limit=1).id,
                         'descripcion': str(line[11]),
                         'importe': line[20],
-                        'cuenta_analitica_id': self.env['account.analytic.account'].search([('code', '=', str(line[43])),'|', ('company_id', '=', False), ('company_id', '=', company_id)], limit=1).id,
+                        'cuenta_analitica_id': self.env['account.analytic.account'].search([
+                            ('code', '=', str(line[43])),
+                            '|', 
+                            ('company_id', '=', False), 
+                            ('company_id', '=', company_id)
+                        ], limit=1).id,
                         'liquidacion': line[31].split('.')[0],
                         'fecha_liquidacion': datetime(*xlrd.xldate_as_tuple(float(line[32]),0)),
                         'original': original,

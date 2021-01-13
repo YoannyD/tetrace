@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -60,7 +60,7 @@ class AccountAnalyticLine(models.Model):
     def _check_imputar_tiempos(self):
         for r in self:
             if r.task_id and r.task_id.stage_id and r.task_id.stage_id.bloquear_imputar_tiempos:
-                raise ValidationError("La inserción de tiempos en la tarea esta bloqueda.")
+                raise ValidationError(_("La inserción de tiempos en la tarea esta bloqueda."))
 
 
 class AccountAnalyticLineRel(models.Model):

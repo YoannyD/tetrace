@@ -3,15 +3,15 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
 ACCIONES = [
-    ('cancelar', 'Cancelar'),
-    ('terminar', 'Terminar')
+    ('cancelar', _('Cancelar')),
+    ('terminar', _('Terminar'))
 ]
 
 
