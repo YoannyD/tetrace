@@ -567,26 +567,31 @@ class SaleOrderLine(models.Model):
     
     def _timesheet_create_task(self, project):
         task = super(SaleOrderLine, self)._timesheet_create_task(project)
-        self._timesheet_create_task_individual(project, self.product_id.project_template_id)
+        self._timesheet_create_task_individual(project)
         return task
     
     def _timesheet_create_task_desde_diseno(self, project):
         if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
             return False
         
-        return self._timesheet_create_task_individual(project, self.product_id.project_template_diseno_id)
+        return self._timesheet_create_task_individual(project, True)
                 
-    def _timesheet_create_task_individual(self, project, plantilla_proyecto):
+    def _timesheet_create_task_individual(self, project, desde_plantilla=False):
         if int(self.product_uom_qty) <= 0 or not self.individual:
             return []
         
-        tasks_individual = self.env['project.task'].search([
-            ('project_id', '=', plantilla_proyecto.id),
+        domain = [
             ('tarea_individual', '=', True),
             '|',
             ('activada', '=', True),
             ('activada', '=', False),
-        ])
+        ]
+        if desde_plantilla:
+            domain += [('project_id', '=', self.product_id.project_template_diseno_id.id)]
+        else:
+            domain += [('project_id', '=', self.product_id.project_template_id.id)]
+        
+        tasks_individual = self.env['project.task'].search(domain)
         
         tasks = []
         for task in tasks_individual:
@@ -594,11 +599,17 @@ class SaleOrderLine(models.Model):
                 name = "%s (%s)" % (task.name, self.job_id.name)
             else:
                 name = task.name
-            
+        
             for i in range(0, int(self.product_uom_qty)):
+                if desde_plantilla:
+                    ref_individual = "%s-%s" % ("d", i)
+                else:
+                    ref_individual = "%s-%s" % ("o", i)
+                
                 new_task = task.copy({
                     'name': name,
                     'project_id': project.id,
+                    'ref_individual': ref_individual
                 })
                 tasks.append(new_task)
         self.write({'task_id': None})

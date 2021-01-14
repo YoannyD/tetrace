@@ -278,6 +278,7 @@ class ProjectTask(models.Model):
     deadline_fin = fields.Integer("Deadline fin")
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
+    ref_individual = fields.Char("Referencia individual")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
@@ -323,8 +324,33 @@ class ProjectTask(models.Model):
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
                 body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
+                
+        if 'employee_id' in vals and not self.env.context.get("no_actualizar_empleado"):
+            for r in self:
+                if r.tarea_individual and r.employee_id and r.ref_individual:
+                    task = self.env['project.task'].search([
+                        ('project_id', '=', r.project_id.id),
+                        ('tarea_individual', '=', True),
+                        ('ref_individual', '=', r.ref_individual)
+                    ])
+                    task.with_context(no_actualizar_empleado=True).cambiar_empleado_individual(r.employee_id)
         return res
     
+    
+    def cambiar_empleado_individual(self, employee):
+        for r in self:
+            if r.tarea_individual:
+                cadena_a_reemplazar = r.name[r.name.find("(")+1:r.name.find(")")]
+                if cadena_a_reemplazar:
+                    name = r.name.replace(cadena_a_reemplazar, employee.name)
+                else:
+                    name = "%s (%s)" % (r.name, employee.name)
+                
+                r.update({
+                    'name': name,
+                    'employee_id': employee.id
+                })
+            
     @api.model
     def _where_calc(self, domain, active_test=True):
         if 'activada' in self._fields and active_test and self._context.get('active_test', True):
