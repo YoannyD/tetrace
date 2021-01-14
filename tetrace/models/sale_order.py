@@ -449,7 +449,7 @@ class SaleOrderLine(models.Model):
                     new_task = task.copy({
                         'name': task.name,
                         'project_id': r.order_id.project_ids[0].id,
-                        'sale_line_id': r.id,
+                        'sale_line_id': None,
                         'partner_id': r.order_id.partner_id.id,
                         'email_from': r.order_id.partner_id.email,
                         'desde_plantilla': True
@@ -488,7 +488,7 @@ class SaleOrderLine(models.Model):
             for task in project_tasks:
                 new_task = task.copy({
                     'name': task.name,
-                    'sale_line_id': self.id,
+                    'sale_line_id': None,
                     'partner_id': self.order_id.partner_id.id,
                     'email_from': self.order_id.partner_id.email,
                     'project_id': project.id
@@ -498,9 +498,9 @@ class SaleOrderLine(models.Model):
                     new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
                     new_task.notificar_asignacion_seguidores()
 
-            project.tasks.filtered(lambda task: task.parent_id != False).write({
-                'sale_line_id': self.id,
-            })
+#             project.tasks.filtered(lambda task: task.parent_id != False).write({
+#                 'sale_line_id': self.id,
+#             })
         else:
             project = self.env['project.project'].create(values)
 
@@ -565,19 +565,23 @@ class SaleOrderLine(models.Model):
         
         return project
     
+    def _timesheet_create_task(self, project):
+        task = super(SaleOrderLine, self)._timesheet_create_task(project)
+        self._timesheet_create_task_individual(project, self.product_id.project_template_id)
+        return task
+    
     def _timesheet_create_task_desde_diseno(self, project):
         if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
             return False
         
-        tasks = self._timesheet_create_task_individual(project)
-        return tasks
+        return self._timesheet_create_task_individual(project, self.product_id.project_template_diseno_id)
                 
-    def _timesheet_create_task_individual(self, project):
+    def _timesheet_create_task_individual(self, project, plantilla_proyecto):
         if int(self.product_uom_qty) <= 0 or not self.individual:
             return []
         
         tasks_individual = self.env['project.task'].search([
-            ('project_id', '=', self.product_id.project_template_diseno_id.id),
+            ('project_id', '=', plantilla_proyecto.id),
             ('tarea_individual', '=', True),
             '|',
             ('activada', '=', True),
