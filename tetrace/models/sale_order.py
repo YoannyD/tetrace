@@ -287,7 +287,7 @@ class SaleOrder(models.Model):
                     ('activada', '=', False),
                 ])
                 for task in template_tasks:
-                    if task.tarea_individual or task.tarea_seleccion:
+                    if task.tarea_individual:
                         continue
                         
                     new_task = task.copy({
@@ -420,6 +420,10 @@ class SaleOrderLine(models.Model):
         self.individual = self.product_id.individual
         return super(SaleOrderLine, self).product_id_change()
     
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        return
+            
     def _timesheet_service_generation(self):
         # Compruebo que el pedido tenga o no proyectos
         project_sale = []
@@ -529,7 +533,7 @@ class SaleOrderLine(models.Model):
             project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
             project = self.product_id.project_template_diseno_id.copy(values)
             for task in self.product_id.project_template_diseno_id.tasks:
-                if task.tarea_individual or task.tarea_seleccion:
+                if task.tarea_individual:
                     continue
                 
                 new_task = task.copy({
@@ -565,36 +569,7 @@ class SaleOrderLine(models.Model):
         if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
             return False
         
-        tasks = self._timesheet_create_task_seleccion(project) + self._timesheet_create_task_individual(project)
-        return tasks
-    
-    def _timesheet_create_task_seleccion(self, project):
-        if not self.job_id or int(self.product_uom_qty) <= 0:
-            return []
-        
-        tasks_seleccion = self.env['project.task'].search([
-            ('project_id', '=', self.product_id.project_template_diseno_id.id),
-            ('job_id', '=', False),
-            ('tarea_seleccion', '=', True),
-            '|',
-            ('activada', '=', True),
-            ('activada', '=', False),
-        ])
-            
-        values = {
-            'project_id': project.id,
-            'sale_line_id': False
-        }
-        if self.job_id:
-            values.update({'job_id': self.job_id.id,})
-            
-        tasks = []
-        for task in tasks_seleccion:
-            values.update({'name': "%s (%s)" % (task.name, self.job_id.name)})
-            for i in range(0, int(self.product_uom_qty)):
-                new_task = task.copy(values)
-                tasks.append(new_task)
-        self.write({'task_id': None})
+        tasks = self._timesheet_create_task_individual(project)
         return tasks
                 
     def _timesheet_create_task_individual(self, project):
@@ -604,7 +579,6 @@ class SaleOrderLine(models.Model):
         tasks_individual = self.env['project.task'].search([
             ('project_id', '=', self.product_id.project_template_diseno_id.id),
             ('tarea_individual', '=', True),
-            ('tarea_seleccion', '=', False),
             '|',
             ('activada', '=', True),
             ('activada', '=', False),
