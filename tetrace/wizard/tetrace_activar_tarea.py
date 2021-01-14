@@ -32,20 +32,24 @@ class ActivarTarea(models.TransientModel):
     
     def action_activar_tareas(self):
         self.ensure_one()
-
+        opciones = []
+        if self.viaje: opciones.append('viaje')
+        if self.baja_tecnico: opciones.append('baja')
+        if self.baja_it: opciones.append('informatica')
+        if self.recogida_equipos: opciones.append('equipos')
+        if self.reubicacion_puesto: opciones.append('reubicacion')
+        if self.facturacion: opciones.append('facturacion')
+            
+        if not opciones:
+            return
+        
         domain = [
             ('project_id', '=', self.project_id.id),
             ('date_deadline', '=', False),
             ('tipo', '=', 'desactivacion'),
-            ('activada', '=', False)
+            ('activada', '=', False),
+            ('opciones_desactivacion', 'in', opciones)
         ]
-        if self.viaje: domain += [('opciones_desactivacion', '=', 'viaje')]
-        if self.baja_tecnico: domain += [('opciones_desactivacion', '=', 'baja')]
-        if self.baja_it: domain += [('opciones_desactivacion', '=', 'informatica')]
-        if self.recogida_equipos: domain += [('opciones_desactivacion', '=', 'equipos')]
-        if self.reubicacion_puesto: domain += [('opciones_desactivacion', '=', 'reubicacion')]
-        if self.facturacion: domain += [('opciones_desactivacion', '=', 'facturacion')]
-            
         tasks = self.env['project.task'].search(domain)
         for task in tasks:
             task.write({
