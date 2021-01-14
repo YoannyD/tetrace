@@ -14,5 +14,6 @@ class TierValidation(models.AbstractModel):
     @api.model
     def _get_under_validation_exceptions(self):
         res = super(TierValidation, self)._get_under_validation_exceptions()
-        res += ["l10n_ar_afip_responsibility_type_id", "l10n_ar_currency_rate"]
+        res += ["l10n_ar_afip_responsibility_type_id", "l10n_ar_currency_rate", 
+                "invoice_date","date","invoice_payment_ref","invoice_date_due"]
         return res
