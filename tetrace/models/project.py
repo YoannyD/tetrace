@@ -188,9 +188,13 @@ class Project(models.Model):
                 
     def view_tecnicos_tree(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_contract')
-        action.update({'domain': [('project_id', '=', self.id)]})
-        return action
+        ctx = dict(self._context)
+        ctx.update({'search_default_filter_employee_id': True})
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
+        action.update({'domain': [('id', 'in', self.tasks.filtered(lambda x: x.employee_id).ids)]})
+        action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
+        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
+        return dict(action, context=ctx)
     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
@@ -258,7 +262,6 @@ class ProjectTask(models.Model):
     tarea_seleccion = fields.Boolean("Tarea Selección")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
-    contract_ids = fields.Many2many('hr.contract', 'task_contract_rel', 'task_id', 'contract_id')
     entrega_ids = fields.One2many('project.task.entrega', 'task_id')
     entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")

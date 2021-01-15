@@ -337,8 +337,8 @@ class AccountMove(models.Model):
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
             
-        if 'asiento_anticipo_id' in vals:
-            self.actualizar_fecha_vencimiento_asiento_anticipo()
+#         if 'asiento_anticipo_id' in vals:
+#             self.actualizar_fecha_vencimiento_asiento_anticipo()
   
         return res
 
