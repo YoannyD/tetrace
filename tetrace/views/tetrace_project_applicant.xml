@@ -13,7 +13,7 @@
             <tree>
                 <field name="applicant_id"/>
                 <field name="task_id"/>
-                <field name="project_id" invisible="1"/>
+                <field name="project_id"/>
             </tree>
         </field>
     </record>
