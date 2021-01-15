@@ -340,8 +340,10 @@ class ProjectTask(models.Model):
     def cambiar_empleado_individual(self, employee):
         for r in self:
             if r.tarea_individual:
-                cadena_a_reemplazar = r.name[r.name.find("(")+1:r.name.find(")")]
-                if cadena_a_reemplazar:
+                pos1 = r.name.find("(")
+                pos2 = r.name.find(")")
+                if pos1 >= 0 and pos2 >= 0:
+                    cadena_a_reemplazar = r.name[pos1+1:pos2]
                     name = r.name.replace(cadena_a_reemplazar, employee.name)
                 else:
                     name = "%s (%s)" % (r.name, employee.name)
