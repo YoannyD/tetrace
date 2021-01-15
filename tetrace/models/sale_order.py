@@ -635,6 +635,8 @@ class PrevisionFacturacion(models.Model):
     feedbak = fields.Text("Feedbak", translate=True)
     observaciones = fields.Text("Observaciones", translate=True)
     importe_factura = fields.Monetary("Importe factura")
+    no_aplica = fields.Boolean("No aplica")
+    cancelado = fields.Boolean("Cancelado")
     
     
 class RefProducto(models.Model):
