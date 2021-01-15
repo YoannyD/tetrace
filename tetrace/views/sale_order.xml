@@ -171,6 +171,7 @@
                     <field name="ref_producto_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="name"/>
+                            <field name="cantidad"/>
                         </tree>
                     </field>
                 </page>
@@ -285,11 +286,11 @@
         <field name="name">tetrace.prevision_facturacion.tree</field>
         <field name="model">tetrace.prevision_facturacion</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree editable="bottom">
                 <field name="order_id" invisible="1"/>
-                <field name="order_partner_id"/>
-                <field name="order_nombre_proyecto"/>
-                <field name="order_project_estado_id"/>
+                <field name="order_partner_id" readonly="1"/>
+                <field name="order_nombre_proyecto" readonly="1"/>
+                <field name="order_project_estado_id" readonly="1"/>
                 <field name="fecha"/>
                 <field name="feedbak"/>
                 <field name="importe_factura"/>

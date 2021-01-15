@@ -12,7 +12,7 @@ class ImputacionVariable(models.Model):
     _name = "tetrace.imputacion_variable"
     _description = "Imputaciones variables"
 
-    name = fields.Char('Descripción')
+    name = fields.Char('Descripción', translate=True)
     order_id = fields.Many2one('sale.order', string="Pedido de venta")
     product_id = fields.Many2one("product.product", domain=[('type', '=', 'service')], string="Servicio")
     coste = fields.Monetary('Coste')

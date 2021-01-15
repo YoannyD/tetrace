@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -14,8 +14,8 @@ class TipoProyecto(models.Model):
     _description = "Tipos de proyecto"
     _rec_name = 'tipo'
 
-    name = fields.Char('Nombre', required=True)
-    tipo = fields.Char('Tipo', required=True)
+    name = fields.Char('Nombre', required=True, translate=True)
+    tipo = fields.Char('Tipo', required=True, translate=True)
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
 
     def name_get(self):
@@ -31,4 +31,4 @@ class TipoProyecto(models.Model):
     def _check_tipo(self):
         for r in self:
             if r.tipo and len(r.tipo) != 2:
-                raise UserError('El tipo tiene que ser 2 caracteres.')
+                raise UserError(_('El tipo tiene que ser 2 caracteres.'))

@@ -14,7 +14,7 @@ class CrearVersion(models.TransientModel):
 
     sale_order_id = fields.Many2one('sale.order', string="Presupuesto/Pedido de venta", ondelete="cascade")
     version = fields.Integer('Versión')
-    comentarios = fields.Text('Comentarios')
+    comentarios = fields.Text('Comentarios', translate=True)
 
     def action_crear_version(self):
         self.env['tetrace.sale_order_version'].create({

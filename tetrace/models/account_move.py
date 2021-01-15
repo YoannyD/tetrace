@@ -16,10 +16,10 @@ from odoo.addons.tetrace.models.conexion_mysql import ConexionMysql
 _logger = logging.getLogger(__name__)
 
 CODIGOS_SII = [
-    ('33', 'Factura electrónica'),
-    ('34', 'Factura no afecta o exenta electrónica'),
-    ('56', 'Nota de débito electrónica'),
-    ('61', 'Nota de crédito electrónica')
+    ('33', _('Factura electrónica')),
+    ('34', _('Factura no afecta o exenta electrónica')),
+    ('56', _('Nota de débito electrónica')),
+    ('61', _('Nota de crédito electrónica'))
 ]
 
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
@@ -40,7 +40,7 @@ class AccountMove(models.Model):
     asiento_anticipo_id = fields.Many2one('account.move', domain=[('type', '=', 'entry')], string="Asiento anticipo")
     fecha_vencimiento_anticipo = fields.Date("Fecha vencimiento anticipo",
                                              compute="_compute_fecha_vencimiento_anticipo")
-    incoterm_complemento = fields.Char('Complemento Incoterm')
+    incoterm_complemento = fields.Char('Complemento Incoterm', translate=True)
     secuencia_num = fields.Integer('Número secuencia')
     secuencia = fields.Char('Secuencia')
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
@@ -51,9 +51,25 @@ class AccountMove(models.Model):
     fecha_servicio = fields.Date("Fecha servicio")
     importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
                                                compute="_compute_importe_validacion_euros")
+    sale_order_id = fields.Many2one("sale.order", compute="_compute_sale_order_id", store=True)
 
+    @api.depends("invoice_origin")
+    def _compute_sale_order_id(self):
+        for r in self:
+            if r.type not in ['out_invoice', 'out_refund', 'out_receipt']:
+                continue
+            
+            if r.invoice_origin:
+                for origin in r.invoice_origin.split(","):
+                    sale_order = self.env['sale.order'].search([('name', '=', origin.strip())], limit=1)
+                    if sale_order:
+                        r.sale_order_id = sale_order.id
+                        return
+            else:
+                r.sale_order_id = False
+    
     def extraer_numero_factura(self):
-    #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
+        #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
         for r in self:
             for line in r.line_ids:
                 resultado = re.search(r"[A-Z]*[0-9]{4}/[0-9]{3}", line.name)
@@ -62,14 +78,14 @@ class AccountMove(models.Model):
                     break    
 
     def _import_facturx_invoice(self, tree):
-    ###################################################
-    ##################Ingetive#########################
-    ###################################################
-    #Modificamos original odoo/addons/account_facturx##
-    #Añadimos cuenta analítica por defecto del partner#
-    ###################################################
-    ##################Ingetive#########################
-    ###################################################
+        ###################################################
+        ##################Ingetive#########################
+        ###################################################
+        #Modificamos original odoo/addons/account_facturx##
+        #Añadimos cuenta analítica por defecto del partner#
+        ###################################################
+        ##################Ingetive#########################
+        ###################################################
         ''' Extract invoice values from the Factur-x xml tree passed as parameter.
 
         :param tree: The tree of the Factur-x xml file.

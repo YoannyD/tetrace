@@ -12,5 +12,5 @@ class TipoContrato(models.Model):
     _name = 'tetrace.tipo_contrato'
     _description = "Tipos de contrato"
 
-    name = fields.Char('Nombre')
+    name = fields.Char('Nombre', translate=True)
     contract_ids = fields.One2many('hr.contract', 'tipo_contrato_id')

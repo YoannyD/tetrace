@@ -3,15 +3,15 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from datetime import timedelta
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
 ACCIONES = [
-    ('cancelar', 'Cancelar'),
-    ('terminar', 'Terminar')
+    ('cancelar', _('Cancelar')),
+    ('terminar', _('Terminar'))
 ]
 
 
@@ -32,22 +32,27 @@ class ActivarTarea(models.TransientModel):
     
     def action_activar_tareas(self):
         self.ensure_one()
-
+        opciones = []
+        if self.viaje: opciones.append('viaje')
+        if self.baja_tecnico: opciones.append('baja')
+        if self.baja_it: opciones.append('informatica')
+        if self.recogida_equipos: opciones.append('equipos')
+        if self.reubicacion_puesto: opciones.append('reubicacion')
+        if self.facturacion: opciones.append('facturacion')
+            
+        if not opciones:
+            return
+        
         domain = [
             ('project_id', '=', self.project_id.id),
             ('date_deadline', '=', False),
-            ('tipo', '=', 'desactivacion')
+            ('tipo', '=', 'desactivacion'),
+            ('activada', '=', False),
+            ('opciones_desactivacion', 'in', opciones)
         ]
-        if self.viaje: domain += [('opciones_desactivacion', '=', 'viaje')]
-        if self.baja_tecnico: domain += [('opciones_desactivacion', '=', 'baja')]
-        if self.baja_it: domain += [('opciones_desactivacion', '=', 'informatica')]
-        if self.recogida_equipos: domain += [('opciones_desactivacion', '=', 'equipos')]
-        if self.reubicacion_puesto: domain += [('opciones_desactivacion', '=', 'reubicacion')]
-        if self.facturacion: domain += [('opciones_desactivacion', '=', 'facturacion')]
-            
         tasks = self.env['project.task'].search(domain)
         for task in tasks:
-            tasks.write({
+            task.write({
                 'activada': True,
                 'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
             })

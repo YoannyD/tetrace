@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -37,7 +37,7 @@ class ITS(models.AbstractModel):
                 'bold': True
             })
             sheet.set_row(0, cell_format=data_format1)
-            sheet.write(0, 5, "INFORME DE PREVISIÓN DE TESORERÍA")
+            sheet.write(0, 5, _("INFORME DE PREVISIÓN DE TESORERÍA"))
 
             data_format2 = workbook.add_format({
                 'bg_color': '#000000',
@@ -45,7 +45,7 @@ class ITS(models.AbstractModel):
                 'bold': True
             })
             sheet.set_row(2, cell_format=data_format2)
-            sheet.write(2, 0, "INSTRUMENTOS DE FINANCIACIÓN")
+            sheet.write(2, 0, _("INSTRUMENTOS DE FINANCIACIÓN"))
 
             data_format3 = workbook.add_format({
                 'bg_color': '#a5a5a5',
@@ -53,7 +53,7 @@ class ITS(models.AbstractModel):
                 'bold': True
             })
             sheet.set_row(4, cell_format=data_format3)
-            sheet.write(4, 0, "ANTICIPO DE FRAS")
+            sheet.write(4, 0, _("ANTICIPO DE FRAS"))
 
             data_format4 = workbook.add_format({
                 'bg_color': '#e7f0fd',
@@ -61,14 +61,14 @@ class ITS(models.AbstractModel):
             })
             sheet.set_row(5, cell_format=data_format4)
 
-            sheet.write(5, 0, "PRÓR")
-            sheet.write(5, 1, "VCTO")
-            sheet.write(5, 2, "BANCO")
-            sheet.write(5, 3, "FRA")
-            sheet.write(5, 4, "CLIENTE")
-            sheet.write(5, 5, "IMPORTE")
-            sheet.write(5, 6, "TOTALES")
-            sheet.write(5, 7, "TOTALES USD")
+            sheet.write(5, 0, _("PRÓR"))
+            sheet.write(5, 1, _("VCTO"))
+            sheet.write(5, 2, _("BANCO"))
+            sheet.write(5, 3, _("FRA"))
+            sheet.write(5, 4, _("CLIENTE"))
+            sheet.write(5, 5, _("IMPORTE"))
+            sheet.write(5, 6, _("TOTALES"))
+            sheet.write(5, 7, _("TOTALES USD"))
 
             row = 6
             for line in data['lines']:

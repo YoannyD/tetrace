@@ -17,7 +17,7 @@ class SaleOrderVersion(models.Model):
     name = fields.Char('Nombre', compute="_compute_name", store=True)
     version = fields.Integer('Versión')
     sale_order_id = fields.Many2one('sale.order', string="Presupuesto/Pedido de venta", required=True)
-    comentarios = fields.Char('Comentarios')
+    comentarios = fields.Char('Comentarios', translate=True)
     pdf = fields.Binary('PDF')
 
     @api.depends('version', 'comentarios', 'create_date')

@@ -22,7 +22,7 @@ class ApplicationSkill(models.Model):
     level_progress = fields.Integer(related='skill_level_id.level_progress')
 
     _sql_constraints = [
-        ('_unique_skill', 'unique (applicant_id, skill_id)', "Two levels for the same skill is not allowed"),
+        ('_unique_skill', 'unique (applicant_id, skill_id)', _("Two levels for the same skill is not allowed")),
     ]
 
     @api.constrains('skill_id', 'skill_type_id')

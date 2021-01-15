@@ -10,12 +10,12 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 OPCIONES_DESACTIVACION = [
-    ('viaje', 'Viaje'),
-    ('baja', 'Baja'),
-    ('informatica', 'Informática'),
-    ('equipos', 'Equipos'),
-    ('reubicacion', 'Reubicación'),
-    ('facturacion', 'Facturación'),
+    ('viaje', _('Viaje')),
+    ('baja', _('Baja')),
+    ('informatica', _('Informática')),
+    ('equipos', _('Equipos')),
+    ('reubicacion', _('Reubicación')),
+    ('facturacion', _('Facturación')),
 ]
 
 
@@ -25,7 +25,7 @@ class Estado(models.Model):
     _order = "sequence,name"
 
     sequence = fields.Integer('Secuencia')
-    name = fields.Char('Nombre', required=True)
+    name = fields.Char('Nombre', required=True, translate=True)
     project_ids = fields.One2many('project.project', 'estado_id')
 
 
@@ -35,7 +35,7 @@ class MotivoCancelacion(models.Model):
     _order = "sequence,name"
 
     sequence = fields.Integer("Secuencia")
-    name = fields.Char('Motivo')
+    name = fields.Char('Motivo', translate=True)
     project_ids = fields.One2many("project.project", "motivo_cancelacion_id")
     
     
@@ -45,7 +45,7 @@ class Project(models.Model):
     def _default_estado_id(self):
         return self.env['tetrace.project_state'].search([], limit=1).id
 
-    descripcion = fields.Text("Descripción")
+    descripcion = fields.Text("Descripción", translate=True)
     estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True,
                                 index=True, group_expand='_read_group_estado_ids',
                                 copy=False, default=lambda self: self._default_estado_id())
@@ -54,7 +54,7 @@ class Project(models.Model):
     partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
-    url_proyecto = fields.Char("URL proyecto")
+    url_proyecto = fields.Char("URL proyecto", translate=True)
     fecha_inicio = fields.Date("Fecha inicio")
     fecha_cancelacion = fields.Date("Fecha cancelación")
     fecha_finalizacion = fields.Date("Fecha finalización")
@@ -175,7 +175,7 @@ class Project(models.Model):
     def actualizar_geo_partner(self):
         for r in self:
             values = {
-                'name': "Geolocalización %s" % r.name,
+                'name': _("Geolocalización %s") % r.name,
                 'partner_latitude': r.partner_latitude,
                 'partner_longitude': r.partner_longitude,
             }
@@ -221,6 +221,32 @@ class Project(models.Model):
         action["context"] = {'search_default_group_date': 1, 'default_account_id': self.analytic_account_id.id}
         return action
     
+    def action_gastos(self):
+        self.ensure_one()
+        return {
+            'name': _('Gastos'),
+            'view_mode': 'tree,form',
+            'res_model': 'account.move.line',
+            'type': 'ir.actions.act_window',
+            'domain': [
+                ('analytic_account_id', '=', self.analytic_account_id.id),
+                ('move_id.type', 'in', ['in_invoice', 'in_refund', 'in_receipt'])
+            ]
+        }
+        
+    def action_ingresos(self):
+        self.ensure_one()
+        return {
+            'name': _('Ingresos'),
+            'view_mode': 'tree,form',
+            'res_model': 'account.move.line',
+            'type': 'ir.actions.act_window',
+            'domain': [
+                ('analytic_account_id', '=', self.analytic_account_id.id),
+                ('move_id.type', 'in', ['out_invoice', 'out_refund', 'out_receipt'])
+            ]
+        }
+    
     
 class ProjectTask(models.Model):
     _inherit = 'project.task'
@@ -238,11 +264,11 @@ class ProjectTask(models.Model):
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
     desde_plantilla = fields.Boolean("Creada desde plantilla")
     tipo = fields.Selection([
-        ('activacion', 'Activación'), 
-        ('desactivacion', 'Desactivacion')
+        ('activacion', _('Activación')), 
+        ('desactivacion', _('Desactivacion'))
     ], string="Tipo tarea")
     tarea_individual = fields.Boolean("Individual")
-    viajes = fields.Boolean("Viajes")
+    viajes = fields.Boolean("Trips")
     viaje_ids = fields.One2many("tetrace.viaje", "task_id")
     activada = fields.Boolean("Activada", default=True)
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
@@ -250,15 +276,15 @@ class ProjectTask(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Empleado")
     deadline_inicio = fields.Integer("Deadline inicio")
     deadline_fin = fields.Integer("Deadline fin")
+    alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
+    alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
+    ref_individual = fields.Char("Referencia individual")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
         for r in self:
-            if r.tarea_individual and r.tipo != 'activacion':
-                raise ValidationError("Para ser una una tarea de individual tiene que ser del tipo activación.")
-                
             if r.tarea_seleccion and not r.tarea_individual:
-                raise ValidationError("Si es tarea de selección tiene que ser tarea individual")
+                raise ValidationError(_("Si es tarea de selección tiene que ser tarea individual"))
     
     @api.depends("entrega_ids.entregado")
     def _compute_entrega_total(self):
@@ -296,10 +322,35 @@ class ProjectTask(models.Model):
         for r in self:
             if not r.desde_plantilla and r.producto_entrega and entregas[str(r.id)]['total'] != r.entrega_total:
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
-                body = "<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s" % (entregas[str(r.id)]['total'], r.entrega_total)
+                body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
+                
+        if 'employee_id' in vals and not self.env.context.get("no_actualizar_empleado"):
+            for r in self:
+                if r.tarea_individual and r.employee_id and r.ref_individual:
+                    task = self.env['project.task'].search([
+                        ('project_id', '=', r.project_id.id),
+                        ('tarea_individual', '=', True),
+                        ('ref_individual', '=', r.ref_individual)
+                    ])
+                    task.with_context(no_actualizar_empleado=True).cambiar_empleado_individual(r.employee_id)
         return res
     
+    
+    def cambiar_empleado_individual(self, employee):
+        for r in self:
+            if r.tarea_individual:
+                cadena_a_reemplazar = r.name[r.name.find("(")+1:r.name.find(")")]
+                if cadena_a_reemplazar:
+                    name = r.name.replace(cadena_a_reemplazar, employee.name)
+                else:
+                    name = "%s (%s)" % (r.name, employee.name)
+                
+                r.update({
+                    'name': name,
+                    'employee_id': employee.id
+                })
+            
     @api.model
     def _where_calc(self, domain, active_test=True):
         if 'activada' in self._fields and active_test and self._context.get('active_test', True):
@@ -372,7 +423,7 @@ class ProjectTaskEntrega(models.Model):
     _name = 'project.task.entrega'
     _description = "Entregas (Tareas)"
 
-    name = fields.Char("Observaciones")
+    name = fields.Char("Observaciones", translate=True)
     fecha = fields.Date("Fecha")
     entregado = fields.Float("Entregado")
     task_id = fields.Many2one("project.task")

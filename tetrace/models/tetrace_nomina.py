@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import float_round
 
@@ -23,7 +23,7 @@ class Nomina(models.Model):
     def action_importar_nominas(self):
         self.ensure_one()
         if self.move_ids:
-            raise UserError("No se puede importar el fichero si existen asientos contables.")
+            raise UserError(_("No se puede importar el fichero si existen asientos contables."))
 
         wizard = self.env['tetrace.importar_nomina'].create({'nomina_id': self.id})
         return wizard.open_wizard()
@@ -42,7 +42,7 @@ class Nomina(models.Model):
                 if key not in agrupar_por_trabajador:
                     agrupar_por_trabajador.update({key: {
                         'nomina_id': r.id,
-                        'ref' : "Nómina %s" % (nomina_trabajador.employee_id.name),
+                        'ref' : _("Nómina %s") % (nomina_trabajador.employee_id.name),
                         'date': nomina_trabajador.fecha_fin,
                         'journal_id': self.env.company.tetrace_nomina_journal_id.id,
                         'line_ids': []
@@ -108,7 +108,7 @@ class NominaTrabajador(models.Model):
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
     account_id = fields.Many2one('account.account', check_company=True) # Unrequired company
-    descripcion = fields.Char('Descripción')
+    descripcion = fields.Char('Descripción', translate=True)
     debe = fields.Monetary('Debe')
     haber = fields.Monetary('Haber')
     company_id = fields.Many2one(related='nomina_id.company_id')
@@ -116,7 +116,7 @@ class NominaTrabajador(models.Model):
     trabajador_analitica_ids = fields.One2many('tetrace.nomina.trabajador.analitica', 'nomina_trabajador_id')
     permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
                                                 compute="_compute_permitir_generar_analitica")
-    texto_importado = fields.Text('Texto importado')
+    texto_importado = fields.Text('Texto importado', translate=True)
     incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion", store=True)
     incorrecta_contrato_multiple = fields.Boolean('Incorrecta contrato', compute="_compute_incorrecta_multiple_contrato", store=True)
     incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)

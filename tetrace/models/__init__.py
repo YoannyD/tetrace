@@ -33,6 +33,8 @@ from . import stock_move
 from . import mis_report_instance
 from . import mis_report
 from . import aep
+from . import tetrace_alquiler_vehiculo
+from . import tetrace_alojamiento
 from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
 from . import tetrace_tickelia
@@ -44,3 +46,4 @@ from . import mod303
 from . import mail_thread
 from . import mail_followers
 from . import documents
+from . import tier_validation

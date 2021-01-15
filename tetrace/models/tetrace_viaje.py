@@ -14,12 +14,13 @@ class Viaje(models.Model):
     
     name = fields.Char("Nombre", compute="_compute_name", store="True")
     fecha = fields.Date("Fecha")
-    origen = fields.Char("Origen")
-    destino = fields.Char("Destino")
+    origen = fields.Char("Origen", translate=True)
+    destino = fields.Char("Destino", translate=True)
     contratado = fields.Boolean("Contratado")
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
     task_id = fields.Many2one("project.task", string="Tarea")
+    observaciones = fields.Text("Observaciones", translate=True)
     
     @api.depends("fecha", "origen", "destino")
     def _compute_name(self):

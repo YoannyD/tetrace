@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -12,11 +12,11 @@ class Validacion(models.Model):
     _name = 'tetrace.validacion'
     _description = "Validaciones"
 
-    name = fields.Char('Nombre', required=True)
+    name = fields.Char('Nombre', required=True, translate=True)
     validacion_user_ids = fields.One2many('tetrace.validacion_user', 'validacion_id')
 
     _sql_constraints = [
-        ("name_unique", "unique(name)", "Ya existe una valoración con ese nombre",)
+        ("name_unique", "unique(name)", _("Ya existe una valoración con ese nombre"))
     ]
 
 
