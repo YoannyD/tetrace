@@ -296,6 +296,8 @@
                 <field name="importe_factura"/>
                 <field name="importe"/>
                 <field name="facturado"/>
+                <field name="no_aplica"/>
+                <field name="cancelado"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
         </field>
