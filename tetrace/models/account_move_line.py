@@ -152,4 +152,11 @@ class AccountMoveLine(models.Model):
                 
             values.update({'company_id': company_id})
         return res
+    
+    def write(self, vals):
+        res = super(AccountMoveLine, self).write(vals)
+        if "price_unit" in vals or "quantity" in vals or "discount" in vals:
+            for r in self:
+                r.move_id.write({"invoice_line_cambia": str(fields.Datetime.now())})
+        return res
             

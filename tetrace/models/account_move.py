@@ -52,8 +52,7 @@ class AccountMove(models.Model):
     importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
                                                compute="_compute_importe_validacion_euros")
     sale_order_id = fields.Many2one("sale.order", compute="_compute_sale_order_id", store=True)
-    invoice_line_cambia = fields.Char("Líneas de factura cambiadas", store=True,
-                                      compute="_compute_change_prices")
+    invoice_line_cambia = fields.Char("Líneas de factura cambiadas")
 
     @api.depends("invoice_origin")
     def _compute_sale_order_id(self):
@@ -69,10 +68,6 @@ class AccountMove(models.Model):
                         return
             else:
                 r.sale_order_id = False
-                
-    @api.depends('invoice_line_ids.price_unit', 'invoice_line_ids.quantity', 'invoice_line_ids.discount')
-    def _compute_change_prices(self):
-        self.write({'invoice_line_cambia': str(fields.Datetime.now())})
     
     def extraer_numero_factura(self):
         #Devolvemos el numero de factura que se encuentra en la descripción de las líneas
