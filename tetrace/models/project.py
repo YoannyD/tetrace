@@ -329,33 +329,38 @@ class ProjectTask(models.Model):
                 r.message_post(body=body, subject="Entrega")
                 
         if 'employee_id' in vals and not self.env.context.get("no_actualizar_empleado"):
-            for r in self:
-                if r.tarea_individual and r.employee_id and r.ref_individual:
-                    task = self.env['project.task'].search([
-                        ('project_id', '=', r.project_id.id),
-                        ('tarea_individual', '=', True),
-                        ('ref_individual', '=', r.ref_individual)
-                    ])
-                    task.with_context(no_actualizar_empleado=True).cambiar_empleado_individual(r.employee_id, r.job_id)
+            self.actualizar_tareas_individuales()
+            
         return res
     
-    
-    def cambiar_empleado_individual(self, employee, job):
+    def actualizar_tareas_individuales(self):
         for r in self:
-            if r.tarea_individual:
-                pos1 = r.name.find("(")
-                pos2 = r.name.find(")")
-                if pos1 >= 0 and pos2 >= 0:
-                    cadena_a_reemplazar = r.name[pos1+1:pos2]
-                    name = r.name.replace(cadena_a_reemplazar, employee.name)
-                else:
-                    name = "%s (%s)" % (r.name, employee.name)
+            if not r.tarea_individual or not r.ref_individual:
+                continue
                 
-                r.update({
-                    'name': name,
-                    'employee_id': employee.id,
-                    'job_id': job.id if job else None
-                })
+            tasks = self.env['project.task'].search([
+                ('project_id', '=', r.project_id.id),
+                ('tarea_individual', '=', True),
+                ('ref_individual', '=', r.ref_individual),
+                ('activada', 'in', [True, False])
+            ])
+        
+            for task in tasks:
+                values = {'job_id': r.job_id.id}
+                if r.employee_id:
+                    pos1 = task.name.find("(")
+                    pos2 = task.name.find(")")
+                    if pos1 >= 0 and pos2 >= 0:
+                        cadena_a_reemplazar = task.name[pos1+1:pos2]
+                        name = task.name.replace(cadena_a_reemplazar, r.employee_id.name)
+                    else:
+                        name = "%s (%s)" % (task.name, r.employee_id.name)
+                            
+                    values.update({
+                        'name': name,
+                        'employee_id': r.employee_id.id,
+                    })
+                task.with_context(no_actualizar_empleado=True).update(values)
             
     @api.model
     def _where_calc(self, domain, active_test=True):

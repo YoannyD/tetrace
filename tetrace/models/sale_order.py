@@ -296,6 +296,7 @@ class SaleOrder(models.Model):
                         'sale_line_id': None,
                         'partner_id': line.order_id.partner_id.id,
                         'email_from': line.order_id.partner_id.email,
+                        'desde_plantilla': True
                     })
                     
                     if task.message_partner_ids:
@@ -441,9 +442,7 @@ class SaleOrderLine(models.Model):
                 project_template_ids.append(r.product_id.project_template_id.id)
                 template_tasks = self.env['project.task'].search([
                     ('project_id', '=', r.product_id.project_template_id.id),
-                    '|',
-                    ('activada', '=', True),
-                    ('activada', '=', False),
+                    ('activada', 'in', [True, False]),
                 ])
                 for task in template_tasks:
                     new_task = task.copy({
@@ -451,14 +450,23 @@ class SaleOrderLine(models.Model):
                         'project_id': r.order_id.project_ids[0].id,
                         'sale_line_id': None,
                         'partner_id': r.order_id.partner_id.id,
-                        'email_from': r.order_id.partner_id.email,
-                        'desde_plantilla': True
+                        'email_from': r.order_id.partner_id.email
                     })
                     
                     if task.message_partner_ids:
                         new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
                         new_task.notificar_asignacion_seguidores()
-                
+        
+        tasks_individuales_plantilla = self.env['project.task'].search([
+            ('project_id', '=', r.order_id.project_ids[0].id),
+            ('tarea_individual', '=', True),
+            ('desde_plantilla', '=', True),
+            ('activada', 'in', [True, False]),
+            ('ref_individual', '!=', False)
+        ])
+        _logger.warning(tasks_individuales_plantilla)
+        tasks_individuales_plantilla.actualizar_tareas_individuales()
+              
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
         values.update({'user_id': self.order_id.coordinador_proyecto_id.id})
@@ -481,9 +489,7 @@ class SaleOrderLine(models.Model):
             project = self.product_id.project_template_id.copy(values)
             project_tasks = self.env['project.task'].search([
                 ('project_id', '=', self.product_id.project_template_id.id),
-                '|',
-                ('activada', '=', True),
-                ('activada', '=', False),
+                ('activada', 'in', [True, False]),
             ])
             for task in project_tasks:
                 new_task = task.copy({
@@ -497,10 +503,6 @@ class SaleOrderLine(models.Model):
                 if task.message_partner_ids:
                     new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
                     new_task.notificar_asignacion_seguidores()
-
-#             project.tasks.filtered(lambda task: task.parent_id != False).write({
-#                 'sale_line_id': self.id,
-#             })
         else:
             project = self.env['project.project'].create(values)
 
@@ -582,9 +584,7 @@ class SaleOrderLine(models.Model):
         
         domain = [
             ('tarea_individual', '=', True),
-            '|',
-            ('activada', '=', True),
-            ('activada', '=', False),
+            ('activada', 'in', [True, False])
         ]
         if desde_plantilla:
             domain += [('project_id', '=', self.product_id.project_template_diseno_id.id)]
@@ -601,42 +601,15 @@ class SaleOrderLine(models.Model):
                 name = task.name
         
             for i in range(0, int(self.product_uom_qty)):
-                if desde_plantilla:
-                    ref_individual = "%s-%s" % ("d", i)
-                else:
-                    ref_individual = "%s-%s" % ("o", i)
-                
                 new_task = task.copy({
                     'name': name,
                     'project_id': project.id,
-                    'ref_individual': ref_individual
+                    'ref_individual': "%s-%s" % (self.id, i),
+                    'desde_plantilla': desde_plantilla
                 })
                 tasks.append(new_task)
         self.write({'task_id': None})
         return tasks
-    
-    
-class PrevisionFacturacion(models.Model):
-    _name = "tetrace.prevision_facturacion"
-    _description = "Gestion facturación"
-    _order = "fecha desc"
-    
-    order_id = fields.Many2one("sale.order", string="Pedido Venta")
-    order_date_order = fields.Datetime(related="order_id.date_order", store=True)
-    order_partner_id = fields.Many2one(related="order_id.partner_id", store=True)
-    order_amount_total = fields.Monetary(realted="order_id.partner_id", store=True)
-    order_nombre_proyecto = fields.Char(related="order_id.nombre_proyecto", store=True)
-    order_project_estado_id = fields.Many2one("tetrace.project_state", 
-                                              related="order_id.project_estado_id", store=True)
-    fecha = fields.Date('Fecha')
-    importe = fields.Monetary("Importe previsto")
-    currency_id = fields.Many2one(related='order_id.currency_id')
-    facturado = fields.Boolean("Facturado")
-    feedbak = fields.Text("Feedbak", translate=True)
-    observaciones = fields.Text("Observaciones", translate=True)
-    importe_factura = fields.Monetary("Importe factura")
-    no_aplica = fields.Boolean("No aplica")
-    cancelado = fields.Boolean("Cancelado")
     
     
 class RefProducto(models.Model):
