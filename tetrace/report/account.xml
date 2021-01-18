@@ -2,7 +2,7 @@
 <odoo>
     <template id="report_invoice_document" inherit_id="account.report_invoice_document">
         <xpath expr="//address[@t-field='o.partner_id']" position="replace">
-            <address t-if="not o.journal_id or o.journal_id.code != 'INVE'">
+            <address t-if="not o.journal_id or not o.journal_id.exportacion">
                 <div>
                     <span class="text-uppercase" t-field="o.partner_id.name"/>
                 </div>
@@ -26,7 +26,7 @@
                 </div>
             </address>
             
-            <address t-if="o.journal_id and o.journal_id.code == 'INVE'" style="padding-top:20px;">
+            <address t-if="o.journal_id and o.journal_id.exportacion" style="padding-top:20px;">
                 <div>
                     <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Importador</h5>
                 </div>
@@ -58,7 +58,7 @@
         </xpath>
 
         <xpath expr="//div[hasclass('page')]/h2[1]" position="replace">
-            <h2 t-if="not o.journal_id or o.journal_id.code != 'INVE'">
+            <h2 t-if="not o.journal_id or not o.journal_id.exportacion">
                 <span t-if="o.type == 'out_invoice' and o.state == 'posted'">Invoice</span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'draft'"><t t-if="o.journal_id.type != 'sale'">Draft Invoice</t> <t t-if="o.journal_id.type == 'sale'">Factura proforma <t t-esc="o.secuencia"/></t></span>
                 <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
@@ -69,7 +69,7 @@
                     <span t-if="o.name != '/'" t-field="o.name"/>
                 </t>
             </h2>
-            <h2 t-if="o.journal_id and o.journal_id.code == 'INVE'">
+            <h2 t-if="o.journal_id and o.journal_id.exportacion">
                 <span>Factura Nº</span> <br/>
                 <span t-if="o.name != '/'" t-field="o.name"/>
             </h2>
@@ -77,20 +77,20 @@
 
         <xpath expr="//div[@id='informations']" position="inside">
             <div class="col-auto mw-100 mb-2" name="intrastat_transport"
-                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.intrastat_transport_mode_id">
+                 t-if="o.journal_id and o.journal_id.exportacion and o.intrastat_transport_mode_id">
                 <strong>Modo transporte:</strong>
                 <p class="m-0" t-field="o.intrastat_transport_mode_id"/>
             </div>
 
             <div class="col-auto mw-100 mb-2"
-                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.invoice_incoterm_id"
+                 t-if="o.journal_id and o.journal_id.exportacion and o.invoice_incoterm_id"
                  name="incoterm">
                 <strong>Incoterm:</strong>
                 <p class="m-0" t-if="o.invoice_incoterm_id" t-field="o.invoice_incoterm_id.code"/>
             </div>
 
             <div class="col-auto mw-100 mb-2"
-                 t-if="o.journal_id and o.journal_id.code == 'INVE' and o.incoterm_complemento"
+                 t-if="o.journal_id and o.journal_id.exportacion and o.incoterm_complemento"
                  name="incoterm_complemento">
                 <strong><br/></strong>
                 <p class="m-0" t-field="o.incoterm_complemento"/>
@@ -122,7 +122,7 @@
         </xpath>
 
         <xpath expr="//table[@name='invoice_line_table']/thead/tr[1]/th[1]" position="before">
-            <t t-if="o.journal_id and o.journal_id.code == 'INVE'">
+            <t t-if="o.journal_id and o.journal_id.exportacion">
                 <th>
                     Artículo
                 </th>
@@ -136,7 +136,7 @@
         </xpath>
 
         <xpath expr="//td[@name='account_invoice_line_name']" position="before">
-            <t t-if="o.journal_id and o.journal_id.code == 'INVE'">
+            <t t-if="o.journal_id and o.journal_id.exportacion">
                 <td>
                     <span t-field="line.product_id.default_code"/>
                 </td>
@@ -151,12 +151,12 @@
         </xpath>
 
         <xpath expr="//div[@id='total']//t[@t-foreach='o.amount_by_group'][1]" position="attributes">
-            <attribute name="t-if">not o.journal_id or o.journal_id.code != 'INVE'</attribute>
+            <attribute name="t-if">not o.journal_id or not o.journal_id.exportacion</attribute>
         </xpath>
 
         <xpath expr="//tr[hasclass('o_total')]/td[1]/strong[1]" position="replace">
-            <strong t-if="o.journal_id and o.journal_id.code == 'INVE'">Total CIP</strong>
-            <strong t-if="not o.journal_id or o.journal_id.code != 'INVE'">Total</strong>
+            <strong t-if="o.journal_id and o.journal_id.exportacion">Total CIP</strong>
+            <strong t-if="not o.journal_id or not o.journal_id.exportacion">Total</strong>
         </xpath>
 
         <xpath expr="//p[@name='comment']" position="attributes">

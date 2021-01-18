@@ -15,6 +15,12 @@ class AccountAccount(models.Model):
     gestionar_cartera = fields.Boolean('Gestionar cartera')
 
 
+class AccountJournal(models.Model):
+    _inherit = "account.journal"
+    
+    exportacion = fields.Boolean("Impresos de exportación")
+    
+    
 class TetraceAccount(models.Model):
     _name = "tetrace.account"
     _description = "Cuentas Tetrace"
