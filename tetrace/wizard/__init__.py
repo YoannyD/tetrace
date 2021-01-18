@@ -9,4 +9,5 @@ from . import tetrace_generar_prevision_facturacion
 from . import tetrace_merge_analytic_account
 from . import tetrace_activar_tarea
 from . import tetrace_importar_producto_pv
+from . import tetrace_prevision_facturacion_cancelar
 from . import invite

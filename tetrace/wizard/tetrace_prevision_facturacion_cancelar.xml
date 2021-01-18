@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_prevision_facturacion_cancelar_form">
+        <field name="name">tetrace.prevision_facturacion_cancelar</field>
+        <field name="model">tetrace.prevision_facturacion_cancelar</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="prevision_facturacion_ids" invisible="1"/>
+                    <field name="fecha"/>
+                    <field name="feedback"/>
+                </group>
+                <footer>
+                    <button name="action_cancelar" string="Enviar" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
