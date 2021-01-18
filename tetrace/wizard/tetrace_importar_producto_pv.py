@@ -37,22 +37,21 @@ class ImportarProductoPV(models.TransientModel):
             
             ref_producto = self.env["product.customerinfo"].search([
                 ('company_id', '=', self.order_id.company_id.id),
-                ('name', '=', self.order_id.partner_id.id),
                 ('product_code', '=', line[0])
-            ])
-            
-            try:
-                cantidad = float(line[1])
-            except:
-                cantidad = 0.0
-            
+            ], limit=1)
+
             product = False
             if ref_producto:
                 if ref_producto.product_id:
                     product = ref_producto.product_id
                 elif ref_producto.product_tmpl_id:
                     product = ref_producto.product_tmpl_id.product_variant_id
-                
+              
+            try:
+                cantidad = float(line[1])
+            except:
+                cantidad = 0.0
+            
             if product:
                 self.env['sale.order.line'].create({
                     'order_id': self.order_id.id,
