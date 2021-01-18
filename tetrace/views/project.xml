@@ -225,10 +225,6 @@
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">
-                <page name="contracts" string="Empleados" attrs="{'invisible': [('tarea_seleccion', '=', False)]}">
-                    <field name="contract_ids" nolabel="1"/>
-                </page>
-                
                 <page name="jobs" string="Procesos de selección" attrs="{'invisible': [('tarea_seleccion', '=', False)]}">
                     <field name="applicant_ids" nolabel="1"/>
                 </page>
@@ -328,6 +324,10 @@
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='inactive']" position="after">
                 <filter string="Desactivadas" name="no_activada" domain="[('activada', '=', False)]"/>
+            </xpath>
+            
+            <xpath expr="//filter[@name='user']" position="after">
+                <filter string="Empleados" name="filter_employee_id" context="{'group_by': 'employee_id'}"/>
             </xpath>
         </field>
     </record>

@@ -33,7 +33,7 @@ class AccountMoveLine(models.Model):
     def _compute_tetrace_account_id(self):
         for r in self:
             r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else None
-
+           
     def _compute_asiento_anticipo_fecha_vencimiento(self):
         for r in self:
             fecha_vencimiento = None

@@ -26,6 +26,13 @@
                         icon="fa-file-text">
                     <field name="applicant_count" string="P. Selección" widget="statinfo"/>
                 </button>
+                
+                <button name="action_task_employee_view"
+                        type="object"
+                        class="oe_stat_button"
+                        string="Proyectos"
+                        icon="fa-puzzle-piece">
+                </button>
             </xpath>
 
             <xpath expr="//field[@name='mobile_phone']" position="before">

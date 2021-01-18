@@ -15,6 +15,12 @@
                         type="action">
                     <field name="document_applicant_count" widget="statinfo"/>
                 </button>
+                
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="view_procesos_seleccion_tree" 
+                        string="Proyectos"
+                        icon="fa-puzzle-piece"/>
             </xpath>
 
             <xpath expr="//field[@name='emp_id']" position="replace"/>

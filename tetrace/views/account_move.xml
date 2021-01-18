@@ -53,6 +53,7 @@
             
             <xpath expr="//group[@name='sale_info_group']" position="inside">
                 <field name="asiento_anticipo_id"/>
+                <field name="invoice_line_cambia" invisible="1"/>
             </xpath>
 
             <xpath expr="//group[@id='header_left_group']/div[1]" position="before">

@@ -103,6 +103,12 @@ class Applicant(models.Model):
                         'folder_id': folder_id,
                         'datas': document.datas
                     })
+                    
+    def view_procesos_seleccion_tree(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_applicant')
+        action.update({'domain': [('applicant_id', '=', self.id)]})
+        return action
 
 
 class ApplicationResumeLine(models.Model):
