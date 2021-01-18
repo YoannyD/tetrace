@@ -336,11 +336,11 @@ class ProjectTask(models.Model):
                         ('tarea_individual', '=', True),
                         ('ref_individual', '=', r.ref_individual)
                     ])
-                    task.with_context(no_actualizar_empleado=True).cambiar_empleado_individual(r.employee_id)
+                    task.with_context(no_actualizar_empleado=True).cambiar_empleado_individual(r.employee_id, r.job_id)
         return res
     
     
-    def cambiar_empleado_individual(self, employee):
+    def cambiar_empleado_individual(self, employee, job):
         for r in self:
             if r.tarea_individual:
                 pos1 = r.name.find("(")
@@ -353,7 +353,8 @@ class ProjectTask(models.Model):
                 
                 r.update({
                     'name': name,
-                    'employee_id': employee.id
+                    'employee_id': employee.id,
+                    'job_id': job.id if job else None
                 })
             
     @api.model
