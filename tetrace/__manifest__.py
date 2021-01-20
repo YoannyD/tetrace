@@ -83,7 +83,6 @@
         'views/account_analytic_account.xml',
         'views/res_config_settings.xml',
         'views/tetrace_linea_analitica_rel.xml',
-        'views/tetrace_project_applicant.xml',
         'views/tetrace_gestion_facturacion.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',

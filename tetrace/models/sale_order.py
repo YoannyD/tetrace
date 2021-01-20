@@ -464,7 +464,6 @@ class SaleOrderLine(models.Model):
             ('activada', 'in', [True, False]),
             ('ref_individual', '!=', False)
         ])
-        _logger.warning(tasks_individuales_plantilla)
         tasks_individuales_plantilla.actualizar_tareas_individuales()
               
     def _timesheet_create_project_prepare_values(self):
@@ -603,6 +602,7 @@ class SaleOrderLine(models.Model):
             for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy({
                     'name': name,
+                    'job_id': self.job_id.id,
                     'project_id': project.id,
                     'ref_individual': "%s-%s" % (self.id, i),
                     'desde_plantilla': desde_plantilla

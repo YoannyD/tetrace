@@ -328,7 +328,7 @@ class ProjectTask(models.Model):
                 body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
                 
-        if 'employee_id' in vals and not self.env.context.get("no_actualizar_empleado"):
+        if ('employee_id' in vals or 'job_id' in vals) and not self.env.context.get("no_actualizar_empleado"):
             self.actualizar_tareas_individuales()
             
         return res
