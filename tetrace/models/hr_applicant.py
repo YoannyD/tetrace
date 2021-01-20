@@ -23,7 +23,8 @@ class Applicant(models.Model):
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
-    task_ids = fields.Many2many("project.task", 'task_applicant_rel', 'applicant_id', 'task_id')
+    task_ids = fields.Many2many("project.task", 'task_applicant_rel', 'applicant_id', 'task_id', 
+                                domain="[('tarea_seleccion', '=', True)]")
 
     def _compute_document_applicant(self):
         for r in self:
@@ -115,13 +116,10 @@ class Applicant(models.Model):
                     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
-        ctx = dict(self._context)
-        ctx.update({'search_default_project': True})
-        action = self.env['ir.actions.act_window'].for_xml_id('project', 'action_view_task')
-        action.update({'domain': [('id', 'in', self.task_ids.ids)]})
-        action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
-        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
-        return dict(action, context=ctx)
+        project_ids = [task.project_id.id for task in self.task_ids]
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
+        action.update({'domain': [('id', 'in', project_ids)]})
+        return action
 
 
 class ApplicationResumeLine(models.Model):

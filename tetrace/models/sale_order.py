@@ -445,6 +445,9 @@ class SaleOrderLine(models.Model):
                     ('activada', 'in', [True, False]),
                 ])
                 for task in template_tasks:
+                    if task.tarea_individual:
+                        continue
+                        
                     new_task = task.copy({
                         'name': task.name,
                         'project_id': r.order_id.project_ids[0].id,
@@ -491,6 +494,9 @@ class SaleOrderLine(models.Model):
                 ('activada', 'in', [True, False]),
             ])
             for task in project_tasks:
+                if task.tarea_individual:
+                    continue
+                    
                 new_task = task.copy({
                     'name': task.name,
                     'sale_line_id': None,

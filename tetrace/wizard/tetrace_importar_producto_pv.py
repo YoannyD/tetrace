@@ -35,10 +35,20 @@ class ImportarProductoPV(models.TransientModel):
             if not line[0]:
                 continue
             
-            ref_producto = self.env["product.customerinfo"].search([
+            refs_producto = self.env["product.customerinfo"].search([
                 ('company_id', '=', self.order_id.company_id.id),
                 ('product_code', '=', line[0])
-            ], limit=1)
+            ])
+            
+            ref_producto = None
+            for ref in refs_producto:
+                if not ref_producto:
+                    ref_producto = ref
+                    continue
+                    
+                if ref.name.id == self.order_id.partner_id.id:
+                    ref_producto = ref
+                    break
 
             product = False
             if ref_producto:
@@ -67,14 +77,14 @@ class ImportarProductoPV(models.TransientModel):
                     ('order_id', '=', self.order_id.id),
                     ('name', '=', line[0])
                 ], limit=1)
-                values = {'cantidad': cantidad}
                 if not ref_producto:
                     RefProducto.create({
                         'order_id': self.order_id.id,
                         'name': line[0],
+                        'cantidad': cantidad
                     })
                 else:
-                    ref_producto.write(values)
+                    ref_producto.write({'cantidad': cantidad})
 
         return {'type': 'ir.actions.act_window_close'}
         

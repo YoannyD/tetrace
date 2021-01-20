@@ -86,6 +86,17 @@
                             </div>
                         </div>
                     </page>
+                    <page string="Tareas" name="tareas">
+                        <field name="task_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="name"/>
+                                <field name="project_id"/>
+                                <field name="user_id"/>
+                                <field name="job_id"/>
+                                <field name="company_id" optional="hide"/>
+                            </tree>
+                        </field>
+                    </page>
                 </notebook>
             </xpath>
         </field>
