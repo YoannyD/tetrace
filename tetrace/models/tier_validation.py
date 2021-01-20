@@ -17,5 +17,5 @@ class TierValidation(models.AbstractModel):
         res += ["l10n_ar_afip_responsibility_type_id", "l10n_ar_currency_rate", 
                 "invoice_date", "date", "line_ids", "invoice_payment_ref", "invoice_date_due",
                 "fecha_servicio", "invoice_payment_term_id", "ref", 'payment_mode_id',
-                "partner_id"]
+                "partner_id", "fiscal_position_id", "partner_shipping_id"]
         return res
