@@ -59,6 +59,10 @@ class Project(models.Model):
     fecha_cancelacion = fields.Date("Fecha cancelación")
     fecha_finalizacion = fields.Date("Fecha finalización")
     motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
+    empresa_destino_nombre = fields.Char("Nombre empresa destino")
+    cif_destino_nombre = fields.Char("CIF empresa destino")
+    direccion = fields.Char("Dirección")
+    nombre_parque = fields.Char("Nombre parque")
                 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):

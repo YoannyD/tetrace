@@ -78,6 +78,10 @@
                 <field name="partner_latitude"/>
                 <field name="partner_longitude"/>
                 <field name="url_proyecto" widget="url"/>
+                <field name="empresa_destino_nombre"/>
+                <field name="cif_destino_nombre"/>
+                <field name="direccion"/>
+                <field name="nombre_parque"/>
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
