@@ -91,7 +91,15 @@ class Applicant(models.Model):
             ])
             for document in documents:
                 folder_id = False
-                if document.name == 'CV_%s' % r.emp_id.name:
+                if document.folder_id.id == 11: #Datos laborables
+                    folder_id = 10 
+                elif document.folder_id.id == 12: #Datos formacion
+                    folder_id = 8 
+                elif document.folder_id.id == 13: #PRL
+                    folder_id = 9
+                elif document.folder_id.id == 14: #Datos personales
+                    folder_id = 7
+                elif document.name == 'CV_%s' % r.emp_id.name:
                     folder_id = 7 #carpeta Datos personales
                 elif document.name in ['PROPUESTA LABORAL_V1_%s' % r.emp_id.name, 
                                        'PROPUESTA LABORAL_V2_%s' % r.emp_id.name]:
