@@ -211,8 +211,11 @@ class Project(models.Model):
     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_applicant')
-        action.update({'domain': [('project_id', '=', self.id)]})
+        applicant_ids = []
+        for task in self.tasks:
+            applicant_ids += task.applicant_ids.ids     
+        action = self.env['ir.actions.act_window'].for_xml_id('hr_recruitment', 'crm_case_categ0_act_job')
+        action.update({'domain': [('id', 'in', applicant_ids)]})
         return action
     
     def action_view_project(self):
