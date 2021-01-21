@@ -91,7 +91,7 @@ class Applicant(models.Model):
                 ('res_id', '=', r.id),
             ])
             for document in documents:
-                folder_id = False
+                folder_id = 4
                 if document.folder_id.id == 11: #Datos laborables
                     folder_id = 10 
                 elif document.folder_id.id == 12: #Datos formacion
@@ -106,13 +106,12 @@ class Applicant(models.Model):
                                        'PROPUESTA LABORAL_V2_%s' % r.emp_id.name]:
                     folder_id = 10 #carpeta Datos laborales
                     
-                if folder_id:
-                    document.copy({
-                        'res_model': 'hr.employee',
-                        'res_id': r.emp_id.id,
-                        'folder_id': folder_id,
-                        'datas': document.datas
-                    })
+                document.write({
+                    'res_model': 'hr.employee',
+                    'res_id': r.emp_id.id,
+                    'folder_id': folder_id,
+                    'datas': document.datas
+                })
                     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
