@@ -29,15 +29,22 @@ class ImportarProductoPV(models.TransientModel):
         fp.seek(0)
         workbook = xlrd.open_workbook(fp.name)
         sheet = workbook.sheet_by_index(0)
+        
         for row_no in range(sheet.nrows):
-            line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
-            
-            if not line[0]:
-                continue
-            
+            cell_cantidad = sheet.cell(row_no,1)
+            cell_referencia = str(sheet.cell(row_no,0).value)
+
+            if cell_referencia[-2:] == ".0":
+                cad_aux = cell_referencia[:-2]
+                try:
+                    if cad_aux.find('.') == -1:
+                        cell_referencia = int(cad_aux)
+                except:
+                    pass
+                
             refs_producto = self.env["product.customerinfo"].search([
                 ('company_id', '=', self.order_id.company_id.id),
-                ('product_code', '=', line[0])
+                ('product_code', '=', cell_referencia)
             ])
             
             ref_producto = None
@@ -58,7 +65,7 @@ class ImportarProductoPV(models.TransientModel):
                     product = ref_producto.product_tmpl_id.product_variant_id
               
             try:
-                cantidad = float(line[1])
+                cantidad = cell_cantidad.value
             except:
                 cantidad = 0.0
             
@@ -75,12 +82,12 @@ class ImportarProductoPV(models.TransientModel):
                 RefProducto = self.env["tetrace.ref_producto"]
                 ref_producto = RefProducto.search([
                     ('order_id', '=', self.order_id.id),
-                    ('name', '=', line[0])
+                    ('name', '=', cell_referencia)
                 ], limit=1)
                 if not ref_producto:
                     RefProducto.create({
                         'order_id': self.order_id.id,
-                        'name': line[0],
+                        'name': cell_referencia,
                         'cantidad': cantidad
                     })
                 else:
