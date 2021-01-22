@@ -91,27 +91,32 @@ class Applicant(models.Model):
                 ('res_id', '=', r.id),
             ])
             for document in documents:
-                folder_id = 4
-                if document.folder_id.id == 11: #Datos laborables
-                    folder_id = 10 
-                elif document.folder_id.id == 12: #Datos formacion
-                    folder_id = 8 
-                elif document.folder_id.id == 13: #PRL
-                    folder_id = 9
-                elif document.folder_id.id == 14: #Datos personales
-                    folder_id = 7
-                elif document.name == 'CV_%s' % r.emp_id.name:
-                    folder_id = 7 #carpeta Datos personales
-                elif document.name in ['PROPUESTA LABORAL_V1_%s' % r.emp_id.name, 
-                                       'PROPUESTA LABORAL_V2_%s' % r.emp_id.name]:
-                    folder_id = 10 #carpeta Datos laborales
-                    
-                document.write({
+                values = {
                     'res_model': 'hr.employee',
                     'res_id': r.emp_id.id,
-                    'folder_id': folder_id,
                     'datas': document.datas
-                })
+                }
+                
+                folder_id = None
+                if document.folder_id.id not in [10, 8, 9, 7, 4]:
+                    folder_id = 4
+                    if document.folder_id.id == 11: #Datos laborables
+                        folder_id = 10 
+                    elif document.folder_id.id == 12: #Datos formacion
+                        folder_id = 8 
+                    elif document.folder_id.id == 13: #PRL
+                        folder_id = 9
+                    elif document.folder_id.id == 14: #Datos personales
+                        folder_id = 7
+                    elif document.name == 'CV_%s' % r.emp_id.name:
+                        folder_id = 7 #carpeta Datos personales
+                    elif document.name in ['PROPUESTA LABORAL_V1_%s' % r.emp_id.name, 
+                                           'PROPUESTA LABORAL_V2_%s' % r.emp_id.name]:
+                        folder_id = 10 #carpeta Datos laborales
+                    
+                if folder_id:
+                    values.update({'folder_id': folder_id})
+                document.write(values)
                     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()

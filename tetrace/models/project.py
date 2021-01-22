@@ -192,12 +192,8 @@ class Project(models.Model):
                 r.partner_geo_id.with_context(no_actualizar=True).write(values)
     
     def default_etapa_tareas(self):
-        TaskType = self.env['project.task.type']
-        etapas_proyecto = TaskType.search([('project_ids', 'in', [self.id])], limit=1)
-        if not etapas_proyecto:
-            etapa_ns = TaskType.search([('name', '=', 'N/A')], limit=1)
-            if etapa_ns:
-                etapa_ns.write({'project_ids': [(4, self.id)]})
+        for r in self:
+            r.type_ids = [(4, 4), (4, 10), (4, 5)]
     
     def view_tecnicos_tree(self):
         self.ensure_one()
