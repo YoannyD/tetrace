@@ -193,7 +193,7 @@ class Project(models.Model):
     
     def default_etapa_tareas(self):
         for r in self:
-            r.type_ids = [(4, 4), (4, 10), (4, 5)]
+            r.type_ids = [(4, 4), (4, 5), (4, 10), (4, 269)]
     
     def view_tecnicos_tree(self):
         self.ensure_one()
