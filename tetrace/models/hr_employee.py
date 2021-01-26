@@ -26,6 +26,7 @@ class Employee(models.Model):
     nivel_validacion_compras_ids = fields.Many2many('tier.definition', string="Validación compras", domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]", check_company=True)
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "employee_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
+    documentacion_laboral = fields.Char("Documentación laboral")
 
     def _compute_document_employee(self):
         for r in self:
