@@ -19,12 +19,29 @@ class PurchaseOrder(models.Model):
             return validacion.id
         return None
     
-    
     account_analytic_id = fields.Many2one(related="order_line.account_analytic_id")
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
     validacion_baremo = fields.Boolean(related="validacion_id.validacion_id.baremo")
     baremo = fields.Boolean("Baremo")
+    importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
+                                               compute="_compute_importe_validacion_euros")
+    
+    @api.depends("amount_untaxed", "date_order")
+    def _compute_importe_validacion_euros(self):
+        for r in self:
+            rate = 0
+            if r.date_order:
+                euro = self.env['res.currency.rate'].search([
+                    ('company_id', '=', r.company_id.id),
+                    ('currency_id', '=', 1),
+                    ('name', '<=', r.date_order.strftime('%Y-%m-%d'))
+                ], limit = 1)
+                if euro:
+                    rate = euro.rate
+            importe_original = r.amount_untaxed
+            r.update({'importe_validacion_euros': importe_original * rate})
+            # Si no tasa para Euro el importe_validacion_euros sera igual a 0
 
 
 class PurchaseOrderLine(models.Model):
