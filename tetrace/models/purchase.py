@@ -10,9 +10,6 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-
-    account_analytic_id = fields.Many2one(related="order_line.account_analytic_id")
-
     def _default_validacion_id(self):
         validacion = self.env['tetrace.validacion_user'].search([
             ('user_id', '=', self.env.user.id),
@@ -21,9 +18,13 @@ class PurchaseOrder(models.Model):
         if validacion:
             return validacion.id
         return None
-
+    
+    
+    account_analytic_id = fields.Many2one(related="order_line.account_analytic_id")
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
+    validacion_baremo = fields.Boolean(related="validacion_id.validacion_id.baremo")
+    baremo = fields.Boolean("Baremo")
 
 
 class PurchaseOrderLine(models.Model):

@@ -14,6 +14,7 @@ class Validacion(models.Model):
 
     name = fields.Char('Nombre', required=True, translate=True)
     validacion_user_ids = fields.One2many('tetrace.validacion_user', 'validacion_id')
+    baremo = fields.Boolean("Baremo")
 
     _sql_constraints = [
         ("name_unique", "unique(name)", _("Ya existe una valoración con ese nombre"))
