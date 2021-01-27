@@ -69,6 +69,7 @@
         'views/tetrace_tipo_proyecto.xml',
         'views/tetrace_tipo_servicio.xml',
         'views/hr_contract.xml',
+        'views/hr_department.xml',
         'views/res_company.xml',
         'views/res_users.xml',
         'views/project.xml',

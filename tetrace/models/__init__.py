@@ -9,6 +9,7 @@ from . import account_move_line
 from . import hr_applicant
 from . import hr_job
 from . import hr_employee
+from . import hr_department
 from . import ir_attachment
 from . import product
 from . import product_template

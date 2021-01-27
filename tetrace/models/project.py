@@ -294,6 +294,9 @@ class ProjectTask(models.Model):
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
     ref_individual = fields.Char("Referencia individual")
+    department_id = fields.Many2one("hr.department", string="Departamento")
+    department_laboral = fields.Boolean(related="department_id.laboral")
+    info_puesto = fields.Char("Información del puesto")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
@@ -339,7 +342,10 @@ class ProjectTask(models.Model):
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
                 body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
-                
+        
+        if 'info_puesto' in vals and not self.env.context.get("no_actualizar_info_puesto"):
+            self.actualizar_info_puesto()
+        
         if ('employee_id' in vals or 'job_id' in vals) and not self.env.context.get("no_actualizar_empleado"):
             self.actualizar_tareas_individuales()
             
@@ -373,7 +379,16 @@ class ProjectTask(models.Model):
                         'employee_id': r.employee_id.id,
                     })
                 task.with_context(no_actualizar_empleado=True).update(values)
-            
+    
+    def actualizar_info_puesto(self):
+        for r in self:
+            if r.department_id:
+                task = self.search([
+                    ('project_id', '=',  r.project_id.id),
+                    ('department_id', '=', r.department_id.id)
+                ])
+                task.with_context(no_actualizar_info_puesto=True).update({'info_puesto': r.info_puesto})
+    
     @api.model
     def _where_calc(self, domain, active_test=True):
         if 'activada' in self._fields and active_test and self._context.get('active_test', True):
