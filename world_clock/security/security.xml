@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.module.category" id="world_clock_management">
+        <field name="name">World Clock</field>
+        <field name="description">User access level for World Clock module</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="clock_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="world_clock_management"/>
+    </record>
+    <record model="res.groups" id="clock_manager">
+        <field name="name">Manager</field>
+        <field name="category_id" ref="world_clock_management"/>
+        <field name="implied_ids" eval="[(4,ref('clock_user'))]"/>
+    </record>
+</odoo>

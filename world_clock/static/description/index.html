@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Odoo Page</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+* {
+	box-sizing: border-box;
+}
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+}
+.top_container {
+	width: 100%;
+}
+.top_container_img {
+	padding-bottom: 44%;
+	background: no-repeat center;
+	background-size: cover;
+	background-image: url("main-screen.png");
+	
+}
+.img_sadow {
+	box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+}
+.top_container_img .app_icon.big {
+	width: 72px;
+	height: 72px;
+}
+.top_container_info .app_icon {
+	background-color: white;
+	display: inline-block;
+	margin: 0 10px 15px 0;
+	vertical-align: top;
+	border-radius: 2px;
+	width: 62px;
+	height: 62px;
+}
+.top_container_info .app_title_comp_name {
+	display: inline-block;
+	margin-bottom: 0px;
+}
+.top_container_info .app_title_comp_name h1 {
+	font-size: 20px;
+	font-weight: 400;
+}
+small, .small {
+	font-size: 80%;
+	font-weight: 400;
+}
+.info_app_table.table tr > td > a {
+	color: #000;
+	text-decoration: none;
+	background-color: transparent;
+}
+.top_container_info .app_title_comp_name a {
+	color: #000;
+	text-decoration: none;
+}
+.rating_star_active {
+	color: #ffe215;
+}
+.top_container_info .app_title_comp_name {
+	display: inline-block;
+	margin-bottom: 15px;
+}
+.top_container_info .app_tags {
+	margin-bottom: 15px;
+}
+.app_tags {
+	letter-spacing: 0;
+	font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 0.75rem;
+	line-height: 1.45;
+}
+.app_tags .badge, .app_tags .label {
+	padding: .3em .8em;
+	font-size: 10px;
+}
+.badge, .label {
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+.badge-violet-dark {
+	color: white;
+	background-color: #000;
+}
+.badge, .label {
+	display: inline-block;
+	padding: 0.25em 0.4em;
+	font-size: 0.9em;
+	font-weight: 700;
+	line-height: 1;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: 0.125rem;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.app_tags {
+	letter-spacing: 0;
+	font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+	font-size: 0.75rem;
+	line-height: 1.45;
+}
+.app_tags .fa {
+	margin-left: 10px;
+	color: #000;
+}
+.table {
+	width: 100%;
+	margin-bottom: 1rem;
+	color: #343a40;
+}
+.alert-info {
+	color: #000;
+	background-color: #dbecf0;
+	border-color: #cde4eb;
+}
+.info_app_table.table tr > td {
+	padding-left: 0;
+}
+.info_app_table.table tr > td > a {
+	font-size: 11.25px;
+}
+.btn:hover {
+	background: #3a3838;
+}
+
+.btn{background: #5188c7;}
+
+.first_sec_comp .logo {
+	margin: auto;
+	color: #000;
+	border-bottom: 1px solid #e4e4e4;
+	text-align: center;
+	display: block;
+}
+.first_sec_comp .logo img {
+	width: 293px;
+	padding: 1rem 0rem;
+	margin: auto
+}
+.first_sec_comp h1 {
+	font-size: 39px;
+	font-weight: 600;
+	margin: 0px !important;
+}
+.first_sec_comp h2 {
+	font-weight: 600;
+	font-size: 1.8rem;
+	margin-top: 15px;
+}
+.first_sec_comp h3 {
+	font-size: 21px;
+	margin-top: 8px
+}
+.first_sec_comp ul {
+	padding: 0 1px;
+}
+.first_sec_comp ul li {
+	display: flex;
+	padding: 8px 0;
+	font-size: 18px
+}
+.first_sec_comp .fa-check {
+	width: 40px;
+	color: #07B700;
+}
+.overview {
+	padding: 1rem 0rem 0rem;
+	background-color: #ffffff !important;
+}
+.overview h2 {
+	font-weight: 600;
+	text-align: center;
+	width: 100%
+}
+.overview h3 {
+	text-align: center;
+	font-size: 16px;
+	width: 100%;
+	margin: 0;
+	margin-top: 14px;
+	color: #000 !important;
+	opacity: 1 !important;
+	line-height: 31px;
+	font-weight: 400;
+	letter-spacing: .5px;
+	margin-bottom: 21px;
+}
+.overview .dash_line {
+	margin-top: 0px;
+	margin-bottom: 2%;
+	border: 0;
+	text-align: center;
+	border-top: 3px solid #5188c7;
+	width: 5%
+}
+.overview .tab-content.desgin {
+	padding-top: 30px;
+	padding-bottom: 30px;
+	padding: 30px
+}
+.overview ul {
+	list-style: none;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link{background-color: #5188c7;}
+
+
+
+.overview .acord_box{font-size:1.05rem; font-weight:400; color: #000; background-color: #3a3838; border:0; font-family:'Open Sans',sans-serif; width:140px;}
+
+.overview .acord_box .nav-link.degn {color:#fff; line-height:33px; border:0; border-radius:0px; font-weight:400; text-align:center}
+
+.overview .tab-content .acord {
+	font-family: Roboto;
+	color: #fff;
+	font-size: 19px;
+	line-height: 50px;
+	background-color: #5188c7;
+	padding-left: 20px;
+	}
+.overview .fa-check {
+	width: 40px;
+	color: #fff;
+}
+.overview .carousel-item img {
+	 border-top-left-radius: 10px;
+     border-top-right-radius: 10px;
+    border: 10px solid #cacacc;
+}
+.overview .carousel-control-prev.icon {
+	width: 35px;
+	color: #000;
+}
+.overview .carousel-control-next.icon {
+	width: 35px;
+	color: #000;
+}
+.overview .carousel-control-prev .fa-chevron-left {
+	font-size: 24px;
+}
+.overview .carousel-control-next .fa-chevron-right {
+	font-size: 24px;
+}
+
+.overview .carousel-item img{width:100%;}
+
+.need_helf h2{font-weight:600; text-align:center; width:100%;}
+.need_helf h4{font-size:16px;text-align:center;}
+.need_helf h5{font-size:16px;}
+.need_helf .dash-line{margin-top:0px; margin-bottom:2%; border:0; text-align:center; border-top:3px solid #5188c7; width:5%;}
+.need_helf a{color: #212529;}
+.need_helf a:hover{color: #212529;text-decoration:none;}
+
+ @media (max-width: 768px) {
+.top_container_info .app_icon.big {
+	width: 84px;
+	height: 84px;
+}
+.top_container_info{margin-top:20px;}
+
+}
+</style>
+</head>
+
+<body>
+<div class="container second_container">
+  <div class="first_sec_comp">
+    <div class="row logo mt-5 "><a href="#" target="_blank"><img src="deligence-logo.png" alt=""></a> </div>
+   
+  </div>
+  <section class="overview">
+    <div class="row py-4 px-3">
+      <div class="w-100" style="border-radius:10px">
+      
+      
+        <ul role="tablist" class="nav nav-pills justify-content-center" data-tabs="tabs" id="pills-tab" style="border:none">
+         
+         
+         
+          <li class="nav-item mb-3 acord_box">
+           <a id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="false" class="nav-link active degn">Overview </a> </li>
+          
+          
+          
+          
+          
+          <li class="nav-item mb-3 acord_box"> 
+          <a class="nav-link  degn" id="pills-profile-tab" data-toggle="pill" href="#pills-video" role="tab" aria-controls="pills-profile" aria-selected="true">Configuration </a> </li>
+          
+          
+          
+          <li class="nav-item mb-3 acord_box">
+           <a id="pills-home-tab" data-toggle="pill" href="#pills-home1" role="tab" aria-controls="pills-home" aria-selected="false" class="nav-link degn">Features </a> </li>
+          
+          
+          
+          <li class="nav-item mb-3 acord_box">
+           <a class="nav-link degn" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Screenshots </a> </li>
+        </ul>
+        
+        
+        <div class="tab-content desgin" id="pills-tabContent">
+          <div class="px-3 pt-1 tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="
+                  pills-home-tab"> 
+            
+          
+          
+          
+            <!-- Overview-->
+            <h2>Overview</h2>
+            <hr class="dash_line">
+            <h3> The basic need for an individual of day to day businessess is to know the time of the countries. This app will be able to show the local date and time of the countries set to odoo backend.</h3>
+          </div>
+          <div class="px-3 pt-1 tab-pane fade" id="pills-video" role="tabpanel" aria-labelledby="
+                  pills-home-tab">
+                  
+                  
+                  
+                  
+                
+            <h2>Configuration</h2>
+            <hr class="dash_line">
+            <ul>
+              <li class="mb-2 acord"> <i class="fa fa-check"></i>No additional configuration required </li>
+               
+            </ul>
+          </div>
+          <div class="px-3 pt-1 tab-pane fade" id="pills-home1" role="tabpanel" aria-labelledby="
+                  pills-home-tab"> 
+            
+           
+           
+           
+           
+           
+            <!-- feature tab-->
+            <h2>Features</h2>
+            <hr class="dash_line">
+            <ul>
+              <li class="mb-2 acord"> <i class="fa fa-check"></i>World clock an be displayed anywhere on odoo website. It can be found as a building block on edit mode and can be placed any where on website.</li>
+              <li class="mb-2 acord"> <i class="fa fa-check"></i>Clocks can be set on odoo backend.</li>
+            </ul>
+          </div>
+         
+         
+         
+          <!-- Screenshot tab-->
+          <div class="px-3 tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+            <div class="tab-pane">
+              <h2>Screenshots</h2>
+              <hr class="dash_line">
+              <div>
+                <section class="screen_slide">
+                  <div id="demo" class="row carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                      
+                      
+                        <div class="carousel-item active" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3>Check time from different country using World Clock. </h3>
+                          <div> <img class="img img-responsive center-block" src="main_screenshot.png"> </div>
+                        </div>
+                      </div>
+                                            
+                      
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3> Click on the world clock icon..</h3>
+                          <div> <img class="img img-responsive center-block" src="main_1.png"> </div>
+                        </div>
+                      </div>
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3>Click Create butoon to create a clock. </h3>
+                          <div style=""> <img class="img img-responsive center-block"  src="main_2.png"> </div>
+                        </div>
+                      </div>
+                      
+                      
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3> Write the country name and choose timezone. Activate the clock on clicking on status.</h3>
+                          <div> <img class="img img-responsive center-block"  src="main_3.png"> </div>
+                        </div>
+                      </div>
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3> You can see the world clock in kanban view.</h3>
+                          <div> <img class="img img-responsive center-block"  src="main_4.png"> </div>
+                        </div>
+                      </div>
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3> On Website frontend( Login with Admin ) in 'Edit Mode', You can see the world clock icon At left side. Just drag and drop it in blank area on right side.</h3>
+                          <div> <img class="img img-responsive center-block"  src="main_5.png"> </div>
+                        </div>
+                      </div>
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3> You will see screen like this, Just click on 'Save' Button on upper right corner.</h3>
+                          <div> <img class="img img-responsive center-block"  src="main_6.png"> </div>
+                        </div>
+                      </div>
+                      <div class="carousel-item" style="min-height:0px">
+                        <div class="col-xs-12 col-sm-12 col-md-12 mb16 mt16" style="float:left">
+                          <h3>World Clock will appear like this.     </h3>
+                          <div> <img class="img img-responsive center-block"  src="main_7.png"> </div>
+                        </div>
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev icon" href="#demo" data-slide="prev"> <span class="carousel-control-prev-icon"><i class="fa fa-chevron-left"></i></span> </a> <a class="carousel-control-next icon" href="#demo" data-slide="next"> <span class="carousel-control-next-icon"><i class="fa fa-chevron-right"></i></span> </a> </div>
+                </section>
+              </div>
+            </div>
+          </div>
+          
+          <!-- faq tab--> 
+          
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  
+  <section class="need_helf mb-5">
+  <div class="row">
+    <div class="col-md-12" style="margin:auto !important; width:70%; padding:30px">
+      <h2>Need Any Help?</h2>
+      <hr class="dash-line">
+      <h4> If you have anything to share with us based on your use of this module, please let us know. We are ready to offer our support. </h4>
+      <div class="col-md-6" style="float:left; padding:20px">
+        <h5 class="text-center"><i class="fa fa-envelope"></i> &nbsp; Email us </h5>
+        <p class="text-center"><a href="mailto:support@deligence.com">Sanjay Kumar</a></p>
+      </div>
+      <div class="col-md-6" style="float:left; padding:20px">
+        <h5 class="text-center"><i class="fa fa-globe"></i> &nbsp; Contact Us </h5>
+        <p class="text-center"><a href="https://www.deligence.com/contact-us/" target="_blank">https://www.deligence.com</a> </p></div>
+    </div>
+    </div>
+  </section>
+</div>
+
+<!-- jQuery library --> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+
+<!-- Popper JS --> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script> 
+
+<!-- Latest compiled JavaScript --> 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

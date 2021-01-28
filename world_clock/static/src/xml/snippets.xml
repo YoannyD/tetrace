@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+    <t t-name="world_clock.list" t-ignore="true" >
+        <section class="world_clock_template css_editable_mode_hidden" id="removeWorld">
+            <div class="w-big-box-buttons">
+                <div class="container w-container">
+                    <div class="row w-row is-flex">
+                        <t t-if="world_clock_obj.length">
+                            <t t-foreach="world_clock_obj" t-as="i">
+                                <div class="col-sm-3 column">
+                                    <div class="w-box">
+                                        <h2>
+                                            <div class="tzDateVal" t-esc="i.tzDate"/>
+                                        </h2>
+                                        <h5>
+                                            <t t-esc="i.name"/>
+                                        </h5>
+                                    </div>
+                                </div>
+                            </t>
+                        </t>
+                        <t t-else="">
+                            <div class="col-sm-12 text-center">No clock has been set on backend.</div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</templates>
