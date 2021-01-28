@@ -382,8 +382,10 @@ class ProjectTask(models.Model):
     
     def actualizar_info_puesto(self):
         for r in self:
-            if r.department_id:
+            if r.department_id and r.ref_individual:
                 task = self.search([
+                    ('ref_individual', '=', r.ref_individual),
+                    ('activada', 'in', [True, False]),
                     ('project_id', '=',  r.project_id.id),
                     ('department_id', '=', r.department_id.id)
                 ])
