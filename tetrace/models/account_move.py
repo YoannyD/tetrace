@@ -46,6 +46,7 @@ class AccountMove(models.Model):
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina")
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
+    validacion_baremo = fields.Boolean(related="validacion_id.validacion_id.baremo")
     tickelia_id = fields.Many2one('tetrace.tickelia', string="Tickelia")
     codigo_sii = fields.Selection(CODIGOS_SII, string="Código SII")
     fecha_servicio = fields.Date("Fecha servicio")
@@ -53,6 +54,7 @@ class AccountMove(models.Model):
                                                compute="_compute_importe_validacion_euros")
     sale_order_id = fields.Many2one("sale.order", compute="_compute_sale_order_id", store=True)
     invoice_line_cambia = fields.Char("Líneas de factura cambiadas")
+    baremo = fields.Boolean("Baremo")
 
     @api.depends("invoice_origin")
     def _compute_sale_order_id(self):

@@ -59,6 +59,10 @@ class Project(models.Model):
     fecha_cancelacion = fields.Date("Fecha cancelación")
     fecha_finalizacion = fields.Date("Fecha finalización")
     motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
+    empresa_destino_nombre = fields.Char("Nombre empresa destino")
+    cif_destino_nombre = fields.Char("CIF empresa destino")
+    direccion = fields.Char("Dirección")
+    nombre_parque = fields.Char("Nombre parque")
                 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -142,6 +146,7 @@ class Project(models.Model):
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
         res.actualizar_deadline_tareas()
+        res.default_etapa_tareas()
         return res
     
     def write(self, vals):
@@ -185,7 +190,11 @@ class Project(models.Model):
                 self.env['res.partner'].with_context(no_actualizar=True).create(values)
             else:
                 r.partner_geo_id.with_context(no_actualizar=True).write(values)
-                
+    
+    def default_etapa_tareas(self):
+        for r in self:
+            r.type_ids = [(4, 4), (4, 5), (4, 10), (4, 269)]
+    
     def view_tecnicos_tree(self):
         self.ensure_one()
         ctx = dict(self._context)
@@ -198,8 +207,11 @@ class Project(models.Model):
     
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
-        action = self.env['ir.actions.act_window'].for_xml_id('tetrace', 'open_view_project_applicant')
-        action.update({'domain': [('project_id', '=', self.id)]})
+        applicant_ids = []
+        for task in self.tasks:
+            applicant_ids += task.applicant_ids.ids     
+        action = self.env['ir.actions.act_window'].for_xml_id('hr_recruitment', 'crm_case_categ0_act_job')
+        action.update({'domain': [('id', 'in', applicant_ids)]})
         return action
     
     def action_view_project(self):
@@ -282,6 +294,9 @@ class ProjectTask(models.Model):
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
     ref_individual = fields.Char("Referencia individual")
+    department_id = fields.Many2one("hr.department", string="Departamento")
+    department_laboral = fields.Boolean(related="department_id.laboral")
+    info_puesto = fields.Char("Información del puesto")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
@@ -327,8 +342,11 @@ class ProjectTask(models.Model):
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
                 body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
-                
-        if 'employee_id' in vals and not self.env.context.get("no_actualizar_empleado"):
+        
+        if 'info_puesto' in vals and not self.env.context.get("no_actualizar_info_puesto"):
+            self.actualizar_info_puesto()
+        
+        if ('employee_id' in vals or 'job_id' in vals) and not self.env.context.get("no_actualizar_empleado"):
             self.actualizar_tareas_individuales()
             
         return res
@@ -361,7 +379,18 @@ class ProjectTask(models.Model):
                         'employee_id': r.employee_id.id,
                     })
                 task.with_context(no_actualizar_empleado=True).update(values)
-            
+    
+    def actualizar_info_puesto(self):
+        for r in self:
+            if r.department_id and r.ref_individual:
+                task = self.search([
+                    ('ref_individual', '=', r.ref_individual),
+                    ('activada', 'in', [True, False]),
+                    ('project_id', '=',  r.project_id.id),
+                    ('department_id', '=', r.department_id.id)
+                ])
+                task.with_context(no_actualizar_info_puesto=True).update({'info_puesto': r.info_puesto})
+    
     @api.model
     def _where_calc(self, domain, active_test=True):
         if 'activada' in self._fields and active_test and self._context.get('active_test', True):

@@ -26,6 +26,7 @@ class Employee(models.Model):
     nivel_validacion_compras_ids = fields.Many2many('tier.definition', string="Validación compras", domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]", check_company=True)
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "employee_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
+    documentacion_laboral = fields.Char("Documentación laboral")
 
     def _compute_document_employee(self):
         for r in self:
@@ -54,14 +55,11 @@ class Employee(models.Model):
             
     def action_task_employee_view(self):
         self.ensure_one()
-        ctx = dict(self._context)
-        ctx.update({'search_default_project': True})
-        task = self.env['project.task'].search([
+        tasks = self.env['project.task'].search([
             ('employee_id', '=', self.id),
             ('tarea_individual', '=', True)
         ])
-        action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
-        action.update({'domain': [('id', 'in', task.ids)]})
-        action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
-        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
-        return dict(action, context=ctx)
+        project_ids = [task.project_id.id for task in tasks]
+        action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
+        action.update({'domain': [('id', 'in', project_ids)]})
+        return action

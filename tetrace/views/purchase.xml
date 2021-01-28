@@ -8,6 +8,8 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="create_uid" invisible="1"/>
                 <field name="validacion_id" domain="[('user_id', 'in', [create_uid, uid])]"/>
+                <field name="validacion_baremo" invisible="1"/>
+                <field name="baremo" attrs="{'invisible': [('validacion_baremo', '=', False)]}"/>
             </xpath>
 
             <xpath expr="//field[@name='account_analytic_id']" position="attributes">

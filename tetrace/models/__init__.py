@@ -9,6 +9,7 @@ from . import account_move_line
 from . import hr_applicant
 from . import hr_job
 from . import hr_employee
+from . import hr_department
 from . import ir_attachment
 from . import product
 from . import product_template
@@ -38,7 +39,6 @@ from . import tetrace_alojamiento
 from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
 from . import tetrace_tickelia
-from . import tetrace_project_applicant
 from . import tetrace_viaje
 from . import tetrace_imputacion_variable
 from . import tetrace_prevision_facturacion

@@ -33,7 +33,7 @@
 
         <xpath expr="//div[@t-field='company.partner_id']" position="replace">
             <div style="display:block">
-                <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.code == 'INVE'">
+                <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.exportacion">
                     <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Exportador</h5>
                 </div>
                 <div>
