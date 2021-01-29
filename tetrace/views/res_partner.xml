@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='category_id']" position="after">
                 <field name="siglas"/>
+                <field name="grupo_tetrace" readonly="1"/>
             </xpath>
             <xpath expr="//field[@name='property_account_payable_id']" position="after">
                 <field name="cuenta_analitica_defecto_id"/>
