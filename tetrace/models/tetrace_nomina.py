@@ -61,8 +61,18 @@ class Nomina(models.Model):
                     elif nomina_trabajador.haber > 0:
                         haber = analitica.importe
 
+                    tax_ids = []
+                    if nomina_trabajador.account_id.group_id.code_prefix == "640":
+                        tax_ids = [11]
+                        
+                    tag_ids = []
+                    if nomina_trabajador.account_id.group_id.code_prefix == "4751":
+                        tag_ids = [5]
+                        
                     agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
                         'account_id': nomina_trabajador.account_id.id,
+                        'tax_ids': [(6, 0, tax_ids)],
+                        'tag_ids': [(6, 0, tag_ids)],
                         'partner_id': partner_id,
                         'name': nomina_trabajador.descripcion,
                         'analytic_account_id': analitica.analytic_account_id.id,
@@ -73,6 +83,8 @@ class Nomina(models.Model):
                 if not nomina_trabajador.trabajador_analitica_ids:
                     agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
                         'account_id': nomina_trabajador.account_id.id,
+                        'tax_ids': [(6, 0, tax_ids)],
+                        'tag_ids': [(6, 0, tag_ids)],
                         'partner_id': partner_id,
                         'name': nomina_trabajador.descripcion,
                         'debit': nomina_trabajador.debe,
