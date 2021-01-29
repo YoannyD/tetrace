@@ -12,8 +12,10 @@ _logger = logging.getLogger(__name__)
 
 class Invoice(http.Controller):
     @http.route(['/api/v1/analytic.line.rel'], type='http', auth='api_key')
-    def listado_account_invoice(self, fecha_desde=None, fecha_hasta=None, offset=0, limit=10000, **kwargs):
-        domain=[]
+    def listado_analytic_line_rel(self, offset=0, limit=10000, **kwargs):
+        domain = []
+        if limit: limit = int(limit)
+        if offset: offset = int(offset)
         analytics = request.env['account.analytic.line.rel'].sudo().with_context(lang="es_ES").search(domain, offset=offset, limit=limit)
         data = []
         for analytic in analytics:
@@ -25,7 +27,7 @@ class Invoice(http.Controller):
         values = {
             'id': analytic.id,
             'company_name': analytic.company_id.name,
-            'date': analytic.date,
+            'date': analytic.date.strftime("%d/%m/%Y") if analytic.date else '',
             'account_id': analytic.account_id.name or '',
             'analytic_account_id': analytic.analytic_account_id.name or '',
             'currency_name': analytic.currency_id.name or '',
@@ -37,8 +39,10 @@ class Invoice(http.Controller):
         return values
     
     @http.route(['/api/v1/account'], type='http', auth='api_key')
-    def listado_account_invoice(self, fecha_desde=None, fecha_hasta=None, offset=0, limit=10000, **kwargs):
-        domain=[]
+    def listado_account(self, offset=0, limit=10000, **kwargs):
+        domain = []
+        if limit: limit = int(limit)
+        if offset: offset = int(offset)
         accounts = request.env['account.account'].sudo().with_context(lang="es_ES").search(domain, offset=offset, limit=limit)
         data = []
         for account in accounts:
@@ -57,8 +61,10 @@ class Invoice(http.Controller):
         return values
     
     @http.route(['/api/v1/analytic.account'], type='http', auth='api_key')
-    def listado_account_invoice(self, fecha_desde=None, fecha_hasta=None, offset=0, limit=10000, **kwargs):
-        domain=[]
+    def listado_analytic_account(self, offset=0, limit=10000, **kwargs):
+        domain = []
+        if limit: limit = int(limit)
+        if offset: offset = int(offset)
         accounts = request.env['account.analytic.account'].sudo().with_context(lang="es_ES").search(domain, offset=offset, limit=limit)
         data = []
         for account in accounts:
@@ -77,8 +83,10 @@ class Invoice(http.Controller):
         return values
     
     @http.route(['/api/v1/company'], type='http', auth='api_key')
-    def listado_account_invoice(self, fecha_desde=None, fecha_hasta=None, offset=0, limit=10000, **kwargs):
-        domain=[]
+    def listado_company(self, offset=0, limit=10000, **kwargs):
+        domain = []
+        if limit: limit = int(limit)
+        if offset: offset = int(offset)
         companies = request.env['res.company'].sudo().with_context(lang="es_ES").search(domain, offset=offset, limit=limit)
         data = []
         for company in companies:
@@ -86,10 +94,10 @@ class Invoice(http.Controller):
 
         return request.make_response(json.dumps(data), headers=[('Content-Type', 'application/json')])
     
-    def get_values_company(self, account):
+    def get_values_company(self, company):
         values = {
-            'id': account.id,
-            'name': account.name
+            'id': company.id,
+            'name': company.name
         }
         return values
     
