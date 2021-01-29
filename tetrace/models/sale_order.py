@@ -395,11 +395,11 @@ class SaleOrder(models.Model):
         self.ensure_one()
         total = 0
         for line in self.order_line:
-            total += line.price_unit
+            total += line.price_subtotal
             
         porcentajes = {}
         for line in self.order_line:
-            porcentaje_linea = (100 * line.price_unit) / total if total else 0
+            porcentaje_linea = (100 * line.price_subtotal) / total if total else 0
             porcentajes.update({str(line.id): porcentaje_linea})
         
         return porcentajes
