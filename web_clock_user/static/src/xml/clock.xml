@@ -4,6 +4,9 @@
         <li class="o_clock">
             <a class="main_clock" />
         </li>
+        <li class="o_clock">
+            <a class="main_clock" />
+        </li>
     </t>
 
     <div t-name="AnalogClock" class="o_clock_analog">
