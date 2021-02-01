@@ -1,0 +1,15 @@
+.lst_horas{
+    color: #fff;
+    list-style: none;
+    li{
+        display:inline-block;
+        padding: 0 12px;
+    }
+    img.o_hora_flag{
+        display:inline-block;
+        width:28px;
+    }
+    .o_hora_display{
+        display:inline-block;
+    }
+}

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/web_world_clock/static/src/js/moment-timezone.min.js"/>
+            <script type="text/javascript" src="/web_world_clock/static/src/js/moment-timezone-with-data.min.js"/>
+            <script type="text/javascript" src="/web_world_clock/static/src/js/main.js"/>
+            <link href="/web_world_clock/static/src/scss/main.scss" rel="stylesheet"/>
+        </xpath>
+    </template>
+</odoo>
