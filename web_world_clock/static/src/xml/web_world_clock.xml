@@ -4,15 +4,19 @@
         <script>
             $(function() {
                 var fecha;
-                setInterval(function(){
+                function drawFechas(){
                     fecha = moment();
-                    $("#o_hora_india").html(fecha.tz('Asia/Kolkata').format('HH:mm:ss'));
-                    $("#o_hora_espana").html(fecha.tz('Europe/Madrid').format('HH:mm:ss'));
-                    $("#o_hora_argentina").html(fecha.tz('America/Argentina/Buenos_Aires').format('HH:mm:ss'));
-                    $("#o_hora_chile").html(fecha.tz('America/Santiago').format('HH:mm:ss'));
-                    $("#o_hora_brasil").html(fecha.tz('America/Sao_Paulo').format('HH:mm:ss'));
-                    $("#o_hora_mexico").html(fecha.tz('America/Mexico_City').format('HH:mm:ss'));
-                }, 1000);
+                    $("#o_hora_india").html(fecha.tz('Asia/Kolkata').format('HH:mm'));
+                    $("#o_hora_espana").html(fecha.tz('Europe/Madrid').format('HH:mm'));
+                    $("#o_hora_argentina").html(fecha.tz('America/Argentina/Buenos_Aires').format('HH:mm'));
+                    $("#o_hora_chile").html(fecha.tz('America/Santiago').format('HH:mm'));
+                    $("#o_hora_brasil").html(fecha.tz('America/Sao_Paulo').format('HH:mm'));
+                    $("#o_hora_mexico").html(fecha.tz('America/Mexico_City').format('HH:mm'));
+                }
+                setInterval(function(){
+                    drawFechas();
+                }, 20000);
+                drawFechas();
             });
         </script>
         <div class="container">
