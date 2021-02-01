@@ -17,7 +17,8 @@ class Partner(models.Model):
                                                   help="Cuenta analítica que tomarán las lineas de sus facturas cargadas", \
                                                   company_dependent=True)
     project_geo_ids = fields.One2many("project.project", "partner_geo_id")
-
+    grupo_tetrace = fields.Boolean("Grupo Tetrace")
+            
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if args is None:

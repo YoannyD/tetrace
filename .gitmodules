@@ -95,3 +95,13 @@
 	path = OCA/geospatial
 	url = git@github.com:OCA/geospatial.git
 	branch = 13.0
+
+[submodule "OCA/server-auth"]
+	path = OCA/server-auth
+	url = git@github.com:OCA/server-auth.git
+	branch = 13.0
+
+[submodule "OCA/server-env"]
+	path = OCA/server-env
+	url = git@github.com:OCA/server-env.git
+	branch = 13.0

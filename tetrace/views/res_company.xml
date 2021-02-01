@@ -9,6 +9,7 @@
                 <field name="tetrace_tickelia_journal_id"/>
                 <field name="tetrace_nomina_journal_id"/>
                 <field name="tetrace_cuenta_analitica_diferencia_cambio"/>
+                <field name="grupo_tetrace"/>
             </xpath>
         </field>
     </record>
