@@ -224,7 +224,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="department_id"/>
-                <field name="info_puesto" attrs="{'invisible': [('department_laboral', '=', False)]}"/>
+                <field name="info_puesto_id" attrs="{'invisible': [('department_laboral', '=', False)]}"/>
                 <field name="department_laboral" invisible="1"/>
                 <field name="job_id"/>
                 <field name="employee_id" attrs="{'invisible': [('tarea_individual', '=', False)]}"/>
