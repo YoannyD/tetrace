@@ -282,9 +282,7 @@ class SaleOrder(models.Model):
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 template_tasks = self.env['project.task'].search([
                     ('project_id', '=', line.product_id.project_template_diseno_id.id),
-                    '|',
-                    ('activada', '=', True),
-                    ('activada', '=', False),
+                    ('activada', 'in', [True, False])
                 ])
                 for task in template_tasks:
                     if task.tarea_individual:
@@ -473,6 +471,15 @@ class SaleOrderLine(models.Model):
             ('ref_individual', '!=', False)
         ])
         tasks_individuales_plantilla.actualizar_tareas_individuales()
+        
+        tasks_departamento_plantilla = self.env['project.task'].search([
+            ('project_id', '=', r.order_id.project_ids[0].id),
+            ('department_id', '!=', False),
+            ('desde_plantilla', '=', True),
+            ('activada', 'in', [True, False]),
+            ('ref_individual', '!=', False)
+        ])
+        tasks_departamento_plantilla.actualizar_info_puesto()
               
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
