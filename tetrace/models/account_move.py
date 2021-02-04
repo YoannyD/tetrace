@@ -55,6 +55,7 @@ class AccountMove(models.Model):
     sale_order_id = fields.Many2one("sale.order", compute="_compute_sale_order_id", store=True)
     invoice_line_cambia = fields.Char("Líneas de factura cambiadas")
     baremo = fields.Boolean("Baremo")
+    lineas_actualizadas = fields.Boolean("Líneas actualizadas")
 
     @api.depends("invoice_origin")
     def _compute_sale_order_id(self):
