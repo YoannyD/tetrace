@@ -45,7 +45,6 @@ class ActivarTarea(models.TransientModel):
         
         domain = [
             ('project_id', '=', self.project_id.id),
-            ('date_deadline', '=', False),
             ('tipo', '=', 'desactivacion'),
             ('activada', '=', False),
             ('opciones_desactivacion', 'in', opciones)
