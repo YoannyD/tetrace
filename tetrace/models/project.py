@@ -165,7 +165,7 @@ class Project(models.Model):
                 continue
                 
             for task in r.tasks:
-                if task.tipo != 'activacion' or task.date_deadline:
+                if task.tipo != 'activacion':
                     continue
                 
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
