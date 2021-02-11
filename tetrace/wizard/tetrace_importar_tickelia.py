@@ -44,7 +44,7 @@ class ImportarTickelia(models.TransientModel):
                     cuenta_contrapartida_63 = str(line[63]).split('.',1)[0]
                     cuenta_contrapartida_64 = str(line[64]).split('.',1)[0]
                     cuenta_contrapartida = cuenta_contrapartida_63 if cuenta_contrapartida_63!='' else cuenta_contrapartida_64
-                    original = _("Empleado: %s DNI: %s Cuenta gasto: %s Cuenta contrapartida: % Cuenta analítica: %s") % \
+                    original = _("Empleado: %s DNI: %s Cuenta gasto: %s Cuenta contrapartida: %s Cuenta analítica: %s") % \
                         (str(line[1]), str(line[0]), cuenta_gasto, cuenta_contrapartida, str(line[43]))
                     values = {
                         'tickelia_id': self.tickelia_id.id,
