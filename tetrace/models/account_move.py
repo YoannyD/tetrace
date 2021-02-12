@@ -56,6 +56,7 @@ class AccountMove(models.Model):
     invoice_line_cambia = fields.Char("Líneas de factura cambiadas")
     baremo = fields.Boolean("Baremo")
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
+    tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
 
     @api.depends("invoice_origin")
     def _compute_sale_order_id(self):

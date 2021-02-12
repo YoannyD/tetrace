@@ -26,6 +26,7 @@ class PurchaseOrder(models.Model):
     baremo = fields.Boolean("Baremo")
     importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
                                                compute="_compute_importe_validacion_euros")
+    tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
     
     @api.depends("amount_untaxed", "date_order")
     def _compute_importe_validacion_euros(self):
