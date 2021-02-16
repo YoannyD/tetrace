@@ -17,7 +17,7 @@
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="tipo_proyecto_id"/>
+                <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre': True}" attrs="{'required': [('baremo', '=', True)]}"/>
             </xpath>
         </field>
     </record>

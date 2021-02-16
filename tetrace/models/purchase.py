@@ -23,7 +23,7 @@ class PurchaseOrder(models.Model):
     validacion_id = fields.Many2one('tetrace.validacion_user', string="Validación",
                                     default=lambda self: self._default_validacion_id())
     validacion_baremo = fields.Boolean(related="validacion_id.validacion_id.baremo")
-    baremo = fields.Boolean("Baremo")
+    baremo = fields.Boolean("Fuera Baremo")
     importe_validacion_euros = fields.Monetary("Importe validación en euros", store=True,
                                                compute="_compute_importe_validacion_euros")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
