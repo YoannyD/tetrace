@@ -18,6 +18,7 @@ class Partner(models.Model):
                                                   company_dependent=True)
     project_geo_ids = fields.One2many("project.project", "partner_geo_id")
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
+    project_ids = fields.Many2many("project.project")
             
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):

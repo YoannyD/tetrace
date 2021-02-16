@@ -63,6 +63,7 @@ class Project(models.Model):
     cif_destino_nombre = fields.Char("CIF empresa destino")
     direccion = fields.Char("Dirección")
     nombre_parque = fields.Char("Nombre parque")
+    partner_ids = fields.Many2many("res.partner", string="Contactos")
                 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
