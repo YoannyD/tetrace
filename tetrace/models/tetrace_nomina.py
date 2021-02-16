@@ -53,6 +53,20 @@ class Nomina(models.Model):
                 if int(key_partner_id) > 0:
                     partner_id = int(key_partner_id)
 
+                tax_ids = []
+                tag_ids = []
+                if nomina_trabajador.account_id.group_id.code_prefix == "640":
+                    tax = self.env['account.tax'].sudo().search([
+                        ('company_id', '=', r.company_id.id),
+                        ('description', '=', 'P_IRPFTD')
+                    ], limit=1)
+                    if tax:
+                        tax_ids = [tax.id]
+                    tag_ids = [4]
+                        
+                if nomina_trabajador.account_id.group_id.code_prefix == "4751":
+                    tag_ids = [5]
+                    
                 for analitica in nomina_trabajador.trabajador_analitica_ids:
                     debe = 0
                     haber = 0
@@ -61,14 +75,6 @@ class Nomina(models.Model):
                     elif nomina_trabajador.haber > 0:
                         haber = analitica.importe
 
-                    tax_ids = []
-                    if nomina_trabajador.account_id.group_id.code_prefix == "640":
-                        tax_ids = [11]
-                        
-                    tag_ids = []
-                    if nomina_trabajador.account_id.group_id.code_prefix == "4751":
-                        tag_ids = [5]
-                        
                     agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
                         'account_id': nomina_trabajador.account_id.id,
                         'tax_ids': [(6, 0, tax_ids)],
