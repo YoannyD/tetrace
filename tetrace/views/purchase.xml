@@ -18,6 +18,11 @@
             
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre': True}" attrs="{'required': [('baremo', '=', True)]}"/>
+                <field name="cuenta_activo"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='order_line']/tree[1]" position="inside">
+                <field name="cuenta_activo" optional="hide"/>
             </xpath>
         </field>
     </record>

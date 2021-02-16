@@ -159,4 +159,16 @@ class AccountMoveLine(models.Model):
             for r in self:
                 r.move_id.write({"invoice_line_cambia": str(fields.Datetime.now())})
         return res
+    
+    def _get_computed_account(self):
+        self.ensure_one()
+        if not self.product_id:
+            return
+        
+        res = super(AccountMoveLine, self)._get_computed_account()
+        
+        if self.purchase_line_id.cuenta_activo:
+            return self.product_id.categ_id.account_activo_id.id
+        
+        return res
             

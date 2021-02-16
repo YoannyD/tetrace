@@ -10,4 +10,15 @@
             </xpath>
         </field>
     </record>
+    
+    <record model="ir.ui.view" id="view_category_property_form">
+        <field name="name">product.category.property.form.inherit.tetrace</field>
+        <field name="inherit_id" ref="account.view_category_property_form"/>
+        <field name="model">product.category</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_account_expense_categ_id']" position="after">
+                <field name="account_activo_id"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
