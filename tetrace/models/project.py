@@ -146,7 +146,8 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
-        res.actualizar_deadline_tareas()
+        res.actualizar_deadline_tareas_activacion()
+        res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
         return res
     
@@ -157,10 +158,13 @@ class Project(models.Model):
             self.actualizar_geo_partner()
             
         if 'fecha_inicio' in vals:
-            self.actualizar_deadline_tareas()
+            self.actualizar_deadline_tareas_activacion()
+            
+        if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
+            self.actualizar_deadline_tareas_desactivacion()
         return res
     
-    def actualizar_deadline_tareas(self):
+    def actualizar_deadline_tareas_activacion(self):
         for r in self:
             if not r.fecha_inicio:
                 continue
@@ -170,6 +174,24 @@ class Project(models.Model):
                     continue
                 
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
+                task.write({'date_deadline': date_deadline})
+                
+    def actualizar_deadline_tareas_desactivacion(self):
+        for r in self:
+            fecha = None
+            if r.fecha_finalizacion:
+                fecha = r.fecha_finalizacion
+            elif r.fecha_cancelacion:
+                fecha = r.fecha_cancelacion
+            
+            if not fecha:
+                continue
+                
+            for task in r.tasks:
+                if task.tipo != 'desactivacion':
+                    continue
+                
+                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline_inicio)
                 task.write({'date_deadline': date_deadline})
     
     @api.model
