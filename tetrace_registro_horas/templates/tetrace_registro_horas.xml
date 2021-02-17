@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="home_parte_horas">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        dasdfa
+                    </div>
+                    <div class="col-md-6">
+sdfasdf
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
