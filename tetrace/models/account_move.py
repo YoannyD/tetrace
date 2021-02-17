@@ -54,7 +54,7 @@ class AccountMove(models.Model):
                                                compute="_compute_importe_validacion_euros")
     sale_order_id = fields.Many2one("sale.order", compute="_compute_sale_order_id", store=True)
     invoice_line_cambia = fields.Char("Líneas de factura cambiadas")
-    baremo = fields.Boolean("Baremo")
+    baremo = fields.Boolean("Fuera Baremo")
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
 
