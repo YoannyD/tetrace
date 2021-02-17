@@ -53,6 +53,20 @@ class Nomina(models.Model):
                 if int(key_partner_id) > 0:
                     partner_id = int(key_partner_id)
 
+                tax_ids = []
+                tag_ids = []
+                if nomina_trabajador.account_id.group_id.code_prefix == "640":
+                    tax = self.env['account.tax'].sudo().search([
+                        ('company_id', '=', r.company_id.id),
+                        ('description', '=', 'P_IRPFTD')
+                    ], limit=1)
+                    if tax:
+                        tax_ids = [tax.id]
+                    tag_ids = [4]
+                        
+                if nomina_trabajador.account_id.group_id.code_prefix == "4751":
+                    tag_ids = [5]
+                    
                 for analitica in nomina_trabajador.trabajador_analitica_ids:
                     debe = 0
                     haber = 0
@@ -61,14 +75,6 @@ class Nomina(models.Model):
                     elif nomina_trabajador.haber > 0:
                         haber = analitica.importe
 
-                    tax_ids = []
-                    if nomina_trabajador.account_id.group_id.code_prefix == "640":
-                        tax_ids = [11]
-                        
-                    tag_ids = []
-                    if nomina_trabajador.account_id.group_id.code_prefix == "4751":
-                        tag_ids = [5]
-                        
                     agrupar_por_trabajador[key]['line_ids'].append((0, 0, {
                         'account_id': nomina_trabajador.account_id.id,
                         'tax_ids': [(6, 0, tax_ids)],
@@ -133,6 +139,7 @@ class NominaTrabajador(models.Model):
     incorrecta_contrato_multiple = fields.Boolean('Incorrecta contrato', compute="_compute_incorrecta_multiple_contrato", store=True)
     incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
     aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
+    bloquear_linea = fields.Boolean("Bloquear línea", compute="_compute_bloquear_linea", store=True)
 
     @api.depends('account_id', 'trabajador_analitica_ids')
     def _compute_incorrecta_sin_distribucion(self):
@@ -141,6 +148,11 @@ class NominaTrabajador(models.Model):
             if (r.account_id and r.account_id.code[0] in ['6', '7'] and not r.trabajador_analitica_ids):
                 incorrecta_sin_distribucion = True
             r.incorrecta_sin_distribucion = incorrecta_sin_distribucion
+    
+    @api.depends("nomina_id.move_ids")
+    def _compute_bloquear_linea(self):
+        for r in self:
+            r.bloquear_linea = True if r.nomina_id.move_ids else False
     
     @api.depends('employee_id')
     def _compute_incorrecta_multiple_contrato(self):

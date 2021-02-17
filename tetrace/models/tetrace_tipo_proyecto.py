@@ -17,6 +17,8 @@ class TipoProyecto(models.Model):
     name = fields.Char('Nombre', required=True, translate=True)
     tipo = fields.Char('Tipo', required=True, translate=True)
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
+    purchase_order_ids = fields.One2many('purchase.order', 'tipo_proyecto_id')
+    account_move_ids = fields.One2many('account.move', 'tipo_proyecto_id')
 
     def name_get(self):
         res=[]

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2020 Ingetive - <info@ingetive.com>
+# © 2021 Ingetive - <info@ingetive.com>
 
 import logging
 
@@ -12,6 +12,7 @@ class ProductCategory(models.Model):
     _inherit = "product.category"
 
     referencia = fields.Char('Referencia')
+    account_activo_id = fields.Many2one('account.account', string="Cuenta activo")
 
     def write(self, vals):
         res = super(ProductCategory, self).write(vals)

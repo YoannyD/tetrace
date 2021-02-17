@@ -47,22 +47,23 @@
                     </group>          
                     <notebook>
                         <page id="nomina_tab" string="Nóminas">
-                            <field name="nomina_trabajador_ids" mode="tree" attrs="{'readonly': [('move_ids', '!=', [])]}">
+                            <field name="nomina_trabajador_ids" mode="tree">
                                 <tree editable="bottom" create="0" decoration-danger="incorrecta_sin_distribucion" decoration-bf="incorrecta_contrato_multiple" decoration-warning="incorrecta_trabajador" decoration-primary="aviso_concepto_descuento">
+                                    <field name="bloquear_linea" invisible="1"/>
                                     <field name="company_id" invisible="1"/>
                                     <field name="incorrecta_sin_distribucion" invisible="1"/>
                                     <field name="incorrecta_contrato_multiple" invisible="1"/>
                                     <field name="incorrecta_trabajador" invisible="1"/>
                                     <field name="aviso_concepto_descuento" invisible="1"/>
                                     <field name="id" invisible="1"/>
-                                    <field name="fecha_inicio"/>
+                                    <field name="fecha_inicio" attrs="{'readonly': [('bloquear_linea', '=', True)]}"/>
                                     <field name="fecha_fin" readonly="1"/>
                                     <field name="employee_id" readonly="1"/>
-                                    <field name="account_id"/>
+                                    <field name="account_id" attrs="{'readonly': [('bloquear_linea', '=', True)]}"/>
                                     <field name="descripcion" readonly="1"/>
                                     <field name="debe"/>
                                     <field name="haber"/>
-                                    <field name="texto_importado" optional="hide"  readonly="1"/>
+                                    <field name="texto_importado" optional="hide" readonly="1"/>
                                     <button name="mostrar_distribuciones_analiticas"
                                         attrs="{'invisible':[('id', '=', False)]}"
                                         type="object"

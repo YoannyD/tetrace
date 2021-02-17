@@ -94,12 +94,13 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
                 domain_by_mode[mode] = self.get_aml_domain_for_dates(
                     date_from, date_to, mode, target_move
                 )
+                
             domain = list(domain) + domain_by_mode[mode]
             domain.append(("account_id", "in", self._map_account_ids[key]))
             if additional_move_line_filter:
                 domain.extend(additional_move_line_filter)
             # fetch sum of debit/credit, grouped by account_id
-
+            
             accs = aml_model.with_context(lang="en_US").read_group(
                 domain,
                 ["debit", "credit", "account_id", "company_id", "date"],

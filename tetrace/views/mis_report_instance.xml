@@ -9,6 +9,7 @@
                 <field name="informe_fecha_contable"/>
                 <field name="informe_con_cuentas_analiticas"/>
                 <field name="estructurales"/>
+                <field name="filtro_estructurales"/>
             </xpath>
         </field>
     </record>

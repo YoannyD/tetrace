@@ -66,6 +66,12 @@
                 <field name="codigo_sii" 
                        attrs="{'invisible': [('company_id', '!=', 4), ('type', 'not in', ('in_invoice', 'in_refund', 'in_receipt'))]}"/>
             </xpath>
+            
+            <xpath expr="//group[@id='header_right_group']" position="inside">
+                <field name="tipo_proyecto_id" 
+                       context="{'mostrar_tipo_nombre': True}" 
+                       attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice')), ('baremo', '=', True)]}"/>
+            </xpath>
 
             <xpath expr="//field[@name='journal_id']" position="after">
                 <field name="nomina_id" attrs="{'invisible': [('nomina_id', '=', False)]}"/>
@@ -79,6 +85,11 @@
                     <field name="incoterm_complemento"/>
                 </div>
             </xpath>
+            
+            <xpath expr="//form[1]/sheet[1]/notebook[1]/page[2]" position="attributes">
+                <attribute name="groups">account.group_account_user,__export__.res_groups_165_9b2681c3</attribute>
+            </xpath>
+
 
             <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
                 <attribute name="context">{'journal_id': journal_id, 'default_partner_id': commercial_partner_id, 'default_currency_id': currency_id != company_currency_id and currency_id or False, 'invoice_type': type}</attribute>

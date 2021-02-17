@@ -78,6 +78,7 @@
                 <field name="partner_latitude"/>
                 <field name="partner_longitude"/>
                 <field name="url_proyecto" widget="url"/>
+                <field name="partner_ids"/>
                 <field name="empresa_destino_nombre"/>
                 <field name="cif_destino_nombre"/>
                 <field name="direccion"/>
