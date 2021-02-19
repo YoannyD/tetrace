@@ -15,13 +15,14 @@ class RegistroTiempoAPI(http.Controller):
     @http.route('/api/projects', type='json', auth="user", website=True)
     def project_list(self, **kw):
         domain = []
+        _logger.warning(kw)
         search = kw.get('search')
         if search:
             domain += [('name', 'ilike', search)]
 
         offset = kw.get('offset') if kw.get('offset') else 0
         limit = kw.get('limit') if kw.get('limit') else 10
-
+        _logger.warning(domain)
         projects = request.env['project.project'].sudo().search(domain, offset=offset, limit=limit)
         projects_count = request.env['project.project'].sudo().search_count(domain)
         data = {'data': [], 'totalCount': projects_count}
@@ -30,6 +31,7 @@ class RegistroTiempoAPI(http.Controller):
                 'id': project.id,
                 'name': project.name
             })
+        _logger.warning(data)
         return json.dumps(data)
 
     @http.route('/api/time/register', type='json', auth="user", website=True)

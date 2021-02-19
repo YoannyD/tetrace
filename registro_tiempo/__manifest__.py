@@ -11,6 +11,7 @@
     'depends': [
         'base',
         'portal',
+        'devexpress',
         'project'
     ],
     'data': [

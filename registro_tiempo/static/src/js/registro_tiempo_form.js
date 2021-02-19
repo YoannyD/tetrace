@@ -3,26 +3,50 @@ odoo.define('registro_tiempo.form', function (require) {
 
 require('web_editor.ready');
 //DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
-DevExpress.ui.dxOverlay.baseZIndex(2000);
+//DevExpress.ui.dxOverlay.baseZIndex(2000);
 //Globalize.loadMessages({'es': es});
 
 var base = require('web_editor.base');
 var ajax = require('web.ajax');
 
 base.ready().then(function () {
+    var current_position;
+    var mapWidget;
+    initGeolocation();
+    function initGeolocation(){
+        if( navigator.geolocation ){
+            // Call getCurrentPosition with success and failure callbacks
+            navigator.geolocation.getCurrentPosition(get_position, function(){});
+        }else{
+            alert("Sorry, your browser does not support geolocation services.");
+        }
+    }
+
+    function get_position(position){
+        current_position = position;
+        console.log(current_position);
+        console.log(mapWidget);
+        console.log([{ lat: current_position.coords.latitude, lng: current_position.coords.longitude}]);
+        mapWidget.option("markers", [{
+            location: { lat: current_position.coords.latitude, lng: current_position.coords.longitude},
+            tooltip: {
+                text: "Tú ubicación"
+            }
+        }]);
+        mapWidget.option("center", { lat: current_position.coords.latitude, lng: current_position.coords.longitude});
+    }
 
     if($("#project_search").length){
         var projectDataSource = new DevExpress.data.CustomStore({
             key: "id",
             load: function(loadOptions) {
-                console.log(loadOptions);
                 var params = {
                     "offset": loadOptions.skip,
                     "limit": loadOptions.take,
                 }
 
-                if(loadOptions.filter){
-                    params["search"] = loadOptions.filter[0].filterValue;
+                if(loadOptions.searchValue){
+                    params["search"] = loadOptions.searchValue;
                 }
 
                 return sendRequest("/api/projects", params);
@@ -38,19 +62,24 @@ base.ready().then(function () {
     }
 
     if($("#map_registro_horas").length){
-        $("#map_registro_horas").dxMap({
+        var location = {};
+        if(current_position){
+            location = { lat: current_position.coords.latitude, lng: current_position.coords.longitude};
+        }
+        mapWidget = $("#map_registro_horas").dxMap({
             provider: "bing",
             zoom: 11,
             height: 200,
             width: "100%",
             controls: true,
             markers: [{
-                location: { lat: 40.753889, lng: -73.981389},
+                location: location,
                 tooltip: {
                     text: "Tú ubicación"
                 }
             }]
         }).dxMap("instance");
+
     }
 
     $("#icon-play").dxButton({
