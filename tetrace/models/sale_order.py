@@ -439,7 +439,7 @@ class SaleOrderLine(models.Model):
         
         project_template_ids = []
         for r in self:
-            if r.product_id.service_tracking == 'task_in_project' and \
+            if r.product_id.service_tracking == 'task_in_project' and r.order_id.project_ids and \
                 r.product_id.project_template_id and r.order_id.id in project_sale and \
                 r.product_id.project_template_id.id not in project_template_ids:
                 project_template_ids.append(r.product_id.project_template_id.id)
@@ -463,23 +463,24 @@ class SaleOrderLine(models.Model):
                         new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
                         new_task.notificar_asignacion_seguidores()
         
-        tasks_individuales_plantilla = self.env['project.task'].search([
-            ('project_id', '=', r.order_id.project_ids[0].id),
-            ('tarea_individual', '=', True),
-            ('desde_plantilla', '=', True),
-            ('activada', 'in', [True, False]),
-            ('ref_individual', '!=', False)
-        ])
-        tasks_individuales_plantilla.actualizar_tareas_individuales()
-        
-        tasks_departamento_plantilla = self.env['project.task'].search([
-            ('project_id', '=', r.order_id.project_ids[0].id),
-            ('department_id', '!=', False),
-            ('desde_plantilla', '=', True),
-            ('activada', 'in', [True, False]),
-            ('ref_individual', '!=', False)
-        ])
-        tasks_departamento_plantilla.actualizar_info_puesto()
+        if r.order_id.project_ids:
+            tasks_individuales_plantilla = self.env['project.task'].search([
+                ('project_id', '=', r.order_id.project_ids[0].id),
+                ('tarea_individual', '=', True),
+                ('desde_plantilla', '=', True),
+                ('activada', 'in', [True, False]),
+                ('ref_individual', '!=', False)
+            ])
+            tasks_individuales_plantilla.actualizar_tareas_individuales()
+
+            tasks_departamento_plantilla = self.env['project.task'].search([
+                ('project_id', '=', r.order_id.project_ids[0].id),
+                ('department_id', '!=', False),
+                ('desde_plantilla', '=', True),
+                ('activada', 'in', [True, False]),
+                ('ref_individual', '!=', False)
+            ])
+            tasks_departamento_plantilla.actualizar_info_puesto()
               
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
