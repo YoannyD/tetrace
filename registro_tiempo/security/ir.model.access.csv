@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_registro_tiempo_tiempo,access_registro_tiempo_tiempo,model_registro_tiempo_tiempo,base.group_user,1,1,1,1
+access_registro_tiempo_tiempo_parada,access_registro_tiempo_tiempo_parada,model_registro_tiempo_tiempo_parada,base.group_user,1,1,1,1
