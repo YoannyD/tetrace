@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="action_registro_tiempo_tiempo"
+                name="Tiempos"
+                res_model="registro_tiempo.tiempo"
+                view_mode="tree,form"/>
+
+    <menuitem name="Registro tiempos"
+              id="main"
+              web_icon="registro_tiempo,static/description/icon.png"
+              sequence="1"/>
+
+    <menuitem name="Tiempos"
+              action="action_registro_tiempo_tiempo"
+              id="menu_registro_tiempo_tiempo"
+              parent="main"
+              sequence="5"/>
+
+    <record id="registro_tiempo_tiempo_form" model="ir.ui.view">
+        <field name="name">registro_tiempo.tiempo.form</field>
+        <field name="model">registro_tiempo.tiempo</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="employee_id"/>
+                            <field name="observaciones"/>
+                        </group>
+                        <group>
+                            <field name="fecha"/>
+                            <field name="hora_inicio" widget="float_time"/>
+                            <field name="hora_fin" widget="float_time"/>
+                            <field name="unidades_realizadas"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Paradas">
+                            <field name="tiempo_parada_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="hora_inicio" widget="float_time"/>
+                                    <field name="hora_fin" widget="float_time"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="registro_tiempo_tiempo_tree" model="ir.ui.view">
+        <field name="name">registro_tiempo.tiempo.tree</field>
+        <field name="model">registro_tiempo.tiempo</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="employee_id"/>
+                <field name="fecha"/>
+                <field name="hora_inicio" widget="float_time"/>
+                <field name="hora_fin" widget="float_time"/>
+                <field name="unidades_realizadas"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="home_parte_horas">
+        <t t-call="portal.frontend_layout">
+            <div class="container  mb-5">
+                <div class="row pt-2 pb-2">
+                    <div class="col-md-6">
+                        <div class="widget-container">
+                            <div class="dx-fieldset">
+                                <div class="dx-field">
+                                    <div class="dx-field-label">Proyectos</div>
+                                    <div class="dx-field-value">
+                                        <div id="project_search"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="map_registro_horas"/>
+                    </div>
+                </div>
+
+                <div class="row border-top border-bottom pt-5 pb-5">
+                    <div class="col-12 btn-ps text-center">
+                        <div class="dx-fieldset">
+                            <div class="dx-field">
+                                <div id="icon-play"/>
+                                <div id="icon-stop"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <a class="btn rounded-circle btn-outline-secondary" href="#">
+                            Añadir registro Parte de horas
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6 col-sm-12">
+                        <div id="form-registro-horas">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

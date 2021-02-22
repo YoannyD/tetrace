@@ -12,6 +12,7 @@
         'website',
     ],
     'data': [
+        'templates/web.xml'
     ],
     'installable': True,
     'auto_install': False,

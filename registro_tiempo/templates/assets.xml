@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_frontend" inherit_id="website.assets_frontend">
+        <xpath expr="//script[last()]" position="after">
+            <script type="text/javascript" src="/registro_tiempo/static/src/js/registro_tiempo_form.js"/>
+        </xpath>
+
+        <xpath expr="//link[last()]" position="after">
+            <link rel="stylesheet" type="text/css" href="/registro_tiempo/static/src/css/main.scss"/>
+        </xpath>
+    </template>
+</odoo>
