@@ -220,8 +220,6 @@
                 <field name="nombre_proyecto"/>
                 <field name="coordinador_proyecto_id"/>
                 <field name="proyecto_country_id"/>
-            </xpath>
-            <xpath expr="//field[@name='expected_date']" position="replace">
                 <field name="validity_date"/>
             </xpath>
             <xpath expr="//field[@name='amount_untaxed']" position="attributes">
@@ -233,8 +231,7 @@
               <xpath expr="//field[@name='commitment_date']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='expected_date']" position="replace"/>
-            <xpath expr="//tree[1]/field[@name='name']" position="replace"/>
+              <xpath expr="//tree[1]/field[@name='name']" position="replace"/>
         </field>
     </record>
 
