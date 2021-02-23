@@ -12,12 +12,14 @@
         'base',
         'portal',
         'devexpress',
-        'project'
+        'project',
+        'hr_attendance'
     ],
     'data': [
         'security/ir.model.access.csv',
         'views/registro_tiempo_tiempo.xml',
         'views/project_project.xml',
+        'views/hr_attendance.xml',
         'templates/assets.xml',
         'templates/registro_tiempo.xml'
     ],

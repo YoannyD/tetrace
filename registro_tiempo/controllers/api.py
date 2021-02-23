@@ -34,10 +34,82 @@ class RegistroTiempoAPI(http.Controller):
         _logger.warning(data)
         return json.dumps(data)
 
+    @http.route('/api/attendance/start', type='json', auth="user", website=True)
+    def attendance_start(self, latitud=False, longitud=False, **kw):
+        if not request.env.user.employee_id:
+            return json.dumps({
+                "result": "ko",
+                "msg": "El usuario no es un empleado",
+            })
+
+        employee = request.env.user.employee_id
+        if employee.attendance_state == "checked_in":
+            return json.dumps({
+                "result": "ko",
+                "msg": "Tiene una entrada en curso.",
+            })
+
+        attendance = request.env['hr.attendance'].sudo().create({
+            'employee_id': employee.id,
+            'check_in': fields.Datetime.now(),
+            'latitude_entrada': latitud,
+            'longitude_entrada': longitud,
+        })
+
+        if attendance:
+            return json.dumps({
+                "result": "ok",
+                "msg": "Entrada realizada correctamente.",
+                "attendance": attendance.get_data_api()
+            })
+        else:
+            return json.dumps({
+                "result": "ko",
+                "msg": "Error al realizar la entrada.",
+            })
+
+    @http.route('/api/attendance/stop', type='json', auth="user", website=True)
+    def attendance_stop(self, latitud=False, longitud=False, **kw):
+        if not request.env.user.employee_id:
+            return json.dumps({
+                "result": "ko",
+                "msg": "El usuario no es un empleado",
+            })
+
+        employee = request.env.user.employee_id
+
+        if employee.attendance_state == "checked_out":
+            return json.dumps({
+                "result": "ko",
+                "msg": "No tiene entradas en curso.",
+            })
+
+        attendance = request.env['hr.attendance'].sudo().search([
+            ('employee_id', '=', employee.id),
+            ('check_out', '=', False)
+        ], limit=1)
+
+        if not attendance:
+            return json.dumps({
+                "result": "ko",
+                "msg": "No tiene entradas en curso.",
+            })
+
+        attendance.write({
+            'check_out': fields.Datetime.now(),
+            'latitude_salida': latitud,
+            'longitude_salida': longitud,
+        })
+
+        return json.dumps({
+            "result": "ok",
+            "msg": "Salida realizada correctamente.",
+            "attendance": attendance.get_data_api()
+        })
+
+
     @http.route('/api/time/register', type='json', auth="user", website=True)
     def time_register(self, project_id, **kw):
-        _logger.warning(kw)
-
         fecha = False
         if kw.get("fecha"):
             try:
@@ -96,33 +168,33 @@ class RegistroTiempoAPI(http.Controller):
             "tiempo": self.get_tiempo_data(tiempo)
         })
 
-    @http.route('/api/time/start', type='json', auth="user", website=True)
-    def time_start(self, project_id, **kw):
-        Tiempo = request.env['registro_tiempo.tiempo'].sudo()
-        tiempo = Tiempo.search([
-            ("project_id", '=', project_id),
-            ("employee_id", "=", request.env.user.employee_id.id),
-            ('hora_fin', '=', False)
-        ], limit=1)
-
-        if tiempo:
-            return json.dumps({
-                "result": "ko",
-                "tiempo": self.get_tiempo_data(tiempo)
-            })
-
-        hora_actual = fields.Datetime.now().strftime("%H:%M")
-        tiempo = request.env['registro_tiempo.tiempo'].sudo().create({
-            'project_id': project_id,
-            'employee_id': request.env.user.employee_id.id,
-            'fecha': fields.Date.today(),
-            'hora_inicio': date_utils.time_str_to_float(hora_actual)
-        })
-
-        return json.dumps({
-            "result": "ok",
-            "tiempo": self.get_tiempo_data(tiempo)
-        })
+    # @http.route('/api/time/start', type='json', auth="user", website=True)
+    # def time_start(self, project_id, **kw):
+    #     Tiempo = request.env['registro_tiempo.tiempo'].sudo()
+    #     tiempo = Tiempo.search([
+    #         ("project_id", '=', project_id),
+    #         ("employee_id", "=", request.env.user.employee_id.id),
+    #         ('hora_fin', '=', False)
+    #     ], limit=1)
+    #
+    #     if tiempo:
+    #         return json.dumps({
+    #             "result": "ko",
+    #             "tiempo": self.get_tiempo_data(tiempo)
+    #         })
+    #
+    #     hora_actual = fields.Datetime.now().strftime("%H:%M")
+    #     tiempo = request.env['registro_tiempo.tiempo'].sudo().create({
+    #         'project_id': project_id,
+    #         'employee_id': request.env.user.employee_id.id,
+    #         'fecha': fields.Date.today(),
+    #         'hora_inicio': date_utils.time_str_to_float(hora_actual)
+    #     })
+    #
+    #     return json.dumps({
+    #         "result": "ok",
+    #         "tiempo": self.get_tiempo_data(tiempo)
+    #     })
 
     @http.route('/api/time/stop', type='json', auth="user", website=True)
     def time_stop(self, project_id, **kw):
@@ -153,5 +225,6 @@ class RegistroTiempoAPI(http.Controller):
 
         }
         return values
+
 
 
