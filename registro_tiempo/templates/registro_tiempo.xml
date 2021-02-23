@@ -2,33 +2,19 @@
 <odoo>
     <template id="home_parte_horas">
         <t t-call="portal.frontend_layout">
-            <div class="container  mb-5">
+            <div id="o_page_registro_horas" class="container  mb-5">
                 <div class="row pt-2 pb-2">
-                    <div class="col-md-6">
-                        <div class="widget-container">
-                            <div class="dx-fieldset">
-                                <div class="dx-field">
-                                    <div class="dx-field-label">Proyectos</div>
-                                    <div class="dx-field-value">
-                                        <div id="project_search"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-md-12 text-center mt-5 mb-5">
+<!--                        <t t-esc="employee.attendance_state"/> <br/>-->
+                        <a href="#"
+                           t-att-data-tipo="'checked_in' if employee.attendance_state == 'checked_in' else 'checked_out'"
+                           t-attf-class="btn btn-registro-hora text-muted #{employee.attendance_state == 'checked_out' and 'btn-secondary' or 'btn-warning'}">
+                            <i class="fa fa-7x fa-sign-out"/>
+                        </a>
+                        <h5 class="mt-3 mb0 text-muted">Pulse para <b>registrar <span class="txt-check-tiempo" t-esc="'entrada' if employee.attendance_state == 'checked_out' else 'salida'"/></b></h5>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div id="map_registro_horas"/>
-                    </div>
-                </div>
-
-                <div class="row border-top border-bottom pt-5 pb-5">
-                    <div class="col-12 btn-ps text-center">
-                        <div class="dx-fieldset">
-                            <div class="dx-field">
-                                <div id="icon-play"/>
-                                <div id="icon-stop"/>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

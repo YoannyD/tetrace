@@ -4,3 +4,4 @@
 from . import registro_tiempo_tiempo
 from . import project_project
 from . import date_utils
+from . import hr_attendance

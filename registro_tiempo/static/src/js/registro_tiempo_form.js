@@ -36,29 +36,33 @@ base.ready().then(function () {
         mapWidget.option("center", { lat: current_position.coords.latitude, lng: current_position.coords.longitude});
     }
 
-    if($("#project_search").length){
+    if($("#o_page_registro_horas").length){
         var projectDataSource = new DevExpress.data.CustomStore({
-            key: "id",
-            load: function(loadOptions) {
-                var params = {
-                    "offset": loadOptions.skip,
-                    "limit": loadOptions.take,
-                }
+        key: "id",
+        load: function(loadOptions) {
+            var params = {
+                "offset": loadOptions.skip,
+                "limit": loadOptions.take,
+            }
 
-                if(loadOptions.searchValue){
-                    params["search"] = loadOptions.searchValue;
-                }
+            if(loadOptions.searchValue){
+                params["search"] = loadOptions.searchValue;
+            }
 
-                return sendRequest("/api/projects", params);
-            },
+            return sendRequest("/api/projects", params);
+        },
+    });
+
+        $(".btn-registro-hora").click(function(event){
+            event.preventDefault();
+            var tipo = $(this).data("tipo");
+            var  latitud, longitud;
+            if(current_position != undefined){
+                latitud = current_position.coords.latitude;
+                longitud = current_position.coords.longitude;
+            }
+            iniciar_tiempo(tipo, latitud, longitud);
         });
-
-        var project_search = $("#project_search").dxSelectBox({
-            dataSource: projectDataSource,
-            displayExpr: "name",
-            valueExpr: "id",
-            searchEnabled: true
-        }).dxSelectBox("instance");
     }
 
     if($("#map_registro_horas").length){
@@ -81,38 +85,6 @@ base.ready().then(function () {
         }).dxMap("instance");
 
     }
-
-    $("#icon-play").dxButton({
-        icon: "fa fa-play-circle",
-        type: "success",
-        onClick: function(e) {
-            var project_id = $("#project_search").dxSelectBox("instance").option('value');
-            if(!project_id){
-                DevExpress.ui.notify("Tiene que elegir un proyecto.", "error");
-                return;
-            }
-            var params = {
-                'project_id': project_id
-            }
-            iniciar_tiempo(params);
-        }
-    });
-
-    $("#icon-stop").dxButton({
-        icon: "fa fa-stop-circle",
-        type: "danger",
-        onClick: function(e) {
-            var project_id = $("#project_search").dxSelectBox("instance").option('value');
-            if(!project_id){
-                DevExpress.ui.notify("Tiene que elegir un proyecto.", "error");
-                return;
-            }
-            var params = {
-                'project_id': project_id
-            }
-            parar_tiempo(params);
-        }
-    });
 
     if($("#form-registro-horas").length){
         var formWidget = $("#form-registro-horas").dxForm({
@@ -300,15 +272,26 @@ base.ready().then(function () {
         return d.promise();
     }
 
-    function iniciar_tiempo(params){
-        params = params || {};
-        ajax.jsonRpc("/api/time/start", 'call', params)
+    function iniciar_tiempo(tipo, latitud, longitud){
+        var url = "";
+        if(tipo == 'checked_out'){
+            url = "/api/attendance/start";
+        }else{
+            url = "/api/attendance/stop";
+        }
+        var params = {
+            latitud: latitud,
+            longitud: longitud
+        };
+        ajax.jsonRpc(url, 'call', params)
         .then(function(result) {
             var data = $.parseJSON(result);
+            console.log(data);
             if(data["result"] == "ok"){
-                DevExpress.ui.notify("Ha iniciado un registro de tiempo");
+                DevExpress.ui.notify(data["msg"]);
+                cambiar_boton_registro_tiempo(tipo);
             }else{
-                DevExpress.ui.notify("Ya hay un tiempo iniciado para ese proyecto.", "error");
+                DevExpress.ui.notify(data["msg"], "error");
             }
         });
     }
@@ -324,6 +307,23 @@ base.ready().then(function () {
                 DevExpress.ui.notify("No hay ningun tiempo iniciado para ese proyecto.", "error");
             }
         });
+    }
+
+    function cambiar_boton_registro_tiempo(tipo){
+        if(tipo == "checked_out"){
+            $(".btn-registro-hora")
+            .removeClass("btn-secondy")
+            .addClass("btn-warning")
+            .data("tipo", "checked_in");
+            $("span.txt-check-tiempo").text("entrada");
+        }else{
+            $(".btn-registro-hora")
+            .removeClass("btn-warning")
+            .addClass("btn-secondary")
+            .data("tipo", "checked_out");
+            $("span.txt-check-tiempo").text("salida");
+        }
+
     }
 });
 
