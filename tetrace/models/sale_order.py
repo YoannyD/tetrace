@@ -268,22 +268,23 @@ class SaleOrder(models.Model):
         # Crear el proyecto con la plantilla diseño del primer producto que la tenga
         project = None
         project_template_diseno_ids = []
-        for line in self.order_line:
+        for line in self.order_line.sudo():
             if line.product_id.service_tracking == 'task_in_project' and line.product_id.project_template_diseno_id:
                 project_template_diseno_ids.append(line.product_id.project_template_diseno_id.id)
                 project = line._timesheet_create_project_diseno()
                 break
-        
+                
         if not project:
             return
         
-        for line in self.order_line:
+        for line in self.order_line.sudo():
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
-                template_tasks = self.env['project.task'].search([
+                template_tasks = self.env['project.task'].sudo().search([
                     ('project_id', '=', line.product_id.project_template_diseno_id.id),
                     ('activada', 'in', [True, False])
                 ])
+            
                 for task in template_tasks:
                     if task.tarea_individual:
                         continue
@@ -294,7 +295,8 @@ class SaleOrder(models.Model):
                         'sale_line_id': None,
                         'partner_id': line.order_id.partner_id.id,
                         'email_from': line.order_id.partner_id.email,
-                        'desde_plantilla': True
+                        'desde_plantilla': True,
+                        "company_id": self.env.company.id
                     })
                     
                     if task.message_partner_ids:
@@ -429,24 +431,27 @@ class SaleOrderLine(models.Model):
         return
             
     def _timesheet_service_generation(self):
+        self = self.sudo()
         # Compruebo que el pedido tenga o no proyectos
         project_sale = []
         for r in self:
             if r.order_id.project_ids:
                 project_sale.append(r.order_id.id)
             
-        super(SaleOrderLine, self)._timesheet_service_generation()
+        super(SaleOrderLine, self.sudo())._timesheet_service_generation()
         
         project_template_ids = []
-        for r in self:
+        for r in self.sudo():
+            project_template = r.product_id.with_context(force_company=1).project_template_id
             if r.product_id.service_tracking == 'task_in_project' and r.order_id.project_ids and \
-                r.product_id.project_template_id and r.order_id.id in project_sale and \
-                r.product_id.project_template_id.id not in project_template_ids:
-                project_template_ids.append(r.product_id.project_template_id.id)
-                template_tasks = self.env['project.task'].search([
-                    ('project_id', '=', r.product_id.project_template_id.id),
+                project_template and r.order_id.id in project_sale and \
+                project_template.id not in project_template_ids:
+                project_template_ids.append(project_template.id)
+                template_tasks = self.env['project.task'].sudo().search([
+                    ('project_id', '=', project_template.id),
                     ('activada', 'in', [True, False]),
                 ])
+
                 for task in template_tasks:
                     if task.tarea_individual:
                         continue
@@ -454,6 +459,7 @@ class SaleOrderLine(models.Model):
                     new_task = task.copy({
                         'name': task.name,
                         'project_id': r.order_id.project_ids[0].id,
+                        "company_id": self.env.company.id,
                         'sale_line_id': None,
                         'partner_id': r.order_id.partner_id.id,
                         'email_from': r.order_id.partner_id.email
@@ -489,6 +495,7 @@ class SaleOrderLine(models.Model):
     
     def _timesheet_create_project(self):
         self.ensure_one()
+        self = self.sudo()
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
         
@@ -496,14 +503,16 @@ class SaleOrderLine(models.Model):
             return self.order_id.project_ids[0]
 
         values = self._timesheet_create_project_prepare_values()
-        if self.product_id.project_template_id:
+        project_template = self.product_id.with_context(force_company=1).project_template_id
+        if project_template:
             values.update({
                 "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
-                "tasks": None
+                "tasks": None,
+                "company_id": self.env.company.id
             })
-            project = self.product_id.project_template_id.copy(values)
+            project = project_template.copy(values)
             project_tasks = self.env['project.task'].search([
-                ('project_id', '=', self.product_id.project_template_id.id),
+                ('project_id', '=', project_template.id),
                 ('activada', 'in', [True, False]),
             ])
             for task in project_tasks:
@@ -515,7 +524,8 @@ class SaleOrderLine(models.Model):
                     'sale_line_id': None,
                     'partner_id': self.order_id.partner_id.id,
                     'email_from': self.order_id.partner_id.email,
-                    'project_id': project.id
+                    'project_id': project.id,
+                    "company_id": self.env.company.id
                 })
 
                 if task.message_partner_ids:
@@ -547,7 +557,8 @@ class SaleOrderLine(models.Model):
         if self.product_id.project_template_diseno_id:
             values.update({
                 "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
-                "tasks": None
+                "tasks": None,
+                "company_id": self.env.company.id
             })
             
             project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
@@ -562,7 +573,8 @@ class SaleOrderLine(models.Model):
                     'partner_id': self.order_id.partner_id.id,
                     'email_from': self.order_id.partner_id.email,
                     'desde_plantilla': True,
-                    'project_id': project.id
+                    'project_id': project.id,
+                    "company_id": self.env.company.id
                 })
                 
                 if task.message_partner_ids:
@@ -607,9 +619,9 @@ class SaleOrderLine(models.Model):
         if desde_plantilla:
             domain += [('project_id', '=', self.product_id.project_template_diseno_id.id)]
         else:
-            domain += [('project_id', '=', self.product_id.project_template_id.id)]
+            domain += [('project_id', '=', self.product_id.with_context(force_company=1).project_template_id.id)]
         
-        tasks_individual = self.env['project.task'].search(domain)
+        tasks_individual = self.env['project.task'].sudo().search(domain)
         
         tasks = []
         for task in tasks_individual:
@@ -624,7 +636,8 @@ class SaleOrderLine(models.Model):
                     'job_id': self.job_id.id,
                     'project_id': project.id,
                     'ref_individual': "%s-%s" % (self.id, i),
-                    'desde_plantilla': desde_plantilla
+                    'desde_plantilla': desde_plantilla,
+                    "company_id": self.env.company.id
                 })
                 tasks.append(new_task)
         self.write({'task_id': None})

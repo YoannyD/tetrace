@@ -99,6 +99,10 @@
                 <field name="coordinador_proyecto_id"/>
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
             </xpath>
+            
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="string">Fecha Límite</attribute>
+            </xpath>
 
             <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
                 <field name="job_id" optional="hide"/>
@@ -220,9 +224,13 @@
                 <field name="nombre_proyecto"/>
                 <field name="coordinador_proyecto_id"/>
                 <field name="proyecto_country_id"/>
+                <field name="validity_date" string="Fecha Límite"/>
             </xpath>
             <xpath expr="//field[@name='amount_untaxed']" position="attributes">
                 <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='expected_date']" position="attributes">
+                <attribute name="optional">hide</attribute>
             </xpath>
             <xpath expr="//field[@name='state']" position="after">
                 <xpath expr="//field[@name='commitment_date']" position="move"/>
@@ -230,8 +238,7 @@
               <xpath expr="//field[@name='commitment_date']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-            <xpath expr="//field[@name='expected_date']" position="replace"/>
-            <xpath expr="//tree[1]/field[@name='name']" position="replace"/>
+              <xpath expr="//tree[1]/field[@name='name']" position="replace"/>          
         </field>
     </record>
 
