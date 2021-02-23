@@ -29,6 +29,10 @@
                         type="object"
                         string="Importar productos"/>
             </xpath>
+            
+            <xpath expr="//field[@name='sale_order_template_id']" position="after">
+                <field name="estado_tetrace" string="Estado Tetrace"/>
+            </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
@@ -226,6 +230,13 @@
                 <field name="proyecto_country_id"/>
                 <field name="validity_date" string="Fecha Límite"/>
             </xpath>
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="estado_tetrace"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
             <xpath expr="//field[@name='amount_untaxed']" position="attributes">
                 <attribute name="optional">show</attribute>
             </xpath>
@@ -259,6 +270,9 @@
                         name="group_coordinador_proyecto_id" 
                         domain="[]" 
                         context="{'group_by': 'coordinador_proyecto_id'}"/>
+            </xpath>
+            <xpath expr="//filter[@name='customer']" position="after">
+                <filter context="{'group_by': 'estado_tetrace'}" name="studio_group_by_HmLe8" string="Estado Tetrace"/>
             </xpath>
         </field>
     </record>
