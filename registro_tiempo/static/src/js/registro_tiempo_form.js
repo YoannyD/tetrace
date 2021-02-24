@@ -2,7 +2,7 @@ odoo.define('registro_tiempo.form', function (require) {
 "use strict";
 
 require('web_editor.ready');
-//DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
+// DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
 //DevExpress.ui.dxOverlay.baseZIndex(2000);
 //Globalize.loadMessages({'es': es});
 
@@ -11,11 +11,10 @@ var ajax = require('web.ajax');
 
 base.ready().then(function () {
     var current_position;
+    var location = {};
     var mapWidget;
-    initGeolocation();
     function initGeolocation(){
         if( navigator.geolocation ){
-            // Call getCurrentPosition with success and failure callbacks
             navigator.geolocation.getCurrentPosition(get_position, function(){});
         }else{
             alert("Sorry, your browser does not support geolocation services.");
@@ -24,9 +23,6 @@ base.ready().then(function () {
 
     function get_position(position){
         current_position = position;
-        console.log(current_position);
-        console.log(mapWidget);
-        console.log([{ lat: current_position.coords.latitude, lng: current_position.coords.longitude}]);
         mapWidget.option("markers", [{
             location: { lat: current_position.coords.latitude, lng: current_position.coords.longitude},
             tooltip: {
@@ -37,43 +33,16 @@ base.ready().then(function () {
     }
 
     if($("#o_page_registro_horas").length){
-        var projectDataSource = new DevExpress.data.CustomStore({
-        key: "id",
-        load: function(loadOptions) {
-            var params = {
-                "offset": loadOptions.skip,
-                "limit": loadOptions.take,
-            }
+        initGeolocation();
 
-            if(loadOptions.searchValue){
-                params["search"] = loadOptions.searchValue;
-            }
-
-            return sendRequest("/api/projects", params);
-        },
-    });
-
-        $(".btn-registro-hora").click(function(event){
-            event.preventDefault();
-            var tipo = $(this).data("tipo");
-            var  latitud, longitud;
-            if(current_position != undefined){
-                latitud = current_position.coords.latitude;
-                longitud = current_position.coords.longitude;
-            }
-            iniciar_tiempo(tipo, latitud, longitud);
-        });
-    }
-
-    if($("#map_registro_horas").length){
-        var location = {};
         if(current_position){
             location = { lat: current_position.coords.latitude, lng: current_position.coords.longitude};
         }
+
         mapWidget = $("#map_registro_horas").dxMap({
             provider: "bing",
             zoom: 11,
-            height: 200,
+            height: 250,
             width: "100%",
             controls: true,
             markers: [{
@@ -84,14 +53,45 @@ base.ready().then(function () {
             }]
         }).dxMap("instance");
 
-    }
+        $(".btn-registro-hora").click(function(event){
+            event.preventDefault();
+            var tipo = $(this).data("tipo");
+            var  latitud, longitud;
+            if(current_position != undefined){
+                latitud = current_position.coords.latitude;
+                longitud = current_position.coords.longitude;
+            }
+            registrar_tiempo(tipo, latitud, longitud);
+        });
 
-    if($("#form-registro-horas").length){
+        $("#btn-form-regis-horas").click(function(event){
+            event.preventDefault();
+            $("#form-registro-horas").toggle("slow");
+        });
+
+        var projectDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            load: function(loadOptions) {
+                var params = {
+                    "offset": loadOptions.skip,
+                    "limit": loadOptions.take,
+                }
+
+                if(loadOptions.searchValue){
+                    params["search"] = loadOptions.searchValue;
+                }
+
+                return sendRequest("/api/projects", params);
+            },
+        });
+
+        var paradaFormData;
         var formWidget = $("#form-registro-horas").dxForm({
-//            formData: formData,
             readOnly: false,
             showColonAfterLabel: true,
-            minColWidth: 300,
+            maxColWidth: 300,
+            labelLocation: "top",
+            align: "center",
             showValidationSummary: true,
             items:[
                 {
@@ -106,44 +106,43 @@ base.ready().then(function () {
                         valueExpr: "id",
                         searchEnabled: true
                     },
-                    validationRules: [{ type: "required" }]
-                },
+                    validationRules: [{
+                        type: "required",
+                        message: "El proyecto es obligatorio."
+                    }]
+                }, // project_id
                 {
-                    dataField: "fecha",
+                    dataField: "fecha_entrada",
                     label: {
-                        text: "Fecha"
+                        text: "Fecha entrada"
                     },
                     editorType: "dxDateBox",
                     editorOptions: {
-                        displayFormat: "dd/MM/yyyy",
+                        type: "datetime",
+                        displayFormat: "dd/MM/yyyy HH:MM",
                         width: "100%"
                     },
-                    validationRules: [{ type: "required" }]
-                },
+                    validationRules: [{
+                        type: "required",
+                        message: "La fecha de entrada es obligatoria."
+                    }]
+                }, // fecha_entrada
                 {
-                    dataField: "hora_inicio",
+                    dataField: "fecha_salida",
                     label: {
-                        text: "Entrada"
+                        text: "Fecha salida"
                     },
                     editorType: "dxDateBox",
                     editorOptions: {
-                        type: "time",
+                        type: "datetime",
+                        displayFormat: "dd/MM/yyyy HH:MM",
                         width: "100%"
                     },
-                    validationRules: [{ type: "required" }]
-                },
-                {
-                    dataField: "hora_fin",
-                    label: {
-                        text: "Salida"
-                    },
-                    editorType: "dxDateBox",
-                    editorOptions: {
-                        type: "time",
-                        width: "100%"
-                    },
-                    validationRules: [{ type: "required" }]
-                },
+                    validationRules: [{
+                        type: "required",
+                        message: "La fecha de salida es obligatoria."
+                    }]
+                }, // fecha_salida
                 {
                     dataField: "paradas",
                     label: {
@@ -151,63 +150,54 @@ base.ready().then(function () {
                     },
                     editorType: "dxDataGrid",
                     editorOptions: {
+                        elementAttr: {
+                        id: "dxParadas",
+                    },
                         dataSource: [],
                         editing: {
                             mode: "row",
                             allowUpdating: true,
                             allowDeleting: true,
-                            allowAdding: true
+                            allowAdding: true,
+                            useIcons: true
                         },
                         columns: [
                             {
                                 caption: "Tipo parada",
-                                dataField: "tipo_parada",
+                                dataField: "tipo_parada_id",
+                                lookup: {
+                                    dataSource: tipoParadaSource,
+                                    displayExpr: "name",
+                                    valueExpr: "id"
+                                },
+                                validationRules: [{
+                                    type: "required",
+                                    message: "El tipo de parada es obligatorio."
+                                }]
                             },
                             {
-                                caption: "Inicio",
-                                dataField: "hora_inicio",
+                                caption: "Entrada",
+                                dataField: "fecha_entrada",
                                 editorType: "dxDateBox",
                                 editorOptions: {
-                                    type: "time",
+                                    type: "datetime",
+                                    displayFormat: "dd/MM/yyyy HH:mm",
                                     width: "100%"
                                 }
                             },
                             {
-                                caption: "Fin",
-                                dataField: "hora_fin",
+                                caption: "Salida",
+                                dataField: "fecha_salida",
                                 editorType: "dxDateBox",
                                 editorOptions: {
-                                    type: "time",
+                                    type: "datetime",
+                                    displayFormat: "dd/MM/yyyy HH:mm",
                                     width: "100%"
                                 }
                             },
                         ],
-                        onSaving: function (e) {
-                            console.log(e);
-                            var change = e.changes[0];
-
-                            if (change) {
-                                e.cancel = true;
-                                var paradas = e.component.option("dataSource");
-
-                                console.log(change.type);
-                                if(change.type === "insert") {
-                                    paradas.push(change["data"]);
-                                    var formData = $("#form-registro-horas").dxForm('instance').option('formData');
-                                    formData["paradas"] = paradas;
-                                }
-
-                                e.component.option({
-                                    dataSource: paradas,
-                                    editing: {
-                                        editRowKey: null,
-                                        changes: []
-                                    }
-                                });
-                            }
-                        },
                     }
-                },
+                }, // paradas
                 {
                     dataField: "unidades_realizadas",
                     label: {
@@ -218,7 +208,7 @@ base.ready().then(function () {
                         showSpinButtons: true,
                         width: "100%"
                     }
-                },
+                }, // unidades_realizadas
                 {
                     dataField: "observaciones",
                     label: {
@@ -229,7 +219,7 @@ base.ready().then(function () {
                         height: 90,
                         width: "100%"
                     }
-                },
+                }, // observacioens
                 {
                     itemType: "button",
                     horizontalAlignment: "center",
@@ -239,18 +229,30 @@ base.ready().then(function () {
                         useSubmitBehavior: true,
                         onClick: function (e){
                             e.cancel = true;
-                            var data = $('#form-registro-horas').dxForm('instance').option('formData');
+                            var dxFormRegistroHoras = $('#form-registro-horas').dxForm('instance');
+                            if(!dxFormRegistroHoras.validate().isValid){
+                                return;
+                            }
 
+                            var dxDataGridParadas = $('#dxParadas').dxDataGrid('instance');
+                            var data = dxFormRegistroHoras.option('formData');
+                            data["paradas"] = dxDataGridParadas.option('formData');
                             console.log(data);
 
                             ajax.jsonRpc("/api/time/register", 'call', data)
                             .then(function(result) {
                                 var data = $.parseJSON(result);
-//                                DevExpress.ui.notify("Ha iniciado un registro de tiempo");
+                                if(data["result"] == "ok"){
+                                    DevExpress.ui.notify("Ha registrado el tiempo correctamente");
+                                    dxFormRegistroHoras.resetValues();
+                                    dxDataGridParadas.option('dataSource', []);
+                                }else{
+                                    DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
+                                }
                             });
                         }
                     }
-                }
+                } // botón
             ]
         });
     }
@@ -262,17 +264,12 @@ base.ready().then(function () {
         ajax.jsonRpc(url, 'call', params)
         .then(function(result) {
             var data = $.parseJSON(result);
-            console.log()
             d.resolve({'data': data["data"], 'totalCount': data["totalCount"] });
         });
-//        .fail(function(xhr) {
-//            d.reject(xhr.responseJSON ? xhr.responseJSON.Message : xhr.statusText);
-//        });
-
         return d.promise();
     }
 
-    function iniciar_tiempo(tipo, latitud, longitud){
+    function registrar_tiempo(tipo, latitud, longitud){
         var url = "";
         if(tipo == 'checked_out'){
             url = "/api/attendance/start";
@@ -296,32 +293,21 @@ base.ready().then(function () {
         });
     }
 
-    function parar_tiempo(params){
-        params = params || {};
-        ajax.jsonRpc("/api/time/stop", 'call', params)
-        .then(function(result) {
-            var data = $.parseJSON(result);
-            if(data["result"] == "ok"){
-                DevExpress.ui.notify("Ha parado el tiempo");
-            }else{
-                DevExpress.ui.notify("No hay ningun tiempo iniciado para ese proyecto.", "error");
-            }
-        });
-    }
-
     function cambiar_boton_registro_tiempo(tipo){
-        if(tipo == "checked_out"){
+        if(tipo == "checked_in"){
             $(".btn-registro-hora")
-            .removeClass("btn-secondy")
-            .addClass("btn-warning")
-            .data("tipo", "checked_in");
+            .removeClass("btn-danger")
+            .addClass("btn-success")
+            .data("tipo", "checked_out");
             $("span.txt-check-tiempo").text("entrada");
+            $("#ico-registro").removeClass("fa-sign-out").addClass("fa-sign-in");
         }else{
             $(".btn-registro-hora")
-            .removeClass("btn-warning")
-            .addClass("btn-secondary")
-            .data("tipo", "checked_out");
+            .removeClass("btn-success")
+            .addClass("btn-danger")
+            .data("tipo", "checked_in");
             $("span.txt-check-tiempo").text("salida");
+            $("#ico-registro").removeClass("fa-sign-in").addClass("fa-sign-out");
         }
 
     }

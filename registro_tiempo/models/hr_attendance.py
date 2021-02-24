@@ -39,6 +39,6 @@ class Attendance(models.Model):
         self.ensure_one()
         return {
             'id': self.id,
-            # 'check_in': self.check_in,
-            # 'check_out': self.check_out,
+            'check_in': self.check_in and self.check_in.strftime("%d/%m/%Y, %H:%M:%S") or "",
+            'check_out': self.check_out and self.check_out.strftime("%d/%m/%Y, %H:%M:%S") or "" ,
         }

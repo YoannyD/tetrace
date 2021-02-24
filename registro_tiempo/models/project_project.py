@@ -13,3 +13,9 @@ class Project(models.Model):
     _inherit = 'project.project'
 
     tiempo_ids = fields.One2many("registro_tiempo.tiempo", "project_id")
+    tiempo_count = fields.Integer("Nº tiempos", compute="_compute_tiempo")
+
+    @api.depends("tiempo_ids")
+    def _compute_tiempo(self):
+        for r in self:
+            r.tiempo_count = len(r.tiempo_ids)
