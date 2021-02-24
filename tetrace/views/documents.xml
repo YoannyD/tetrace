@@ -9,10 +9,23 @@
                 <field name="res_name" string="Adjuntado a"/>
             </xpath>
             
-            <xpath expr="//filter[@name='Inactive']" position="after">
+         <xpath expr="//filter[@name='Inactive']" position="after">
                 <field name="res_model"/>
                 <field name="res_id"/>
             </xpath>
+              <xpath expr="//search[1]/field[@name='res_model']" position="replace"/>
+              <xpath expr="//field[@name='index_content']" position="replace"/>
+              <xpath expr="//field[@name='partner_id']" position="replace"/>
+              <xpath expr="//search[1]/field[@name='tag_ids']" position="replace"/>
+              <xpath expr="//search[1]/field[@name='name']" position="before">
+              <xpath expr="//field[@name='res_name']" position="move"/>
+              </xpath>
+              <xpath expr="//filter[@name='owner']" position="before">
+                <filter context="{'group_by': 'folder_id'}" name="studio_group_by_XwqJU" string="Workspace"/>
+              </xpath>
+              <xpath expr="//field[@name='res_name']" position="attributes">
+                <attribute name="string"></attribute>
+              </xpath> 
         </field>
     </record>
 </odoo>
