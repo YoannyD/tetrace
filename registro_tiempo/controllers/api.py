@@ -15,14 +15,13 @@ class RegistroTiempoAPI(http.Controller):
     @http.route('/api/projects', type='json', auth="user", website=True)
     def project_list(self, **kw):
         domain = []
-        _logger.warning(kw)
         search = kw.get('search')
         if search:
             domain += [('name', 'ilike', search)]
 
         offset = kw.get('offset') if kw.get('offset') else 0
         limit = kw.get('limit') if kw.get('limit') else 10
-        _logger.warning(domain)
+
         projects = request.env['project.project'].sudo().search(domain, offset=offset, limit=limit)
         projects_count = request.env['project.project'].sudo().search_count(domain)
         data = {'data': [], 'totalCount': projects_count}
@@ -31,7 +30,15 @@ class RegistroTiempoAPI(http.Controller):
                 'id': project.id,
                 'name': project.name
             })
-        _logger.warning(data)
+
+        return json.dumps(data)
+
+    @http.route('/api/tipo_parada', type='json', auth="user", website=True)
+    def tipo_parada_list(self, **kw):
+        tipos = request.env["registro_tiempo.tipo_parada"].sudo().search([])
+        data = []
+        for tipo in tipos:
+            data.append(tipo.get_data_api())
         return json.dumps(data)
 
     @http.route('/api/attendance/start', type='json', auth="user", website=True)
@@ -107,37 +114,24 @@ class RegistroTiempoAPI(http.Controller):
             "attendance": attendance.get_data_api()
         })
 
-
     @http.route('/api/time/register', type='json', auth="user", website=True)
     def time_register(self, project_id, **kw):
-        fecha = False
-        if kw.get("fecha"):
-            try:
-                f = kw.get("fecha").split(" ")
-                fecha = fields.Date.from_string(f[0])
-            except:
-                fecha = False
+        _logger.warning(kw)
+        try:
+            fecha_entrada = fields.Datetime.from_string(kw.get("fecha_entrada"))
+        except:
+            fecha_entrada = False
 
-        hora_inicio = hora_inicio = date_utils.date_str_to_float_time(kw.get("hora_inicio"))
-        if kw.get("hora_inicio"):
-            try:
-                hora_inicio = date_utils.date_str_to_float_time(kw.get("hora_inicio"))
-            except:
-                hora_inicio = False
-
-        hora_fin = False
-        if kw.get("hora_fin"):
-            try:
-                hora_fin = date_utils.date_str_to_float_time(kw.get("hora_fin"))
-            except:
-                hora_fin = False
+        try:
+            fecha_salida = fields.Datetime.from_string(kw.get("fecha_salida"))
+        except:
+            fecha_salida = False
 
         values = {
             'project_id': project_id,
             "employee_id": request.env.user.employee_id.id,
-            "fecha": fecha,
-            "hora_inicio": hora_inicio,
-            "hora_fin": hora_fin,
+            "fecha_entrada": fecha_entrada,
+            "fecha_salida": fecha_salida,
             "unidades_realizadas": kw.get("unidades_realizadas"),
             "observaciones": kw.get("observaciones")
         }
@@ -147,77 +141,32 @@ class RegistroTiempoAPI(http.Controller):
         if kw.get("paradas"):
             for parada in kw.get("paradas"):
                 try:
-                    hora_fin = date_utils.date_str_to_float_time(kw.get("hora_fin"))
+                    fecha_entrada = fields.Datetime.from_string(kw.get("fecha_entrada"))
                 except:
-                    hora_fin = False
+                    fecha_entrada = False
 
                 try:
-                    hora_inicio = date_utils.date_str_to_float_time(kw.get("hora_inicio"))
+                    fecha_salida = fields.Datetime.from_string(kw.get("fecha_salida"))
                 except:
-                    hora_inicio = False
+                    fecha_salida = False
 
                 request.env['registro_tiempo.tiempo_parada'].sudo().create({
                     'tiempo_id': tiempo.id,
-                    "name": parada['tipo_parada'],
-                    'hora_inicio': hora_inicio,
-                    'hora_fin': hora_fin,
+                    "tipo_parada_id": parada['tipo_parada_id'],
+                    'fecha_entrada': fecha_entrada,
+                    'fecha_salida': fecha_salida,
                 })
 
-        return json.dumps({
-            "result": "ok",
-            "tiempo": self.get_tiempo_data(tiempo)
-        })
-
-    # @http.route('/api/time/start', type='json', auth="user", website=True)
-    # def time_start(self, project_id, **kw):
-    #     Tiempo = request.env['registro_tiempo.tiempo'].sudo()
-    #     tiempo = Tiempo.search([
-    #         ("project_id", '=', project_id),
-    #         ("employee_id", "=", request.env.user.employee_id.id),
-    #         ('hora_fin', '=', False)
-    #     ], limit=1)
-    #
-    #     if tiempo:
-    #         return json.dumps({
-    #             "result": "ko",
-    #             "tiempo": self.get_tiempo_data(tiempo)
-    #         })
-    #
-    #     hora_actual = fields.Datetime.now().strftime("%H:%M")
-    #     tiempo = request.env['registro_tiempo.tiempo'].sudo().create({
-    #         'project_id': project_id,
-    #         'employee_id': request.env.user.employee_id.id,
-    #         'fecha': fields.Date.today(),
-    #         'hora_inicio': date_utils.time_str_to_float(hora_actual)
-    #     })
-    #
-    #     return json.dumps({
-    #         "result": "ok",
-    #         "tiempo": self.get_tiempo_data(tiempo)
-    #     })
-
-    @http.route('/api/time/stop', type='json', auth="user", website=True)
-    def time_stop(self, project_id, **kw):
-        Tiempo = request.env['registro_tiempo.tiempo'].sudo()
-        tiempo = Tiempo.search([
-            ("project_id", '=', project_id),
-            ("employee_id", "=", request.env.user.employee_id.id),
-            ('fecha', '!=', False),
-            ('hora_inicio', '!=', False),
-            ('hora_fin', '=', False),
-        ], limit=1)
         if tiempo:
-            hora_actual = fields.Datetime.now().strftime("%H:%M")
-            tiempo.write({"hora_fin": date_utils.time_str_to_float(hora_actual)})
             return json.dumps({
                 "result": "ok",
                 "tiempo": self.get_tiempo_data(tiempo)
             })
-
-        return json.dumps({
-            "result": "ko",
-            "tiempo": {}
-        })
+        else:
+            return json.dumps({
+                "result": "ko",
+                "tiempo": {}
+            })
 
     def get_tiempo_data(self, tiempo):
         values = {

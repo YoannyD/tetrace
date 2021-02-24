@@ -15,8 +15,10 @@ class RegistroHoras(CustomerPortal):
     @http.route('/my/timesheet', type='http', auth="user", website=True)
     def home_parte_horas(self, **kwargs):
         projects = request.env['project.project'].sudo().search([])
+        tipos_parada = request.env["registro_tiempo.tipo_parada"].sudo().search([])
         values = {
             'employee': request.env.user.employee_id,
-            'projects': projects
+            'projects': projects,
+            'tipos_parada': tipos_parada
         }
         return request.render("registro_tiempo.home_parte_horas", values)

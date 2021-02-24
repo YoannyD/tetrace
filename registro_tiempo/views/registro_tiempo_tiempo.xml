@@ -5,16 +5,22 @@
                 res_model="registro_tiempo.tiempo"
                 view_mode="tree,form"/>
 
-    <menuitem name="Registro tiempos"
-              id="main"
-              web_icon="registro_tiempo,static/description/icon.png"
-              sequence="1"/>
+    <act_window id="action_registro_tiempo_tipo_parada"
+                name="Tipos parada"
+                res_model="registro_tiempo.tipo_parada"
+                view_mode="tree,form"/>
 
     <menuitem name="Tiempos"
               action="action_registro_tiempo_tiempo"
               id="menu_registro_tiempo_tiempo"
-              parent="main"
+              parent="hr_attendance.menu_hr_attendance_manage_attendances"
               sequence="5"/>
+
+    <menuitem name="Tipos parada"
+              action="action_registro_tiempo_tipo_parada"
+              id="menu_registro_tiempo_tipo_parada"
+              parent="hr_attendance.menu_hr_attendance_manage_attendances"
+              sequence="15"/>
 
     <record id="registro_tiempo_tiempo_form" model="ir.ui.view">
         <field name="name">registro_tiempo.tiempo.form</field>
@@ -29,9 +35,9 @@
                             <field name="observaciones"/>
                         </group>
                         <group>
-                            <field name="fecha"/>
-                            <field name="hora_inicio" widget="float_time"/>
-                            <field name="hora_fin" widget="float_time"/>
+                            <field name="fecha_entrada"/>
+                            <field name="fecha_salida"/>
+                            <field name="horas_trabajadas" widget="float_time"/>
                             <field name="unidades_realizadas"/>
                         </group>
                     </group>
@@ -39,9 +45,10 @@
                         <page string="Paradas">
                             <field name="tiempo_parada_ids" nolabel="1">
                                 <tree editable="bottom">
-                                    <field name="name"/>
-                                    <field name="hora_inicio" widget="float_time"/>
-                                    <field name="hora_fin" widget="float_time"/>
+                                    <field name="tipo_parada_id"/>
+                                    <field name="fecha_entrada"/>
+                                    <field name="fecha_salida"/>
+                                    <field name="horas_parada" widget="float_time"/>
                                 </tree>
                             </field>
                         </page>
@@ -58,10 +65,70 @@
             <tree>
                 <field name="project_id"/>
                 <field name="employee_id"/>
-                <field name="fecha"/>
-                <field name="hora_inicio" widget="float_time"/>
-                <field name="hora_fin" widget="float_time"/>
                 <field name="unidades_realizadas"/>
+                <field name="fecha_entrada"/>
+                <field name="fecha_salida"/>
+                <field name="horas_trabajadas" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="registro_tiempo_tiempo_parada_form" model="ir.ui.view">
+        <field name="name">registro_tiempo.tiempo_parada.form</field>
+        <field name="model">registro_tiempo.tiempo_parada</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="tipo_parada_id"/>
+                            <field name="tiempo_id"/>
+                        </group>
+                        <group>
+                            <field name="fecha_entrada"/>
+                            <field name="fecha_salida"/>
+                            <field name="horas_parada" widget="float_time"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="registro_tiempo_tiempo_parada_tree" model="ir.ui.view">
+        <field name="name">registro_tiempo.tiempo_parada.tree</field>
+        <field name="model">registro_tiempo.tiempo_parada</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="tipo_parada_id"/>
+                <field name="tiempo_id"/>
+                <field name="fecha_entrada"/>
+                <field name="fecha_salida"/>
+                <field name="horas_parada" widget="float_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="registro_tiempo_tipo_parada_form" model="ir.ui.view">
+        <field name="name">registro_tiempo.tipo_parada.form</field>
+        <field name="model">registro_tiempo.tipo_parada</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="registro_tiempo_tipo_parada_tree" model="ir.ui.view">
+        <field name="name">registro_tiempo.tipo_parada.tree</field>
+        <field name="model">registro_tiempo.tipo_parada</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
             </tree>
         </field>
     </record>
