@@ -17,7 +17,8 @@
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre': True}" attrs="{'required': [('baremo', '=', True)]}"/>
+                <!--<field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre': True}" attrs="{'required': [('baremo', '=', True)]}"/>-->
+                <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre': True}" attrs="{'required': 1}"/>
                 <field name="cuenta_activo"/>
             </xpath>
             
@@ -35,6 +36,12 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="account_analytic_id" string= "Cuenta analítica"/>
             </xpath>
+              <xpath expr="//field[@name='product_id']" position="after">
+                <field name="date_planned"/>
+              </xpath>
+              <xpath expr="//search[1]/group[1]/filter[@name='order_date']" position="after">
+                <filter context="{'group_by': 'state'}" name="studio_group_by_w9rqj" string="Estado"/>
+              </xpath>
         </field>
     </record>
 </odoo>
