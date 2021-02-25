@@ -6,7 +6,6 @@ import json
 
 from odoo import http, fields
 from odoo.http import request
-from odoo.addons.registro_tiempo.models import date_utils
 
 _logger = logging.getLogger(__name__)
 
@@ -116,7 +115,6 @@ class RegistroTiempoAPI(http.Controller):
 
     @http.route('/api/time/register', type='json', auth="user", website=True)
     def time_register(self, project_id, **kw):
-        _logger.warning(kw)
         try:
             fecha_entrada = fields.Datetime.from_string(kw.get("fecha_entrada"))
         except:
@@ -160,20 +158,10 @@ class RegistroTiempoAPI(http.Controller):
         if tiempo:
             return json.dumps({
                 "result": "ok",
-                "tiempo": self.get_tiempo_data(tiempo)
+                "tiempo": tiempo.get_data_api()
             })
         else:
             return json.dumps({
                 "result": "ko",
                 "tiempo": {}
             })
-
-    def get_tiempo_data(self, tiempo):
-        values = {
-            'id': tiempo.id,
-
-        }
-        return values
-
-
-

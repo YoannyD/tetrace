@@ -236,8 +236,7 @@ base.ready().then(function () {
 
                             var dxDataGridParadas = $('#dxParadas').dxDataGrid('instance');
                             var data = dxFormRegistroHoras.option('formData');
-                            data["paradas"] = dxDataGridParadas.option('formData');
-                            console.log(data);
+                            data["paradas"] = dxDataGridParadas.option('dataSource');
 
                             ajax.jsonRpc("/api/time/register", 'call', data)
                             .then(function(result) {
@@ -283,7 +282,6 @@ base.ready().then(function () {
         ajax.jsonRpc(url, 'call', params)
         .then(function(result) {
             var data = $.parseJSON(result);
-            console.log(data);
             if(data["result"] == "ok"){
                 DevExpress.ui.notify(data["msg"]);
                 cambiar_boton_registro_tiempo(tipo);
