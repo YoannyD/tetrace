@@ -55,6 +55,7 @@ class Project(models.Model):
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
     url_proyecto = fields.Char("URL proyecto", translate=True)
+    maps = fields.Char("Maps")
     fecha_inicio = fields.Date("Fecha inicio")
     fecha_cancelacion = fields.Date("Fecha cancelación")
     fecha_finalizacion = fields.Date("Fecha finalización")
