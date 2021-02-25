@@ -44,7 +44,9 @@ class SaleOrder(models.Model):
     ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
     imputacion_variable_ids = fields.One2many('tetrace.imputacion_variable', 'order_id')
     total_imputacion_variable = fields.Monetary("Total imputaciones", compute="_compute_total_imputacion_variable")
-    estado_tetrace= fields.Selection(selection=[('Pttrealizar', 'Ptt de realizar'),('Rechazado', 'Rechazado'),('cancelado', 'Cancelado'),('descartado', 'Descartado'),('enviado', 'Enviado'),('asignado', 'Asignado'),('Revisado', 'Revisado'),('standby', 'Stand by'),], string='Estado Tetrace', default='Pttrealizar') 
+    estado_tetrace= fields.Selection(selection=[('Pttrealizar', 'Ptt de realizar'),('Rechazado', 'Rechazado'),('cancelado', 'Cancelado'),('descartado', 'Descartado'),('enviado', 'Enviado'),('asignado', 'Asignado'),('Revisado', 'Revisado'),('standby', 'Stand by'),], string='Estado Tetrace', default='Pttrealizar')
+    motivo_cancelacion= fields.Selection(selection=[('precio', 'Valor económico de la propuesta'),('tarde', 'Tardanza en contestar al cliente'),('expectativas', 'No cumple con las expectativas del cliente'),('nocontesta', 'No contesta'),], string='Motivo Cancelación')
+    feedbacktetrace = fields.Text("Feedback")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
