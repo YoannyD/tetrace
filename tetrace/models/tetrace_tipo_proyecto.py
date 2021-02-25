@@ -23,10 +23,13 @@ class TipoProyecto(models.Model):
     def name_get(self):
         res=[]
         for rec in self:
-            if self.env.context.get('mostrar_tipo_nombre', False):
-                res.append((rec.id, '%s %s' % (rec.tipo, rec.name)))
+            if self.env.context.get('display_tipo', False):
+                display_name = rec.tipo
+            elif self.env.context.get('display_name', False):
+                display_name = rec.name
             else:
-                res.append((rec.id, rec.tipo))
+                display_name = '%s %s' % (rec.tipo, rec.name)
+            res.append((rec.id, display_name))
         return res
     
     @api.constrains("tipo")

@@ -30,6 +30,13 @@ class RegistroTiempo(models.Model):
             else:
                 r.horas_trabajadas = False
 
+    def get_data_api(self):
+        self.ensure_one()
+        return {
+            'id': self.id,
+        }
+
+
 class RegistroHoraParada(models.Model):
     _name = "registro_tiempo.tiempo_parada"
     _description = "Paradas del registro horas"
@@ -54,6 +61,13 @@ class RegistroHoraParada(models.Model):
                 r.horas_parada = delta.total_seconds() / 3600.0
             else:
                 r.horas_parada = False
+
+    def get_data_api(self):
+        self.ensure_one()
+        return {
+            'id': self.id,
+        }
+
 
 class TipoParada(models.Model):
     _name = "registro_tiempo.tipo_parada"
