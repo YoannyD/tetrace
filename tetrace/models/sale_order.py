@@ -17,7 +17,7 @@ class SaleOrder(models.Model):
     name = fields.Char(compute="_compute_name", store=True)
     ref_proyecto = fields.Char('Referencia proyecto', copy=False)
     ejercicio_proyecto = fields.Integer('Ejercicio', default=fields.Date.today().strftime("%y"), copy=False)
-    tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False)
+    tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False, context='{"display_tipo": True}')
     num_proyecto = fields.Char('Nº proyecto', copy=False)
     partner_siglas = fields.Char(related="partner_id.siglas")
     tipo_servicio_id = fields.Many2one('tetrace.tipo_servicio', string="Tipo de servicio", copy=False)

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{'search_default_my_quotation': 1, 'display_tipo': 1}</field>
+    </record>
+    
+    <record id="sale.action_orders" model="ir.actions.act_window">
+        <field name="context">{'display_tipo': 1}</field>
+    </record>
+    
+    <record id="sale.action_orders_to_invoice" model="ir.actions.act_window">
+        <field name="context">{'create': False, 'display_tipo': 1}</field>
+    </record>
+    
+    <record id="sale.action_orders_upselling" model="ir.actions.act_window">
+        <field name="context">{'create': False, 'display_tipo': 1}</field>
+    </record>
+    
     <record model="ir.actions.act_window" id="action_version_view">
         <field name="name">Versiones</field>
         <field name="type">ir.actions.act_window</field>
@@ -62,7 +78,7 @@
                                     <field name="ejercicio_proyecto"/>
                                 </div>
                                 <div>
-                                    <field name="tipo_proyecto_id" context="{'mostrar_tipo_nombre' : 1}"/>
+                                    <field name="tipo_proyecto_id" context="{'display_tipo': 1}"/>
                                 </div>
                                 <div>
                                     .
