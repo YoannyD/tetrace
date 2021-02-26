@@ -44,8 +44,20 @@ class SaleOrder(models.Model):
     ref_producto_ids = fields.One2many("tetrace.ref_producto", "order_id")
     imputacion_variable_ids = fields.One2many('tetrace.imputacion_variable', 'order_id')
     total_imputacion_variable = fields.Monetary("Total imputaciones", compute="_compute_total_imputacion_variable")
-    estado_tetrace= fields.Selection(selection=[('Pttrealizar', 'Ptt de realizar'),('Rechazado', 'Rechazado'),('descartado', 'Descartado'),('enviado', 'Enviado'),('asignado', 'Asignado'),('Revisado', 'Revisado'),('standby', 'Stand by'),], string='Estado Tetrace', default='Pttrealizar')
-    motivo_cancelacion= fields.Selection(selection=[('precio', 'Valor económico de la propuesta'),('tarde', 'Tardanza en contestar al cliente'),('expectativas', 'No cumple con las expectativas del cliente'),('nocontesta', 'No contesta'),], string='Motivo Cancelación')
+    estado_tetrace = fields.Selection(selection=[
+        ('Pttrealizar', 'Ptt de realizar'),
+        ('Rechazado', 'Rechazado'),
+        ('descartado', 'Descartado'),
+        ('enviado', 'Enviado'),
+        ('asignado', 'Asignado'),
+        ('Revisado', 'Revisado'),
+        ('standby', 'Stand by'),
+    ], string='Estado Tetrace', default='Pttrealizar')
+    motivo_cancelacion = fields.Selection(selection=[
+        ('precio', 'Valor económico de la propuesta'),
+        ('tarde', 'Tardanza en contestar al cliente'),
+        ('expectativas', 'No cumple con las expectativas del cliente'),('nocontesta', 'No contesta'),
+    ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
 
     sql_constraints = [
@@ -58,6 +70,12 @@ class SaleOrder(models.Model):
             if r.num_proyecto:
                 if len(r.num_proyecto) != 4:
                     raise ValidationError(_("El Nº de proyecto tiene que ser de 4 caracteres."))
+                    
+    @api.constrains("estado_tetrace", "motivo_cancelacion", "feedbacktetrace")
+    def _check_estado_tetrace(self):
+        for r in self:
+            if r.estado_tetrace == 'Rechazado' and (not r.motivo_cancelacion or r.feedbacktetrace):
+                raise ValidationError(_("El Motivo de cancelación y Feedback son obligatorios"))
                     
     @api.constrains("referencia_proyecto_antigua")
     def _check_referencia_proyecto_antigua(self):
