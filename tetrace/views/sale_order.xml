@@ -48,8 +48,8 @@
             
             <xpath expr="//field[@name='sale_order_template_id']" position="after">
                 <field name="estado_tetrace" string="Estado Tetrace"/>
-                <field name="motivo_cancelacion" string="Motivo cancelación" attrs="{&quot;invisible&quot;: [[&quot;estado_tetrace&quot;,&quot;!=&quot;,&quot;Rechazado&quot;]], &quot;required&quot;: [[&quot;estado_tetrace&quot;,&quot;=&quot;,&quot;Rechazado&quot;]]}"/>
-                <field name="feedbacktetrace" string="Feedback" attrs="{&quot;required&quot;: [[&quot;estado_tetrace&quot;,&quot;=&quot;,&quot;Rechazado&quot;]]}"/>
+                <field name="motivo_cancelacion" string="Motivo cancelación" attrs="{'invisible': [['estado_tetrace', '!=', 'Rechazado']], 'required': [['estado_tetrace','=','Rechazado']]}"/>
+                <field name="feedbacktetrace" string="Feedback" attrs="{'required': [['estado_tetrace', '=', 'Rechazado']]}"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
