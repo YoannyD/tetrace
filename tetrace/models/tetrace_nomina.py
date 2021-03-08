@@ -19,7 +19,13 @@ class Nomina(models.Model):
     company_id = fields.Many2one('res.company', required=True, default= lambda self: self.env.company)
     nomina_trabajador_ids = fields.One2many('tetrace.nomina.trabajador', 'nomina_id')
     move_ids = fields.One2many('account.move', 'nomina_id')
+    move_count = fields.Integer("Nº asientos", compute="_compute_move_ids")
 
+    @api.depends('move_ids')
+    def _compute_move_ids(self):
+        for r in self:
+            r.move_count = len(r.move_ids)
+    
     def action_importar_nominas(self):
         self.ensure_one()
         if self.move_ids:
