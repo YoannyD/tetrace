@@ -59,6 +59,7 @@ class SaleOrder(models.Model):
         ('expectativas', 'No cumple con las expectativas del cliente'),('nocontesta', 'No contesta'),
     ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
+    importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -83,6 +84,14 @@ class SaleOrder(models.Model):
             if  r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}',r.referencia_proyecto_antigua) == None:
                 raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
 
+    @api.depends("order_line.untaxed_amount_to_invoice")
+    def _compute_amt_to_invoice(self):
+        for r in self:
+            total = 0
+            for line in r.order_line:
+                total += line.untaxed_amount_to_invoice
+            r.importe_pendiente_facturar = total
+                
     @api.depends("rfq", "ref_proyecto")
     def _compute_name(self):
         for r in self:

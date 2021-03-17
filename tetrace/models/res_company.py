@@ -16,3 +16,4 @@ class Company(models.Model):
     tetrace_cuenta_analitica_diferencia_cambio = fields.Many2one('account.analytic.account', 
                                                                  string='Cuenta anlítica apuntes diferencias de cambio')
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
+    tax_agency_id = fields.Many2one("aeat.tax.agency", string="Tax Agency ")

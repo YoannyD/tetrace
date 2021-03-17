@@ -23,35 +23,10 @@ base.ready().then(function () {
 
     function get_position(position){
         current_position = position;
-        mapWidget.option("markers", [{
-            location: { lat: current_position.coords.latitude, lng: current_position.coords.longitude},
-            tooltip: {
-                text: "Tú ubicación"
-            }
-        }]);
-        mapWidget.option("center", { lat: current_position.coords.latitude, lng: current_position.coords.longitude});
     }
 
     if($("#o_page_registro_horas").length){
         initGeolocation();
-
-        if(current_position){
-            location = { lat: current_position.coords.latitude, lng: current_position.coords.longitude};
-        }
-
-        mapWidget = $("#map_registro_horas").dxMap({
-            provider: "bing",
-            zoom: 11,
-            height: 250,
-            width: "100%",
-            controls: true,
-            markers: [{
-                location: location,
-                tooltip: {
-                    text: "Tú ubicación"
-                }
-            }]
-        }).dxMap("instance");
 
         $(".btn-registro-hora").click(function(event){
             event.preventDefault();

@@ -272,6 +272,17 @@
               <xpath expr="//tree[1]/field[@name='name']" position="replace"/>          
         </field>
     </record>
+    
+    <record model="ir.ui.view" id="view_order_tree">
+        <field name="name">sale.order.tree2.tetrace</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="importe_pendiente_facturar" sum="Total a facturar" widget="monetary"/>
+            </xpath>
+        </field>
+    </record>
 
     <record model="ir.ui.view" id="view_sales_order_filter">
         <field name="name">sale.order.list.select.tetrace</field>

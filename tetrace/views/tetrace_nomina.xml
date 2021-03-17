@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record id="act_asientos_nomina" model="ir.actions.act_window">
+            <field name="res_model">account.move</field>
+            <field name="name">Asientos nómina</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('nomina_id', '=', active_id)]</field>
+        </record>
+    
     <act_window id="action_tetrace_nomina"
                 name="Nóminas"
                 view_mode="tree,form"
@@ -36,6 +43,15 @@
                             string="Actualizar distribución analítica"/>
                 </header>
                 <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <field name="move_ids" invisible="1"/>
+                        <button class="oe_stat_button" 
+                                name="%(tetrace.act_asientos_nomina)d" 
+                                type="action"
+                                icon="fa-pencil-square-o">
+                            <field string="Asientos" name="move_count" widget="statinfo"/>
+                        </button>
+                    </div>    
                     <group>
                         <group>
                             <field name="name"/>
@@ -65,14 +81,11 @@
                                     <field name="haber"/>
                                     <field name="texto_importado" optional="hide" readonly="1"/>
                                     <button name="mostrar_distribuciones_analiticas"
-                                        attrs="{'invisible':[('id', '=', False)]}"
-                                        type="object"
-                                        icon="fa-external-link"/>
+                                            attrs="{'invisible':[('id', '=', False)]}"
+                                            type="object"
+                                            icon="fa-external-link"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page id="nomina_asientos_tab" string="Asientos">
-                            <field name="move_ids" nolabel="1" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
