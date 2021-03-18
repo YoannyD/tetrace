@@ -37,7 +37,6 @@ class Viaje(models.Model):
     @api.model
     def create(self, vals):
         res = super(Viaje, self).create(vals)
-        res.notificar_a_seguidores()
         res.pasar_tarea_a_en_proceso()
         return res
     
