@@ -18,7 +18,7 @@ class TierValidation(models.AbstractModel):
                 "invoice_date", "date", "line_ids", "invoice_payment_ref", "invoice_date_due",
                 "fecha_servicio", "invoice_payment_term_id", "ref", 'payment_mode_id',
                 "partner_id", "fiscal_position_id", "partner_shipping_id", "access_token","tipo_proyecto_id",
-                "l10n_latam_document_number", "name"]
+                "l10n_latam_document_number", "name", "message_main_attachment_id"]
         return res
     
     def _check_allow_write_under_validation(self, vals):

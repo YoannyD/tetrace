@@ -24,6 +24,7 @@ CODIGOS_SII = [
 
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
 
+
 class AccountMove(models.Model):
     _inherit = "account.move"
     _state_to = ["posted"]
