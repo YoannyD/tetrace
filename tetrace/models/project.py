@@ -287,6 +287,11 @@ class Project(models.Model):
             ]
         }
     
+    def action_crear_tareas_act_desc(self):
+        self.ensure_one()
+        wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
+        return wizard.open_wizard()
+    
     
 class ProjectTask(models.Model):
     _inherit = 'project.task'

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_crear_tareas_act_desc_form">
+        <field name="name">tetrace.crear_tareas_act_desc</field>
+        <field name="model">tetrace.crear_tareas_act_desc</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="project_id" invisible="1"/>
+                        <field name="accion" required="1"/>
+                    </group>
+                    <group attrs="{'invisible': [('accion', '!=', 'activacion')]}">
+                        <field name="project_theme_id" attrs="{'required': [('accion', '=', 'activacion')]}"/>
+                        <field name="puesto_ids">
+                            <tree editable="bottom">
+                                <field name="employee_id" required="1"/>
+                                <field name="job_id"/>
+                                <field name="cantidad" required="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                    
+                    <group attrs="{'invisible': [('accion', '!=', 'desactivacion')]}">
+                        <field name="tecnico_project_ids" invisible="1"/>
+                        <field name="tecnico_ids" 
+                               options="{'no_create_edit': True}"
+                               domain="[('id', 'in', tecnico_project_ids)]" 
+                               attrs="{'required': [('accion', '=', 'desactivacion')]}"
+                               widget="many2many_tags"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_generar_tareas" string="Crear" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

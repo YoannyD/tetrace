@@ -27,6 +27,11 @@
                         name="action_activar_tareas"
                         string="Finalizar proyecto"/>
                 
+                <button class="oe_stat_button" 
+                        type="object" 
+                        name="action_crear_tareas_act_desc"
+                        string="Crear tareas Activación/Desactivación"/>
+                
                 <field name="estado_id" 
                        widget="statusbar" 
                        options="{'clickable': '1'}"
