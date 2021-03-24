@@ -78,6 +78,7 @@
         'views/purchase.xml',
         'views/sale_order.xml',
         'views/res_partner.xml',
+        'views/resource_calendar.xml',
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
         'views/tetrace_tickelia.xml',

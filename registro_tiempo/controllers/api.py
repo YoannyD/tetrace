@@ -13,17 +13,24 @@ _logger = logging.getLogger(__name__)
 class RegistroTiempoAPI(http.Controller):
     @http.route('/api/projects', type='json', auth="user", website=True)
     def project_list(self, **kw):
-        domain = []
+        data = {'data': [], 'totalCount': 0}
+        if not request.env.user.employee_ids.ids:
+            return json.dumps(data)
+        
+        domain = [('employee_id', 'in', request.env.user.employee_ids.ids)]
         search = kw.get('search')
         if search:
-            domain += [('name', 'ilike', search)]
+            domain += [('project_id.name', 'ilike', search)]
 
         offset = kw.get('offset') if kw.get('offset') else 0
         limit = kw.get('limit') if kw.get('limit') else 10
 
-        projects = request.env['project.project'].sudo().search(domain, offset=offset, limit=limit)
-        projects_count = request.env['project.project'].sudo().search_count(domain)
-        data = {'data': [], 'totalCount': projects_count}
+        tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search(domain)
+        project_ids = [r.project_id.id for r in tecnico_calendario]
+        
+        projects = request.env['project.project'].sudo().search([('id', 'in', project_ids)], offset=offset, limit=limit)
+        projects_count = request.env['project.project'].sudo().search_count([('id', 'in', project_ids)])
+        data['totalCount'] = projects_count
         for project in projects:
             data['data'].append({
                 'id': project.id,

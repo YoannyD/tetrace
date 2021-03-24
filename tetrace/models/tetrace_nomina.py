@@ -287,7 +287,7 @@ class NominaTrabajador(models.Model):
                 self.env['tetrace.nomina.trabajador.analitica'].create(values)
                 lineas = lineas + 1
                 
-            if analitica_data and lineas== 0:
+            if analitica_data and lineas == 0:
                 self.env['tetrace.nomina.trabajador.analitica'].create({
                     'nomina_trabajador_id': r.id,
                     'analytic_account_id': max_analytic,

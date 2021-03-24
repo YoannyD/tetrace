@@ -65,6 +65,7 @@ class Project(models.Model):
     direccion = fields.Char("Dirección")
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
+    tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
                 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -497,5 +498,13 @@ class ProjectTaskEntrega(models.Model):
     entregado = fields.Float("Entregado")
     task_id = fields.Many2one("project.task")
     
+
+class TecnicoCalendario(models.Model):
+    _name = 'tetrace.tecnico_calendario'
+    _description = "Técnicos calendarios"
+    
+    project_id = fields.Many2one('project.project', string="Proyecto")
+    employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
+    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
     
     

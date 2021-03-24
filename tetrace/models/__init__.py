@@ -25,6 +25,7 @@ from . import hr_resume
 from . import res_partner
 from . import res_company
 from . import res_users
+from . import resource_calendar
 from . import res_config_settings
 from . import sale_order
 from . import tetrace_sale_order_version

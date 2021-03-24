@@ -87,6 +87,18 @@ base.ready().then(function () {
                     }]
                 }, // project_id
                 {
+                    dataField: "tipo",
+                    label: {
+                        text: "Tipo"
+                    },
+                    editorType: "dxRadioGroup",
+                    editorOptions: {
+                        layout: "horizontal",
+                        items: ["Parte", "MOB", "DEMOB"],
+                        value: "Parte"
+                    }]
+                }, // tipo
+                {
                     dataField: "fecha_entrada",
                     label: {
                         text: "Fecha entrada"
