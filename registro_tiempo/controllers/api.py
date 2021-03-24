@@ -16,7 +16,7 @@ class RegistroTiempoAPI(http.Controller):
         data = {'data': [], 'totalCount': 0}
         if not request.env.user.employee_ids.ids:
             return json.dumps(data)
-        
+
         domain = [('employee_id', 'in', request.env.user.employee_ids.ids)]
         search = kw.get('search')
         if search:
@@ -27,7 +27,7 @@ class RegistroTiempoAPI(http.Controller):
 
         tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search(domain)
         project_ids = [r.project_id.id for r in tecnico_calendario]
-        
+
         projects = request.env['project.project'].sudo().search([('id', 'in', project_ids)], offset=offset, limit=limit)
         projects_count = request.env['project.project'].sudo().search_count([('id', 'in', project_ids)])
         data['totalCount'] = projects_count
@@ -172,3 +172,28 @@ class RegistroTiempoAPI(http.Controller):
                 "result": "ko",
                 "tiempo": {}
             })
+
+    @http.route('/api/festivo', type='json', auth="user", website=True)
+    def festivo(self, project_id, fecha, **kw):
+        _logger.warning(fecha)
+        try:
+            fecha = fields.Date.from_string(fecha)
+        except:
+            fecha = False
+        _logger.warning(fecha)
+        if not fecha or not request.env.user.employee_ids.ids:
+            return json.dumps({"result": "ok"})
+
+        tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
+            ('project_id', '=', project_id),
+            ('employee_id', 'in', request.env.user.employee_ids.ids)
+        ], limit=1)
+
+        festivo = False
+        if tecnico_calendario:
+            festivo = tecnico_calendario.es_festivo(fecha)
+
+        return json.dumps({
+            "result": "ok",
+            "festivo": festivo
+        })

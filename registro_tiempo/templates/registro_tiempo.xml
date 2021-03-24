@@ -34,7 +34,7 @@
                                 </t>
                             ];
                         </script>
-                        <div id="form-registro-horas" style="display:none"/>
+                        <div id="form-registro-horas"/>
                     </div>
                 </div>
             </div>

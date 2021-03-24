@@ -96,7 +96,7 @@ base.ready().then(function () {
                         layout: "horizontal",
                         items: ["Parte", "MOB", "DEMOB"],
                         value: "Parte"
-                    }]
+                    }
                 }, // tipo
                 {
                     dataField: "fecha_entrada",
@@ -107,7 +107,37 @@ base.ready().then(function () {
                     editorOptions: {
                         type: "datetime",
                         displayFormat: "dd/MM/yyyy HH:MM",
-                        width: "100%"
+                        width: "100%",
+                        onValueChanged: function(data) {
+                            var f = new Date(data.value);
+                            var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+                            var dxFormRegistroHoras = $('#form-registro-horas').dxForm('instance');
+                            var formData = dxFormRegistroHoras.option('formData');
+
+                            if(!data.value || data.value == undefined || !formData["project_id"] || formData["project_id"] == undefined){
+                                DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
+                                return;
+                            }
+
+                            var text_label = "Fecha entrada";
+
+                            if(f.getHours() >= 22){
+                                text_label += " [Nocturno]"
+                            }
+
+                            var params = {
+                                'project_id': formData["project_id"],
+                                'fecha': fecha
+                            }
+                            ajax.jsonRpc("/api/festivo", 'call', params)
+                            .then(function(result) {
+                                var data = $.parseJSON(result);
+                                if(data["festivo"]){
+                                    text_label += " [festivo]"
+                                }
+                                dxFormRegistroHoras.itemOption("fecha_entrada", "label", { text: text_label});
+                            });
+                        },
                     },
                     validationRules: [{
                         type: "required",
