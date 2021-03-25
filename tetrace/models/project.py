@@ -509,14 +509,8 @@ class TecnicoCalendario(models.Model):
 
     def es_festivo(self, fecha):
         self.ensure_one()
-        attendances = self.env["resource.calendar.attendance"].sudo().search([
-            ('dayofweek', '=', fecha.weekday()),
-            ('festivo', '=', True),
-            ('calendar_id', '=', self.resource_calendar_id.id)
-        ])
-
         festivo = True
-        for attendance in attendances:
+        for attendance in self.resource_calendar_id.attendance_ids:
             if attendance.dayofweek == fecha.weekday():
                 if attendance.festivo:
                     return True
@@ -525,4 +519,14 @@ class TecnicoCalendario(models.Model):
 
         return festivo
 
+    def es_festivo_cliente(self, fecha):
+        self.ensure_one()
+        festivo = True
+        for attendance in self.resource_calendar_id.attendance_ids:
+            if attendance.dayofweek == fecha.weekday():
+                if attendance.festivo_cliente:
+                    return True
+                else:
+                    festivo = False
 
+        return festivo

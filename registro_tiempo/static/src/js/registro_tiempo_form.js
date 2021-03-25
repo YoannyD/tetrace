@@ -60,216 +60,302 @@ base.ready().then(function () {
             },
         });
 
-        var paradaFormData;
-        var formWidget = $("#form-registro-horas").dxForm({
-            readOnly: false,
-            showColonAfterLabel: true,
-            maxColWidth: 300,
-            labelLocation: "top",
-            align: "center",
-            showValidationSummary: true,
-            items:[
+        $("#summary").dxValidationSummary({});
+
+        var project_id_dx = $("#project_id_dx").dxSelectBox({
+            dataSource: projectDataSource,
+            displayExpr: "name",
+            valueExpr: "id",
+            searchEnabled: true,
+            onValueChanged: function(data) {
+                if(data.value){
+                    $(".form_fields").show();
+                }else{
+                    $(".form_fields").hide();
+                }
+            }
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "El proyecto es obligatorio."
+            }]
+        }).dxSelectBox("instance");
+
+        var tipo_dx = $("#tipo_dx").dxRadioGroup({
+            layout: "horizontal",
+            items: ["Parte", "MOB", "DEMOB"],
+            value: "Parte"
+        }).dxRadioGroup("instance");
+
+        var fecha_entrada_dx = $("#fecha_entrada_dx").dxDateBox({
+            type: "datetime",
+            displayFormat: "dd/MM/yyyy HH:mm",
+            width: "100%",
+            visible: true,
+            onValueChanged: function(data) {
+                var f = new Date(data.value);
+                var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+                var project_id = project_id_dx.option("value");
+                var tipo = tipo_dx.option("value");
+
+                if(tipo != 'Parte'){
+                    return;
+                }
+
+                if(!data.value || data.value == undefined || !project_id || project_id == undefined){
+                    DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
+                    return;
+                }
+
+                var params = {
+                    'project_id': project_id,
+                    'fecha': fecha
+                }
+                console.log(params);
+                ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    console.log(data);
+                    f.setHours(data["desde_hora"], data["desde_min"]);
+                    console.log(f);
+                    fecha_entrada_dx.option("value", f);
+                });
+
+                var text_label = "Fecha entrada <br/>";
+                if(f.getHours() >= 22){
+                    text_label += ' <span class="badge badge-dark">Nocturno</span>'
+                }
+
+                ajax.jsonRpc("/api/festivo", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    if(data["festivo"]){
+                        text_label += ' <span class="badge badge-danger">Festivo</span>';
+                    }
+                    $(".dx-field-fecha_entrada .dx-field-label").html(text_label);
+                });
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de entrada es obligatoria."
+            }]
+        }).dxDateBox("instance");
+
+        var fecha_salida_dx = $("#fecha_salida_dx").dxDateBox({
+            type: "datetime",
+            displayFormat: "dd/MM/yyyy HH:MM",
+            width: "100%",
+            visible: true,
+            onValueChanged: function(data) {
+                var f = new Date(data.value);
+                var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+                var project_id = project_id_dx.option("value");
+                var tipo = tipo_dx.option("value");
+
+                if(tipo != 'Parte'){
+                    return;
+                }
+
+                if(!data.value || data.value == undefined || !project_id || project_id == undefined){
+                    DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
+                    return;
+                }
+
+                var params = {
+                    'project_id': project_id,
+                    'fecha': fecha
+                }
+
+                ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    f.setHours(data["hasta_hora"], data["hasta_min"]);
+                    fecha_salida_dx.option("value", f);
+                });
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de salida es obligatoria."
+            }]
+        }).dxDateBox("instance");
+
+        var paradas_dx = $("#paradas_dx").dxDataGrid({
+            dataSource: [],
+            editing: {
+                mode: "row",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true,
+                useIcons: true
+            },
+            columns: [
                 {
-                    dataField: "project_id",
-                    label: {
-                        text: "Proyecto"
-                    },
-                    editorType: "dxSelectBox",
-                    editorOptions: {
-                        dataSource: projectDataSource,
+                    caption: "Tipo parada",
+                    dataField: "tipo_parada_id",
+                    lookup: {
+                        dataSource: tipoParadaSource,
                         displayExpr: "name",
-                        valueExpr: "id",
-                        searchEnabled: true
+                        valueExpr: "id"
                     },
                     validationRules: [{
                         type: "required",
-                        message: "El proyecto es obligatorio."
+                        message: "El tipo de parada es obligatorio."
                     }]
-                }, // project_id
+                },
                 {
-                    dataField: "tipo",
-                    label: {
-                        text: "Tipo"
-                    },
-                    editorType: "dxRadioGroup",
-                    editorOptions: {
-                        layout: "horizontal",
-                        items: ["Parte", "MOB", "DEMOB"],
-                        value: "Parte"
-                    }
-                }, // tipo
-                {
+                    caption: "Entrada",
                     dataField: "fecha_entrada",
-                    label: {
-                        text: "Fecha entrada"
-                    },
                     editorType: "dxDateBox",
                     editorOptions: {
                         type: "datetime",
-                        displayFormat: "dd/MM/yyyy HH:MM",
-                        width: "100%",
-                        onValueChanged: function(data) {
-                            var f = new Date(data.value);
-                            var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
-                            var dxFormRegistroHoras = $('#form-registro-horas').dxForm('instance');
-                            var formData = dxFormRegistroHoras.option('formData');
-
-                            if(!data.value || data.value == undefined || !formData["project_id"] || formData["project_id"] == undefined){
-                                DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
-                                return;
-                            }
-
-                            var text_label = "Fecha entrada";
-
-                            if(f.getHours() >= 22){
-                                text_label += " [Nocturno]"
-                            }
-
-                            var params = {
-                                'project_id': formData["project_id"],
-                                'fecha': fecha
-                            }
-                            ajax.jsonRpc("/api/festivo", 'call', params)
-                            .then(function(result) {
-                                var data = $.parseJSON(result);
-                                if(data["festivo"]){
-                                    text_label += " [festivo]"
-                                }
-                                dxFormRegistroHoras.itemOption("fecha_entrada", "label", { text: text_label});
-                            });
-                        },
-                    },
-                    validationRules: [{
-                        type: "required",
-                        message: "La fecha de entrada es obligatoria."
-                    }]
-                }, // fecha_entrada
+                        displayFormat: "dd/MM/yyyy HH:mm",
+                        width: "100%"
+                    }
+                },
                 {
+                    caption: "Salida",
                     dataField: "fecha_salida",
-                    label: {
-                        text: "Fecha salida"
-                    },
                     editorType: "dxDateBox",
                     editorOptions: {
                         type: "datetime",
-                        displayFormat: "dd/MM/yyyy HH:MM",
-                        width: "100%"
-                    },
-                    validationRules: [{
-                        type: "required",
-                        message: "La fecha de salida es obligatoria."
-                    }]
-                }, // fecha_salida
-                {
-                    dataField: "paradas",
-                    label: {
-                        text: "Paradas"
-                    },
-                    editorType: "dxDataGrid",
-                    editorOptions: {
-                        elementAttr: {
-                        id: "dxParadas",
-                    },
-                        dataSource: [],
-                        editing: {
-                            mode: "row",
-                            allowUpdating: true,
-                            allowDeleting: true,
-                            allowAdding: true,
-                            useIcons: true
-                        },
-                        columns: [
-                            {
-                                caption: "Tipo parada",
-                                dataField: "tipo_parada_id",
-                                lookup: {
-                                    dataSource: tipoParadaSource,
-                                    displayExpr: "name",
-                                    valueExpr: "id"
-                                },
-                                validationRules: [{
-                                    type: "required",
-                                    message: "El tipo de parada es obligatorio."
-                                }]
-                            },
-                            {
-                                caption: "Entrada",
-                                dataField: "fecha_entrada",
-                                editorType: "dxDateBox",
-                                editorOptions: {
-                                    type: "datetime",
-                                    displayFormat: "dd/MM/yyyy HH:mm",
-                                    width: "100%"
-                                }
-                            },
-                            {
-                                caption: "Salida",
-                                dataField: "fecha_salida",
-                                editorType: "dxDateBox",
-                                editorOptions: {
-                                    type: "datetime",
-                                    displayFormat: "dd/MM/yyyy HH:mm",
-                                    width: "100%"
-                                }
-                            },
-                        ],
-                    }
-                }, // paradas
-                {
-                    dataField: "unidades_realizadas",
-                    label: {
-                        text: "Unidades realizadas"
-                    },
-                    editorType: "dxNumberBox",
-                    editorOptions: {
-                        showSpinButtons: true,
+                        displayFormat: "dd/MM/yyyy HH:mm",
                         width: "100%"
                     }
-                }, // unidades_realizadas
-                {
-                    dataField: "observaciones",
-                    label: {
-                        text: "Observaciones"
-                    },
-                    editorType: "dxTextArea",
-                    editorOptions: {
-                        height: 90,
-                        width: "100%"
-                    }
-                }, // observacioens
-                {
-                    itemType: "button",
-                    horizontalAlignment: "center",
-                    buttonOptions: {
-                        text: "Registrar",
-                        type: "success",
-                        useSubmitBehavior: true,
-                        onClick: function (e){
-                            e.cancel = true;
-                            var dxFormRegistroHoras = $('#form-registro-horas').dxForm('instance');
-                            if(!dxFormRegistroHoras.validate().isValid){
-                                return;
-                            }
+                },
+            ],
+        }).dxDataGrid("instance");
 
-                            var dxDataGridParadas = $('#dxParadas').dxDataGrid('instance');
-                            var data = dxFormRegistroHoras.option('formData');
-                            data["paradas"] = dxDataGridParadas.option('dataSource');
+        var unidades_realizadas_dx = $("#unidades_realizadas_dx").dxNumberBox({
+            showSpinButtons: true,
+            width: "100%"
+        }).dxNumberBox("instance");
 
-                            ajax.jsonRpc("/api/time/register", 'call', data)
-                            .then(function(result) {
-                                var data = $.parseJSON(result);
-                                if(data["result"] == "ok"){
-                                    DevExpress.ui.notify("Ha registrado el tiempo correctamente");
-                                    dxFormRegistroHoras.resetValues();
-                                    dxDataGridParadas.option('dataSource', []);
-                                }else{
-                                    DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
-                                }
-                            });
-                        }
+        var observaciones_dx = $("#observaciones_dx").dxTextArea({
+            height: 90,
+            width: "100%"
+        }).dxTextArea("instance");
+
+        var btn_enviar_dx = $("#btn_enviar_dx").dxButton({
+            stylingMode: "contained",
+            text: "Enviar",
+            type: "success",
+            useSubmitBehavior: true,
+        }).dxButton("instance");
+
+        $("#form-registro-horas").on("submit", function(e) {
+            e.preventDefault();
+            var params = {
+                'project_id': project_id_dx.option("value"),
+                'fecha_entrada': fecha_entrada_dx.option("value"),
+                'fecha_salida': fecha_salida_dx.option("value"),
+                'tipo': tipo_dx.option("value"),
+                'paradas': paradas_dx.option('dataSource'),
+                'unidades_realizadas': unidades_realizadas_dx.option("value"),
+                'observaciones': observaciones_dx.option("value"),
+            };
+
+            ajax.jsonRpc("/api/time/register", 'call', params)
+            .then(function(result) {
+                var data = $.parseJSON(result);
+                if(data["result"] == "ok"){
+                    DevExpress.ui.notify("Ha registrado el tiempo correctamente");
+//                    e.reset();
+                }else{
+                    DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
+                }
+            });
+        });
+
+        $("#grid-registro").dxDataGrid({
+            dataSource: new DevExpress.data.CustomStore({
+                key: "id",
+                load: function(loadOptions) {
+                    var params = {
+                        "offset": loadOptions.skip,
+                        "limit": loadOptions.take,
                     }
-                } // botón
-            ]
+
+//                    if(loadOptions.filter){
+//                        params["search"] = loadOptions.filter[0].filterValue;
+//                    }
+//
+//                    params['order'] = '';
+//                    $.each(loadOptions.sort, function( index, value ) {
+//                        if(index > 0){
+//                            params['order'] += ", ";
+//                        }
+//                        params['order'] += value["selector"];
+//                        if(value["desc"])
+//                            params['order'] += " desc";
+//                    });
+
+                    return sendRequest("/api/registros", params);
+                },
+            }),
+            remoteOperations: true,
+            allowColumnReordering: true,
+            rowAlternationEnabled: true,
+            showColumnLines: true,
+            showRowLines: true,
+            showBorders: true,
+            repaintChangesOnly: true,
+            grouping: {autoExpandAll: true,},
+            searchPanel: {visible: true},
+            scrolling: {
+                mode: "virtual",
+                rowRenderingMode: "virtual"
+            },
+            paging: {
+                pageSize: 50
+            },
+            wordWrapEnabled: true,
+            groupPanel: {visible: false},
+            onSelectionChanged: function(e) {
+                e.component.collapseAll(-1);
+                e.component.expandRow(e.currentSelectedRowKeys[0]);
+            },
+            columns: [
+                {
+                    caption: "Projecto",
+                    dataField: "project_name",
+                },
+                {
+                    caption: "Tipo",
+                    dataField: "tipo",
+                },
+                {
+                    caption: "Festivo",
+                    dataField: "festivo",
+                },
+                {
+                    caption: "Nocturno",
+                    dataField: "nocturno",
+                },
+                {
+                    caption: "Entrada",
+                    dataField: "fecha_entrada",
+                    dataType: "date",
+                },
+                {
+                    caption: "Día",
+                    dataField: "dia_semana_fecha_entrada",
+                },
+                {
+                    caption: "Salida",
+                    dataField: "fecha_salida",
+                    dataType: "date",
+                },
+                {
+                    caption: "Horas",
+                    dataField: "horas_trabajadas",
+                },
+                {
+                    caption: "Horas extra",
+                    dataField: "horas_extra",
+                },
+            ],
         });
     }
 
@@ -324,7 +410,6 @@ base.ready().then(function () {
             $("span.txt-check-tiempo").text("salida");
             $("#ico-registro").removeClass("fa-sign-in").addClass("fa-sign-out");
         }
-
     }
 });
 

@@ -3,11 +3,34 @@
 
 import logging
 import json
+import math
 
 from odoo import http, fields
 from odoo.http import request
+from datetime import datetime, time
+from odoo.tools.float_utils import float_round
 
 _logger = logging.getLogger(__name__)
+
+def float_to_time(hours):
+    if hours == 24.0:
+        return time.max
+    fractional, integral = math.modf(hours)
+    return time(int(integral), int(float_round(60 * fractional, precision_digits=0)), 0)
+
+def date_from_string(fecha):
+    try:
+        fecha = fields.Date.from_string(fecha)
+    except:
+        fecha = False
+    return fecha
+
+def datetime_from_string(fecha):
+    try:
+        fecha = fields.Datetime.from_string(fecha)
+    except:
+        fecha = False
+    return fecha
 
 
 class RegistroTiempoAPI(http.Controller):
@@ -120,21 +143,53 @@ class RegistroTiempoAPI(http.Controller):
             "attendance": attendance.get_data_api()
         })
 
+    @http.route('/api/registros', type='json', auth="user", website=True)
+    def registros_list(self, **kw):
+        data = {'data': [], 'totalCount': 0}
+        if not request.env.user.employee_ids.ids:
+            return json.dumps(data)
+
+        offset = kw.get('offset') if kw.get('offset') else 0
+        limit = kw.get('limit') if kw.get('limit') else 10
+
+        domain = [('employee_id', 'in', request.env.user.employee_ids.ids)]
+        tiempos = request.env["registro_tiempo.tiempo"].sudo().search(domain, offset=offset, limit=limit)
+        tiempos_count = request.env["registro_tiempo.tiempo"].sudo().search_count(domain)
+        data['totalCount'] = tiempos_count
+
+        for tiempo in tiempos:
+            tipo = ""
+            if tiempo.tipo:
+                tipo = dict(tiempo._fields['tipo'].selection).get(tiempo.tipo)
+
+            dia_semana_fecha_entrada = ""
+            if tiempo.dia_semana_fecha_entrada:
+                dia_semana_fecha_entrada = dict(tiempo._fields['dia_semana_fecha_entrada'].selection).get(tiempo.dia_semana_fecha_entrada)
+
+            data['data'].append({
+                'id': tiempo.id,
+                'project_id': tiempo.project_id.id or 0,
+                'project_name': tiempo.project_id.name or "",
+                'tipo': tipo,
+                'festivo': tiempo.festivo,
+                'nocturno': tiempo.nocturno,
+                'fecha_entrada': tiempo.fecha_entrada.strftime("%d/%m/%Y %H:%m") if tiempo.fecha_entrada else "",
+                'fecha_salida': tiempo.fecha_salida.strftime("%d/%m/%Y %H:%m") if tiempo.fecha_salida else "",
+                'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
+                'horas_trabajadas': tiempo.horas_trabajadas or "",
+                'horas_extra': tiempo.horas_extra or "",
+            })
+        return json.dumps(data)
+
     @http.route('/api/time/register', type='json', auth="user", website=True)
     def time_register(self, project_id, **kw):
-        try:
-            fecha_entrada = fields.Datetime.from_string(kw.get("fecha_entrada"))
-        except:
-            fecha_entrada = False
-
-        try:
-            fecha_salida = fields.Datetime.from_string(kw.get("fecha_salida"))
-        except:
-            fecha_salida = False
+        fecha_entrada = date_from_string(kw.get("fecha_entrada"))
+        fecha_salida = date_from_string(kw.get("fecha_salida"))
 
         values = {
             'project_id': project_id,
             "employee_id": request.env.user.employee_id.id,
+            "tipo": kw.get("tipo").lower(),
             "fecha_entrada": fecha_entrada,
             "fecha_salida": fecha_salida,
             "unidades_realizadas": kw.get("unidades_realizadas"),
@@ -142,18 +197,23 @@ class RegistroTiempoAPI(http.Controller):
         }
 
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
+        values = {}
+        if tiempo.es_festivo():
+            values.update({'festivo': True})
+
+        if tiempo.es_festivo_cliente():
+            values.update({'festivo_cliente': True})
+
+        if tiempo.es_nocturno():
+            values.update({'nocturno': True})
+
+        if values:
+            tiempo.write(values)
 
         if kw.get("paradas"):
             for parada in kw.get("paradas"):
-                try:
-                    fecha_entrada = fields.Datetime.from_string(kw.get("fecha_entrada"))
-                except:
-                    fecha_entrada = False
-
-                try:
-                    fecha_salida = fields.Datetime.from_string(kw.get("fecha_salida"))
-                except:
-                    fecha_salida = False
+                fecha_entrada = date_from_string(parada['fecha_entrada'])
+                fecha_salida = date_from_string(parada['fecha_salida'])
 
                 request.env['registro_tiempo.tiempo_parada'].sudo().create({
                     'tiempo_id': tiempo.id,
@@ -175,12 +235,7 @@ class RegistroTiempoAPI(http.Controller):
 
     @http.route('/api/festivo', type='json', auth="user", website=True)
     def festivo(self, project_id, fecha, **kw):
-        _logger.warning(fecha)
-        try:
-            fecha = fields.Date.from_string(fecha)
-        except:
-            fecha = False
-        _logger.warning(fecha)
+        fecha = date_from_string(fecha)
         if not fecha or not request.env.user.employee_ids.ids:
             return json.dumps({"result": "ok"})
 
@@ -196,4 +251,42 @@ class RegistroTiempoAPI(http.Controller):
         return json.dumps({
             "result": "ok",
             "festivo": festivo
+        })
+
+    @http.route('/api/calendario/hora_dia_semana', type='json', auth="user", website=True)
+    def calendario_hora_inicio(self, project_id, fecha, **kw):
+        _logger.warning(fecha)
+        fecha = date_from_string(fecha)
+        _logger.warning(fecha)
+
+        desde_hora, desde_min = 0, 0
+        hasta_hora, hasta_min = 0, 0
+        if fecha and not request.env.user.employee_ids.ids:
+            tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
+                ('project_id', '=', project_id),
+                ('employee_id', 'in', request.env.user.employee_ids.ids)
+            ], limit=1)
+
+            if tecnico_calendario:
+                attendance = request.env["resource.calendar.attendance"].search([
+                    ('calendar_id', '=', tecnico_calendario.resource_calendar_id.id),
+                    ('dayofweek', '=', fecha.weekday()),
+                ], limit=1)
+
+                if attendance.hour_from:
+                    hour_time = float_to_time(attendance.hour_from)
+                    desde_hora = hour_time.strftime("%H")
+                    desde_min = hour_time.strftime("%M")
+
+                if attendance.hour_to:
+                    hour_time = float_to_time(attendance.hour_to)
+                    hasta_hora = hour_time.strftime("%H")
+                    hasta_min = hour_time.strftime("%M")
+
+        return json.dumps({
+            "result": "ok",
+            "desde_hora": int(desde_hora),
+            "desde_min": int(desde_min),
+            "hasta_hora": int(hasta_hora),
+            "hasta_min": int(hasta_min),
         })

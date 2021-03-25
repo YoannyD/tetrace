@@ -34,7 +34,64 @@
                                 </t>
                             ];
                         </script>
-                        <div id="form-registro-horas"/>
+                        <form id="form-registro-horas" style="max-width:600px;margin:0 auto;display:none;">
+                            <div class="dx-fieldset">
+                                 <div class="dx-field mb-2">
+                                    <div class="dx-field-label">Proyecto</div>
+                                    <div class="dx-field-value">
+                                        <div id="project_id_dx"/>
+                                    </div>
+                                </div>
+                                <div class="form_fields" style="display:none">
+                                    <div class="dx-field mb-2">
+                                        <div class="dx-field-label">Tipo</div>
+                                        <div class="dx-field-value">
+                                            <div id="tipo_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-fecha_entrada mb-2">
+                                        <div class="dx-field-label">Fecha entrada</div>
+                                        <div class="dx-field-value">
+                                            <div id="fecha_entrada_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-fecha_salida mb-2">
+                                        <div class="dx-field-label">Fecha salida</div>
+                                        <div class="dx-field-value">
+                                            <div id="fecha_salida_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-paradas mb-2">
+                                        <div class="dx-field-label">Paradas</div>
+                                        <div class="dx-field-value">
+                                            <div id="paradas_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field mb-2">
+                                        <div class="dx-field-label">Unidades realizadas</div>
+                                        <div class="dx-field-value">
+                                            <div id="unidades_realizadas_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Observaciones</div>
+                                        <div class="dx-field-value">
+                                            <div id="observaciones_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <div id="summary"/>
+                                        <div id="btn_enviar_dx"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div id="grid-registro"/>
                     </div>
                 </div>
             </div>
