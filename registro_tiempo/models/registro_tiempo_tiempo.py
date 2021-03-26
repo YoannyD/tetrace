@@ -74,8 +74,9 @@ class RegistroTiempo(models.Model):
             horas = 0
             if r.fecha_hora_entrada and r.fecha_hora_salida:
                 delta = r.fecha_hora_salida - r.fecha_hora_entrada
-                if delta > 0:
-                    horas = delta.total_seconds() / 3600.0
+                horas = delta.total_seconds() / 3600.0
+                if horas < 0:
+                    horas = 0
             r.horas_trabajadas = horas
 
     @api.depends('fecha_salida', 'hora_salida')
