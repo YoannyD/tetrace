@@ -43,24 +43,24 @@ class RegistroTiempo(models.Model):
     festivo_cliente = fields.Boolean('Festivo cliente')
     fecha_salida = fields.Date('Fecha salida')
     hora_salida = fields.Float('Hora salida', default=0.0)
-    fecha_hora_salida = fields.Float('Fecha/Hora salida', compute="_compute_fecha_hora_salida", store=True)
+    fecha_hora_salida = fields.Datetime('Fecha/Hora salida', compute="_compute_fecha_hora_salida", store=True)
     tipo = fields.Selection(TIPOS, string="Tipo")
     unidades_realizadas = fields.Integer("Unidades realizadas")
     observaciones = fields.Text("Observaciones")
     tiempo_parada_ids = fields.One2many("registro_tiempo.tiempo_parada", "tiempo_id")
     horas_trabajadas = fields.Float("Horas trabajadas", compute='_compute_horas_trabajadas', store=True, readonly=True)
-    horas_extra = fields.Float('Horas extra')
-    horas_extra_cliente = fields.Float('Horas extra cliente')
+    horas_extra = fields.Float('Horas extras')
+    horas_extra_cliente = fields.Float('Horas extras cliente')
 
     @api.depends('fecha_entrada', 'hora_entrada')
     def _compute_fecha_hora_entrada(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for r in self:
             fecha = None
-            # if r.fecha_entrada:
-                # fecha = union_date_time(r.fecha_entrada, 0.0, user_tz)
+            if r.fecha_entrada:
+                fecha = union_date_time(r.fecha_entrada, r.hora_entrada, user_tz)
+                fecha = fecha.strftime("%Y-%m-%d %H:%M:%S")
 
-            _logger.warning(fecha)
             r.fecha_hora_entrada = fecha
 
     @api.depends('fecha_entrada')
@@ -68,22 +68,24 @@ class RegistroTiempo(models.Model):
         for r in self:
             r.dia_semana_fecha_entrada = str(r.fecha_entrada.weekday()) if r.fecha_entrada else False
 
-    @api.depends("fecha_entrada", "fecha_salida")
+    @api.depends("fecha_hora_entrada", "fecha_hora_salida")
     def _compute_horas_trabajadas(self):
         for r in self:
-            if r.fecha_entrada and r.fecha_salida:
-                delta = r.fecha_salida - r.fecha_entrada
-                r.horas_trabajadas = delta.total_seconds() / 3600.0
-            else:
-                r.horas_trabajadas = False
+            horas = 0
+            if r.fecha_hora_entrada and r.fecha_hora_salida:
+                delta = r.fecha_hora_salida - r.fecha_hora_entrada
+                if delta > 0:
+                    horas = delta.total_seconds() / 3600.0
+            r.horas_trabajadas = horas
 
     @api.depends('fecha_salida', 'hora_salida')
-    def _compute_fecha_hora_entrada(self):
+    def _compute_fecha_hora_salida(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for r in self:
             fecha = None
-            # if r.fecha_salida:
-            #     fecha = union_date_time(r.fecha_salida, r.hora_salida, user_tz)
+            if r.fecha_salida:
+                fecha = union_date_time(r.fecha_salida, r.hora_salida, user_tz)
+                fecha = fecha.strftime("%Y-%m-%d %H:%M:%S")
             r.fecha_hora_salida = fecha
 
     @api.depends('project_id', 'employee_id')
@@ -109,11 +111,25 @@ class RegistroTiempo(models.Model):
 
     def es_nocturno(self):
         self.ensure_one()
-        if self.fecha_entrada:
-            hora = int(self.fecha_entrada.strftime('%H'))
-            if hora >= 22:
-                return True
-        return False
+        return True if self.hora_entrada >= 22 else False
+
+    def get_horas_extra(self):
+        self.ensure_one()
+        if self.horas_trabajadas and self.tecnico_calendario_id:
+            attendance = self.tecnico_calendario_id.get_attendance(self.fecha_entrada)
+            if attendance:
+                horas_extra = self.horas_trabajadas - attendance.horas
+                return horas_extra if horas_extra >= 0 else 0
+        return 0
+
+    def get_horas_extra_cliente(self):
+        self.ensure_one()
+        if self.horas_trabajadas and self.tecnico_calendario_id:
+            attendance = self.tecnico_calendario_id.get_attendance(self.fecha_entrada)
+            if attendance:
+                horas_extra = self.horas_trabajadas - attendance.horas_cliente
+                return horas_extra if horas_extra >= 0 else 0
+        return 0
 
     def get_data_api(self):
         self.ensure_one()
@@ -133,11 +149,12 @@ class RegistroTiempo(models.Model):
             'tipo': tipo,
             'festivo': self.festivo or False,
             'nocturno': self.nocturno or False,
-            'fecha_hora_entrada': self.fecha_hora_entrada.strftime("%d/%m/%Y %H:%m") if self.fecha_hora_entrada else "",
-            'fecha_hora_salida': self.fecha_hora_salida.strftime("%d/%m/%Y %H:%m") if self.fecha_hora_salida else "",
+            'fecha_hora_entrada': self.fecha_hora_entrada.strftime("%d/%m/%Y %H:%M:00") if self.fecha_hora_entrada else "",
+            'fecha_hora_salida': self.fecha_hora_salida.strftime("%d/%m/%Y %H:%M:00") if self.fecha_hora_salida else "",
             'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
             'horas_trabajadas': self.horas_trabajadas or 0,
             'horas_extra': self.horas_extra or 0,
+            'horas_extra_cliente': self.horas_extra_cliente or 0,
         }
         return data
 

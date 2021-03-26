@@ -87,7 +87,19 @@ base.ready().then(function () {
         var tipo_dx = $("#tipo_dx").dxRadioGroup({
             layout: "horizontal",
             items: ["Parte", "MOB", "DEMOB"],
-            value: "Parte"
+            value: "Parte",
+            onValueChanged: function(data) {
+                if(data.value != 'Parte'){
+                    $(".dx-field-fecha_entrada .dx-field-label").html("Fecha entrada");
+                    $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
+                    $(".dx-field-fecha_salida .dx-field-label").html("Fecha salida");
+                    $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
+                }else{
+                    console.log(fecha_entrada_dx);
+                    console.log(fecha_entrada_dx.option);
+                    fecha_entrada_dx.option("onValueChanged");
+                }
+            }
         }).dxRadioGroup("instance");
 
         var fecha_entrada_dx = $("#fecha_entrada_dx").dxDateBox({
@@ -101,7 +113,9 @@ base.ready().then(function () {
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
 
+                var label = "Fecha entrada";
                 if(tipo != 'Parte'){
+                    $(".dx-field-fecha_entrada .dx-field-label").html(label);
                     return;
                 }
 
@@ -125,8 +139,6 @@ base.ready().then(function () {
                 ajax.jsonRpc("/api/festivo", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
-                    console.log(data);
-                    var label = "Fecha entrada";
                     if(data["festivo"]){
                         label += ' <span class="badge badge-danger">Festivo</span>';
                     }
@@ -162,7 +174,6 @@ base.ready().then(function () {
         var fecha_salida_dx = $("#fecha_salida_dx").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
-            value: new Date(),
             pickerType: "rollers",
             onValueChanged: function(data) {
                 var f = new Date(data.value);
@@ -170,7 +181,9 @@ base.ready().then(function () {
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
 
+                var label = "Fecha salida";
                 if(tipo != 'Parte'){
+                    $(".dx-field-fecha_salida .dx-field-label").html(label);
                     return;
                 }
 
@@ -194,7 +207,6 @@ base.ready().then(function () {
                 ajax.jsonRpc("/api/festivo", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
-                    var label = "Fecha salida";
                     if(data["festivo"]){
                         label += ' <span class="badge badge-danger">Festivo</span>';
                     }
@@ -223,7 +235,7 @@ base.ready().then(function () {
         }).dxValidator({
             validationRules: [{
                 type: "required",
-                message: "La fecha de entrada es obligatoria."
+                message: "La hora de salida es obligatoria."
             }]
         }).dxDateBox("instance");
 
@@ -295,7 +307,9 @@ base.ready().then(function () {
             var params = {
                 'project_id': project_id_dx.option("value"),
                 'fecha_entrada': fecha_entrada_dx.option("value"),
+                'hora_entrada': hora_entrada_dx.option("value"),
                 'fecha_salida': fecha_salida_dx.option("value"),
+                'hora_salida': hora_salida_dx.option("value"),
                 'tipo': tipo_dx.option("value"),
                 'paradas': paradas_dx.option('dataSource'),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
@@ -318,7 +332,6 @@ base.ready().then(function () {
             dataSource: new DevExpress.data.CustomStore({
                 key: "id",
                 load: function(loadOptions) {
-                    console.log(loadOptions);
                     var params = {
                         "offset": loadOptions.skip,
                         "limit": loadOptions.take,
@@ -415,6 +428,10 @@ base.ready().then(function () {
                 {
                     caption: "Horas extra",
                     dataField: "horas_extra",
+                },
+                {
+                    caption: "Horas extra cliente",
+                    dataField: "horas_extra_cliente",
                 },
             ],
             summary: {

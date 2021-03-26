@@ -7,7 +7,7 @@ import json
 from odoo import http, fields
 from odoo.http import request
 from odoo.addons.devexpress.models.utils import create_domain, data_groups
-from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time
+from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time, datetime_from_string, date_str_to_float_time
 
 _logger = logging.getLogger(__name__)
 
@@ -151,28 +151,40 @@ class RegistroTiempoAPI(http.Controller):
 
     @http.route('/api/time/register', type='json', auth="user", website=True)
     def time_register(self, project_id, **kw):
+        if not request.env.user.employee_ids.ids:
+            raise
+
         fecha_entrada = date_from_string(kw.get("fecha_entrada"))
+        hora_entrada = datetime_from_string(kw.get("hora_entrada"))
         fecha_salida = date_from_string(kw.get("fecha_salida"))
+        hora_salida = datetime_from_string(kw.get("hora_salida"))
 
         values = {
             'project_id': project_id,
-            "employee_id": request.env.user.employee_id.id,
+            "employee_id": request.env.user.employee_ids[0].id,
             "tipo": kw.get("tipo").lower(),
             "fecha_entrada": fecha_entrada,
+            "hora_entrada": date_str_to_float_time(hora_entrada.strftime("%Y-%m-%d %H:%m")) if hora_entrada else 0,
             "fecha_salida": fecha_salida,
+            "hora_salida": date_str_to_float_time(hora_salida.strftime("%Y-%m-%d %H:%m")) if hora_salida else 0,
             "unidades_realizadas": kw.get("unidades_realizadas"),
             "observaciones": kw.get("observaciones")
         }
 
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
-        values = {}
+        values = {
+            'horas_extra': tiempo.get_horas_extra(),
+            'horas_extra_cliente': tiempo.get_horas_extra_cliente(),
+        }
         if tiempo.es_festivo():
+            _logger.warning("es festivo")
             values.update({'festivo': True})
 
         if tiempo.es_festivo_cliente():
             values.update({'festivo_cliente': True})
 
         if tiempo.es_nocturno():
+            _logger.warning("es festivo")
             values.update({'nocturno': True})
 
         if values:
@@ -223,9 +235,7 @@ class RegistroTiempoAPI(http.Controller):
 
     @http.route('/api/calendario/hora_dia_semana', type='json', auth="user", website=True)
     def calendario_hora_inicio(self, project_id, fecha, **kw):
-        _logger.warning(fecha)
         fecha = date_from_string(fecha)
-        _logger.warning(fecha)
 
         desde_hora, desde_min = 0, 0
         hasta_hora, hasta_min = 0, 0

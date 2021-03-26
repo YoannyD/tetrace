@@ -511,7 +511,7 @@ class TecnicoCalendario(models.Model):
         self.ensure_one()
         festivo = True
         for attendance in self.resource_calendar_id.attendance_ids:
-            if attendance.dayofweek == fecha.weekday():
+            if attendance.dayofweek == str(fecha.weekday()):
                 if attendance.festivo:
                     return True
                 else:
@@ -523,10 +523,17 @@ class TecnicoCalendario(models.Model):
         self.ensure_one()
         festivo = True
         for attendance in self.resource_calendar_id.attendance_ids:
-            if attendance.dayofweek == fecha.weekday():
+            if attendance.dayofweek == str(fecha.weekday()):
                 if attendance.festivo_cliente:
                     return True
                 else:
                     festivo = False
 
         return festivo
+
+    def get_attendance(self, fecha):
+        self.ensure_one()
+        for attendance in self.resource_calendar_id.attendance_ids:
+            if attendance.dayofweek == str(fecha.weekday()):
+                return attendance
+        return None
