@@ -9,6 +9,7 @@ from odoo import http, fields
 from odoo.http import request
 from datetime import datetime, time
 from odoo.tools.float_utils import float_round
+from odoo.addons.devexpress.models.utils import create_domain, data_groups
 
 _logger = logging.getLogger(__name__)
 
@@ -144,41 +145,31 @@ class RegistroTiempoAPI(http.Controller):
         })
 
     @http.route('/api/registros', type='json', auth="user", website=True)
-    def registros_list(self, **kw):
-        data = {'data': [], 'totalCount': 0}
+    def registros_list(self, filtros=None, order=None, offset=None, limit=None, group=None, **kw):
+        _logger.warning(kw)
+        data = {
+            'data': [],
+            'totalCount': 0,
+        }
         if not request.env.user.employee_ids.ids:
             return json.dumps(data)
 
-        offset = kw.get('offset') if kw.get('offset') else 0
-        limit = kw.get('limit') if kw.get('limit') else 10
+        offset = offset or 0
+        limit = limit or 10
+        order = order or "id desc"
+        domain = create_domain(filtros)
+        domain += [('employee_id', 'in', request.env.user.employee_ids.ids)]
 
-        domain = [('employee_id', 'in', request.env.user.employee_ids.ids)]
-        tiempos = request.env["registro_tiempo.tiempo"].sudo().search(domain, offset=offset, limit=limit)
-        tiempos_count = request.env["registro_tiempo.tiempo"].sudo().search_count(domain)
-        data['totalCount'] = tiempos_count
+        if group:
+            data = data_groups("registro_tiempo.tiempo", group, domain, 0)
+        else:
+            Tiempo = request.env["registro_tiempo.tiempo"].sudo()
+            tiempos = Tiempo.search(domain, offset=offset, limit=limit, order=order)
+            tiempos_count = Tiempo.search_count(domain)
+            data['totalCount'] = tiempos_count
 
-        for tiempo in tiempos:
-            tipo = ""
-            if tiempo.tipo:
-                tipo = dict(tiempo._fields['tipo'].selection).get(tiempo.tipo)
-
-            dia_semana_fecha_entrada = ""
-            if tiempo.dia_semana_fecha_entrada:
-                dia_semana_fecha_entrada = dict(tiempo._fields['dia_semana_fecha_entrada'].selection).get(tiempo.dia_semana_fecha_entrada)
-
-            data['data'].append({
-                'id': tiempo.id,
-                'project_id': tiempo.project_id.id or 0,
-                'project_name': tiempo.project_id.name or "",
-                'tipo': tipo,
-                'festivo': tiempo.festivo,
-                'nocturno': tiempo.nocturno,
-                'fecha_entrada': tiempo.fecha_entrada.strftime("%d/%m/%Y %H:%m") if tiempo.fecha_entrada else "",
-                'fecha_salida': tiempo.fecha_salida.strftime("%d/%m/%Y %H:%m") if tiempo.fecha_salida else "",
-                'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
-                'horas_trabajadas': tiempo.horas_trabajadas or "",
-                'horas_extra': tiempo.horas_extra or "",
-            })
+            for tiempo in tiempos:
+                data['data'].append(tiempo.get_data_api())
         return json.dumps(data)
 
     @http.route('/api/time/register', type='json', auth="user", website=True)

@@ -20,18 +20,19 @@ class RegistroTiempo(models.Model):
     _order = "id desc"
 
     project_id = fields.Many2one('project.project', string="Proyecto", required=True)
+    project_name = fields.Char(related="project_id.name", store="True")
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
     tecnico_calendario_id = fields.Many2one('tetrace.tecnico_calendario', string="Técnico calendario",
                                             compute="_compute_tecnico_calendario_id")
     fecha_entrada = fields.Datetime('Fecha entrada')
     dia_semana_fecha_entrada = fields.Selection([
-        ('0', 'Monday'),
-        ('1', 'Tuesday'),
-        ('2', 'Wednesday'),
-        ('3', 'Thursday'),
-        ('4', 'Friday'),
-        ('5', 'Saturday'),
-        ('6', 'Sunday')
+        ('0', _('Monday')),
+        ('1', _('Tuesday')),
+        ('2', _('Wednesday')),
+        ('3', _('Thursday')),
+        ('4', _('Friday')),
+        ('5', _('Saturday')),
+        ('6', _('Sunday'))
     ], 'Día de la semana', compute="_compute_dia_semana_fecha_entrada", store=True)
     nocturno = fields.Boolean('Nocturno')
     festivo = fields.Boolean('Festivo')
@@ -90,7 +91,29 @@ class RegistroTiempo(models.Model):
 
     def get_data_api(self):
         self.ensure_one()
-        return {'id': self.id,}
+        tipo = ""
+        if self.tipo:
+            tipo = dict(self._fields['tipo'].selection).get(self.tipo)
+
+        dia_semana_fecha_entrada = ""
+        if self.dia_semana_fecha_entrada:
+            dia_semana_fecha_entrada = dict(self._fields['dia_semana_fecha_entrada'].selection).get(
+                self.dia_semana_fecha_entrada)
+
+        data = {
+            'id': self.id,
+            'project_id': self.project_id.id or 0,
+            'project_name': self.project_name or "",
+            'tipo': tipo,
+            'festivo': self.festivo,
+            'nocturno': self.nocturno,
+            'fecha_entrada': self.fecha_entrada.strftime("%d/%m/%Y %H:%m") if self.fecha_entrada else "",
+            'fecha_salida': self.fecha_salida.strftime("%d/%m/%Y %H:%m") if self.fecha_salida else "",
+            'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
+            'horas_trabajadas': self.horas_trabajadas or "",
+            'horas_extra': self.horas_extra or "",
+        }
+        return data
 
 
 class RegistroHoraParada(models.Model):
@@ -120,9 +143,7 @@ class RegistroHoraParada(models.Model):
 
     def get_data_api(self):
         self.ensure_one()
-        return {
-            'id': self.id,
-        }
+        return {'id': self.id,}
 
 
 class TipoParada(models.Model):

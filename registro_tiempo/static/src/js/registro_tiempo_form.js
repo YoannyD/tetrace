@@ -115,9 +115,7 @@ base.ready().then(function () {
                 ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
-                    console.log(data);
                     f.setHours(data["desde_hora"], data["desde_min"]);
-                    console.log(f);
                     fecha_entrada_dx.option("value", f);
                 });
 
@@ -272,37 +270,56 @@ base.ready().then(function () {
             dataSource: new DevExpress.data.CustomStore({
                 key: "id",
                 load: function(loadOptions) {
+                    console.log(loadOptions);
                     var params = {
                         "offset": loadOptions.skip,
                         "limit": loadOptions.take,
                     }
 
-//                    if(loadOptions.filter){
-//                        params["search"] = loadOptions.filter[0].filterValue;
-//                    }
-//
-//                    params['order'] = '';
-//                    $.each(loadOptions.sort, function( index, value ) {
-//                        if(index > 0){
-//                            params['order'] += ", ";
-//                        }
-//                        params['order'] += value["selector"];
-//                        if(value["desc"])
-//                            params['order'] += " desc";
-//                    });
+                    if(loadOptions.filter){
+                        params["filtros"] = loadOptions.filter;
+                    }
 
-                    return sendRequest("/api/registros", params);
+                    if(loadOptions.group){
+                        params["group"] = loadOptions.group;
+                    }
+
+                    if(loadOptions.isLoadingAll){
+                        params["isLoadingAll"] = loadOptions.isLoadingAll;
+                    }
+
+                    params['order'] = '';
+                    $.each(loadOptions.sort, function( index, value ) {
+                        if(index > 0){
+                            params['order'] += ", ";
+                        }
+                        params['order'] += value["selector"];
+                        if(value["desc"])
+                            params['order'] += " desc";
+                    });
+
+                    return sendRequest2("/api/registros", params);
                 },
             }),
-            remoteOperations: true,
+            remoteOperations: { groupPaging: true },
             allowColumnReordering: true,
+            allowColumnResizing: true,
             rowAlternationEnabled: true,
             showColumnLines: true,
             showRowLines: true,
             showBorders: true,
             repaintChangesOnly: true,
-            grouping: {autoExpandAll: true,},
+            grouping: {autoExpandAll: false,},
+            groupPanel: {visible: true},
             searchPanel: {visible: true},
+            filterRow: {
+                visible: true,
+                applyFilter: "auto"
+            },
+            headerFilter: {
+                visible: true
+            },
+            wordWrapEnabled: true,
             scrolling: {
                 mode: "virtual",
                 rowRenderingMode: "virtual"
@@ -310,11 +327,11 @@ base.ready().then(function () {
             paging: {
                 pageSize: 50
             },
-            wordWrapEnabled: true,
-            groupPanel: {visible: false},
-            onSelectionChanged: function(e) {
-                e.component.collapseAll(-1);
-                e.component.expandRow(e.currentSelectedRowKeys[0]);
+            summary: {
+                groupItems: [{
+                    column: "id",
+                    summaryType: "count"
+                }]
             },
             columns: [
                 {
@@ -367,6 +384,18 @@ base.ready().then(function () {
         .then(function(result) {
             var data = $.parseJSON(result);
             d.resolve({'data': data["data"], 'totalCount': data["totalCount"] });
+        });
+        return d.promise();
+    }
+
+    function sendRequest2(url, params) {
+        var d = $.Deferred();
+        params = params || {};
+
+        ajax.jsonRpc(url, 'call', params)
+        .then(function(result) {
+            var data = $.parseJSON(result);
+            d.resolve(data);
         });
         return d.promise();
     }
