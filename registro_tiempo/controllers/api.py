@@ -3,35 +3,13 @@
 
 import logging
 import json
-import math
 
 from odoo import http, fields
 from odoo.http import request
-from datetime import datetime, time
-from odoo.tools.float_utils import float_round
 from odoo.addons.devexpress.models.utils import create_domain, data_groups
+from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time
 
 _logger = logging.getLogger(__name__)
-
-def float_to_time(hours):
-    if hours == 24.0:
-        return time.max
-    fractional, integral = math.modf(hours)
-    return time(int(integral), int(float_round(60 * fractional, precision_digits=0)), 0)
-
-def date_from_string(fecha):
-    try:
-        fecha = fields.Date.from_string(fecha)
-    except:
-        fecha = False
-    return fecha
-
-def datetime_from_string(fecha):
-    try:
-        fecha = fields.Datetime.from_string(fecha)
-    except:
-        fecha = False
-    return fecha
 
 
 class RegistroTiempoAPI(http.Controller):
@@ -146,7 +124,6 @@ class RegistroTiempoAPI(http.Controller):
 
     @http.route('/api/registros', type='json', auth="user", website=True)
     def registros_list(self, filtros=None, order=None, offset=None, limit=None, group=None, **kw):
-        _logger.warning(kw)
         data = {
             'data': [],
             'totalCount': 0,
@@ -252,7 +229,7 @@ class RegistroTiempoAPI(http.Controller):
 
         desde_hora, desde_min = 0, 0
         hasta_hora, hasta_min = 0, 0
-        if fecha and not request.env.user.employee_ids.ids:
+        if fecha and request.env.user.employee_ids.ids:
             tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
                 ('project_id', '=', project_id),
                 ('employee_id', 'in', request.env.user.employee_ids.ids)

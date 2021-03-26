@@ -68,6 +68,9 @@ base.ready().then(function () {
             valueExpr: "id",
             searchEnabled: true,
             onValueChanged: function(data) {
+                if(fecha_entrada_dx.option("value") == null){
+                    var fecha_entrada = fecha_entrada_dx.option("value", new Date());
+                }
                 if(data.value){
                     $(".form_fields").show();
                 }else{
@@ -88,12 +91,12 @@ base.ready().then(function () {
         }).dxRadioGroup("instance");
 
         var fecha_entrada_dx = $("#fecha_entrada_dx").dxDateBox({
-            type: "datetime",
-            displayFormat: "dd/MM/yyyy HH:mm",
-            width: "100%",
-            visible: true,
+            type: "date",
+            displayFormat: "dd/MM/yyyy",
+            pickerType: "rollers",
             onValueChanged: function(data) {
                 var f = new Date(data.value);
+                fecha_salida_dx.option("value", f);
                 var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
@@ -111,26 +114,23 @@ base.ready().then(function () {
                     'project_id': project_id,
                     'fecha': fecha
                 }
-                console.log(params);
+
                 ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
                     f.setHours(data["desde_hora"], data["desde_min"]);
-                    fecha_entrada_dx.option("value", f);
+                    hora_entrada_dx.option("value", f);
                 });
-
-                var text_label = "Fecha entrada <br/>";
-                if(f.getHours() >= 22){
-                    text_label += ' <span class="badge badge-dark">Nocturno</span>'
-                }
 
                 ajax.jsonRpc("/api/festivo", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
+                    console.log(data);
+                    var label = "Fecha entrada";
                     if(data["festivo"]){
-                        text_label += ' <span class="badge badge-danger">Festivo</span>';
+                        label += ' <span class="badge badge-danger">Festivo</span>';
                     }
-                    $(".dx-field-fecha_entrada .dx-field-label").html(text_label);
+                    $(".dx-field-fecha_entrada .dx-field-label").html(label);
                 });
             },
         }).dxValidator({
@@ -140,11 +140,30 @@ base.ready().then(function () {
             }]
         }).dxDateBox("instance");
 
+        var hora_entrada_dx = $("#hora_entrada_dx").dxDateBox({
+            type: "time",
+            displayFormat: "HH:mm",
+            pickerType: "rollers",
+            onValueChanged: function(data) {
+                var f = new Date(data.value);
+                var label = "Hora entrada";
+                if(es_hora_nocturna(f.getHours())){
+                    label += ' <span class="badge badge-dark">Nocturno</span>';
+                }
+                $(".dx-field-hora_entrada .dx-field-label").html(label);
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de entrada es obligatoria."
+            }]
+        }).dxDateBox("instance");
+
         var fecha_salida_dx = $("#fecha_salida_dx").dxDateBox({
-            type: "datetime",
-            displayFormat: "dd/MM/yyyy HH:MM",
-            width: "100%",
-            visible: true,
+            type: "date",
+            displayFormat: "dd/MM/yyyy",
+            value: new Date(),
+            pickerType: "rollers",
             onValueChanged: function(data) {
                 var f = new Date(data.value);
                 var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
@@ -169,13 +188,42 @@ base.ready().then(function () {
                 .then(function(result) {
                     var data = $.parseJSON(result);
                     f.setHours(data["hasta_hora"], data["hasta_min"]);
-                    fecha_salida_dx.option("value", f);
+                    hora_salida_dx.option("value", f);
+                });
+
+                ajax.jsonRpc("/api/festivo", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    var label = "Fecha salida";
+                    if(data["festivo"]){
+                        label += ' <span class="badge badge-danger">Festivo</span>';
+                    }
+                    $(".dx-field-fecha_salida .dx-field-label").html(label);
                 });
             },
         }).dxValidator({
             validationRules: [{
                 type: "required",
                 message: "La fecha de salida es obligatoria."
+            }]
+        }).dxDateBox("instance");
+
+        var hora_salida_dx = $("#hora_salida_dx").dxDateBox({
+            type: "time",
+            displayFormat: "HH:mm",
+            pickerType: "rollers",
+            onValueChanged: function(data) {
+                var f = new Date(data.value);
+                var label = "Hora salida";
+                if(es_hora_nocturna(f.getHours())){
+                    label += ' <span class="badge badge-dark">Nocturno</span>';
+                }
+                $(".dx-field-hora_salida .dx-field-label").html(label);
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de entrada es obligatoria."
             }]
         }).dxDateBox("instance");
 
@@ -301,7 +349,7 @@ base.ready().then(function () {
                     return sendRequest2("/api/registros", params);
                 },
             }),
-            remoteOperations: { groupPaging: true },
+            remoteOperations: { groupPaging: true,},
             allowColumnReordering: true,
             allowColumnResizing: true,
             rowAlternationEnabled: true,
@@ -309,7 +357,10 @@ base.ready().then(function () {
             showRowLines: true,
             showBorders: true,
             repaintChangesOnly: true,
-            grouping: {autoExpandAll: false,},
+            wordWrapEnabled: true,
+            grouping: {
+                autoExpandAll: false,
+            },
             groupPanel: {visible: true},
             searchPanel: {visible: true},
             filterRow: {
@@ -319,19 +370,12 @@ base.ready().then(function () {
             headerFilter: {
                 visible: true
             },
-            wordWrapEnabled: true,
             scrolling: {
                 mode: "virtual",
                 rowRenderingMode: "virtual"
             },
             paging: {
                 pageSize: 50
-            },
-            summary: {
-                groupItems: [{
-                    column: "id",
-                    summaryType: "count"
-                }]
             },
             columns: [
                 {
@@ -373,7 +417,13 @@ base.ready().then(function () {
                     dataField: "horas_extra",
                 },
             ],
-        });
+            summary: {
+                groupItems: [{
+                    column: "id",
+                    summaryType: "count"
+                }]
+            },
+        }).dxDataGrid('instance');
     }
 
     function sendRequest(url, params) {
@@ -398,6 +448,12 @@ base.ready().then(function () {
             d.resolve(data);
         });
         return d.promise();
+    }
+
+    function es_hora_nocturna(hora){
+        if(hora >= 22)
+            return true;
+        return false;
     }
 
     function registrar_tiempo(tipo, latitud, longitud){

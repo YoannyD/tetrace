@@ -2,8 +2,10 @@
 # © 2021 Ingetive - <info@ingetive.com>
 
 import logging
+import pytz
 
 from odoo import models, fields, api, _
+from odoo.addons.registro_tiempo.models.date_utils import union_date_time
 
 _logger = logging.getLogger(__name__)
 
@@ -24,7 +26,9 @@ class RegistroTiempo(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
     tecnico_calendario_id = fields.Many2one('tetrace.tecnico_calendario', string="Técnico calendario",
                                             compute="_compute_tecnico_calendario_id")
-    fecha_entrada = fields.Datetime('Fecha entrada')
+    fecha_entrada = fields.Date('Fecha entrada')
+    hora_entrada = fields.Float('Hora entrada', default=0.0)
+    fecha_hora_entrada = fields.Datetime('Fecha/Hora entrada', compute="_compute_fecha_hora_entrada", store=True)
     dia_semana_fecha_entrada = fields.Selection([
         ('0', _('Monday')),
         ('1', _('Tuesday')),
@@ -37,7 +41,9 @@ class RegistroTiempo(models.Model):
     nocturno = fields.Boolean('Nocturno')
     festivo = fields.Boolean('Festivo')
     festivo_cliente = fields.Boolean('Festivo cliente')
-    fecha_salida = fields.Datetime('Fecha salida')
+    fecha_salida = fields.Date('Fecha salida')
+    hora_salida = fields.Float('Hora salida', default=0.0)
+    fecha_hora_salida = fields.Float('Fecha/Hora salida', compute="_compute_fecha_hora_salida", store=True)
     tipo = fields.Selection(TIPOS, string="Tipo")
     unidades_realizadas = fields.Integer("Unidades realizadas")
     observaciones = fields.Text("Observaciones")
@@ -45,6 +51,17 @@ class RegistroTiempo(models.Model):
     horas_trabajadas = fields.Float("Horas trabajadas", compute='_compute_horas_trabajadas', store=True, readonly=True)
     horas_extra = fields.Float('Horas extra')
     horas_extra_cliente = fields.Float('Horas extra cliente')
+
+    @api.depends('fecha_entrada', 'hora_entrada')
+    def _compute_fecha_hora_entrada(self):
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        for r in self:
+            fecha = None
+            # if r.fecha_entrada:
+                # fecha = union_date_time(r.fecha_entrada, 0.0, user_tz)
+
+            _logger.warning(fecha)
+            r.fecha_hora_entrada = fecha
 
     @api.depends('fecha_entrada')
     def _compute_dia_semana_fecha_entrada(self):
@@ -59,6 +76,15 @@ class RegistroTiempo(models.Model):
                 r.horas_trabajadas = delta.total_seconds() / 3600.0
             else:
                 r.horas_trabajadas = False
+
+    @api.depends('fecha_salida', 'hora_salida')
+    def _compute_fecha_hora_entrada(self):
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        for r in self:
+            fecha = None
+            # if r.fecha_salida:
+            #     fecha = union_date_time(r.fecha_salida, r.hora_salida, user_tz)
+            r.fecha_hora_salida = fecha
 
     @api.depends('project_id', 'employee_id')
     def _compute_tecnico_calendario_id(self):
@@ -105,13 +131,13 @@ class RegistroTiempo(models.Model):
             'project_id': self.project_id.id or 0,
             'project_name': self.project_name or "",
             'tipo': tipo,
-            'festivo': self.festivo,
-            'nocturno': self.nocturno,
-            'fecha_entrada': self.fecha_entrada.strftime("%d/%m/%Y %H:%m") if self.fecha_entrada else "",
-            'fecha_salida': self.fecha_salida.strftime("%d/%m/%Y %H:%m") if self.fecha_salida else "",
+            'festivo': self.festivo or False,
+            'nocturno': self.nocturno or False,
+            'fecha_hora_entrada': self.fecha_hora_entrada.strftime("%d/%m/%Y %H:%m") if self.fecha_hora_entrada else "",
+            'fecha_hora_salida': self.fecha_hora_salida.strftime("%d/%m/%Y %H:%m") if self.fecha_hora_salida else "",
             'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
-            'horas_trabajadas': self.horas_trabajadas or "",
-            'horas_extra': self.horas_extra or "",
+            'horas_trabajadas': self.horas_trabajadas or 0,
+            'horas_extra': self.horas_extra or 0,
         }
         return data
 

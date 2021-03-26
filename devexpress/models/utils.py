@@ -51,6 +51,9 @@ def parse_filtro(filtro, condition_force=None):
 
     if isinstance(filtro, list) and len(filtro) == 3:
         valor = filtro[2]
+        if valor == 'No definido':
+            valor = None
+
         if condition_force:
             condition = condition_force
         elif filtro[1] == 'contains':
@@ -73,7 +76,7 @@ def parse_filtro(filtro, condition_force=None):
 
 def data_groups(res_model, grupos, domain, nivel, fields_exception=[]):
     if not grupos or (nivel + 1) > len(grupos):
-        return None, None
+        return None
 
     campo_group = grupos[nivel]['selector']
     if grupos[nivel] and 'desc' in grupos[nivel] and grupos[nivel]['desc']:
