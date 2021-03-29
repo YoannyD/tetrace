@@ -11,7 +11,6 @@
     'depends': [
         'base',
         'portal',
-        'devexpress',
         'project',
         'hr_attendance'
     ],
