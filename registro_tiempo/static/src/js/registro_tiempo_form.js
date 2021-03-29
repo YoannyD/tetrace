@@ -386,17 +386,17 @@ base.ready().then(function () {
                     dataField: "nocturno",
                 },
                 {
-                    caption: "Entrada",
-                    dataField: "fecha_entrada",
-                    dataType: "date",
-                },
-                {
                     caption: "Día",
                     dataField: "dia_semana_fecha_entrada",
                 },
                 {
+                    caption: "Entrada",
+                    dataField: "fecha_hora_entrada",
+                    dataType: "date",
+                },
+                {
                     caption: "Salida",
-                    dataField: "fecha_salida",
+                    dataField: "fecha_hora_salida",
                     dataType: "date",
                 },
                 {
