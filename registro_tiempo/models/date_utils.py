@@ -19,7 +19,12 @@ def sum_time_for_date(fecha, hora):
     tiempo = '{0:02.0f}:{1:02.0f}:00'.format(*divmod(hora * 60, 60)).split(":")
     return fecha + timedelta(hours=float(tiempo[0]), minutes=float(tiempo[1]))
 
-def union_date_time(fecha, hora, tz):
+def union_date_time(fecha, hora):
+    fecha_str = fecha.strftime("%Y-%m-%d")
+    hora_str = time_float_to_str(hora)
+    return fields.Datetime.from_string('%s %s' % (fecha_str, hora_str))
+
+def union_date_time_tz(fecha, hora, tz):
     fecha_str = fecha.strftime("%Y-%m-%d")
     hora_str = time_float_to_str(hora)
     return tz.localize(fields.Datetime.from_string('%s %s' % (fecha_str, hora_str))).astimezone(pytz.timezone('UTC'))

@@ -34,7 +34,7 @@
                                 </t>
                             ];
                         </script>
-                        <form id="form-registro-horas" style="max-width:600px;margin:0 auto;display:none">
+                        <form id="form-registro-horas" style="max-width:600px;margin:0 auto;display:none;">
                             <div class="dx-fieldset">
                                  <div class="dx-field mb-2">
                                     <div class="dx-field-label">Proyecto</div>
@@ -79,7 +79,7 @@
                                             <div id="paradas_dx"/>
                                         </div>
                                     </div>
-                                    <div class="dx-field mb-2">
+                                    <div class="dx-field dx-field-unidades_realizadas mb-2">
                                         <div class="dx-field-label">Unidades realizadas</div>
                                         <div class="dx-field-value">
                                             <div id="unidades_realizadas_dx"/>

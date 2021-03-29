@@ -5,7 +5,7 @@ import logging
 import pytz
 
 from odoo import models, fields, api, _
-from odoo.addons.registro_tiempo.models.date_utils import union_date_time
+from odoo.addons.registro_tiempo.models.date_utils import union_date_time_tz
 
 _logger = logging.getLogger(__name__)
 
@@ -58,7 +58,7 @@ class RegistroTiempo(models.Model):
         for r in self:
             fecha = None
             if r.fecha_entrada:
-                fecha = union_date_time(r.fecha_entrada, r.hora_entrada, user_tz)
+                fecha = union_date_time_tz(r.fecha_entrada, r.hora_entrada, user_tz)
                 fecha = fecha.strftime("%Y-%m-%d %H:%M:%S")
 
             r.fecha_hora_entrada = fecha
@@ -70,6 +70,7 @@ class RegistroTiempo(models.Model):
 
     @api.depends("fecha_hora_entrada", "fecha_hora_salida")
     def _compute_horas_trabajadas(self):
+
         for r in self:
             horas = 0
             if r.fecha_hora_entrada and r.fecha_hora_salida:
@@ -79,13 +80,13 @@ class RegistroTiempo(models.Model):
                     horas = 0
             r.horas_trabajadas = horas
 
-    @api.depends('fecha_salida', 'hora_salida')
+    @api.depends('fecha_salida', 'hora_salida',)
     def _compute_fecha_hora_salida(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for r in self:
             fecha = None
             if r.fecha_salida:
-                fecha = union_date_time(r.fecha_salida, r.hora_salida, user_tz)
+                fecha = union_date_time_tz(r.fecha_salida, r.hora_salida, user_tz)
                 fecha = fecha.strftime("%Y-%m-%d %H:%M:%S")
             r.fecha_hora_salida = fecha
 
@@ -112,7 +113,7 @@ class RegistroTiempo(models.Model):
 
     def es_nocturno(self):
         self.ensure_one()
-        return True if self.hora_entrada >= 22 else False
+        return True if self.hora_entrada < 6 or self.hora_entrada >= 22 else False
 
     def get_horas_extra(self):
         self.ensure_one()

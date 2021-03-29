@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record model="ir.ui.view" id="resource_calendar_form">
+        <field name="name">resource.calendar.form.tetrace</field>
+        <field name="inherit_id" ref="resource.resource_calendar_form"/>
+        <field name="model">resource.calendar</field>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet[1]" position="before">
+                <header>
+                    <field name="id" invisible="1"/>
+                    <button name="cargar_festivos"
+                            string="Cargar festivos"
+                            type="object"
+                            attrs="{'invisible': ['|', ('id', '=', False), ('country_id', '=', False)]}"
+                            class="oe_highlight"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//field[@name='tz']" position="after">
+                <field name="country_id"/>
+            </xpath>
+        </field>
+    </record>
+
     <record model="ir.ui.view" id="view_resource_calendar_attendance_tree">
         <field name="name">resource.calendar.attendance.tree.tetrace</field>
         <field name="inherit_id" ref="resource.view_resource_calendar_attendance_tree"/>

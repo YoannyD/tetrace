@@ -2,14 +2,14 @@ odoo.define('registro_tiempo.form', function (require) {
 "use strict";
 
 require('web_editor.ready');
-// DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
-//DevExpress.ui.dxOverlay.baseZIndex(2000);
-//Globalize.loadMessages({'es': es});
-
 var base = require('web_editor.base');
 var ajax = require('web.ajax');
 
 base.ready().then(function () {
+    DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
+    DevExpress.ui.dxOverlay.baseZIndex(2000);
+    DevExpress.config({ defaultCurrency: "EUR" });
+
     var current_position;
     var location = {};
     var mapWidget;
@@ -94,10 +94,12 @@ base.ready().then(function () {
                     $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
                     $(".dx-field-fecha_salida .dx-field-label").html("Fecha salida");
                     $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
+                    $(".dx-field-paradas").hide();
+                    $(".dx-field-unidades_realizadas").hide();
                 }else{
-                    console.log(fecha_entrada_dx);
-                    console.log(fecha_entrada_dx.option);
                     fecha_entrada_dx.option("onValueChanged");
+                    $(".dx-field-paradas").show();
+                    $(".dx-field-unidades_realizadas").show();
                 }
             }
         }).dxRadioGroup("instance");
@@ -176,16 +178,11 @@ base.ready().then(function () {
             displayFormat: "dd/MM/yyyy",
             pickerType: "rollers",
             onValueChanged: function(data) {
+                var label = "Fecha salida";
                 var f = new Date(data.value);
                 var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
-
-                var label = "Fecha salida";
-                if(tipo != 'Parte'){
-                    $(".dx-field-fecha_salida .dx-field-label").html(label);
-                    return;
-                }
 
                 if(!data.value || data.value == undefined || !project_id || project_id == undefined){
                     DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
@@ -203,15 +200,6 @@ base.ready().then(function () {
                     f.setHours(data["hasta_hora"], data["hasta_min"]);
                     hora_salida_dx.option("value", f);
                 });
-
-                ajax.jsonRpc("/api/festivo", 'call', params)
-                .then(function(result) {
-                    var data = $.parseJSON(result);
-                    if(data["festivo"]){
-                        label += ' <span class="badge badge-danger">Festivo</span>';
-                    }
-                    $(".dx-field-fecha_salida .dx-field-label").html(label);
-                });
             },
         }).dxValidator({
             validationRules: [{
@@ -224,14 +212,6 @@ base.ready().then(function () {
             type: "time",
             displayFormat: "HH:mm",
             pickerType: "rollers",
-            onValueChanged: function(data) {
-                var f = new Date(data.value);
-                var label = "Hora salida";
-                if(es_hora_nocturna(f.getHours())){
-                    label += ' <span class="badge badge-dark">Nocturno</span>';
-                }
-                $(".dx-field-hora_salida .dx-field-label").html(label);
-            },
         }).dxValidator({
             validationRules: [{
                 type: "required",
@@ -265,22 +245,12 @@ base.ready().then(function () {
                 {
                     caption: "Entrada",
                     dataField: "fecha_entrada",
-                    editorType: "dxDateBox",
-                    editorOptions: {
-                        type: "datetime",
-                        displayFormat: "dd/MM/yyyy HH:mm",
-                        width: "100%"
-                    }
+                    dataType: "datetime",
                 },
                 {
                     caption: "Salida",
                     dataField: "fecha_salida",
-                    editorType: "dxDateBox",
-                    editorOptions: {
-                        type: "datetime",
-                        displayFormat: "dd/MM/yyyy HH:mm",
-                        width: "100%"
-                    }
+                    dataType: "datetime",
                 },
             ],
         }).dxDataGrid("instance");
@@ -304,12 +274,15 @@ base.ready().then(function () {
 
         $("#form-registro-horas").on("submit", function(e) {
             e.preventDefault();
+            var hora_entrada = hora_entrada_dx.option("value");
+            var hora_salida = hora_salida_dx.option("value");
+
             var params = {
                 'project_id': project_id_dx.option("value"),
                 'fecha_entrada': fecha_entrada_dx.option("value"),
-                'hora_entrada': hora_entrada_dx.option("value"),
+                'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
                 'fecha_salida': fecha_salida_dx.option("value"),
-                'hora_salida': hora_salida_dx.option("value"),
+                'hora_salida': hora_salida.getHours() + ":" + hora_salida.getMinutes(),
                 'tipo': tipo_dx.option("value"),
                 'paradas': paradas_dx.option('dataSource'),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
@@ -321,14 +294,19 @@ base.ready().then(function () {
                 var data = $.parseJSON(result);
                 if(data["result"] == "ok"){
                     DevExpress.ui.notify("Ha registrado el tiempo correctamente");
-//                    e.reset();
+                    tipo_dx.option("value", "Parte");
+                    paradas_dx.option("dataSource", []);
+                    unidades_realizadas_dx.reset();
+                    observaciones_dx.reset();
+                    grid_resgistro_dx.refresh();
+                    project_id_dx.reset();
                 }else{
                     DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
                 }
             });
         });
 
-        $("#grid-registro").dxDataGrid({
+        var grid_resgistro_dx = $("#grid-registro").dxDataGrid({
             dataSource: new DevExpress.data.CustomStore({
                 key: "id",
                 load: function(loadOptions) {
@@ -468,7 +446,7 @@ base.ready().then(function () {
     }
 
     function es_hora_nocturna(hora){
-        if(hora >= 22)
+        if(hora < 6 || hora >= 22)
             return true;
         return false;
     }

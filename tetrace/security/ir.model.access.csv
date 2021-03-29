@@ -26,3 +26,4 @@ access_tetrace_imputacion_variable_line,access_tetrace_imputacion_variable_line,
 access_tetrace_alquiler_vehiculo,access_tetrace_alquiler_vehiculo,model_tetrace_alquiler_vehiculo,base.group_user,1,1,1,1
 access_tetrace_alojamiento,access_tetrace_alojamiento,model_tetrace_alojamiento,base.group_user,1,1,1,1
 access_tetrace_tecnico_calendario,access_tetrace_tecnico_calendario,model_tetrace_tecnico_calendario,base.group_user,1,1,1,1
+access_tetrace_festivo,access_tetrace_festivo,model_tetrace_festivo,base.group_user,1,1,1,1

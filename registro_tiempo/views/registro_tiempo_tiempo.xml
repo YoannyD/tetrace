@@ -43,8 +43,10 @@
                             <field name="nocturno"/>
                             <field name="fecha_entrada"/>
                             <field name="hora_entrada" widget="float_time"/>
+                            <field name="fecha_hora_entrada"/>
                             <field name="fecha_salida"/>
                             <field name="hora_salida" widget="float_time"/>
+                            <field name="fecha_hora_salida"/>
                             <field name="horas_trabajadas" widget="float_time"/>
                             <field name="horas_extra" widget="float_time"/>
                             <field name="horas_extra_cliente" widget="float_time"/>

@@ -15,70 +15,64 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="edit_project">
         <field name="name">project.project.form.tetrace</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="model">project.project</field>
         <field name="arch" type="xml">
             <xpath expr="//header[1]" position="inside">
-                <button class="oe_stat_button" 
-                        type="object" 
+                <button class="oe_stat_button"
+                        type="object"
                         name="action_activar_tareas"
                         string="Finalizar proyecto"/>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
+
+                <button class="oe_stat_button"
+                        type="object"
                         name="action_crear_tareas_act_desc"
                         string="Crear tareas Activación/Desactivación"/>
-                
-                <field name="estado_id" 
-                       widget="statusbar" 
+
+                <field name="estado_id"
+                       widget="statusbar"
                        options="{'clickable': '1'}"
                        groups="tetrace.group_tetrace_project_estado"/>
             </xpath>
-            
+
             <xpath expr="//div[@name='button_box']/button" position="before">
-                <button class="oe_stat_button" 
-                        type="object" 
+                <button class="oe_stat_button"
+                        type="object"
                         name="view_sale_order_form"
                         string="Presupuesto"
                         attrs="{'invisible':[('sale_order_id', '=', False)]}"
                         icon="fa-file-text-o"/>
             </xpath>
-            
+
             <xpath expr="//div[@name='button_box']" position="inside">
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="view_responsables_tree" 
+                <button class="oe_stat_button"
+                        type="object"
+                        name="view_responsables_tree"
                         string="Responsables"
                         icon="fa-male"/>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="view_tecnicos_tree" 
-                        string="Técnicos"
-                        icon="fa-users"/>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="view_procesos_seleccion_tree" 
+
+                <button class="oe_stat_button"
+                        type="object"
+                        name="view_procesos_seleccion_tree"
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="action_gastos" 
+
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_gastos"
                         string="Gastos"
                         icon="fa-usd"/>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="action_ingresos" 
+
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_ingresos"
                         string="Ingresos"
                         icon="fa-usd"/>
             </xpath>
-            
+
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="partner_ids">
                     <tree editable="bottom">
@@ -92,7 +86,7 @@
                 <field name="direccion"/>
                 <field name="nombre_parque"/>
             </xpath>
-            
+
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion"/>
@@ -101,15 +95,15 @@
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
                 <field name="resource_calendar_id" string="Calendario por defecto"/>
             </xpath>
-            
+
             <xpath expr="//group[@name='misc'][1]" position="replace"/>
-            
+
             <xpath expr="//page[@name='settings']" position="inside">
                 <group>
                     <field name="descripcion"/>
                 </group>
             </xpath>
-            
+
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Técnicos">
                     <field name="tecnico_calendario_ids" context="{'default_resource_calendar_id': resource_calendar_id}" nolabel="1">
@@ -122,7 +116,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="project_invoice_form_timesheet_tetrace">
         <field name="name">Inherit project form : Invoicing Data Tetrace</field>
         <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
@@ -133,7 +127,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="project_view_form_inherit_timesheet_tetrace">
         <field name="name">project.view.form.inherit.timesheet.tetrace</field>
         <field name="inherit_id" ref="sale_timesheet_enterprise.project_view_form_inherit"/>
@@ -142,13 +136,13 @@
             <xpath expr="//field[@name='allow_timesheet_timer']/../.." position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            
+
             <xpath expr="//div[@id='allow_billable_container']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="view_project_kanban">
         <field name="name">project.project.kanban.tetrace</field>
         <field name="model">project.project</field>
@@ -159,7 +153,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="project_project_map_tetrace">
         <field name="name">project.project.map.tetrace</field>
         <field name="model">project.project</field>
@@ -178,21 +172,21 @@
         <field name="model">project.project</field>
         <field name="arch" type="xml">
             <xpath expr="//filter[1]" position="before">
-                <filter string="Diseño" 
-                        name="filter_estado_id_diseno" 
+                <filter string="Diseño"
+                        name="filter_estado_id_diseno"
                         domain="[('estado_id', '=', 3)]"/>
-                <filter string="En proceso" 
-                        name="filter_estado_id_en_proceso" 
+                <filter string="En proceso"
+                        name="filter_estado_id_en_proceso"
                         domain="[('estado_id', '=', 1)]"/>
-                <filter string="Terminado" 
-                        name="filter_estado_id_terminado" 
+                <filter string="Terminado"
+                        name="filter_estado_id_terminado"
                         domain="[('estado_id', '=', 2)]"/>
-                <filter string="Cancelado" 
-                        name="filter_estado_id_cancelado" 
+                <filter string="Cancelado"
+                        name="filter_estado_id_cancelado"
                         domain="[('estado_id', '=', 4)]"/>
                 <separator/>
             </xpath>
-            
+
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="estado_id"/>
             </xpath>
@@ -253,12 +247,12 @@
                 <field name="employee_id" attrs="{'invisible': [('tarea_individual', '=', False)]}"/>
                 <field name="tipo"/>
             </xpath>
-            
+
             <xpath expr="//notebook[1]" position="inside">
                 <page name="jobs" string="Procesos de selección" attrs="{'invisible': [('tarea_seleccion', '=', False)]}">
                     <field name="applicant_ids" nolabel="1"/>
                 </page>
-                
+
                 <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">
                     <field name="producto_entrega" invisible="1"/>
                     <field name="desde_plantilla" invisible="1"/>
@@ -270,7 +264,7 @@
                         </tree>
                     </field>
                 </page>
-                
+
                 <page name="opciones" string="Opciones">
                     <group>
                         <group>
@@ -286,7 +280,7 @@
                         </group>
                     </group>
                 </page>
-                
+
                 <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="viaje_ids" nolabel="1">
                         <tree editable="bottom">
@@ -315,7 +309,7 @@
                         </form>
                     </field>
                 </page>
-                
+
                 <page name="alquiler_vehiculos" string="Alquiler vehículos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alquiler_vehiculo_ids" nolabel="1">
                         <tree editable="bottom">
@@ -330,7 +324,7 @@
                         </tree>
                     </field>
                 </page>
-                
+
                 <page name="alojamientos" string="Alojamientos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alojamiento_ids" nolabel="1">
                         <tree editable="bottom">
@@ -346,7 +340,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="view_task_tree2">
         <field name="name">project.task.tree.tetrace</field>
         <field name="model">project.task</field>
@@ -358,7 +352,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="view_task_search_form">
         <field name="name">project.task.search.form.tetrace</field>
         <field name="model">project.task</field>
@@ -367,13 +361,13 @@
             <xpath expr="//filter[@name='inactive']" position="after">
                 <filter string="Desactivadas" name="no_activada" domain="[('activada', '=', False)]"/>
             </xpath>
-            
+
             <xpath expr="//filter[@name='user']" position="after">
                 <filter string="Empleados" name="filter_employee_id" context="{'group_by': 'employee_id'}"/>
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="task_type_edit">
         <field name="name">project.task.type.form.tetrace</field>
         <field name="model">project.task.type</field>
@@ -395,7 +389,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record id="action_tetrace_motivo_cancelacion" model="ir.actions.act_window">
         <field name="name">Motivos cancelación</field>
         <field name="res_model">tetrace.motivo_cancelacion</field>
@@ -421,7 +415,7 @@
             </form>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="tetrace_motivo_cancelacion_tree">
         <field name="name">tetrace.motivo_cancelacion.form</field>
         <field name="model">tetrace.motivo_cancelacion</field>

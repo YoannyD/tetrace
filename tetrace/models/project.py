@@ -220,16 +220,6 @@ class Project(models.Model):
         for r in self:
             r.type_ids = [(4, 4), (4, 5), (4, 10), (4, 269)]
 
-    def view_tecnicos_tree(self):
-        self.ensure_one()
-        ctx = dict(self._context)
-        ctx.update({'search_default_filter_employee_id': True})
-        action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
-        action.update({'domain': [('id', 'in', self.tasks.filtered(lambda x: x.employee_id).ids)]})
-        action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
-        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
-        return dict(action, context=ctx)
-
     def view_procesos_seleccion_tree(self):
         self.ensure_one()
         applicant_ids = []

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# © 2020 Ingetive - <info@ingetive.com>
+# © 2021 Ingetive - <info@ingetive.com>
 
 from . import tetrace_validacion
 from . import account_financial_report
@@ -43,6 +43,7 @@ from . import tetrace_tickelia
 from . import tetrace_viaje
 from . import tetrace_imputacion_variable
 from . import tetrace_prevision_facturacion
+from . import tetrace_festivo
 from . import mod303
 from . import mail_thread
 from . import mail_followers

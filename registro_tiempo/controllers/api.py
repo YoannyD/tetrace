@@ -7,7 +7,8 @@ import json
 from odoo import http, fields
 from odoo.http import request
 from odoo.addons.devexpress.models.utils import create_domain, data_groups
-from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time, datetime_from_string, date_str_to_float_time
+from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time, datetime_from_string, \
+    date_str_to_float_time, time_str_to_float
 
 _logger = logging.getLogger(__name__)
 
@@ -155,19 +156,26 @@ class RegistroTiempoAPI(http.Controller):
             raise
 
         fecha_entrada = date_from_string(kw.get("fecha_entrada"))
-        hora_entrada = datetime_from_string(kw.get("hora_entrada"))
+        try:
+            hora_entrada = time_str_to_float(kw.get("hora_entrada"))
+        except:
+            hora_entrada = 0
+
         fecha_salida = date_from_string(kw.get("fecha_salida"))
-        hora_salida = datetime_from_string(kw.get("hora_salida"))
+
+        try:
+            hora_salida = time_str_to_float(kw.get("hora_salida"))
+        except:
+            hora_salida = 0
 
         values = {
             'project_id': project_id,
             "employee_id": request.env.user.employee_ids[0].id,
             "tipo": kw.get("tipo").lower(),
             "fecha_entrada": fecha_entrada,
-            "hora_entrada": date_str_to_float_time(hora_entrada.strftime("%Y-%m-%d %H:%m")) if hora_entrada else 0,
+            "hora_entrada": hora_entrada,
             "fecha_salida": fecha_salida,
-            "hora_salida": date_str_to_float_time(hora_salida.strftime("%Y-%m-%d %H:%m")) if hora_salida else 0,
-            "unidades_realizadas": kw.get("unidades_realizadas"),
+            "hora_salida": hora_salida,
             "observaciones": kw.get("observaciones")
         }
 
@@ -177,23 +185,24 @@ class RegistroTiempoAPI(http.Controller):
             'horas_extra_cliente': tiempo.get_horas_extra_cliente(),
         }
         if tiempo.es_festivo():
-            _logger.warning("es festivo")
             values.update({'festivo': True})
 
         if tiempo.es_festivo_cliente():
             values.update({'festivo_cliente': True})
 
         if tiempo.es_nocturno():
-            _logger.warning("es festivo")
             values.update({'nocturno': True})
+
+        if tiempo.tipo == 'parte':
+            values.update({'unidades_realizadas': kw.get("unidades_realizadas")})
 
         if values:
             tiempo.write(values)
 
-        if kw.get("paradas"):
+        if tiempo.tipo == 'parte' and kw.get("paradas"):
             for parada in kw.get("paradas"):
-                fecha_entrada = date_from_string(parada['fecha_entrada'])
-                fecha_salida = date_from_string(parada['fecha_salida'])
+                fecha_entrada = datetime_from_string(parada['fecha_entrada'])
+                fecha_salida = datetime_from_string(parada['fecha_salida'])
 
                 request.env['registro_tiempo.tiempo_parada'].sudo().create({
                     'tiempo_id': tiempo.id,

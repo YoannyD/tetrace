@@ -8,6 +8,33 @@ from datetime import datetime, timedelta
 
 _logger = logging.getLogger(__name__)
 
+class ResourceCalendar(models.Model):
+    _inherit = "resource.calendar"
+
+    country_id = fields.Many2one('res.country', string="País")
+
+    def cargar_festivos(self):
+        for r in self:
+            if r.country_id:
+                festivos = self.env['tetrace.festivo'].search([('country_id', '=', r.country_id.id)])
+                Leaves = self.env['resource.calendar.leaves']
+                for festivo in festivos:
+                    leave = Leaves.search([
+                        ('calendar_id', '=', r.id),
+                        ('date_from', '=', festivo.fecha_inicio.strftime("%Y-%m-%d 00:00:00")),
+                        ('date_to', '=', festivo.fecha_fin.strftime("%Y-%m-%d 00:00:00")),
+                    ], limit=1)
+
+                    if leave:
+                        leave.write({'name': festivo.name})
+                    else:
+                        Leaves.create({
+                            'name': festivo.name,
+                            'date_from': festivo.fecha_inicio.strftime("%Y-%m-%d 00:00:00"),
+                            'date_to': festivo.fecha_fin.strftime("%Y-%m-%d 00:00:00"),
+                            'calendar_id': r.id
+                        })
+
 
 class ResourceCalendarAttendance(models.Model):
     _inherit = "resource.calendar.attendance"
