@@ -91,7 +91,7 @@ class SaleOrder(models.Model):
             for line in r.order_line:
                 total += line.untaxed_amount_to_invoice
             r.importe_pendiente_facturar = total
-                
+
     @api.depends("rfq", "ref_proyecto")
     def _compute_name(self):
         for r in self:

@@ -135,11 +135,16 @@ class RegistroTiempoAPI(http.Controller):
         offset = offset or 0
         limit = limit or 10
         order = order or "id desc"
+
+        _logger.warning(filtros)
+
         domain = create_domain(filtros)
         domain += [('employee_id', 'in', request.env.user.employee_ids.ids)]
 
         if group:
+            _logger.warning(group)
             data = data_groups("registro_tiempo.tiempo", group, domain, 0)
+            _logger.warning(data)
         else:
             Tiempo = request.env["registro_tiempo.tiempo"].sudo()
             tiempos = Tiempo.search(domain, offset=offset, limit=limit, order=order)

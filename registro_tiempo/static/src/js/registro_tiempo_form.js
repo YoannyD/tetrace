@@ -392,12 +392,14 @@ base.ready().then(function () {
                 {
                     caption: "Entrada",
                     dataField: "fecha_hora_entrada",
-                    dataType: "date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm",
                 },
                 {
                     caption: "Salida",
                     dataField: "fecha_hora_salida",
-                    dataType: "date",
+                    dataType: "datetime",
+                    format: "dd/MM/yyyy HH:mm",
                 },
                 {
                     caption: "Horas",
