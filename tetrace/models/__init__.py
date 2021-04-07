@@ -36,6 +36,7 @@ from . import stock_move
 from . import mis_report_instance
 from . import mis_report
 from . import aep
+from . import kpimatrix
 from . import tetrace_alquiler_vehiculo
 from . import tetrace_alojamiento
 from . import tetrace_tipo_proyecto

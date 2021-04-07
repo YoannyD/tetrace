@@ -84,6 +84,7 @@
         'views/resource_calendar.xml',
         'views/stock_move.xml',
         'views/mis_report_instance.xml',
+        'views/mis_report.xml',
         'views/tetrace_tickelia.xml',
         'views/tetrace_vat_book.xml',
         'views/account_analytic_account.xml',
