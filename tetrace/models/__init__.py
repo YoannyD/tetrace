@@ -15,6 +15,7 @@ from . import product
 from . import product_template
 from . import product_category
 from . import account_partner_ledger
+from . import date_utils
 from . import project
 from . import conexion_mysql
 from . import tetrace_skills

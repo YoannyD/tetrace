@@ -2,6 +2,7 @@
 # © 2021 Ingetive - <info@ingetive.com>
 
 import logging
+import pytz
 
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
@@ -14,15 +15,21 @@ class ResourceCalendar(models.Model):
     country_id = fields.Many2one('res.country', string="País")
 
     def cargar_festivos(self):
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for r in self:
             if r.country_id:
                 festivos = self.env['tetrace.festivo'].search([('country_id', '=', r.country_id.id)])
                 Leaves = self.env['resource.calendar.leaves']
                 for festivo in festivos:
+                    fecha_inicio = user_tz.localize(fields.Datetime.from_string('%s %s' % (festivo.fecha_inicio, '00:00:00'))).astimezone(pytz.timezone('UTC'))
+                    fecha_inicio_str = fecha_inicio.strftime("%Y-%m-%d %H:%M:%S")
+                    fecha_fin = user_tz.localize(fields.Datetime.from_string('%s %s' % (festivo.fecha_inicio, '23:59:59'))).astimezone(pytz.timezone('UTC'))
+                    fecha_fin_str = fecha_fin.strftime("%Y-%m-%d %H:%M:%S")
+
                     leave = Leaves.search([
                         ('calendar_id', '=', r.id),
-                        ('date_from', '=', festivo.fecha_inicio.strftime("%Y-%m-%d 00:00:00")),
-                        ('date_to', '=', festivo.fecha_fin.strftime("%Y-%m-%d 00:00:00")),
+                        ('date_from', '=', fecha_inicio_str),
+                        ('date_to', '=', fecha_fin_str),
                     ], limit=1)
 
                     if leave:
@@ -30,8 +37,8 @@ class ResourceCalendar(models.Model):
                     else:
                         Leaves.create({
                             'name': festivo.name,
-                            'date_from': festivo.fecha_inicio.strftime("%Y-%m-%d 00:00:00"),
-                            'date_to': festivo.fecha_fin.strftime("%Y-%m-%d 00:00:00"),
+                            'date_from': fecha_inicio_str,
+                            'date_to': fecha_fin_str,
                             'calendar_id': r.id
                         })
 
