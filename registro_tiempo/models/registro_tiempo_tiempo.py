@@ -5,7 +5,8 @@ import logging
 import pytz
 
 from odoo import models, fields, api, _
-from odoo.addons.registro_tiempo.models.date_utils import union_date_time_tz
+from odoo.addons.registro_tiempo.models.date_utils import union_date_time_tz, time_float_to_str
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -54,6 +55,12 @@ class RegistroTiempo(models.Model):
     horas_extra = fields.Float('Horas extras')
     horas_extra_cliente = fields.Float('Horas extras cliente')
 
+    @api.constrains("fecha_hora_entrada", "fecha_hora_salida")
+    def _check_fechas_hora(self):
+        for r in self:
+            if r.fecha_hora_entrada and r.fecha_hora_salida and r.fecha_hora_entrada > r.fecha_hora_salida:
+                raise ValidationError(_("La fecha de salida tiene que se superior a la de entrada"))
+
     @api.depends('fecha_entrada', 'hora_entrada')
     def _compute_fecha_hora_entrada(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
@@ -72,7 +79,6 @@ class RegistroTiempo(models.Model):
 
     @api.depends("fecha_hora_entrada", "fecha_hora_salida")
     def _compute_horas_trabajadas(self):
-
         for r in self:
             horas = 0
             if r.fecha_hora_entrada and r.fecha_hora_salida:
@@ -148,8 +154,22 @@ class RegistroTiempo(models.Model):
 
         dia_semana_fecha_entrada = ""
         if self.dia_semana_fecha_entrada:
-            dia_semana_fecha_entrada = dict(self._fields['dia_semana_fecha_entrada'].selection).get(
-                self.dia_semana_fecha_entrada)
+            dia_semana_fecha_entrada = dict(self._fields['dia_semana_fecha_entrada'].selection).get(self.dia_semana_fecha_entrada)
+
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        fecha_hora_entrada = ""
+        if self.fecha_hora_entrada:
+            fecha_hora_entrada = self.fecha_hora_entrada\
+                .astimezone(user_tz)\
+                .replace(tzinfo=None)\
+                .strftime("%Y/%m/%d %H:%M:00")
+
+        fecha_hora_salida = ""
+        if self.fecha_hora_salida:
+            fecha_hora_salida = self.fecha_hora_salida \
+                .astimezone(user_tz) \
+                .replace(tzinfo=None) \
+                .strftime("%Y/%m/%d %H:%M:00")
 
         data = {
             'id': self.id,
@@ -158,8 +178,8 @@ class RegistroTiempo(models.Model):
             'tipo': tipo,
             'festivo': self.festivo or False,
             'nocturno': self.nocturno or False,
-            'fecha_hora_entrada': self.fecha_hora_entrada.strftime("%Y/%m/%d %H:%M:00") if self.fecha_hora_entrada else "",
-            'fecha_hora_salida': self.fecha_hora_salida.strftime("%Y/%m/%d %H:%M:00") if self.fecha_hora_salida else "",
+            'fecha_hora_entrada': fecha_hora_entrada,
+            'fecha_hora_salida': fecha_hora_salida,
             'dia_semana_fecha_entrada': dia_semana_fecha_entrada,
             'horas_trabajadas': self.horas_trabajadas or 0,
             'horas_extra': self.horas_extra or 0,
