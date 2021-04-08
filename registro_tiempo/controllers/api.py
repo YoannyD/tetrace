@@ -136,15 +136,11 @@ class RegistroTiempoAPI(http.Controller):
         limit = limit or 10
         order = order or "id desc"
 
-        _logger.warning(filtros)
-
         domain = create_domain(filtros)
         domain += [('employee_id', 'in', request.env.user.employee_ids.ids)]
 
         if group:
-            _logger.warning(group)
             data = data_groups("registro_tiempo.tiempo", group, domain, 0)
-            _logger.warning(data)
         else:
             Tiempo = request.env["registro_tiempo.tiempo"].sudo()
             tiempos = Tiempo.search(domain, offset=offset, limit=limit, order=order)
@@ -167,7 +163,6 @@ class RegistroTiempoAPI(http.Controller):
             hora_entrada = 0
 
         fecha_salida = date_from_string(kw.get("fecha_salida"))
-
         try:
             hora_salida = time_str_to_float(kw.get("hora_salida"))
         except:
@@ -183,7 +178,7 @@ class RegistroTiempoAPI(http.Controller):
             "hora_salida": hora_salida,
             "observaciones": kw.get("observaciones")
         }
-
+        
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
         values = {
             'horas_extra': tiempo.get_horas_extra(),

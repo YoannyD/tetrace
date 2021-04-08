@@ -276,19 +276,25 @@ base.ready().then(function () {
             e.preventDefault();
             var hora_entrada = hora_entrada_dx.option("value");
             var hora_salida = hora_salida_dx.option("value");
+            
+            var f = fecha_entrada_dx.option("value");
+            var fecha_entrada = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+            
+            var f = fecha_salida_dx.option("value");
+            var fecha_salida = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
 
             var params = {
                 'project_id': project_id_dx.option("value"),
-                'fecha_entrada': fecha_entrada_dx.option("value"),
+                'fecha_entrada': fecha_entrada,
                 'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
-                'fecha_salida': fecha_salida_dx.option("value"),
+                'fecha_salida': fecha_salida,
                 'hora_salida': hora_salida.getHours() + ":" + hora_salida.getMinutes(),
                 'tipo': tipo_dx.option("value"),
                 'paradas': paradas_dx.option('dataSource'),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
                 'observaciones': observaciones_dx.option("value"),
             };
-
+   
             ajax.jsonRpc("/api/time/register", 'call', params)
             .then(function(result) {
                 var data = $.parseJSON(result);

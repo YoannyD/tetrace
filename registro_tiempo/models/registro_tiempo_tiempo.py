@@ -88,7 +88,7 @@ class RegistroTiempo(models.Model):
                     horas = 0
             r.horas_trabajadas = horas
 
-    @api.depends('fecha_salida', 'hora_salida',)
+    @api.depends('fecha_salida', 'hora_salida')
     def _compute_fecha_hora_salida(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
         for r in self:
