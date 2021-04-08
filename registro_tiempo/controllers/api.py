@@ -235,12 +235,13 @@ class RegistroTiempoAPI(http.Controller):
 
         tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
             ('project_id', '=', project_id),
-            ('employee_id', 'in', request.env.user.employee_ids.ids)
+            ('employee_id', 'in', request.env.user.employee_ids.ids),
+            ('resource_calendar_id', '!=', False)
         ], limit=1)
 
         festivo = False
         if tecnico_calendario:
-            festivo = tecnico_calendario.es_festivo(fecha)
+            festivo = tecnico_calendario.resource_calendar_id.es_festivo(fecha)
 
         return json.dumps({
             "result": "ok",

@@ -25,7 +25,9 @@ class RegistroTiempo(models.Model):
     project_name = fields.Char(related="project_id.name", store="True")
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
     tecnico_calendario_id = fields.Many2one('tetrace.tecnico_calendario', string="Técnico calendario",
-                                            compute="_compute_tecnico_calendario_id")
+                                            compute="_compute_tecnico_calendario")
+    resource_calendar_id = fields.Many2one("resource.calendar", string="Calendario laboral",
+                                            compute="_compute_tecnico_calendario")
     fecha_entrada = fields.Date('Fecha entrada')
     hora_entrada = fields.Float('Hora entrada', default=0.0)
     fecha_hora_entrada = fields.Datetime('Fecha/Hora entrada', compute="_compute_fecha_hora_entrada", store=True)
@@ -91,23 +93,28 @@ class RegistroTiempo(models.Model):
             r.fecha_hora_salida = fecha
 
     @api.depends('project_id', 'employee_id')
-    def _compute_tecnico_calendario_id(self):
+    def _compute_tecnico_calendario(self):
         for r in self:
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].sudo().search([
                 ('project_id', '=', r.project_id.id),
                 ('employee_id', '=', r.employee_id.id),
             ], limit=1)
-            r.tecnico_calendario_id = tecnico_calendario.id
+            r.update({
+                'tecnico_calendario_id': tecnico_calendario.id,
+                'resource_calendar_id': tecnico_calendario.resource_calendar_id.id if tecnico_calendario.resource_calendar_id else False
+            })
 
     def es_festivo(self):
         self.ensure_one()
-        if self.fecha_entrada and self.tecnico_calendario_id and self.tecnico_calendario_id.es_festivo(self.fecha_entrada):
+        if self.fecha_entrada and self.resource_calendar_id and \
+            self.resource_calendar_id.es_festivo(self.fecha_entrada):
             return True
         return False
 
     def es_festivo_cliente(self):
         self.ensure_one()
-        if self.fecha_entrada and self.tecnico_calendario_id and self.tecnico_calendario_id.es_festivo_cliente(self.fecha_entrada):
+        if self.fecha_entrada and self.resource_calendar_id and \
+            self.resource_calendar_id.es_festivo_cliente(self.fecha_entrada):
             return True
         return False
 
@@ -117,8 +124,8 @@ class RegistroTiempo(models.Model):
 
     def get_horas_extra(self):
         self.ensure_one()
-        if self.horas_trabajadas and self.tecnico_calendario_id:
-            attendance = self.tecnico_calendario_id.get_attendance(self.fecha_entrada)
+        if self.horas_trabajadas and self.resource_calendar_id:
+            attendance = self.resource_calendar_id.get_attendance(self.fecha_entrada)
             if attendance:
                 horas_extra = self.horas_trabajadas - attendance.horas
                 return horas_extra if horas_extra >= 0 else 0
@@ -126,8 +133,8 @@ class RegistroTiempo(models.Model):
 
     def get_horas_extra_cliente(self):
         self.ensure_one()
-        if self.horas_trabajadas and self.tecnico_calendario_id:
-            attendance = self.tecnico_calendario_id.get_attendance(self.fecha_entrada)
+        if self.horas_trabajadas and self.resource_calendar_id:
+            attendance = self.resource_calendar_id.get_attendance(self.fecha_entrada)
             if attendance:
                 horas_extra = self.horas_trabajadas - attendance.horas_cliente
                 return horas_extra if horas_extra >= 0 else 0

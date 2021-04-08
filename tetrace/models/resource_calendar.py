@@ -5,7 +5,7 @@ import logging
 import pytz
 
 from odoo import models, fields, api, _
-from datetime import datetime, timedelta
+from datetime import datetime, date
 
 _logger = logging.getLogger(__name__)
 
@@ -13,6 +13,65 @@ class ResourceCalendar(models.Model):
     _inherit = "resource.calendar"
 
     country_id = fields.Many2one('res.country', string="País")
+
+    def es_festivo_global(self, fecha):
+        self.ensure_one()
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+
+        if type(fecha) is date:
+            fecha_aux = user_tz.localize(fields.Datetime.from_string('%s %s' % (fecha, '00:00:00'))).astimezone(pytz.timezone('UTC'))
+            fecha_str = fecha_aux.strftime("%Y-%m-%d %H:%M:%S")
+        elif type(fecha) is datetime:
+            fecha_str = fecha.strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            return False
+
+        leave = self.env['resource.calendar.leaves'].sudo().search([
+            ('calendar_id', '=', self.id),
+            ('date_from', '<=', fecha_str),
+            ('date_to', '>=', fecha_str),
+        ], limit=1)
+
+        if leave:
+            return True
+        return False
+
+    def es_festivo(self, fecha):
+        self.ensure_one()
+        if self.es_festivo_global(fecha):
+            return True
+
+        festivo = True
+        for attendance in self.attendance_ids:
+            if attendance.dayofweek == str(fecha.weekday()):
+                if attendance.festivo:
+                    return True
+                else:
+                    festivo = False
+
+        return festivo
+
+    def es_festivo_cliente(self, fecha):
+        self.ensure_one()
+        if self.es_festivo_global(fecha):
+            return True
+
+        festivo = True
+        for attendance in self.attendance_ids:
+            if attendance.dayofweek == str(fecha.weekday()):
+                if attendance.festivo_cliente:
+                    return True
+                else:
+                    festivo = False
+
+        return festivo
+
+    def get_attendance(self, fecha):
+        self.ensure_one()
+        for attendance in self.attendance_ids:
+            if attendance.dayofweek == str(fecha.weekday()):
+                return attendance
+        return None
 
     def cargar_festivos(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')

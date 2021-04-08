@@ -496,34 +496,3 @@ class TecnicoCalendario(models.Model):
     project_id = fields.Many2one('project.project', string="Proyecto")
     employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
     resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
-
-    def es_festivo(self, fecha):
-        self.ensure_one()
-        festivo = True
-        for attendance in self.resource_calendar_id.attendance_ids:
-            if attendance.dayofweek == str(fecha.weekday()):
-                if attendance.festivo:
-                    return True
-                else:
-                    festivo = False
-
-        return festivo
-
-    def es_festivo_cliente(self, fecha):
-        self.ensure_one()
-        festivo = True
-        for attendance in self.resource_calendar_id.attendance_ids:
-            if attendance.dayofweek == str(fecha.weekday()):
-                if attendance.festivo_cliente:
-                    return True
-                else:
-                    festivo = False
-
-        return festivo
-
-    def get_attendance(self, fecha):
-        self.ensure_one()
-        for attendance in self.resource_calendar_id.attendance_ids:
-            if attendance.dayofweek == str(fecha.weekday()):
-                return attendance
-        return None
