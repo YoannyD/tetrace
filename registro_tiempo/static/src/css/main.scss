@@ -7,7 +7,11 @@
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.3);
 }
 
-#form-registro-horas{
-    margin:0 auto;
-    max-width:500px;
+.dx-field-label{
+    width: 30%!important;
+}
+
+.dx-field-value-static,
+.dx-field-value:not(.dx-switch):not(.dx-checkbox):not(.dx-button){
+    width: 70%!important;
 }

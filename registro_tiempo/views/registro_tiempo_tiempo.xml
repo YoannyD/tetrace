@@ -32,13 +32,24 @@
                         <group>
                             <field name="project_id"/>
                             <field name="employee_id"/>
+                            <field name="tipo" required="1"/>
+                            <field name="unidades_realizadas"/>
                             <field name="observaciones"/>
                         </group>
                         <group>
+                            <field name="dia_semana_fecha_entrada"/>
+                            <field name="festivo"/>
+                            <field name="festivo_cliente"/>
+                            <field name="nocturno"/>
                             <field name="fecha_entrada"/>
+                            <field name="hora_entrada" widget="float_time"/>
+                            <field name="fecha_hora_entrada"/>
                             <field name="fecha_salida"/>
+                            <field name="hora_salida" widget="float_time"/>
+                            <field name="fecha_hora_salida"/>
                             <field name="horas_trabajadas" widget="float_time"/>
-                            <field name="unidades_realizadas"/>
+                            <field name="horas_extra" widget="float_time"/>
+                            <field name="horas_extra_cliente" widget="float_time"/>
                         </group>
                     </group>
                     <notebook>
@@ -66,9 +77,15 @@
                 <field name="project_id"/>
                 <field name="employee_id"/>
                 <field name="unidades_realizadas"/>
-                <field name="fecha_entrada"/>
-                <field name="fecha_salida"/>
+                <field name="dia_semana_fecha_entrada"/>
+                <field name="festivo"/>
+                <field name="festivo_cliente"/>
+                <field name="nocturno"/>
+                <field name="fecha_hora_entrada"/>
+                <field name="fecha_hora_salida"/>
                 <field name="horas_trabajadas" widget="float_time"/>
+                <field name="horas_extra" widget="float_time"/>
+                <field name="horas_extra_cliente" widget="float_time"/>
             </tree>
         </field>
     </record>

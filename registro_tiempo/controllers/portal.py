@@ -16,8 +16,9 @@ class RegistroHoras(CustomerPortal):
     def home_parte_horas(self, **kwargs):
         projects = request.env['project.project'].sudo().search([])
         tipos_parada = request.env["registro_tiempo.tipo_parada"].sudo().search([])
+        employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
         values = {
-            'employee': request.env.user.employee_id,
+            'employee': employee,
             'projects': projects,
             'tipos_parada': tipos_parada
         }

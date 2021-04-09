@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_tetrace_festivo" model="ir.actions.act_window">
+        <field name="name">Festivos</field>
+        <field name="res_model">tetrace.festivo</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_tetrace_festivo"
+              id="menu_tetrace_festivo"
+              name="Festivos"
+              parent="project.menu_project_config"
+              sequence="15"/>
+
+    <record model="ir.ui.view" id="tetrace_festivo_form">
+        <field name="name">tetrace.festivo.form</field>
+        <field name="model">tetrace.festivo</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="country_id"/>
+                        </group>
+                        <group>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_festivo_tree">
+        <field name="name">tetrace.festivo.tree</field>
+        <field name="model">tetrace.festivo</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="country_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="tetrace_festivo_search">
+        <field name="name">tetrace.festivo.search</field>
+        <field name="model">tetrace.festivo</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="country_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <field name="name"/>
+                <separator/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="country_id_group" string="País" domain="[]" context="{'group_by' : 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>
