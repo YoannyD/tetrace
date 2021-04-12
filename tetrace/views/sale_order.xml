@@ -60,6 +60,14 @@
                         icon="fa-tasks">
                     <field name="version_count" widget="statinfo" string="Versiones"/>
                 </button>
+                
+                <button name="action_view_purchase_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-cart-plus"
+                        attrs="{'invisible': [('purchase_order_count', '=', 0)]}">
+                    <field name="purchase_order_count" widget="statinfo" string="Compras"/>
+                </button>
             </xpath>
 
             <xpath expr="//div[hasclass('oe_title')]" position="replace">
