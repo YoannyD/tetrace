@@ -279,6 +279,9 @@ class SaleOrder(models.Model):
                         'company_id': None
                     })
 
+    def _create_analytic_account(self, prefix=None):
+        pass
+                    
     def action_crear_version(self):
         self.ensure_one()
         wizard = self.env['tetrace.crear_version'].create({
@@ -520,7 +523,10 @@ class SaleOrderLine(models.Model):
 
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
-        values.update({'user_id': self.order_id.coordinador_proyecto_id.id})
+        values.update({
+            'analytic_account_id': self.order_id.analytic_account_id.id if self.order_id.analytic_account_id else False,
+            'user_id': self.order_id.coordinador_proyecto_id.id
+        })
         return values
 
     def _timesheet_create_project(self):

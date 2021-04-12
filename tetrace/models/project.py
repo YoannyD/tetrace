@@ -122,6 +122,13 @@ class Project(models.Model):
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
 
+    @api.model
+    def _create_analytic_account_from_values(self, values):
+        return self.env['account.analytic.account'].search([('id', '<', 0)], limit=1)
+    
+    def _create_analytic_account(self):
+        return self.env['account.analytic.account'].search([('id', '<', 0)], limit=1)
+    
     def view_responsables_tree(self):
         self.ensure_one()
         ctx = dict(self._context)
