@@ -25,6 +25,7 @@ class Applicant(models.Model):
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
     task_ids = fields.Many2many("project.task", 'task_applicant_rel', 'applicant_id', 'task_id', 
                                 domain="[('tarea_seleccion', '=', True)]")
+    proceso_seleccion_id= fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
 
     def _compute_document_applicant(self):
         for r in self:

@@ -38,8 +38,12 @@
                 <field name="sin_adjuntos"/>
                 <field name="icono_warning"/>
             </xpath>
-
+            
             <xpath expr="//field[@name='job_id']" position="after">
+                <field name="proceso_seleccion_id"/>
+            </xpath>
+
+            <xpath expr="//field[@name='job_id']" position="before">
                 <field name="referencia"/>
             </xpath>
 
