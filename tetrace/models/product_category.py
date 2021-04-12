@@ -12,7 +12,8 @@ class ProductCategory(models.Model):
     _inherit = "product.category"
 
     referencia = fields.Char('Referencia')
-    account_activo_id = fields.Many2one('account.account', string="Cuenta activo")
+    account_activo_id = fields.Many2one('account.account', string="Cuenta activo", company_dependent=True,
+                                        domain="['&', ('deprecated', '=', False), ('company_id', '=', current_company_id)]",)
 
     def write(self, vals):
         res = super(ProductCategory, self).write(vals)
