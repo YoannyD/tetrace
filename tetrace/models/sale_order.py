@@ -265,7 +265,6 @@ class SaleOrder(models.Model):
             order.action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
-        self.send_mail_seguidores()
         self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
         return res
 
