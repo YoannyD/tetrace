@@ -14,6 +14,7 @@ class AccountAnalyticAccount(models.Model):
     _description = 'Analytic Account'
     
     estructurales = fields.Boolean(string='Estructurales', default=False)
+    update_from_sale_order = fields.Boolean("Actualizar desde Pedido de Venta")
 
     @api.constrains('company_id')
     def _check_company_id(self):
