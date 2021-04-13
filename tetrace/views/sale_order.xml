@@ -60,6 +60,14 @@
                         icon="fa-tasks">
                     <field name="version_count" widget="statinfo" string="Versiones"/>
                 </button>
+                
+                <button name="action_view_purchase_order"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-cart-plus"
+                        attrs="{'invisible': [('purchase_order_count', '=', 0)]}">
+                    <field name="purchase_order_count" widget="statinfo" string="Compras"/>
+                </button>
             </xpath>
 
             <xpath expr="//div[hasclass('oe_title')]" position="replace">
@@ -99,6 +107,8 @@
                 <attribute name="context">{'res_partner_search_mode': 'customer', 'solo_company': 1, 'show_address': 1, 'show_vat': True}</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='analytic_account_id']" position="replace"/>
+            
             <xpath expr="//group[1]/group[2]" position="inside">
                 <field name="ref_proyecto" invisible="1"/>
                 <label for="nombre_proyecto"/>
@@ -120,12 +130,17 @@
                 <field name="referencia_proyecto_antigua"/>
                 <field name="coordinador_proyecto_id"/>
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
+                <field name="analytic_account_id" 
+                       context="{'default_partner_id':partner_invoice_id, 'default_name':name}" 
+                       attrs="{'readonly': [('invoice_count','!=',0),('state','=','sale')]}" 
+                       groups="analytic.group_analytic_accounting" 
+                       force_save="1"/>
             </xpath>
             
             <xpath expr="//field[@name='validity_date']" position="attributes">
                 <attribute name="string">Fecha Límite</attribute>
             </xpath>
-
+            
             <xpath expr="//field[@name='order_line']//tree[1]/field[@name='name']" position="after">
                 <field name="job_id" optional="hide"/>
                 <field name="individual" optional="hide"/>

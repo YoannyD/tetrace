@@ -60,6 +60,7 @@ class SaleOrder(models.Model):
     ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
+    purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -117,6 +118,10 @@ class SaleOrder(models.Model):
                     partner_seguidores_ids.append(user.partner_id.id)
             r.update({'seguidor_partner_proyecto_ids': [(6, 0, partner_seguidores_ids)]})
 
+    def _compute_purchase_order_count(self):
+        for r in self:
+            r.purchase_order_count = self.env['purchase.order'].search_count([('origin', 'like', r.name)])
+            
     def _compute_version(self):
         for r in self:
             r.version_count = len(r.version_ids)
@@ -260,10 +265,25 @@ class SaleOrder(models.Model):
             order.action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
-        self.send_mail_seguidores()
         self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
         return res
 
+    def action_view_purchase_order(self):
+        self.ensure_one()
+        return {
+            'name': 'Pedidos de Compra',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'view_mode': 'tree, form',
+            'views': [
+                (self.env.ref('purchase.purchase_order_tree').id, 'tree'),
+                (self.env.ref('purchase.purchase_order_form').id, 'form')
+            ],
+            'view_id': False,
+            'target': 'current',
+            'domain': [('origin', 'like', self.name)]
+        }
+    
     def actualizar_datos_proyecto(self):
         for r in self:
             if r.project_ids:
@@ -273,12 +293,13 @@ class SaleOrder(models.Model):
                 name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
                 r.project_ids.write({'name': name})
                 for p in r.project_ids:
-                    p.analytic_account_id.write({
-                        'name': name,
-                        'partner_id': r.partner_id.id,
-                        'company_id': None
-                    })
-
+                    if p.analytic_account_id.update_from_sale_order:
+                        p.analytic_account_id.write({
+                            'name': name,
+                            'partner_id': r.partner_id.id,
+                            'company_id': None
+                        })
+                    
     def action_crear_version(self):
         self.ensure_one()
         wizard = self.env['tetrace.crear_version'].create({

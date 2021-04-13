@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="estructurales"/>
+                <field name="update_from_sale_order"/>
             </xpath>
         </field>
     </record>

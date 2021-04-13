@@ -155,7 +155,7 @@
         </xpath>
 
         <xpath expr="//tr[hasclass('o_total')]/td[1]/strong[1]" position="replace">
-            <strong t-if="o.journal_id and o.journal_id.exportacion">Total CIP</strong>
+            <strong t-if="o.journal_id and o.journal_id.exportacion">Total</strong>
             <strong t-if="not o.journal_id or not o.journal_id.exportacion">Total</strong>
         </xpath>
 

@@ -59,6 +59,14 @@ class AccountMove(models.Model):
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
 
+    @api.onchange("purchase_vendor_bill_id", "purchase_id")
+    def _onchange_purchase_auto_complete(self):
+        res = super(AccountMove, self)._onchange_purchase_auto_complete() or {}
+        if 'warning' in res and (res['warning']['message'] == _("Selected purchase order have different payment mode.") or \
+                                res['warning']['message'] == _("Selected purchase order have different supplier bank.")):
+            del res['warning']
+        return res
+    
     @api.depends("invoice_origin")
     def _compute_sale_order_id(self):
         for r in self:

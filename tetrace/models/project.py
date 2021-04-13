@@ -121,7 +121,7 @@ class Project(models.Model):
     @api.model
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
-
+    
     def view_responsables_tree(self):
         self.ensure_one()
         ctx = dict(self._context)
