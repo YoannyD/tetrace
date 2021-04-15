@@ -112,7 +112,10 @@
         <field name="inherit_id" ref="account.view_invoice_tree"/>
         <field name="model">account.move</field>
         <field name="arch" type="xml">
-
+            <xpath expr="//tree[1]" position="inside">
+                <field name="can_review"/>
+            </xpath>
+            
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="asiento_anticipo_id"/>
                 <field name="fecha_vencimiento_anticipo"/>
