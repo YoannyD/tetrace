@@ -117,8 +117,8 @@
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="asiento_anticipo_id"/>
-                <field name="fecha_vencimiento_anticipo"/>
+                <field name="asiento_anticipo_id" optional="hide"/>
+                <field name="fecha_vencimiento_anticipo" optional="hide"/>
             </xpath>
 
             <xpath expr="//field[@name='name']" position="after">
