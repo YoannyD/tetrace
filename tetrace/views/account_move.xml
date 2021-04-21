@@ -113,7 +113,7 @@
         <field name="model">account.move</field>
         <field name="arch" type="xml">
             <xpath expr="//tree[1]" position="inside">
-                <field name="can_review"/>
+                <field name="can_review" string="Se puede revisar"/>
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
