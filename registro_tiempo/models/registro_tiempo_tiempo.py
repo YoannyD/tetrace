@@ -222,7 +222,7 @@ class TipoParada(models.Model):
     _name = "registro_tiempo.tipo_parada"
     _description = "Tipos de paradas"
 
-    name = fields.Char("Nombre")
+    name = fields.Char("Nombre", translate=True)
     tiempo_parada_ids = fields.One2many("registro_tiempo.tiempo_parada", "tipo_parada_id")
 
     def get_data_api(self):
