@@ -12,7 +12,8 @@
         'base',
         'portal',
         'project',
-        'hr_attendance'
+        'hr_attendance',
+        'tetrace'
     ],
     'data': [
         'security/ir.model.access.csv',

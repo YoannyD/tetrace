@@ -121,7 +121,7 @@ class Project(models.Model):
     @api.model
     def _read_group_estado_ids(self, estados, domain, order):
         return self.env['tetrace.project_state'].search([])
-    
+
     def view_responsables_tree(self):
         self.ensure_one()
         ctx = dict(self._context)
@@ -493,6 +493,6 @@ class TecnicoCalendario(models.Model):
     _name = 'tetrace.tecnico_calendario'
     _description = "Técnicos calendarios"
 
-    project_id = fields.Many2one('project.project', string="Proyecto")
+    project_id = fields.Many2one('project.project', string="Proyecto", required=True)
     employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
     resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
