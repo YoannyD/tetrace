@@ -40,7 +40,8 @@
         'l10n_es_vat_book',
         'l10n_es_aeat',
         'l10n_es_aeat_mod303',
-        'sale_timesheet_enterprise'
+        'sale_timesheet_enterprise',
+        'purchase_tier_validation'
     ],
     'data': [
         'security/tetrace_security.xml',

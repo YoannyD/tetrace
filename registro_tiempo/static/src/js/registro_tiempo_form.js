@@ -44,7 +44,7 @@ base.ready().then(function () {
             $("#form-registro-horas").toggle("slow");
         });
 
-        var projectDataSource = new DevExpress.data.CustomStore({
+        var tecnicosDataSource = new DevExpress.data.CustomStore({
             key: "id",
             load: function(loadOptions) {
                 var params = {
@@ -56,11 +56,51 @@ base.ready().then(function () {
                     params["search"] = loadOptions.searchValue;
                 }
 
-                return sendRequest("/api/projects", params);
+                return sendRequest("/api/tecnicos-proyecto", params);
             },
         });
 
         $("#summary").dxValidationSummary({});
+
+        var employee_id_dx = $("#employee_id_dx").dxSelectBox({
+            dataSource: tecnicosDataSource,
+            displayExpr: "name",
+            valueExpr: "id",
+            searchEnabled: true,
+            onValueChanged: function(data) {
+                $(".form_fields").hide();
+                project_id_dx.option("value", null);
+                var project_data_source = project_id_dx.getDataSource();
+                project_data_source.reload();
+                if(data.value){
+                    $(".dx-field-project_id").show();
+                }else{
+                    $(".dx-field-project_id").hide();
+                }
+            }
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "El técnico es obligatorio."
+            }]
+        }).dxSelectBox("instance");
+
+        var projectDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            load: function(loadOptions) {
+                var params = {
+                    "offset": loadOptions.skip,
+                    "limit": loadOptions.take,
+                    "employee_id": employee_id_dx.option("value")
+                }
+
+                if(loadOptions.searchValue){
+                    params["search"] = loadOptions.searchValue;
+                }
+
+                return sendRequest("/api/projects", params);
+            },
+        });
 
         var project_id_dx = $("#project_id_dx").dxSelectBox({
             dataSource: projectDataSource,
@@ -276,14 +316,15 @@ base.ready().then(function () {
             e.preventDefault();
             var hora_entrada = hora_entrada_dx.option("value");
             var hora_salida = hora_salida_dx.option("value");
-            
+
             var f = fecha_entrada_dx.option("value");
             var fecha_entrada = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
-            
+
             var f = fecha_salida_dx.option("value");
             var fecha_salida = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
 
             var params = {
+                'employee_id': employee_id_dx.option("value"),
                 'project_id': project_id_dx.option("value"),
                 'fecha_entrada': fecha_entrada,
                 'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
@@ -294,7 +335,7 @@ base.ready().then(function () {
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
                 'observaciones': observaciones_dx.option("value"),
             };
-   
+
             ajax.jsonRpc("/api/time/register", 'call', params)
             .then(function(result) {
                 var data = $.parseJSON(result);

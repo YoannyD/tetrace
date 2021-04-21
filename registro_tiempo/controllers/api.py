@@ -15,12 +15,15 @@ _logger = logging.getLogger(__name__)
 
 class RegistroTiempoAPI(http.Controller):
     @http.route('/api/projects', type='json', auth="user", website=True)
-    def project_list(self, **kw):
+    def project_list(self, employee_id=None, **kw):
         data = {'data': [], 'totalCount': 0}
         if not request.env.user.employee_ids.ids:
             return json.dumps(data)
 
-        domain = [('employee_id', 'in', request.env.user.employee_ids.ids)]
+        domain = []
+        if employee_id:
+            domain += [('employee_id', '=', employee_id)]
+
         search = kw.get('search')
         if search:
             domain += [('project_id.name', 'ilike', search)]
@@ -38,6 +41,36 @@ class RegistroTiempoAPI(http.Controller):
             data['data'].append({
                 'id': project.id,
                 'name': project.name
+            })
+
+        return json.dumps(data)
+
+    @http.route('/api/tecnicos-proyecto', type='json', auth="user", website=True)
+    def tecnicos_proyecto_list(self, **kw):
+        data = {'data': [], 'totalCount': 0}
+
+        domain = []
+        search = kw.get('search')
+        if search:
+            domain += [('employee_id.name', 'ilike', search)]
+
+        offset = kw.get('offset') if kw.get('offset') else 0
+        limit = kw.get('limit') if kw.get('limit') else 10
+
+        tecnicos = request.env['tetrace.tecnico_calendario'].sudo().read_group(
+            domain=domain,
+            fields=["employee_id"],
+            groupby=["employee_id"],
+        )
+
+        employee_ids = [int(e['employee_id'][0]) for e in tecnicos]
+        employees = request.env['hr.employee'].sudo().search([('id', 'in', employee_ids)], offset=offset, limit=limit, order="name desc")
+        data['totalCount'] = len(employee_ids)
+
+        for employee in employees:
+            data['data'].append({
+                'id': employee.id,
+                'name': employee.name
             })
 
         return json.dumps(data)
@@ -152,10 +185,7 @@ class RegistroTiempoAPI(http.Controller):
         return json.dumps(data)
 
     @http.route('/api/time/register', type='json', auth="user", website=True)
-    def time_register(self, project_id, **kw):
-        if not request.env.user.employee_ids.ids:
-            raise
-
+    def time_register(self, project_id, employee_id, **kw):
         fecha_entrada = date_from_string(kw.get("fecha_entrada"))
         try:
             hora_entrada = time_str_to_float(kw.get("hora_entrada"))
@@ -170,7 +200,7 @@ class RegistroTiempoAPI(http.Controller):
 
         values = {
             'project_id': project_id,
-            "employee_id": request.env.user.employee_ids[0].id,
+            "employee_id": employee_id,
             "tipo": kw.get("tipo").lower(),
             "fecha_entrada": fecha_entrada,
             "hora_entrada": hora_entrada,
@@ -178,7 +208,7 @@ class RegistroTiempoAPI(http.Controller):
             "hora_salida": hora_salida,
             "observaciones": kw.get("observaciones")
         }
-        
+
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
         values = {
             'horas_extra': tiempo.get_horas_extra(),

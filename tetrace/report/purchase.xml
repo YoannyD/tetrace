@@ -23,9 +23,12 @@
         
         <xpath expr="//div[@t-field='o.partner_id']" position="attributes">
             <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
-            <span t-field="o.picking_type_id.warehouse_id.partner_id.comment"/>
         </xpath>
         
+        <xpath expr="//div[@t-field='o.partner_id']" position="after">
+            <span t-field="o.picking_type_id.warehouse_id.partner_id.comment"/>
+        </xpath>  
+                
         <xpath expr="//p[@t-if='o.partner_id.vat']" position="after">
             <div t-if="o.payment_term_id">
                 <span t-field="o.payment_term_id.display_name"/>

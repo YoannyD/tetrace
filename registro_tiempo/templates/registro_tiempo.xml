@@ -36,13 +36,19 @@
                         </script>
                         <form id="form-registro-horas" style="max-width:600px;margin:0 auto;display:none;">
                             <div class="dx-fieldset">
-                                 <div class="dx-field mb-2">
+                                <div class="dx-field mb-2 dx-field-employee_id">
+                                    <div class="dx-field-label">Técnico</div>
+                                    <div class="dx-field-value">
+                                        <div id="employee_id_dx"/>
+                                    </div>
+                                 </div>
+                                 <div class="dx-field mb-2 dx-field-project_id" style="display:none">
                                     <div class="dx-field-label">Proyecto</div>
                                     <div class="dx-field-value">
                                         <div id="project_id_dx"/>
                                     </div>
-                                </div>
-                                <div class="form_fields" style="display:none">
+                                 </div>
+                                 <div class="form_fields" style="display:none">
                                     <div class="dx-field mb-2">
                                         <div class="dx-field-label">Tipo</div>
                                         <div class="dx-field-value">
