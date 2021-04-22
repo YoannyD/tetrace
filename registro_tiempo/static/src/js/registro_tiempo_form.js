@@ -1,11 +1,9 @@
 odoo.define('registro_tiempo.form', function (require) {
 "use strict";
 
-require('web_editor.ready');
-var base = require('web_editor.base');
 var ajax = require('web.ajax');
-
-base.ready().then(function () {
+    
+$(function() {
     DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
     DevExpress.ui.dxOverlay.baseZIndex(2000);
     DevExpress.config({ defaultCurrency: "EUR" });
