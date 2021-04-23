@@ -2,7 +2,7 @@ odoo.define('registro_tiempo.form', function (require) {
 "use strict";
 
 var ajax = require('web.ajax');
-    
+
 $(function() {
     DevExpress.localization.locale(navigator.language || navigator.browserLanguage);
     DevExpress.ui.dxOverlay.baseZIndex(2000);
@@ -106,6 +106,7 @@ $(function() {
             valueExpr: "id",
             searchEnabled: true,
             onValueChanged: function(data) {
+                grid_resgistro_dx.refresh();
                 if(fecha_entrada_dx.option("value") == null){
                     var fecha_entrada = fecha_entrada_dx.option("value", new Date());
                 }
@@ -166,6 +167,7 @@ $(function() {
 
                 var params = {
                     'project_id': project_id,
+                    'employee_id': employee_id_dx.option("value"),
                     'fecha': fecha
                 }
 
@@ -229,6 +231,7 @@ $(function() {
 
                 var params = {
                     'project_id': project_id,
+                    'employee_id': employee_id_dx.option("value"),
                     'fecha': fecha
                 }
 
@@ -357,6 +360,8 @@ $(function() {
                     var params = {
                         "offset": loadOptions.skip,
                         "limit": loadOptions.take,
+                        'employee_id': employee_id_dx.option("value"),
+                        'project_id': project_id_dx.option("value")
                     }
 
                     if(loadOptions.filter){
