@@ -17,9 +17,6 @@ class RegistroTiempoAPI(http.Controller):
     @http.route('/api/projects', type='json', auth="user", website=True)
     def project_list(self, employee_id=None, **kw):
         data = {'data': [], 'totalCount': 0}
-        if not request.env.user.employee_ids.ids:
-            return json.dumps(data)
-
         domain = []
         if employee_id:
             domain += [('employee_id', '=', employee_id)]
@@ -48,7 +45,6 @@ class RegistroTiempoAPI(http.Controller):
     @http.route('/api/tecnicos-proyecto', type='json', auth="user", website=True)
     def tecnicos_proyecto_list(self, **kw):
         data = {'data': [], 'totalCount': 0}
-
         domain = []
         search = kw.get('search')
         if search:
@@ -157,12 +153,10 @@ class RegistroTiempoAPI(http.Controller):
         })
 
     @http.route('/api/registros', type='json', auth="user", website=True)
-    def registros_list(self, filtros=None, order=None, offset=None, limit=None, group=None, **kw):
-        data = {
-            'data': [],
-            'totalCount': 0,
-        }
-        if not request.env.user.employee_ids.ids:
+    def registros_list(self, filtros=None, employee_id=None, project_id=None, order=None, offset=None, limit=None,
+                       group=None, **kw):
+        data = {'data': [], 'totalCount': 0}
+        if not employee_id:
             return json.dumps(data)
 
         offset = offset or 0
@@ -170,7 +164,10 @@ class RegistroTiempoAPI(http.Controller):
         order = order or "id desc"
 
         domain = create_domain(filtros)
-        domain += [('employee_id', 'in', request.env.user.employee_ids.ids)]
+        domain += [('employee_id', '=', employee_id)]
+
+        if project_id:
+            domain += [('project_id', '=', project_id)]
 
         if group:
             data = data_groups("registro_tiempo.tiempo", group, domain, 0)
@@ -253,14 +250,14 @@ class RegistroTiempoAPI(http.Controller):
             })
 
     @http.route('/api/festivo', type='json', auth="user", website=True)
-    def festivo(self, project_id, fecha, **kw):
+    def festivo(self, project_id, employee_id, fecha, **kw):
         fecha = date_from_string(fecha)
-        if not fecha or not request.env.user.employee_ids.ids:
+        if not fecha:
             return json.dumps({"result": "ok"})
 
         tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
             ('project_id', '=', project_id),
-            ('employee_id', 'in', request.env.user.employee_ids.ids),
+            ('employee_id', '=', employee_id),
             ('resource_calendar_id', '!=', False)
         ], limit=1)
 
@@ -274,15 +271,15 @@ class RegistroTiempoAPI(http.Controller):
         })
 
     @http.route('/api/calendario/hora_dia_semana', type='json', auth="user", website=True)
-    def calendario_hora_inicio(self, project_id, fecha, **kw):
+    def calendario_hora_inicio(self, project_id, employee_id, fecha, **kw):
         fecha = date_from_string(fecha)
-
         desde_hora, desde_min = 0, 0
         hasta_hora, hasta_min = 0, 0
-        if fecha and request.env.user.employee_ids.ids:
+
+        if fecha:
             tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
                 ('project_id', '=', project_id),
-                ('employee_id', 'in', request.env.user.employee_ids.ids)
+                ('employee_id', '=', employee_id)
             ], limit=1)
 
             if tecnico_calendario:
