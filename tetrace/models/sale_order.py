@@ -684,6 +684,7 @@ class SaleOrderLine(models.Model):
             for i in range(0, int(self.product_uom_qty)):
                 new_task = task.copy({
                     'name': name,
+                    'partner_id': self.order_id.partner_id.id,
                     'job_id': self.job_id.id,
                     'project_id': project.id,
                     'ref_individual': "%s-%s" % (self.id, i),
