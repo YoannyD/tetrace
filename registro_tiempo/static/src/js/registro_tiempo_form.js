@@ -344,7 +344,6 @@ $(function() {
                     unidades_realizadas_dx.reset();
                     observaciones_dx.reset();
                     grid_resgistro_dx.refresh();
-                    project_id_dx.reset();
                 }else{
                     DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
                 }
