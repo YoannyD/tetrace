@@ -44,12 +44,6 @@ class PurchaseOrder(models.Model):
             importe_original = r.amount_untaxed
             r.update({'importe_validacion_euros': importe_original * rate})
             # Si no tasa para Euro el importe_validacion_euros sera igual a 0
-
-    @api.model
-    def _get_under_validation_exceptions(self):
-        res = super(PurchaseOrder, self)._get_under_validation_exceptions()
-#         res += ["supplier_partner_bank_id", "payment_term_id"]
-        return res
             
     @api.model
     def create(self, vals):
