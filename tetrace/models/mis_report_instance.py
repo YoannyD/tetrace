@@ -12,6 +12,11 @@ SRC_ACTUALS = "actuals"
 SRC_ACTUALS_ALT = "actuals_alt"
 SRC_CMPCOL = "cmpcol"
 SRC_SUMCOL = "sumcol"
+FILTROS_ESTRUCTURALES = [
+    ('todos', _("Incluir todos")),
+    ('sin', _("Sin estructurales")),
+    ('con', _("Solo estructurales")),
+]
 
 
 class MisReportInstance(models.Model):
@@ -19,15 +24,14 @@ class MisReportInstance(models.Model):
 
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
     informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
-    estructurales = fields.Boolean("Incluir estructurales")
-    filtro_estructurales = fields.Boolean("Utilizar filtro estructurales")
+    filtro_estructurales = fields.Selection(FILTROS_ESTRUCTURALES, string=_("Filtro estructurales"))
 
     def _add_analytic_filters_to_context(self, context):
         self.ensure_one()
         super(MisReportInstance, self)._add_analytic_filters_to_context(context)
-        if self.filtro_estructurales and not self.estructurales:
+        if self.filtro_estructurales in ['sin', 'con']:
             context["mis_report_filters"]["analytic_account_id.estructurales"] = {
-                "value": False,
+                "value": True if self.filtro_estructurales == 'con' else False,
                 "operator": "=",
             }
     
