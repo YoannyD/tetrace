@@ -55,11 +55,22 @@ class RegistroTiempo(models.Model):
     horas_extra = fields.Float('Horas extras')
     horas_extra_cliente = fields.Float('Horas extras cliente')
 
-    @api.constrains("fecha_hora_entrada", "fecha_hora_salida")
+    @api.constrains("fecha_hora_entrada", "fecha_hora_salida", "employee_id", "project_id")
     def _check_fechas_hora(self):
         for r in self:
             if r.fecha_hora_entrada and r.fecha_hora_salida and r.fecha_hora_entrada > r.fecha_hora_salida:
                 raise ValidationError(_("La fecha de salida tiene que se superior a la de entrada"))
+
+            tiempo = self.search([
+                ('employee_id', '=', r.employee_id.id),
+                ('project_id', '<=', r.project_id.id),
+                ('fecha_hora_entrada', '>=', r.fecha_hora_entrada),
+                ('fecha_hora_salida', '>=', r.fecha_hora_entrada),
+                ('fecha_hora_salida', '<=', r.fecha_hora_salida),
+                ('id', '!=', r.id),
+            ], order='fecha_hora_entrada desc', limit=1)
+            if tiempo:
+                raise ValidationError(_("Ya existe un registro en ese periodo de tiempo."))
 
     @api.depends('fecha_entrada', 'hora_entrada')
     def _compute_fecha_hora_entrada(self):
