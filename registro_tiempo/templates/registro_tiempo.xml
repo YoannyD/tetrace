@@ -99,7 +99,8 @@
                                     </div>
                                     <div class="text-center mt-3">
                                         <div id="summary"/>
-                                        <div id="btn_enviar_dx"/>
+                                        <div id="btn_enviar_dx" style="margin-right:25px;"/>
+                                        <div id="btn_limpiar_dx"/>
                                     </div>
                                 </div>
                             </div>

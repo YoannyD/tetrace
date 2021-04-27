@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 
 
 def _get_account_name(self, account):
-    _logger.warning(self.mostrar_cuenta_consolidacion)
     if self.mostrar_cuenta_consolidacion and account.tetrace_account_id:
         result = account.tetrace_account_id.name
     else:

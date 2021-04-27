@@ -108,7 +108,7 @@ $(function() {
             onValueChanged: function(data) {
                 grid_resgistro_dx.refresh();
                 if(fecha_entrada_dx.option("value") == null){
-                    var fecha_entrada = fecha_entrada_dx.option("value", new Date());
+                    fecha_entrada_dx.option("value", new Date());
                 }
                 if(data.value){
                     $(".form_fields").show();
@@ -148,9 +148,9 @@ $(function() {
             displayFormat: "dd/MM/yyyy",
             pickerType: "rollers",
             onValueChanged: function(data) {
-                var f = new Date(data.value);
-                fecha_salida_dx.option("value", f);
-                var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+                var fecha = new Date(data.value);
+                fecha_salida_dx.option("value", fecha);
+                var fecha_str = date_to_string(fecha);
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
 
@@ -168,14 +168,14 @@ $(function() {
                 var params = {
                     'project_id': project_id,
                     'employee_id': employee_id_dx.option("value"),
-                    'fecha': fecha
+                    'fecha': fecha_str
                 }
 
                 ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
-                    f.setHours(data["desde_hora"], data["desde_min"]);
-                    hora_entrada_dx.option("value", f);
+                    fecha.setHours(data["desde_hora"], data["desde_min"]);
+                    hora_entrada_dx.option("value", fecha);
                 });
 
                 ajax.jsonRpc("/api/festivo", 'call', params)
@@ -219,8 +219,8 @@ $(function() {
             pickerType: "rollers",
             onValueChanged: function(data) {
                 var label = "Fecha salida";
-                var f = new Date(data.value);
-                var fecha = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
+                var fecha = new Date(data.value);
+                var fecha_str = date_to_string(fecha);
                 var project_id = project_id_dx.option("value");
                 var tipo = tipo_dx.option("value");
 
@@ -232,14 +232,14 @@ $(function() {
                 var params = {
                     'project_id': project_id,
                     'employee_id': employee_id_dx.option("value"),
-                    'fecha': fecha
+                    'fecha': fecha_str
                 }
 
                 ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
                 .then(function(result) {
                     var data = $.parseJSON(result);
-                    f.setHours(data["hasta_hora"], data["hasta_min"]);
-                    hora_salida_dx.option("value", f);
+                    fecha.setHours(data["hasta_hora"], data["hasta_min"]);
+                    hora_salida_dx.option("value", fecha);
                 });
             },
         }).dxValidator({
@@ -262,8 +262,12 @@ $(function() {
 
         var paradas_dx = $("#paradas_dx").dxDataGrid({
             dataSource: [],
+            onInitNewRow: function (e) {
+                e.data.fecha_entrada = fecha_entrada_dx.option("value");
+                e.data.fecha_salida = fecha_entrada_dx.option("value");
+            },
             editing: {
-                mode: "row",
+                mode: "cell",
                 allowUpdating: true,
                 allowDeleting: true,
                 allowAdding: true,
@@ -313,23 +317,31 @@ $(function() {
             useSubmitBehavior: true,
         }).dxButton("instance");
 
+        var btn_limpiar_dx = $("#btn_limpiar_dx").dxButton({
+            stylingMode: "contained",
+            text: "Limpiar",
+            type: "normal",
+            onClick: function() {
+                employee_id_dx.reset();
+                project_id_dx.option("value", null);
+                tipo_dx.option("value", "Parte");
+                paradas_dx.option("dataSource", []);
+                unidades_realizadas_dx.reset();
+                observaciones_dx.reset();
+            }
+        }).dxButton("instance");
+
         $("#form-registro-horas").on("submit", function(e) {
             e.preventDefault();
             var hora_entrada = hora_entrada_dx.option("value");
             var hora_salida = hora_salida_dx.option("value");
 
-            var f = fecha_entrada_dx.option("value");
-            var fecha_entrada = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
-
-            var f = fecha_salida_dx.option("value");
-            var fecha_salida = f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
-
             var params = {
                 'employee_id': employee_id_dx.option("value"),
                 'project_id': project_id_dx.option("value"),
-                'fecha_entrada': fecha_entrada,
+                'fecha_entrada': date_to_string(fecha_entrada_dx.option("value")),
                 'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
-                'fecha_salida': fecha_salida,
+                'fecha_salida': date_to_string(fecha_salida_dx.option("value")),
                 'hora_salida': hora_salida.getHours() + ":" + hora_salida.getMinutes(),
                 'tipo': tipo_dx.option("value"),
                 'paradas': paradas_dx.option('dataSource'),
@@ -342,10 +354,17 @@ $(function() {
                 var data = $.parseJSON(result);
                 if(data["result"] == "ok"){
                     DevExpress.ui.notify("Ha registrado el tiempo correctamente");
-                    tipo_dx.option("value", "Parte");
-                    paradas_dx.option("dataSource", []);
-                    unidades_realizadas_dx.reset();
-                    observaciones_dx.reset();
+                    fecha_entrada_dx.option("value", date_to_string(fecha_entrada_dx.option("value"), 1));
+
+                    var paradas = paradas_dx.option('dataSource');
+                    if(paradas != undefined){
+                        $.each(paradas, function( index, value ) {
+                            paradas[index]["fecha_entrada"] =  date_to_string(value["fecha_entrada"], 1);
+                            paradas[index]["fecha_salida"] = date_to_string(value["fecha_salida"], 1);
+                        });
+                        paradas_dx.option('dataSource', paradas);
+                    }
+
                     grid_resgistro_dx.refresh();
                 }else{
                     DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
@@ -498,6 +517,15 @@ $(function() {
             d.resolve(data);
         });
         return d.promise();
+    }
+
+    function date_to_string(fecha, sum_day){
+        sum_day = sum_day || 0;
+        var f = new Date(fecha);
+        if(sum_day > 0){
+            f.setDate(f.getDate() + sum_day);
+        }
+        return f.getFullYear() + "-" + (f.getMonth() + 1) + "-" + f.getDate();
     }
 
     function es_hora_nocturna(hora){
