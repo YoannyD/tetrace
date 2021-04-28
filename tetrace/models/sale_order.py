@@ -310,14 +310,14 @@ class SaleOrder(models.Model):
 
     def action_generar_proyecto(self):
         self.ensure_one()
-        if self.project_ids:
-            return
-
         if not self.ref_proyecto or not self.nombre_proyecto:
             raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
 
-        # Crear el proyecto con la plantilla diseño del primer producto que la tenga
         project = None
+        if self.project_ids:
+            project = self.project_ids[0]
+            
+        # Crear el proyecto con la plantilla diseño del primer producto si aún no hay un proyecto creado
         project_template_diseno_ids = []
         for line in self.order_line.sudo():
             if line.product_id.service_tracking == 'task_in_project' and line.product_id.project_template_diseno_id:
@@ -335,29 +335,11 @@ class SaleOrder(models.Model):
                     ('project_id', '=', line.product_id.project_template_diseno_id.id),
                     ('activada', 'in', [True, False])
                 ])
-
-                for task in template_tasks:
-                    if task.check_task_exist(line.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
-                        continue
-
-                    new_task = task.copy({
-                        'name': task.name,
-                        'project_id': project.id,
-                        'sale_line_id': None,
-                        'partner_id': line.order_id.partner_id.id,
-                        'email_from': line.order_id.partner_id.email,
-                        'desde_plantilla': True,
-                        "company_id": self.env.company.id,
-                        'ref_created': "%s-%s-%s" % (line.order_id.id, task.project_id.id, task.id)
-                    })
-
-                    if task.message_partner_ids:
-                        new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
-                        new_task.notificar_asignacion_seguidores()
+                line.copy_tasks(template_tasks, project, True)
 
             line._timesheet_create_task_desde_diseno(project)
         self.actualizar_datos_proyecto()
-
+        
     def action_view_task(self):
         action = super(SaleOrder, self).action_view_task()
         action['context'].pop('search_default_sale_order_id', None)

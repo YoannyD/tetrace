@@ -35,7 +35,7 @@ class SaleOrderLine(models.Model):
         for r in self:
             if r.order_id.project_ids:
                 project_sale.append(r.order_id.id)
-
+        
         super(SaleOrderLine, self.sudo())._timesheet_service_generation()
 
         project_template_ids = []
@@ -49,44 +49,35 @@ class SaleOrderLine(models.Model):
                     ('project_id', '=', project_template.id),
                     ('activada', 'in', [True, False]),
                 ])
+                r.copy_tasks(template_tasks, r.order_id.project_ids[0], False)
+            
+            r.actualizar_tareas_individuales()
+            r.actualizar_info_puesto()
 
-                for task in template_tasks:
-                    if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
-                        continue
-
-                    new_task = task.copy({
-                        'name': task.name,
-                        'project_id': r.order_id.project_ids[0].id,
-                        "company_id": self.env.company.id,
-                        'sale_line_id': None,
-                        'partner_id': r.order_id.partner_id.id,
-                        'email_from': r.order_id.partner_id.email,
-                        'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
-                    })
-
-                    if task.message_partner_ids:
-                        new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
-                        new_task.notificar_asignacion_seguidores()
-
-        if r.order_id.project_ids:
+    def actualizar_tareas_individuales(self):
+        self.ensure_one()
+        if self.order_id.project_ids:
             tasks_individuales_plantilla = self.env['project.task'].search([
-                ('project_id', '=', r.order_id.project_ids[0].id),
+                ('project_id', '=', self.order_id.project_ids[0].id),
                 ('tarea_individual', '=', True),
                 ('desde_plantilla', '=', True),
                 ('activada', 'in', [True, False]),
                 ('ref_individual', '!=', False)
             ])
             tasks_individuales_plantilla.actualizar_tareas_individuales()
-
+            
+    def actualizar_info_puesto(self):
+        self.ensure_one()
+        if self.order_id.project_ids:
             tasks_departamento_plantilla = self.env['project.task'].search([
-                ('project_id', '=', r.order_id.project_ids[0].id),
+                ('project_id', '=', self.order_id.project_ids[0].id),
                 ('department_id', '!=', False),
                 ('desde_plantilla', '=', True),
                 ('activada', 'in', [True, False]),
                 ('ref_individual', '!=', False)
             ])
             tasks_departamento_plantilla.actualizar_info_puesto()
-
+                
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
         values.update({'user_id': self.order_id.coordinador_proyecto_id.id})
@@ -114,23 +105,7 @@ class SaleOrderLine(models.Model):
                 ('project_id', '=', project_template.id),
                 ('activada', 'in', [True, False]),
             ])
-            for task in project_tasks:
-                if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
-                    continue
-
-                new_task = task.copy({
-                    'name': task.name,
-                    'sale_line_id': None,
-                    'partner_id': self.order_id.partner_id.id,
-                    'email_from': self.order_id.partner_id.email,
-                    'project_id': project.id,
-                    "company_id": self.env.company.id,
-                    'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
-                })
-
-                if task.message_partner_ids:
-                    new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
-                    new_task.notificar_asignacion_seguidores()
+            self.copy_tasks(project_tasks, project, False)
         else:
             project = self.env['project.project'].create(values)
 
@@ -151,7 +126,14 @@ class SaleOrderLine(models.Model):
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
 
-        project_follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
+        if self.project_id:
+            tasks_with_sale_line = self.project_id.tasks.filtered(lambda t: t.sale_line_id).ids
+            self.copy_tasks(self.product_id.project_template_diseno_id.tasks, self.project_id, True)
+            self.project_id.tasks\
+                .filtered(lambda task: task.id not in tasks_with_sale_line and task.parent_id != False)\
+                .write({'sale_line_id': None})
+            return self.project_id
+ 
         # create the project or duplicate one
         values = self._timesheet_create_project_prepare_values()
         if self.product_id.project_template_diseno_id:
@@ -161,27 +143,8 @@ class SaleOrderLine(models.Model):
                 "company_id": self.env.company.id
             })
 
-            project_follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
             project = self.product_id.project_template_diseno_id.copy(values)
-            for task in self.product_id.project_template_diseno_id.tasks:
-                if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
-                    continue
-
-                new_task = task.copy({
-                    'name': task.name,
-                    'sale_line_id': None,
-                    'partner_id': self.order_id.partner_id.id,
-                    'email_from': self.order_id.partner_id.email,
-                    'desde_plantilla': True,
-                    'project_id': project.id,
-                    "company_id": self.env.company.id,
-                    'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
-                })
-
-                if task.message_partner_ids:
-                    new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
-                    new_task.notificar_asignacion_seguidores()
-
+            self.copy_tasks(self.product_id.project_template_diseno_id.tasks, project, True)
             project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': None})
         else:
             project = self.env['project.project'].create(values)
@@ -192,17 +155,23 @@ class SaleOrderLine(models.Model):
 
         # link project as generated by current so line
         self.write({'project_id': project.id})
-
+    
+        project_follower_ids = self.seguidores_proyecto()
         if project_follower_ids:
             project.with_context(add_follower=True).message_subscribe(project_follower_ids, [])
 
         return project
 
+    def seguidores_proyecto(self):
+        self.ensure_one()
+        follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
+        if self.product_id and self.product_id.project_template_diseno_id and \
+            self.product_id.project_template_diseno_id.message_partner_ids:
+            follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
+        return follower_ids
+    
     def _timesheet_create_task(self, project):
-        task = self.env['project.task'].search([
-            ('project_id', '=', project.id),
-            ('sale_line_id', '=', self.id),
-        ], limit=1)
+        task = self.existe_tarea_rel_linea(project)
         if not task:
             task = super(SaleOrderLine, self)._timesheet_create_task(project)
         self._timesheet_create_task_individual(project)
@@ -211,7 +180,10 @@ class SaleOrderLine(models.Model):
     def _timesheet_create_task_desde_diseno(self, project):
         if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
             return False
-
+        
+        if self.existe_tarea_rel_linea(project):
+            return False
+        
         return self._timesheet_create_task_individual(project, True)
 
     def _timesheet_create_task_individual(self, project, desde_plantilla=False):
@@ -253,3 +225,35 @@ class SaleOrderLine(models.Model):
                 tasks.append(new_task)
         self.write({'task_id': None})
         return tasks
+    
+    def copy_tasks(self, tasks, project=None, desde_plantilla=False):
+        new_tasks = []
+        for task in tasks:
+            if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
+                continue
+
+            new_task = task.copy({
+                'name': task.name,
+                'project_id': project.id if project else task.project_id.id,
+                'sale_line_id': None,
+                'partner_id': self.order_id.partner_id.id,
+                'email_from': self.order_id.partner_id.email,
+                'desde_plantilla': desde_plantilla,
+                "company_id": self.env.company.id,
+                'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
+            })
+
+            if task.message_partner_ids:
+                new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
+                new_task.notificar_asignacion_seguidores()
+            new_tasks.append(new_task)
+        return new_tasks
+    
+    def existe_tarea_rel_linea(self, project):
+        self.ensure_one()
+        task = self.env['project.task'].sudo().search([
+            ('project_id', '=', project.id),
+            ('sale_line_id', '=', self.id),
+            ('activada', 'in', [True, False]),
+        ], limit=1)
+        return task

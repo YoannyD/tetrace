@@ -5,7 +5,7 @@ import logging
 
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -42,6 +42,7 @@ class Project(models.Model):
                                 copy=False, default=lambda self: self._default_estado_id())
     product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
     color = fields.Integer(related="sale_order_id.tipo_servicio_id.color")
+    sale_order_state = fields.Selection(related="sale_order_id.state")
     partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
@@ -57,6 +58,8 @@ class Project(models.Model):
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
+    visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
+                                                        compute="_compute_visible_btn_crear_tareas_faltantes")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -74,6 +77,14 @@ class Project(models.Model):
         return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
             so_lines.mapped('order_id').ids) | set(sale_order.ids)
 
+    @api.depends("sale_order_id", "sale_order_state")
+    def _compute_visible_btn_crear_tareas_faltantes(self):
+        for r in self:
+            if r.sale_order_id and r.sale_order_state == 'sale':
+                r.visible_btn_crear_tareas_faltantes = True
+            else:
+                r.visible_btn_crear_tareas_faltantes = False
+    
     def _table_get_line_values(self):
         result = super(Project, self)._table_get_line_values()
 
@@ -274,7 +285,20 @@ class Project(models.Model):
         wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
         return wizard.open_wizard()
     
-
+    def action_crear_tareas_faltantes(self):
+        self.ensure_one()
+        if not self.sale_order_id:
+            return
+        
+        if self.sale_order_id.state != 'sale':
+            raise UserError(_("El pedido de venta tiene que estar confirmado"))
+        
+        self.sale_order_id.action_generar_proyecto()
+        self.sale_order_id.mapped('order_line').sudo().with_context(
+                force_company=self.sale_order_id.company_id.id,
+            )._timesheet_service_generation()
+    
+    
 class TecnicoCalendario(models.Model):
     _name = 'tetrace.tecnico_calendario'
     _description = "Técnicos calendarios"

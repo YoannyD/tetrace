@@ -31,6 +31,13 @@
                         type="object"
                         name="action_crear_tareas_act_desc"
                         string="Crear tareas Activación/Desactivación"/>
+                
+                <field name="visible_btn_crear_tareas_faltantes" invisible="1"/>
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_crear_tareas_faltantes"
+                        attrs="{'invisible':[('visible_btn_crear_tareas_faltantes', '=', False)]}"
+                        string="Crear tareas faltantes"/>
 
                 <field name="estado_id"
                        widget="statusbar"
