@@ -16,7 +16,8 @@ from . import product_template
 from . import product_category
 from . import account_partner_ledger
 from . import date_utils
-from . import project
+from . import project_project
+from . import project_task
 from . import conexion_mysql
 from . import tetrace_skills
 from . import tetrace_tipo_contrato
@@ -29,6 +30,7 @@ from . import res_users
 from . import resource_calendar
 from . import res_config_settings
 from . import sale_order
+from . import sale_order_line
 from . import tetrace_sale_order_version
 from . import purchase
 from . import analytic_account
