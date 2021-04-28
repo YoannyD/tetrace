@@ -51,7 +51,8 @@ class ProjectTask(models.Model):
     ref_individual = fields.Char("Referencia individual")
     department_id = fields.Many2one("hr.department", string="Departamento")
     department_laboral = fields.Boolean(related="department_id.laboral")
-    info_puesto_id = fields.Many2one('ir.attachment', string='Información puesto', domain=[('res_model', '=', 'project.task')])
+    info_puesto_id = fields.Many2one('ir.attachment', string='Información puesto',
+                                     domain=[('res_model', '=', 'project.task')])
     ref_created = fields.Char("Referencia creación", copy=False, help="Compuesto por project_id-task_id de origen")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
@@ -97,17 +98,19 @@ class ProjectTask(models.Model):
                 date_deadline = r.date_deadline.strftime("%m/%d/%Y") if r.date_deadline else ''
                 messages_post.update({
                     str(r.id): {
-                            'subject': _("Cambiada fecha límite"),
-                            'body': _("<strong>Fecha límite:</strong> %s -> %s") % (date_deadline, vals.get("date_deadline"))
+                        'subject': _("Cambiada fecha límite"),
+                        'body': _("<strong>Fecha límite:</strong> %s -> %s") % (
+                        date_deadline, vals.get("date_deadline"))
                     }
                 })
-            
+
         res = super(ProjectTask, self).write(vals)
 
         for r in self:
             if not r.desde_plantilla and r.producto_entrega and entregas[str(r.id)]['total'] != r.entrega_total:
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
-                body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
+                body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (
+                entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
 
         if 'info_puesto_id' in vals and not self.env.context.get("no_actualizar_info_puesto"):
@@ -136,7 +139,7 @@ class ProjectTask(models.Model):
                     pos1 = task.name.find("(")
                     pos2 = task.name.find(")")
                     if pos1 >= 0 and pos2 >= 0:
-                        cadena_a_reemplazar = task.name[pos1+1:pos2]
+                        cadena_a_reemplazar = task.name[pos1 + 1:pos2]
                         name = task.name.replace(cadena_a_reemplazar, r.employee_id.name)
                     else:
                         name = "%s (%s)" % (task.name, r.employee_id.name)
@@ -153,7 +156,7 @@ class ProjectTask(models.Model):
                 task = self.search([
                     ('ref_individual', '=', r.ref_individual),
                     ('activada', 'in', [True, False]),
-                    ('project_id', '=',  r.project_id.id),
+                    ('project_id', '=', r.project_id.id),
                     ('department_id', '=', r.department_id.id)
                 ])
                 task.with_context(no_actualizar_info_puesto=True).update({'info_puesto_id': r.info_puesto_id.id})
@@ -195,7 +198,6 @@ class ProjectTask(models.Model):
         new_task = super(ProjectTask, self).copy(default)
         if self.message_partner_ids:
             new_task.with_context(add_follower=True).message_subscribe(self.message_partner_ids.ids, [])
-            new_task.notificar_asignacion_seguidores()
         return new_task
 
     def notificar_asignacion_seguidores(self):
@@ -218,6 +220,7 @@ class ProjectTask(models.Model):
                 email_layout_xmlid='mail.mail_notification_light',
                 model_description=r.name,
             )
+
     @api.model
     def check_task_exist(self, order_id, project_id, task_id, max_exist=1):
         task_count = self.search_count([
@@ -231,6 +234,7 @@ class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
 
     bloquear_imputar_tiempos = fields.Boolean('Bloquear imputación de tiempos')
+    no_update_deadline = fields.Boolean("No actualizar la fecha límite")
 
 
 class ProjectTaskEntrega(models.Model):
