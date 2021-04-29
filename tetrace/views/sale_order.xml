@@ -48,7 +48,7 @@
                 <field name="visible_btn_change_partner" invisible="1"/>
                 <button name="action_change_partner"
                         type="object"
-                        attrs="{'invisible': [('visible_btn_change_partner', '!=', False)]}"
+                        attrs="{'invisible': [('visible_btn_change_partner', '=', False)]}"
                         string="Cambiar cliente"/>
             </xpath>
             

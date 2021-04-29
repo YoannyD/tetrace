@@ -63,7 +63,7 @@ class SaleOrder(models.Model):
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
     purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
-    visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", 
+    visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
                                                 compute="_compute_visible_btn_change_partner")
 
     sql_constraints = [
@@ -100,7 +100,7 @@ class SaleOrder(models.Model):
     @api.depends("invoice_ids", "state", "picking_ids")
     def _compute_visible_btn_change_partner(self):
         for r in self:
-            if r.invoice_ids or r.state != 'state' or r.picking_ids:
+            if r.invoice_ids or r.state != 'sale' or r.picking_ids:
                 r.visible_btn_change_partner = False 
             else:
                 r.visible_btn_change_partner = True 
