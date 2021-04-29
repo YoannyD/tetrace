@@ -295,6 +295,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='amount_total']" position="after">
                 <field name="importe_pendiente_facturar" sum="Total a facturar" widget="monetary"/>
+                <field name="invoice_total"/>
             </xpath>
         </field>
     </record>

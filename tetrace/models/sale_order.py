@@ -38,7 +38,7 @@ class SaleOrder(models.Model):
                                                   compute="_compute_visible_btn_generar_proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", "order_id")
     total_previsto = fields.Monetary("Total previsto", compute="_compute_prevision_facturacion", store=True)
-    total_facturado = fields.Monetary("Total facturado", compute="_compute_prevision_facturacion", store=True)
+    total_facturado = fields.Monetary("Total facturado (Previsto)", compute="_compute_prevision_facturacion", store=True)
     project_estado_id = fields.Many2one("tetrace.project_state", compute="_compute_project_estado_id",
                                         string="Estado proyecto", store=True)
     rfq = fields.Char("RFQ")
@@ -62,6 +62,7 @@ class SaleOrder(models.Model):
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
     purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
+    invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -110,6 +111,14 @@ class SaleOrder(models.Model):
             else:
                 r.project_estado_id = None
 
+    @api.depends("invoice_ids")
+    def _compute_invoice_total(self):
+        for r in self:
+            total = 0
+            for invoice in r.invoice_ids:
+                total += invoice.amount_total
+            r.invoice_total = total
+                
     @api.depends("seguidor_proyecto_ids")
     def _compute_seguidor_partner_proyecto_ids(self):
         for r in self:
