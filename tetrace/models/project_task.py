@@ -92,18 +92,6 @@ class ProjectTask(models.Model):
                 }
             })
 
-        messages_post = {}
-        if 'date_deadline' in vals:
-            for r in self:
-                date_deadline = r.date_deadline.strftime("%m/%d/%Y") if r.date_deadline else ''
-                messages_post.update({
-                    str(r.id): {
-                        'subject': _("Cambiada fecha límite"),
-                        'body': _("<strong>Fecha límite:</strong> %s -> %s") % (
-                        date_deadline, vals.get("date_deadline"))
-                    }
-                })
-
         res = super(ProjectTask, self).write(vals)
 
         for r in self:
@@ -199,6 +187,11 @@ class ProjectTask(models.Model):
         if self.message_partner_ids:
             new_task.with_context(add_follower=True).message_subscribe(self.message_partner_ids.ids, [])
         return new_task
+    
+    def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
+        if self.env.context.get("no_notificar"):
+            return []
+        return super(ProjectTask, self)._message_auto_subscribe_followers(updated_values, default_subtype_ids)
 
     def notificar_asignacion_seguidores(self):
         view = self.env['ir.ui.view'].browse(self.env['ir.model.data'].xmlid_to_res_id("mail.message_user_assigned"))
@@ -220,7 +213,7 @@ class ProjectTask(models.Model):
                 email_layout_xmlid='mail.mail_notification_light',
                 model_description=r.name,
             )
-
+    
     @api.model
     def check_task_exist(self, order_id, project_id, task_id, max_exist=1):
         task_count = self.search_count([

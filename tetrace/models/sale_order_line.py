@@ -30,16 +30,16 @@ class SaleOrderLine(models.Model):
         return
 
     def _timesheet_service_generation(self):
-        self = self.sudo()
+        self = self.sudo().with_context(no_notificar=True)
         project_sale = []
         for r in self:
             if r.order_id.project_ids:
                 project_sale.append(r.order_id.id)
-
-        super(SaleOrderLine, self.sudo())._timesheet_service_generation()
+        
+        super(SaleOrderLine, self)._timesheet_service_generation()
 
         project_template_ids = []
-        for r in self.sudo():
+        for r in self:
             project_template = r.product_id.with_context(force_company=1).project_template_id
             if r.product_id.service_tracking == 'task_in_project' and r.order_id.project_ids and \
                 project_template and r.order_id.id in project_sale and \
@@ -78,29 +78,33 @@ class SaleOrderLine(models.Model):
             ])
             tasks_departamento_plantilla.actualizar_info_puesto()
 
+    def validar_crear_proyecto(self):
+        self.ensure_one()
+        if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
+            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
+            
     def _timesheet_create_project_prepare_values(self):
         values = super(SaleOrderLine, self)._timesheet_create_project_prepare_values()
-        values.update({'user_id': self.order_id.coordinador_proyecto_id.id})
+        values.update({
+            "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
+            "tasks": None,
+            "company_id": self.env.company.id,
+            'user_id': self.order_id.coordinador_proyecto_id.id
+        })
         return values
 
     def _timesheet_create_project(self):
         self.ensure_one()
-        self = self.sudo()
-        if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
-            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
-
+        self = self.sudo().with_context(no_notificar=True)
+        self.validar_crear_proyecto()
         if self.order_id.project_ids and self.product_id.service_tracking in ['task_global_project', 'task_in_project']:
             return self.order_id.project_ids[0]
 
         values = self._timesheet_create_project_prepare_values()
         project_template = self.product_id.with_context(force_company=1).project_template_id
         if project_template:
-            values.update({
-                "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
-                "tasks": None,
-                "company_id": self.env.company.id
-            })
             project = project_template.copy(values)
+            
             project_tasks = self.env['project.task'].search([
                 ('project_id', '=', project_template.id),
                 ('activada', 'in', [True, False]),
@@ -117,53 +121,45 @@ class SaleOrderLine(models.Model):
         self.write({'project_id': project.id})
 
         if self.order_id.seguidor_partner_proyecto_ids:
-            project.with_context(add_follower=True).message_subscribe(self.order_id.seguidor_partner_proyecto_ids.ids,
-                                                                      [])
+            project.with_context(add_follower=True).message_subscribe(self.order_id.seguidor_partner_proyecto_ids.ids, [])
 
         return project
 
     def _timesheet_create_project_diseno(self):
         self.ensure_one()
-        if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
-            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
+        self.validar_crear_proyecto()
 
-        if self.project_id:
-            tasks_with_sale_line = self.project_id.tasks.filtered(lambda t: t.sale_line_id).ids
-            self.copy_tasks(self.product_id.project_template_diseno_id.tasks, self.project_id, True)
+        def create_new_tasks(tasks, project):
+            tasks_with_sale_line = project.tasks.filtered(lambda t: t.sale_line_id).ids
+            new_tasks = self.copy_tasks(tasks, project, True)
             self.project_id.tasks \
                 .filtered(lambda task: task.id not in tasks_with_sale_line and task.parent_id != False) \
                 .write({'sale_line_id': None})
+            return new_tasks
+        
+        if self.project_id:
+            create_new_tasks(self.product_id.project_template_diseno_id.tasks, self.project_id)
             return self.project_id
 
-        # create the project or duplicate one
         values = self._timesheet_create_project_prepare_values()
         if self.product_id.project_template_diseno_id:
-            values.update({
-                "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
-                "tasks": None,
-                "company_id": self.env.company.id
-            })
-
             project = self.product_id.project_template_diseno_id.copy(values)
-            self.copy_tasks(self.product_id.project_template_diseno_id.tasks, project, True)
-            project.tasks.filtered(lambda task: task.parent_id != False).write({'sale_line_id': None})
+            create_new_tasks(self.product_id.project_template_diseno_id.tasks, project)
         else:
             project = self.env['project.project'].create(values)
 
-        # Avoid new tasks to go to 'Undefined Stage'
         if not project.type_ids:
             project.type_ids = self.env['project.task.type'].create({'name': _('New')})
 
-        # link project as generated by current so line
         self.write({'project_id': project.id})
 
-        project_follower_ids = self.seguidores_proyecto()
+        project_follower_ids = self.seguidores_proyecto_diseno()
         if project_follower_ids:
             project.with_context(add_follower=True).message_subscribe(project_follower_ids, [])
 
         return project
 
-    def seguidores_proyecto(self):
+    def seguidores_proyecto_diseno(self):
         self.ensure_one()
         follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
         if self.product_id and self.product_id.project_template_diseno_id and \
@@ -179,11 +175,9 @@ class SaleOrderLine(models.Model):
         return task
 
     def _timesheet_create_task_desde_diseno(self, project):
-        if self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0:
-            return False
-
-        if self.existe_tarea_rel_linea(project):
-            return False
+        if self.existe_tarea_rel_linea(project) or \
+            (self.order_id.state == 'draft' and int(self.product_uom_qty) <= 0):
+            return []
 
         return self._timesheet_create_task_individual(project, True)
 
@@ -247,6 +241,7 @@ class SaleOrderLine(models.Model):
             if task.message_partner_ids:
                 new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
             new_tasks.append(new_task)
+
         return new_tasks
 
     def existe_tarea_rel_linea(self, project):

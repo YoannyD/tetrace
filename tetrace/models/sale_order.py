@@ -329,7 +329,7 @@ class SaleOrder(models.Model):
 
         if not project:
             return
-
+        
         for line in self.order_line.sudo():
             if line.product_id.project_template_diseno_id and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
@@ -337,10 +337,10 @@ class SaleOrder(models.Model):
                     ('project_id', '=', line.product_id.project_template_diseno_id.id),
                     ('activada', 'in', [True, False])
                 ])
-                new_tasks = line.copy_tasks(template_tasks, project, True)
-                new_tasks.notificar_asignacion_seguidores()
-
+                line.copy_tasks(template_tasks, project, True)
+           
             line._timesheet_create_task_desde_diseno(project)
+                
         self.actualizar_datos_proyecto()
 
     def action_view_task(self):
