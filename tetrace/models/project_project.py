@@ -169,6 +169,9 @@ class Project(models.Model):
 
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
+            
+        if 'partner_id' in vals:
+            self.actualizar_partner_task()
         return res
 
     def actualizar_deadline_tareas_activacion(self):
@@ -195,6 +198,11 @@ class Project(models.Model):
                 date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline_inicio)
                 task.write({'date_deadline': date_deadline})
 
+    def actualizar_partner_task(self):
+        for r in self:
+            if r.partner_id:
+                r.tasks.write({'partner_id': r.partner_id.id})
+                
     @api.model
     def actualizar_vals(self, vals):
         if "estado_id" in vals and vals.get("estado_id") != 4:

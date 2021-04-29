@@ -44,6 +44,12 @@
                 <button name="action_importar_productos"
                         type="object"
                         string="Importar productos"/>
+                
+                <field name="visible_btn_change_partner" invisible="1"/>
+                <button name="action_change_partner"
+                        type="object"
+                        attrs="{'invisible': [('visible_btn_change_partner', '!=', False)]}"
+                        string="Cambiar cliente"/>
             </xpath>
             
             <xpath expr="//field[@name='sale_order_template_id']" position="after">
