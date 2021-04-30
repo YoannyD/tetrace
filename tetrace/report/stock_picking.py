@@ -11,18 +11,18 @@ _logger = logging.getLogger(__name__)
 class PickingReport(models.AbstractModel):
     _name = 'report.tetrace.stock_picking_unit'
     _description = "Informe unificado"
-    
+
     def _get_report_values(self, docids, data):
-        docs = self.env['stock.picking'].sudo().browse(docids)
+        pickings = self.env['stock.picking'].sudo().search([('id', 'in', docids)])
         partner = None
-        if docs:
-            partner = docs[0].partner_id
-        
-        _logger.warning(docs)
+        if pickings:
+            partner = pickings[0].partner_id
+
+        _logger.warning(pickings)
         _logger.warning(partner)
-        
+
         return {
-            'docs': docs,
+            'docs': pickings,
             'partner': partner,
             'data': data,
         }
