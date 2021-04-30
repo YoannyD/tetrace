@@ -33,3 +33,13 @@ class Product(models.Model):
         if self.description_sale:
             return self.description_sale
         return name
+    
+    def get_code_supplier_info(self, partner):
+        self.ensure_one()
+        supplier_info = self.env["product.customerinfo"].search([
+            ('name', '=', partner.id),
+            '|',
+            ('product_id', '=', self.id),
+            ('product_tmpl_id', '=', self.product_tmpl_id.id)
+        ], limit=1)
+        return supplier_info.product_code if supplier_info else None

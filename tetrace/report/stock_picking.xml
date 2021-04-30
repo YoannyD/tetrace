@@ -45,7 +45,7 @@
                                                     <span t-field="ml.product_id.description_picking"/>
                                                 </td>
                                                 <td>
-                                                    <span t-field="ml.product_id.l10n_in_hsn_code"/>
+                                                    <t t-esc="ml.product_id.get_code_supplier_info(partner)"/>
                                                 </td>
                                                 <td>
                                                     <span t-if="picking.state != 'done'" t-field="ml.product_uom_qty"/>
