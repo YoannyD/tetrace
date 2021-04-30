@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -17,9 +18,10 @@ class PickingReport(models.AbstractModel):
         partner = None
         if pickings:
             partner = pickings[0].partner_id
-
-        _logger.warning(pickings)
-        _logger.warning(partner)
+            
+        for p in pickings:
+            if p.partner_id != partner:
+                raise UserError(_("Los albaranes tiene que ser del mismo cliente."))
 
         return {
             'docs': pickings,
