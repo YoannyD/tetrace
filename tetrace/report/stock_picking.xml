@@ -21,7 +21,7 @@
 
                     <t t-foreach="docs" t-as="picking">
                          <div>
-                            <h2>Referencia pedido: <span t-field="picking.sale_id"/> <span t-field="picking.name"/></h2>
+                            <h2>Referencia pedido: <span t-field="picking.sale_id"/></h2>
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
