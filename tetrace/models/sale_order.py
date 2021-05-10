@@ -358,7 +358,7 @@ class SaleOrder(models.Model):
                 ])
                 line.copy_tasks(template_tasks, project, True)
            
-            line.with_context(mail_notrack=True)._timesheet_create_task_desde_diseno(project)
+            line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
                 
         self.actualizar_datos_proyecto()
         project.enviar_email_tareas_asignadas()

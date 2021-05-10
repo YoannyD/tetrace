@@ -54,6 +54,7 @@ class ProjectTask(models.Model):
     info_puesto_id = fields.Many2one('ir.attachment', string='Información puesto',
                                      domain=[('res_model', '=', 'project.task')])
     ref_created = fields.Char("Referencia creación", copy=False, help="Compuesto por project_id-task_id de origen")
+    notify_by_email = fields.Boolean("Notificado por email")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):

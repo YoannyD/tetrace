@@ -227,7 +227,7 @@ class SaleOrderLine(models.Model):
             if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
                 continue
 
-            new_task = task.with_context(mail_notrack=True).copy({
+            new_task = task.with_context(tracking_disable=True).copy({
                 'name': task.name,
                 'project_id': project.id if project else task.project_id.id,
                 'sale_line_id': None,

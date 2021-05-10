@@ -324,10 +324,14 @@ class Project(models.Model):
                 ('partner_id', '!=', False)
             ])
             for user in users:
-                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and not x.notify_by_email)
+                if not user_tasks:
+                    continue
+                    
                 email_template.sudo()\
                 .with_context(tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
                 .send_mail(r.id, force_send=True, email_values={'recipient_ids': [(4, user.partner_id.id)]})
+                user_tasks.write({'notify_by_email': True})
                 
     def enviar_email_estado_proyecto(self, estado):
         email_template = self.env.ref('tetrace.email_template_project_estado', raise_if_not_found=False)
@@ -349,11 +353,10 @@ class Project(models.Model):
                     subject = _("El proyecto %s ha sido modificado" % r.name)
                 
                 email_template.sudo()\
-                .with_context(estado=estado)\
+                .with_context(estado=estado, lang=user.lang or r.partner_id.lang)\
                 .send_mail(r.id, force_send=True, email_values={
                     'subject': subject,
-                    'recipient_ids': [(4, user.partner_id.id)],
-                    'lang': user.lang or r.partner_id.lang
+                    'recipient_ids': [(4, user.partner_id.id)]
                 })
         
     def get_all_user_assigned_task(self):
