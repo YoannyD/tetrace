@@ -157,7 +157,9 @@ class ProjectTask(models.Model):
         return super(ProjectTask, self)._where_calc(domain, active_test)
 
     def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        if self.env.context.get("default_res_model") == 'project.project':
+        _logger.warning("message_subscribe")
+        _logger.warning(self.env.context)
+        if self.env.context.get("default_res_model") == 'project.project' or self.env.context.get("no_notify"):
             return
         return super(ProjectTask, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
 
@@ -180,13 +182,6 @@ class ProjectTask(models.Model):
             ('partner_id', 'in', partner_ids or []),
             ('channel_id', 'in', channel_ids or [])
         ]).unlink()
-
-    def copy(self, default=None):
-        self.ensure_one()
-        new_task = super(ProjectTask, self).copy(default)
-        if self.message_partner_ids:
-            new_task.with_context(add_follower=True).message_subscribe(self.message_partner_ids.ids, [])
-        return new_task
     
     def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
         if self.env.context.get("no_notificar"):

@@ -159,6 +159,10 @@ class Project(models.Model):
         return res
 
     def write(self, vals):
+        if 'fecha_inicio' in vals:
+            projects_activacion = self.filtered(lambda x: not x.fecha_inicio)
+            projects_modificacion = self.filtered(lambda x: x.fecha_inicio)
+        
         res = super(Project, self).write(vals)
         vals = self.actualizar_vals(vals)
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
@@ -166,9 +170,14 @@ class Project(models.Model):
 
         if 'fecha_inicio' in vals:
             self.actualizar_deadline_tareas_activacion()
+            projects_activacion.enviar_email_estado_proyecto('activacion')
+            projects_modificacion.enviar_email_estado_proyecto('modificacion')
 
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
+            
+        if 'fecha_finalizacion' in vals:
+            self.enviar_email_estado_proyecto('desactivacion')
             
         if 'partner_id' in vals:
             self.actualizar_partner_task()
@@ -302,7 +311,59 @@ class Project(models.Model):
         self.sale_order_id.mapped('order_line').sudo().with_context(
             force_company=self.sale_order_id.company_id.id,
         )._timesheet_service_generation()
-
+        
+    def enviar_email_tareas_asignadas(self):
+        email_template = self.env.ref('tetrace.email_template_project_task_assigned', raise_if_not_found=False)
+        for r in self:
+            user_asignados_ids = r.get_all_user_assigned_task()
+            if not user_asignados_ids:
+                continue
+                
+            users = self.env['res.users'].search([
+                ('id', 'in', user_asignados_ids),
+                ('partner_id', '!=', False)
+            ])
+            for user in users:
+                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                email_template.sudo()\
+                .with_context(tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
+                .send_mail(r.id, force_send=True, email_values={'recipient_ids': [(4, user.partner_id.id)]})
+                
+    def enviar_email_estado_proyecto(self, estado):
+        email_template = self.env.ref('tetrace.email_template_project_estado', raise_if_not_found=False)
+        for r in self:
+            user_asignados_ids = r.get_all_user_assigned_task()
+            if not user_asignados_ids:
+                continue
+                
+            users = self.env['res.users'].search([
+                ('id', 'in', user_asignados_ids),
+                ('partner_id', '!=', False)
+            ])
+            for user in users:
+                if estado == 'activacion':
+                    subject = _("El proyecto %s ha sido activado" % r.name)
+                elif estado == 'desactivacion':
+                    subject = _("El proyecto %s ha sido desactivado" % r.name)
+                elif estado == 'modificacion':
+                    subject = _("El proyecto %s ha sido modificado" % r.name)
+                
+                email_template.sudo()\
+                .with_context(estado=estado)\
+                .send_mail(r.id, force_send=True, email_values={
+                    'subject': subject,
+                    'recipient_ids': [(4, user.partner_id.id)],
+                    'lang': user.lang or r.partner_id.lang
+                })
+        
+    def get_all_user_assigned_task(self):
+        self.ensure_one()
+        user_ids = []
+        for task in self.tasks:
+            if task.user_id and task.user_id.id not in user_ids:
+                user_ids.append(task.user_id.id)
+        return user_ids
+    
 
 class TecnicoCalendario(models.Model):
     _name = 'tetrace.tecnico_calendario'

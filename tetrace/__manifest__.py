@@ -47,6 +47,7 @@
         'security/tetrace_security.xml',
         'security/ir.model.access.csv',
         'data/project.xml',
+        'data/mail_project.xml',
         'data/mail_activity.xml',
         'data/mail_sale_order.xml',
         'data/mail_tetrace_viaje.xml',

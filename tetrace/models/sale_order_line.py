@@ -207,7 +207,7 @@ class SaleOrderLine(models.Model):
                 if task.check_task_exist(self.order_id.id, task.project_id.id, task.id, int(self.product_uom_qty)):
                     break
 
-                new_task = task.copy({
+                new_task = task.with_context(mail_notrack=True).copy({
                     'name': name,
                     'partner_id': self.order_id.partner_id.id,
                     'job_id': self.job_id.id,
@@ -227,7 +227,7 @@ class SaleOrderLine(models.Model):
             if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
                 continue
 
-            new_task = task.copy({
+            new_task = task.with_context(mail_notrack=True).copy({
                 'name': task.name,
                 'project_id': project.id if project else task.project_id.id,
                 'sale_line_id': None,
@@ -237,9 +237,6 @@ class SaleOrderLine(models.Model):
                 "company_id": self.env.company.id,
                 'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
             })
-
-            if task.message_partner_ids:
-                new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids)
             new_tasks.append(new_task)
 
         return new_tasks
