@@ -2,9 +2,9 @@
 <odoo>
     <data noupdate="0">
         <record id="email_template_project_task_assigned" model="mail.template">
-            <field name="name">Nuevo proyecto</field>
+            <field name="name">Pre-proyecto</field>
             <field name="model_id" ref="project.model_project_project"/>
-            <field name="subject">Nuevo proyecto: ${object.name}</field>
+            <field name="subject">Pre-proyecto: ${object.name}</field>
             <field name="body_html" type="html">
 <div style="margin: 0px; padding: 0px;">
     <p style="margin: 0px; padding: 0px; font-size: 13px;">
@@ -31,22 +31,29 @@
         % if ctx.get('estado') == 'activacion':
             El proyecto ${object.name} ha sido activado 
             % if object.fecha_inicio:
-                ${object.fecha_inicio.strftime("%d/%m/%Y")}
+                ${object.fecha_inicio.strftime("%d/%m/%Y")}.
             % endif
         % endif
         
         % if ctx.get('estado') == 'desactivacion':
             El proyecto ${object.name} ha sido desactivado 
                 % if object.fecha_finalizacion:
-                    ${object.fecha_finalizacion.strftime("%d/%m/%Y")}
+                    ${object.fecha_finalizacion.strftime("%d/%m/%Y")}.
                 % endif
         % endif
         
         % if ctx.get('estado') == 'modificacion':
             El proyecto ${object.name} ha sido modificado 
             % if object.fecha_inicio:
-                ${object.fecha_inicio.strftime("%d/%m/%Y")}
+                ${object.fecha_inicio.strftime("%d/%m/%Y")}.
             % endif
+        % endif
+        
+        % if ctx.get('tasks'):
+            Tareas del proyecto en las que estás asignado:
+            % for task in ctx.get('tasks'):
+                <li>${task.name}</li>
+            % endfor
         % endif
     </p>
 </div>

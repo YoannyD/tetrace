@@ -176,9 +176,9 @@ class Project(models.Model):
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
             
-        if 'fecha_finalizacion' in vals:
+        if vals.get('fecha_cancelacion') or vals.get('fecha_finalizacion'):
             self.enviar_email_estado_proyecto('desactivacion')
-            
+              
         if 'partner_id' in vals:
             self.actualizar_partner_task()
         return res
@@ -324,13 +324,13 @@ class Project(models.Model):
                 ('partner_id', '!=', False)
             ])
             for user in users:
-                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and not x.notify_by_email)
+                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.desde_plantilla and not x.notify_by_email)
                 if not user_tasks:
                     continue
                     
                 email_template.sudo()\
-                .with_context(tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
-                .send_mail(r.id, force_send=True, email_values={'recipient_ids': [(4, user.partner_id.id)]})
+                    .with_context(tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
+                    .send_mail(r.id, force_send=True, email_values={'recipient_ids': [(4, user.partner_id.id)]})
                 user_tasks.write({'notify_by_email': True})
                 
     def enviar_email_estado_proyecto(self, estado):
@@ -352,12 +352,16 @@ class Project(models.Model):
                 elif estado == 'modificacion':
                     subject = _("El proyecto %s ha sido modificado" % r.name)
                 
+                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                if not user_tasks:
+                    continue
+                
                 email_template.sudo()\
-                .with_context(estado=estado, lang=user.lang or r.partner_id.lang)\
-                .send_mail(r.id, force_send=True, email_values={
-                    'subject': subject,
-                    'recipient_ids': [(4, user.partner_id.id)]
-                })
+                    .with_context(estado=estado, tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
+                    .send_mail(r.id, force_send=True, email_values={
+                        'subject': subject,
+                        'recipient_ids': [(4, user.partner_id.id)]
+                    })
         
     def get_all_user_assigned_task(self):
         self.ensure_one()
