@@ -45,6 +45,7 @@ from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
 from . import tetrace_tickelia
 from . import tetrace_viaje
+from . import tetrace_experiencia
 from . import tetrace_imputacion_variable
 from . import tetrace_prevision_facturacion
 from . import tetrace_festivo

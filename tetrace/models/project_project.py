@@ -60,6 +60,7 @@ class Project(models.Model):
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
     visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
+    experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -168,6 +169,9 @@ class Project(models.Model):
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
 
+        if 'experiencia_ids' in vals or 'tecnico_calendario_ids' in vals or 'fecha_inicio' in vals or 'fecha_fin' in vals:
+            self.actualizar_experiencias_tecnicos()
+            
         if 'fecha_inicio' in vals:
             self.actualizar_deadline_tareas_activacion()
             projects_activacion.enviar_email_estado_proyecto('activacion')
@@ -183,6 +187,39 @@ class Project(models.Model):
             self.actualizar_partner_task()
         return res
 
+    def actualizar_experiencias_tecnicos(self):
+        for r in self:
+            for tecnico in r.tecnico_calendario_ids:
+                if not tecnico.job_id:
+                    continue
+                    
+                for experiencia in r.experiencia_ids:
+                    experiencia_tecnico_proyecto = self.env['tetrace.experiencia_tecnico_proyecto'].search([
+                        ('experiencia_id', '=', experiencia.id),
+                        ('employee_id', '=', tecnico.employee_id.id),
+                        ('project_id', '=', r.id),
+                        ('resume_line_id', '!=', False),
+                    ], limit=1)
+                    
+                    values = {
+                        'employee_id': tecnico.employee_id.id,
+                        'name': experiencia.name,
+                        'descripcion': experiencia.descripcion,
+                        'date_start': tecnico.fecha_inicio,
+                        'date_end': tecnico.fecha_fin
+                    }
+                    
+                    if experiencia_tecnico_proyecto:
+                        experiencia_tecnico_proyecto.resume_line_id.write(values)
+                    else:
+                        resume_line = self.env['hr.resume.line'].create(values)
+                        self.env['tetrace.experiencia_tecnico_proyecto'].create({
+                            'experiencia_id': experiencia.id,
+                            'employee_id': tecnico.employee_id.id,
+                            'project_id': r.id,
+                            'resume_line_id': resume_line.id
+                        })
+    
     def actualizar_deadline_tareas_activacion(self):
         for r in self:
             if not r.fecha_inicio:

@@ -116,9 +116,20 @@
                     <field name="tecnico_calendario_ids" context="{'default_resource_calendar_id': resource_calendar_id}" nolabel="1">
                         <tree editable="bottom">
                             <field name="employee_id"/>
+                            <field name="job_id"/>
                             <field name="resource_calendar_id"/>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page string="Experiencias">
+                    <field name="experiencia_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="name"/>
+                            <field name="job_id"/>
+                            <field name="descripcion"/>
                         </tree>
                     </field>
                 </page>

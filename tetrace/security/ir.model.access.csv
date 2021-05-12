@@ -28,3 +28,4 @@ access_tetrace_alojamiento,access_tetrace_alojamiento,model_tetrace_alojamiento,
 access_tetrace_tecnico_calendario,access_tetrace_tecnico_calendario,model_tetrace_tecnico_calendario,base.group_user,1,1,1,1
 access_tetrace_festivo,access_tetrace_festivo,model_tetrace_festivo,base.group_user,1,1,1,1
 access_tetrace_proceso_seleccion,access_tetrace_proceso_seleccion,model_tetrace_proceso_seleccion,base.group_user,1,1,1,1
+access_tetrace_experiencia,access_tetrace_experiencia,model_tetrace_experiencia,base.group_user,1,1,1,1
