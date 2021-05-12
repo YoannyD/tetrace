@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="tetrace_tecnico_calendario_action"
+                name="Asignaciones técnico"
+                res_model="tetrace.tecnico_calendario"
+                view_mode="tree,form"/>
+    
+    <menuitem id="menu_tetrace_tecnico_calendario"
+              parent="project.menu_project_report"
+              action="tetrace_tecnico_calendario_action"
+              name="Asignaciones técnico"
+              sequence="70"/>
+    
+    <record model="ir.ui.view" id="tetrace_tecnico_calendario_form">
+        <field name="name">tetrace.tecnico_calendario.form</field>
+        <field name="model">tetrace.tecnico_calendario</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="project_id"/>
+                            <field name="employee_id"/>
+                            <field name="resource_calendar_id"/>
+                        </group>
+                        <group>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_tecnico_calendario_tree">
+        <field name="name">tetrace.tecnico_calendario.tree</field>
+        <field name="model">tetrace.tecnico_calendario</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="employee_id"/>
+                <field name="resource_calendar_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_tecnico_calendario_search">
+        <field name="name">tetrace.tecnico_calendario.search</field>
+        <field name="model">tetrace.tecnico_calendario</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <field name="employee_id"/>
+                <separator/>
+                <filter string="Sin Fecha Fin" name="filter_sin_fecha_fin" domain="[('fecha_fin', '=', False)]"/>
+                <separator/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_project_id" string="Proyecto" context="{'group_by': 'project_id'}"/>
+                    <filter name="group_employee_id" string="Empleado" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_resource_calendar_id" string="Calendario" context="{'group_by': 'resource_calendar_id'}"/>
+                    <filter name="group_fecha_inicio" string="Fecha inicio" context="{'group_by': 'fecha_inicio'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

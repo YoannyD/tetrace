@@ -117,6 +117,8 @@
                         <tree editable="bottom">
                             <field name="employee_id"/>
                             <field name="resource_calendar_id"/>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
                         </tree>
                     </field>
                 </page>

@@ -370,12 +370,3 @@ class Project(models.Model):
             if task.user_id and task.user_id.id not in user_ids:
                 user_ids.append(task.user_id.id)
         return user_ids
-    
-
-class TecnicoCalendario(models.Model):
-    _name = 'tetrace.tecnico_calendario'
-    _description = "Técnicos calendarios"
-
-    project_id = fields.Many2one('project.project', string="Proyecto", required=True)
-    employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
-    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
