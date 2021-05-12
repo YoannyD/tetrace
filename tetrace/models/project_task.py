@@ -211,12 +211,12 @@ class ProjectTask(models.Model):
             )
     
     @api.model
-    def check_task_exist(self, order_id, project_id, task_id, max_exist=1):
-        task_count = self.search_count([
-            ('ref_created', '=', '%s-%s-%s' % (order_id, project_id, task_id)),
-            ('active', 'in', [True, False])
-        ])
-        return True if max_exist <= task_count else False
+    def check_task_exist(self, ref_created, ref_individual=None):
+        domain = [('ref_created', '=', ref_created)]
+        if ref_individual:
+            domain += [('ref_individual', '=', ref_individual)]
+        task_count = self.search_count(domain)
+        return True if task_count > 0 else False
 
 
 class ProjectTaskType(models.Model):

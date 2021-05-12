@@ -50,11 +50,13 @@ class CrearTareasActDesc(models.TransientModel):
         self.ensure_one()
         ref = datetime.now().timestamp()
         for task in self.project_theme_id.tasks:
+            ref_created = "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
             if task.tarea_individual:
                 for puesto in self.puesto_ids:
                     for i in range(0, puesto.cantidad):
-                        if task.check_task_exist(self.project_id.sale_order_id.id, task.project_id.id, task.id,
-                                                 puesto.cantidad):
+                        ref_individual = "%s.%s.%s-%s" % (ref, puesto.employee_id.id, puesto.job_id.id, i)
+                        ref_created = "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
+                        if task.check_task_exist(ref_created, ref_individual):
                             break
 
                         new_task = task.copy({
@@ -62,13 +64,13 @@ class CrearTareasActDesc(models.TransientModel):
                             'job_id': puesto.job_id.id,
                             'employee_id': puesto.employee_id.id,
                             'project_id': self.project_id.id,
-                            'ref_individual': "%s.%s.%s-%s" % (ref, puesto.employee_id.id, puesto.job_id.id, i),
+                            'ref_individual': ref_individual,
                             'desde_plantilla': True,
                             "company_id": self.project_id.company_id.id,
-                            'ref_created': "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
+                            'ref_created': ref_created
                         })
                         new_task.actualizar_tareas_individuales()
-            elif not task.check_task_exist(self.project_id.sale_order_id, self.project_id, True):
+            elif not task.check_task_exist(ref_created):
                 new_task = task.copy({
                     'name': task.name,
                     'sale_line_id': None,
@@ -77,7 +79,7 @@ class CrearTareasActDesc(models.TransientModel):
                     'desde_plantilla': True,
                     'project_id': self.project_id.id,
                     "company_id": self.project_id.company_id.id,
-                    'ref_created': "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
+                    'ref_created': ref_created
                 })
 
             if new_task and task.message_partner_ids:

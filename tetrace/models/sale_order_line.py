@@ -204,7 +204,9 @@ class SaleOrderLine(models.Model):
                 name = task.name
 
             for i in range(0, int(self.product_uom_qty)):
-                if task.check_task_exist(self.order_id.id, task.project_id.id, task.id, int(self.product_uom_qty)):
+                ref_individual = "%s-%s" % (self.id, i)
+                ref_created = "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
+                if task.check_task_exist(ref_created, ref_individual):
                     break
 
                 new_task = task.with_context(mail_notrack=True).copy({
@@ -215,7 +217,7 @@ class SaleOrderLine(models.Model):
                     'ref_individual': "%s-%s" % (self.id, i),
                     'desde_plantilla': desde_plantilla,
                     "company_id": self.env.company.id,
-                    'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
+                    'ref_created': ref_created
                 })
                 tasks.append(new_task)
         self.write({'task_id': None})
@@ -224,7 +226,8 @@ class SaleOrderLine(models.Model):
     def copy_tasks(self, tasks, project=None, desde_plantilla=False):
         new_tasks = []
         for task in tasks:
-            if task.check_task_exist(self.order_id.id, task.project_id.id, task.id) or task.tarea_individual:
+            ref_created = "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
+            if task.check_task_exist(ref_created) or task.tarea_individual:
                 continue
 
             new_task = task.with_context(tracking_disable=True).copy({
@@ -235,7 +238,7 @@ class SaleOrderLine(models.Model):
                 'email_from': self.order_id.partner_id.email,
                 'desde_plantilla': desde_plantilla,
                 "company_id": self.env.company.id,
-                'ref_created': "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
+                'ref_created': ref_created
             })
             new_tasks.append(new_task)
 
