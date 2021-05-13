@@ -104,7 +104,7 @@
                                                 </div>
                                                 <t t-if="line.price_subtotal == 0">
                                                     <div style="display:inline-block;float:right">
-                                                        INCLUIDO
+                                                        Refacturable
                                                     </div>
                                                 </t>
                                                 <t t-if="line.price_subtotal &gt; 0">
