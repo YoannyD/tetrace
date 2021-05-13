@@ -15,13 +15,19 @@ class Experiencia(models.Model):
 
     name = fields.Char("Nombre", required=True)
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo", required=True)
-    project_id = fields.Many2one('project.project', string="Proyecto", required=True)
+    project_id = fields.Many2one('project.project', string="Proyecto", required=True, ondelete="cascade")
     descripcion = fields.Text('Descripción')
     experiencia_tecnico_proyecto_ids = fields.One2many('tetrace.experiencia_tecnico_proyecto', 'experiencia_id')
     
     _sql_constraints = [
         ('job_id_project_id_uniq', 'unique(job_id, project_id)', 'No puede haber más de un puesto de trabajo por proyecto.'),
     ]
+    
+    def unlink(self):
+        for r in self:
+            for etp in r.experiencia_tecnico_proyecto_ids:
+                etp.resume_line_id.unlink()
+        return super(Experiencia, self).unlink()
             
             
 class ExperienciaTecnicoProyecto(models.Model):

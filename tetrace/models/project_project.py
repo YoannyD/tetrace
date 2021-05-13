@@ -169,7 +169,7 @@ class Project(models.Model):
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
 
-        if 'experiencia_ids' in vals or 'tecnico_calendario_ids' in vals or 'fecha_inicio' in vals or 'fecha_fin' in vals:
+        if 'experiencia_ids' in vals or 'tecnico_calendario_ids' in vals:
             self.actualizar_experiencias_tecnicos()
             
         if 'fecha_inicio' in vals:
@@ -188,23 +188,37 @@ class Project(models.Model):
         return res
 
     def actualizar_experiencias_tecnicos(self):
+        ResumeLine = self.env['hr.resume.line']
+        ExperienciaTecnicoProyecto = self.env['tetrace.experiencia_tecnico_proyecto']
         for r in self:
-            for tecnico in r.tecnico_calendario_ids:
-                if not tecnico.job_id:
-                    continue
-                    
+            for tecnico in r.tecnico_calendario_ids: 
                 for experiencia in r.experiencia_ids:
-                    experiencia_tecnico_proyecto = self.env['tetrace.experiencia_tecnico_proyecto'].search([
+                    experiencia_tecnico_proyecto = ExperienciaTecnicoProyecto.search([
                         ('experiencia_id', '=', experiencia.id),
                         ('employee_id', '=', tecnico.employee_id.id),
                         ('project_id', '=', r.id),
                         ('resume_line_id', '!=', False),
                     ], limit=1)
                     
+                    if experiencia_tecnico_proyecto:
+                        if not tecnico.job_id or not tecnico.fecha_inicio:
+                            experiencia_tecnico_proyecto.resume_line_id.unlink()
+                            continue
+                        
+                        if tecnico.job_id.id != experiencia.job_id.id:
+                            experiencia_tecnico_proyecto.resume_line_id.unlink()
+                            experiencia_tecnico_proyecto = None
+                            experiencia = self.env['tetrace.experiencia'].search([
+                                ('job_id', '=', tecnico.job_id.id),
+                                ('project_id', '=', r.id)
+                            ], limit=1)
+                            if not experiencia:
+                                continue
+                    
                     values = {
                         'employee_id': tecnico.employee_id.id,
                         'name': experiencia.name,
-                        'descripcion': experiencia.descripcion,
+                        'description': experiencia.descripcion,
                         'date_start': tecnico.fecha_inicio,
                         'date_end': tecnico.fecha_fin
                     }
@@ -212,14 +226,35 @@ class Project(models.Model):
                     if experiencia_tecnico_proyecto:
                         experiencia_tecnico_proyecto.resume_line_id.write(values)
                     else:
-                        resume_line = self.env['hr.resume.line'].create(values)
+                        resume_line = ResumeLine.create(values)
                         self.env['tetrace.experiencia_tecnico_proyecto'].create({
                             'experiencia_id': experiencia.id,
                             'employee_id': tecnico.employee_id.id,
                             'project_id': r.id,
                             'resume_line_id': resume_line.id
                         })
-    
+                        
+        for r in self:
+            domain = [
+                ('project_id', '=', r.id),
+                ('resume_line_id', '!=', False)
+            ]
+            
+            employee_ids = [e.employee_id.id for e in r.tecnico_calendario_ids.filtered(lambda x: x.job_id and x.employee_id and x.fecha_inicio)]
+            if r.experiencia_ids and employee_ids:
+                domain = ['|',
+                    ('experiencia_id', 'not in', r.experiencia_ids.ids),
+                    ('employee_id', 'not in', employee_ids)
+                ]
+            elif r.experiencia_ids:
+                domain = [('experiencia_id', 'not in', r.experiencia_ids.ids)]
+            elif employee_ids:
+                domain = [('employee_id', 'not in', employee_ids)]
+            
+            experiencia_tecnico_proyecto = ExperienciaTecnicoProyecto.search(domain)
+            for etp in experiencia_tecnico_proyecto:
+                etp.resume_line_id.unlink()
+            
     def actualizar_deadline_tareas_activacion(self):
         for r in self:
             if not r.fecha_inicio:
