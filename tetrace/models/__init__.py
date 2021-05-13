@@ -16,7 +16,8 @@ from . import product_template
 from . import product_category
 from . import account_partner_ledger
 from . import date_utils
-from . import project
+from . import project_project
+from . import project_task
 from . import conexion_mysql
 from . import tetrace_skills
 from . import tetrace_tipo_contrato
@@ -29,6 +30,7 @@ from . import res_users
 from . import resource_calendar
 from . import res_config_settings
 from . import sale_order
+from . import sale_order_line
 from . import tetrace_sale_order_version
 from . import purchase
 from . import analytic_account
@@ -43,9 +45,11 @@ from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
 from . import tetrace_tickelia
 from . import tetrace_viaje
+from . import tetrace_experiencia
 from . import tetrace_imputacion_variable
 from . import tetrace_prevision_facturacion
 from . import tetrace_festivo
+from . import tetrace_tecnico_calendario
 from . import mod303
 from . import mail_thread
 from . import mail_followers

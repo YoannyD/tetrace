@@ -5,18 +5,9 @@ import logging
 
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 _logger = logging.getLogger(__name__)
-
-OPCIONES_DESACTIVACION = [
-    ('viaje', _('Viaje')),
-    ('baja', _('Baja')),
-    ('informatica', _('Informática')),
-    ('equipos', _('Equipos')),
-    ('reubicacion', _('Reubicación')),
-    ('facturacion', _('Facturación')),
-]
 
 
 class Estado(models.Model):
@@ -51,6 +42,7 @@ class Project(models.Model):
                                 copy=False, default=lambda self: self._default_estado_id())
     product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
     color = fields.Integer(related="sale_order_id.tipo_servicio_id.color")
+    sale_order_state = fields.Selection(related="sale_order_id.state")
     partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
@@ -66,6 +58,9 @@ class Project(models.Model):
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
+    visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
+                                                        compute="_compute_visible_btn_crear_tareas_faltantes")
+    experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -77,11 +72,21 @@ class Project(models.Model):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \
             .mapped('sale_line_id.order_id.order_line') \
-            .filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
+            .filtered(lambda
+                          sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
         # include the service SO line of SO sharing the same project
         sale_order = self.env['sale.order'].search([('project_id', 'in', self.ids)])
-        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
+        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda
+                                                                                    sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
             so_lines.mapped('order_id').ids) | set(sale_order.ids)
+
+    @api.depends("sale_order_id", "sale_order_state")
+    def _compute_visible_btn_crear_tareas_faltantes(self):
+        for r in self:
+            if r.sale_order_id and r.sale_order_state == 'sale':
+                r.visible_btn_crear_tareas_faltantes = True
+            else:
+                r.visible_btn_crear_tareas_faltantes = False
 
     def _table_get_line_values(self):
         result = super(Project, self)._table_get_line_values()
@@ -129,7 +134,8 @@ class Project(models.Model):
         ctx.update({'search_default_user': True})
         action = self.env['ir.actions.act_window'].for_xml_id('project', 'act_project_project_2_project_task_all')
         action['view_mode'] = "tree,kanban,form,calendar,pivot,graph,activity"
-        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'), (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
+        action['views'] = [(False, 'tree'), (False, 'kanban'), (False, 'form'), (False, 'calendar'), (False, 'pivot'),
+                           (False, 'graph'), (False, 'activity'), (False, 'gantt'), (False, 'map')]
         return dict(action, context=ctx)
 
     def view_sale_order_form(self):
@@ -154,27 +160,107 @@ class Project(models.Model):
         return res
 
     def write(self, vals):
+        if 'fecha_inicio' in vals:
+            projects_activacion = self.filtered(lambda x: not x.fecha_inicio)
+            projects_modificacion = self.filtered(lambda x: x.fecha_inicio)
+        
         res = super(Project, self).write(vals)
         vals = self.actualizar_vals(vals)
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
 
+        if 'experiencia_ids' in vals or 'tecnico_calendario_ids' in vals:
+            self.actualizar_experiencias_tecnicos()
+            
         if 'fecha_inicio' in vals:
             self.actualizar_deadline_tareas_activacion()
+            projects_activacion.enviar_email_estado_proyecto('activacion')
+            projects_modificacion.enviar_email_estado_proyecto('modificacion')
 
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
+            
+        if vals.get('fecha_cancelacion') or vals.get('fecha_finalizacion'):
+            self.enviar_email_estado_proyecto('desactivacion')
+              
+        if 'partner_id' in vals:
+            self.actualizar_partner_task()
         return res
 
+    def actualizar_experiencias_tecnicos(self):
+        ResumeLine = self.env['hr.resume.line']
+        ExperienciaTecnicoProyecto = self.env['tetrace.experiencia_tecnico_proyecto']
+        for r in self:
+            for tecnico in r.tecnico_calendario_ids: 
+                for experiencia in r.experiencia_ids:
+                    experiencia_tecnico_proyecto = ExperienciaTecnicoProyecto.search([
+                        ('experiencia_id', '=', experiencia.id),
+                        ('employee_id', '=', tecnico.employee_id.id),
+                        ('project_id', '=', r.id),
+                        ('resume_line_id', '!=', False),
+                    ], limit=1)
+                    
+                    if experiencia_tecnico_proyecto:
+                        if not tecnico.job_id or not tecnico.fecha_inicio:
+                            experiencia_tecnico_proyecto.resume_line_id.unlink()
+                            continue
+                        
+                        if tecnico.job_id.id != experiencia.job_id.id:
+                            experiencia_tecnico_proyecto.resume_line_id.unlink()
+                            experiencia_tecnico_proyecto = None
+                            experiencia = self.env['tetrace.experiencia'].search([
+                                ('job_id', '=', tecnico.job_id.id),
+                                ('project_id', '=', r.id)
+                            ], limit=1)
+                            if not experiencia:
+                                continue
+                    
+                    values = {
+                        'employee_id': tecnico.employee_id.id,
+                        'name': experiencia.name,
+                        'description': experiencia.descripcion,
+                        'date_start': tecnico.fecha_inicio,
+                        'date_end': tecnico.fecha_fin
+                    }
+                    
+                    if experiencia_tecnico_proyecto:
+                        experiencia_tecnico_proyecto.resume_line_id.write(values)
+                    else:
+                        resume_line = ResumeLine.create(values)
+                        self.env['tetrace.experiencia_tecnico_proyecto'].create({
+                            'experiencia_id': experiencia.id,
+                            'employee_id': tecnico.employee_id.id,
+                            'project_id': r.id,
+                            'resume_line_id': resume_line.id
+                        })
+                        
+        for r in self:
+            domain = [
+                ('project_id', '=', r.id),
+                ('resume_line_id', '!=', False)
+            ]
+            
+            employee_ids = [e.employee_id.id for e in r.tecnico_calendario_ids.filtered(lambda x: x.job_id and x.employee_id and x.fecha_inicio)]
+            if r.experiencia_ids and employee_ids:
+                domain = ['|',
+                    ('experiencia_id', 'not in', r.experiencia_ids.ids),
+                    ('employee_id', 'not in', employee_ids)
+                ]
+            elif r.experiencia_ids:
+                domain = [('experiencia_id', 'not in', r.experiencia_ids.ids)]
+            elif employee_ids:
+                domain = [('employee_id', 'not in', employee_ids)]
+            
+            experiencia_tecnico_proyecto = ExperienciaTecnicoProyecto.search(domain)
+            for etp in experiencia_tecnico_proyecto:
+                etp.resume_line_id.unlink()
+            
     def actualizar_deadline_tareas_activacion(self):
         for r in self:
             if not r.fecha_inicio:
                 continue
 
-            for task in r.tasks:
-                if task.tipo != 'activacion':
-                    continue
-
+            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
                 task.write({'date_deadline': date_deadline})
 
@@ -189,13 +275,15 @@ class Project(models.Model):
             if not fecha:
                 continue
 
-            for task in r.tasks:
-                if task.tipo != 'desactivacion':
-                    continue
-
+            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
                 date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline_inicio)
                 task.write({'date_deadline': date_deadline})
 
+    def actualizar_partner_task(self):
+        for r in self:
+            if r.partner_id:
+                r.tasks.write({'partner_id': r.partner_id.id})
+                
     @api.model
     def actualizar_vals(self, vals):
         if "estado_id" in vals and vals.get("estado_id") != 4:
@@ -283,216 +371,76 @@ class Project(models.Model):
         wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
         return wizard.open_wizard()
 
-
-class ProjectTask(models.Model):
-    _inherit = 'project.task'
-
-    @api.model
-    def _default_sale_line_id(self):
-        return False
-
-    tarea_seleccion = fields.Boolean("Tarea Selección")
-    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
-    entrega_ids = fields.One2many('project.task.entrega', 'task_id')
-    entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
-    producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
-    desde_plantilla = fields.Boolean("Creada desde plantilla")
-    tipo = fields.Selection([
-        ('activacion', _('Activación')),
-        ('desactivacion', _('Desactivacion'))
-    ], string="Tipo tarea")
-    tarea_individual = fields.Boolean("Individual")
-    viajes = fields.Boolean("Trips")
-    viaje_ids = fields.One2many("tetrace.viaje", "task_id")
-    activada = fields.Boolean("Activada", default=True)
-    opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
-    sale_line_id = fields.Many2one('sale.order.line', default=_default_sale_line_id)
-    employee_id = fields.Many2one('hr.employee', string="Empleado")
-    deadline_inicio = fields.Integer("Deadline inicio")
-    deadline_fin = fields.Integer("Deadline fin")
-    alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
-    alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
-    ref_individual = fields.Char("Referencia individual")
-    department_id = fields.Many2one("hr.department", string="Departamento")
-    department_laboral = fields.Boolean(related="department_id.laboral")
-    info_puesto_id = fields.Many2one('ir.attachment', string='Información puesto', domain=[('res_model', '=', 'project.task')])
-
-    @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
-    def _check_tipos_tareas(self):
-        for r in self:
-            if r.tarea_seleccion and not r.tarea_individual:
-                raise ValidationError(_("Si es tarea de selección tiene que ser tarea individual"))
-
-    @api.depends("entrega_ids.entregado")
-    def _compute_entrega_total(self):
-        for r in self:
-            total = 0
-            if not r.desde_plantilla and r.producto_entrega:
-                for entrega in r.entrega_ids:
-                    total += entrega.entregado
-            r.entrega_total = total
-
-    @api.onchange('project_id')
-    def _onchange_project(self):
-        result = super(ProjectTask, self)._onchange_project()
-        self.sale_line_id = False
-        return result
-
-    @api.onchange("tarea_seleccion")
-    def _onchange_tarea_seleccion(self):
-        for r in self:
-            if r.tarea_seleccion:
-                r.tarea_individual = True
-
-    def write(self, vals):
-        entregas = {}
-        for r in self:
-            entregas.update({
-                str(r.id): {
-                    'registro': r,
-                    'total': r.entrega_total
-                }
-            })
-
-        res = super(ProjectTask, self).write(vals)
-
-        for r in self:
-            if not r.desde_plantilla and r.producto_entrega and entregas[str(r.id)]['total'] != r.entrega_total:
-                r.sale_line_id.write({'qty_delivered': r.entrega_total})
-                body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (entregas[str(r.id)]['total'], r.entrega_total)
-                r.message_post(body=body, subject="Entrega")
-
-        if 'info_puesto_id' in vals and not self.env.context.get("no_actualizar_info_puesto"):
-            self.actualizar_info_puesto()
-
-        if ('employee_id' in vals or 'job_id' in vals) and not self.env.context.get("no_actualizar_empleado"):
-            self.actualizar_tareas_individuales()
-
-        return res
-
-    def actualizar_tareas_individuales(self):
-        for r in self:
-            if not r.tarea_individual or not r.ref_individual:
-                continue
-
-            tasks = self.env['project.task'].search([
-                ('project_id', '=', r.project_id.id),
-                ('tarea_individual', '=', True),
-                ('ref_individual', '=', r.ref_individual),
-                ('activada', 'in', [True, False])
-            ])
-
-            for task in tasks:
-                values = {'job_id': r.job_id.id}
-                if r.employee_id:
-                    pos1 = task.name.find("(")
-                    pos2 = task.name.find(")")
-                    if pos1 >= 0 and pos2 >= 0:
-                        cadena_a_reemplazar = task.name[pos1+1:pos2]
-                        name = task.name.replace(cadena_a_reemplazar, r.employee_id.name)
-                    else:
-                        name = "%s (%s)" % (task.name, r.employee_id.name)
-
-                    values.update({
-                        'name': name,
-                        'employee_id': r.employee_id.id,
-                    })
-                task.with_context(no_actualizar_empleado=True).update(values)
-
-    def actualizar_info_puesto(self):
-        for r in self:
-            if r.department_id and r.ref_individual:
-                task = self.search([
-                    ('ref_individual', '=', r.ref_individual),
-                    ('activada', 'in', [True, False]),
-                    ('project_id', '=',  r.project_id.id),
-                    ('department_id', '=', r.department_id.id)
-                ])
-                task.with_context(no_actualizar_info_puesto=True).update({'info_puesto_id': r.info_puesto_id.id})
-
-    @api.model
-    def _where_calc(self, domain, active_test=True):
-        if 'activada' in self._fields and active_test and self._context.get('active_test', True):
-            if not any(item[0] == 'activada' for item in domain):
-                domain = [('activada', '=', 1)] + domain
-        return super(ProjectTask, self)._where_calc(domain, active_test)
-
-    def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        if self.env.context.get("default_res_model") == 'project.project':
-            return
-        return super(ProjectTask, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
-
-    def message_unsubscribe(self, partner_ids=None, channel_ids=None):
-        if not partner_ids and not channel_ids:
-            return True
-
-        user_pid = self.env.user.partner_id.id
-        if not channel_ids and set(partner_ids) == set([user_pid]):
-            self.check_access_rights('read')
-            self.check_access_rule('read')
-        else:
-            self.check_access_rights('write')
-            self.check_access_rule('write')
-
-        self.env['mail.followers'].sudo().search([
-            ('res_model', '=', self._name),
-            ('res_id', 'in', self.ids),
-            '|',
-            ('partner_id', 'in', partner_ids or []),
-            ('channel_id', 'in', channel_ids or [])
-        ]).unlink()
-
-    def copy(self, default=None):
+    def action_crear_tareas_faltantes(self):
         self.ensure_one()
-        new_task = super(ProjectTask, self).copy(default)
-        if self.message_partner_ids:
-            new_task.with_context(add_follower=True).message_subscribe(self.message_partner_ids.ids, [])
-            new_task.notificar_asignacion_seguidores()
-        return new_task
+        if not self.sale_order_id:
+            return
 
-    def notificar_asignacion_seguidores(self):
-        view = self.env['ir.ui.view'].browse(self.env['ir.model.data'].xmlid_to_res_id("mail.message_user_assigned"))
+        if self.sale_order_id.state != 'sale':
+            raise UserError(_("El pedido de venta tiene que estar confirmado"))
+
+        self.sale_order_id.action_generar_proyecto()
+        self.sale_order_id.mapped('order_line').sudo().with_context(
+            force_company=self.sale_order_id.company_id.id,
+        )._timesheet_service_generation()
+        
+    def enviar_email_tareas_asignadas(self):
+        email_template = self.env.ref('tetrace.email_template_project_task_assigned', raise_if_not_found=False)
         for r in self:
-            if not r.message_partner_ids:
+            user_asignados_ids = r.get_all_user_assigned_task()
+            if not user_asignados_ids:
                 continue
-
-            values = {
-                'object': r,
-                'model_description': r.display_name,
-            }
-            assignation_msg = view.render(values, engine='ir.qweb', minimal_qcontext=True)
-            assignation_msg = self.env['mail.thread']._replace_local_links(assignation_msg)
-            r.message_notify(
-                subject=_('You have been assigned to %s') % r.display_name,
-                body=assignation_msg,
-                partner_ids=r.message_partner_ids.ids,
-                record_name=r.display_name,
-                email_layout_xmlid='mail.mail_notification_light',
-                model_description=r.name,
-            )
-
-
-class ProjectTaskType(models.Model):
-    _inherit = 'project.task.type'
-
-    bloquear_imputar_tiempos = fields.Boolean('Bloquear imputación de tiempos')
-
-
-class ProjectTaskEntrega(models.Model):
-    _name = 'project.task.entrega'
-    _description = "Entregas (Tareas)"
-
-    name = fields.Char("Observaciones", translate=True)
-    fecha = fields.Date("Fecha")
-    entregado = fields.Float("Entregado")
-    task_id = fields.Many2one("project.task")
-
-
-class TecnicoCalendario(models.Model):
-    _name = 'tetrace.tecnico_calendario'
-    _description = "Técnicos calendarios"
-
-    project_id = fields.Many2one('project.project', string="Proyecto", required=True)
-    employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
-    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
+                
+            users = self.env['res.users'].search([
+                ('id', 'in', user_asignados_ids),
+                ('partner_id', '!=', False)
+            ])
+            for user in users:
+                user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.desde_plantilla and not x.notify_by_email)
+                if not user_tasks:
+                    continue
+                    
+                email_template.sudo()\
+                    .with_context(tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
+                    .send_mail(r.id, force_send=True, email_values={'recipient_ids': [(4, user.partner_id.id)]})
+                user_tasks.write({'notify_by_email': True})
+                
+    def enviar_email_estado_proyecto(self, estado):
+        email_template = self.env.ref('tetrace.email_template_project_estado', raise_if_not_found=False)
+        for r in self:
+            user_asignados_ids = r.get_all_user_assigned_task()
+            if not user_asignados_ids:
+                continue
+                
+            users = self.env['res.users'].search([
+                ('id', 'in', user_asignados_ids),
+                ('partner_id', '!=', False)
+            ])
+            for user in users:
+                if estado == 'activacion':
+                    subject = _("El proyecto %s ha sido activado" % r.name)
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and tipo == 'activacion')
+                elif estado == 'desactivacion':
+                    subject = _("El proyecto %s ha sido desactivado" % r.name)
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and tipo == 'desactivacion')
+                elif estado == 'modificacion':
+                    subject = _("El proyecto %s ha sido modificado" % r.name)
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                
+                if not user_tasks:
+                    continue
+                
+                email_template.sudo()\
+                    .with_context(estado=estado, tasks=user_tasks, lang=user.lang or r.partner_id.lang)\
+                    .send_mail(r.id, force_send=True, email_values={
+                        'subject': subject,
+                        'recipient_ids': [(4, user.partner_id.id)]
+                    })
+        
+    def get_all_user_assigned_task(self):
+        self.ensure_one()
+        user_ids = []
+        for task in self.tasks:
+            if task.user_id and task.user_id.id not in user_ids:
+                user_ids.append(task.user_id.id)
+        return user_ids

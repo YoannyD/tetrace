@@ -15,5 +15,12 @@
             <field name="sequence">15</field>
             <field name="name">Terminado</field>
         </record>
+        
+        <record id="mt_task_date" model="mail.message.subtype">
+            <field name="name">Fecha límite cambiada</field>
+            <field name="res_model">project.task</field>
+            <field name="default" eval="True"/>
+            <field name="description">Fecha límite cambiada</field>
+        </record>
     </data>
 </odoo>

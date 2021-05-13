@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_change_partner_sale_order_form">
+        <field name="name">tetrace.change_partner_sale_order</field>
+        <field name="model">tetrace.change_partner_sale_order</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="order_id" invisible="1"/>
+                        <field name="partner_id" required="1"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_change_partner" string="Cambiar" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-default" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
