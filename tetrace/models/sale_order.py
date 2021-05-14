@@ -53,6 +53,7 @@ class SaleOrder(models.Model):
         ('asignado', 'Asignado'),
         ('Revisado', 'Revisado'),
         ('standby', 'Stand by'),
+        ('terminado', 'Terminado'),
     ], string='Estado Tetrace', default='Pttrealizar')
     motivo_cancelacion = fields.Selection(selection=[
         ('precio', 'Valor económico de la propuesta'),
