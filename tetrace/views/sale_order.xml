@@ -117,6 +117,7 @@
             
             <xpath expr="//group[1]/group[2]" position="inside">
                 <field name="ref_proyecto" invisible="1"/>
+                <field name="tipo_proyecto_name"/>
                 <label for="nombre_proyecto"/>
                 <div class="d-flex flex-row">
                     <div style="padding-right:8px;">
@@ -264,6 +265,7 @@
                 <xpath expr="//field[@name='partner_id']" position="move"/>
                 <field name="rfq"/>
                 <field name="ref_proyecto"/>
+                <field name="tipo_proyecto_name"/>
                 <field name="nombre_proyecto"/>
                 <field name="coordinador_proyecto_id"/>
                 <field name="proyecto_country_id"/>

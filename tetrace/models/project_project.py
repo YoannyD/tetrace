@@ -61,6 +61,7 @@ class Project(models.Model):
     visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
+    tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
