@@ -283,7 +283,7 @@ class SaleOrder(models.Model):
 
     def _action_confirm(self):
         for order in self:
-            order.action_generar_proyecto()
+            order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
         self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
@@ -361,7 +361,8 @@ class SaleOrder(models.Model):
             line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
                 
         self.actualizar_datos_proyecto()
-        project.enviar_email_tareas_asignadas()
+        if not self.env.context.get("no_enviar_email_tareas_asignadas"):
+            project.enviar_email_tareas_asignadas()
 
     def action_view_task(self):
         action = super(SaleOrder, self).action_view_task()
