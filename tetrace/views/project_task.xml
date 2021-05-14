@@ -47,7 +47,7 @@
                         </group>
                     </group>
                 </page>
-
+                
                 <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="viaje_ids" nolabel="1">
                         <tree editable="bottom">
@@ -101,6 +101,17 @@
                             <field name="realizado"/>
                             <field name="employee_id"/>
                             <field name="observaciones"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <field name="project_id_sale_order_id" invisible="1"/>
+                <page string="Asignaciones" attrs="{'invisible': [('project_id_sale_order_id', '!=', False)]}">
+                    <field name="asginacion_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="company_id"/>
+                            <field name="responsable_id"/>
+                            <field name="seguidor_ids" widget="many2many_tags"/>
                         </tree>
                     </field>
                 </page>

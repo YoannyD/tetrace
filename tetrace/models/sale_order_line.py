@@ -208,8 +208,8 @@ class SaleOrderLine(models.Model):
                 ref_created = "%s-%s-%s" % (self.order_id.id, task.project_id.id, task.id)
                 if task.check_task_exist(ref_created, ref_individual):
                     break
-
-                new_task = task.with_context(mail_notrack=True).copy({
+                
+                values = {
                     'name': name,
                     'partner_id': self.order_id.partner_id.id,
                     'job_id': self.job_id.id,
@@ -217,8 +217,16 @@ class SaleOrderLine(models.Model):
                     'ref_individual': "%s-%s" % (self.id, i),
                     'desde_plantilla': desde_plantilla,
                     "company_id": self.env.company.id,
-                    'ref_created': ref_created
-                })
+                    'ref_created': ref_created,
+                }
+                
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
+                if responsable_id:
+                    values.update({'user_id': responsable_id})
+                
+                new_task = task.with_context(mail_notrack=True).copy(values)
+                if seguidores_ids:
+                    new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
                 tasks.append(new_task)
         self.write({'task_id': None})
         return tasks
@@ -230,6 +238,7 @@ class SaleOrderLine(models.Model):
             if task.check_task_exist(ref_created) or task.tarea_individual:
                 continue
 
+            responsable_id, seguidores_ids = task.get_responsable_y_seguidores()   
             new_task = task.with_context(tracking_disable=True).copy({
                 'name': task.name,
                 'project_id': project.id if project else task.project_id.id,
@@ -238,10 +247,13 @@ class SaleOrderLine(models.Model):
                 'email_from': self.order_id.partner_id.email,
                 'desde_plantilla': desde_plantilla,
                 "company_id": self.env.company.id,
-                'ref_created': ref_created
+                'ref_created': ref_created,
+                'user_id': responsable_id
             })
+            if seguidores_ids:
+                new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
             new_tasks.append(new_task)
-
+            
         return new_tasks
 
     def existe_tarea_rel_linea(self, project):
