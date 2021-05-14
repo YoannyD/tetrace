@@ -56,7 +56,7 @@ class ProjectTask(models.Model):
     ref_created = fields.Char("Referencia creación", copy=False, help="Compuesto por project_id-task_id de origen")
     notify_by_email = fields.Boolean("Notificado por email")
     asginacion_ids = fields.One2many('tetrace.asignacion', 'task_id')
-    project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id")
+    project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):

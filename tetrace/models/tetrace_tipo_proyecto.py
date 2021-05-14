@@ -19,6 +19,7 @@ class TipoProyecto(models.Model):
     sale_order_ids = fields.One2many('sale.order', 'tipo_proyecto_id')
     purchase_order_ids = fields.One2many('purchase.order', 'tipo_proyecto_id')
     account_move_ids = fields.One2many('account.move', 'tipo_proyecto_id')
+    tipo_servicio_ids = fields.Many2many("tetrace.tipo_servicio")
 
     def name_get(self):
         res=[]

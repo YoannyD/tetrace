@@ -21,7 +21,8 @@ class SaleOrder(models.Model):
                                        context='{"display_tipo": True}')
     num_proyecto = fields.Char('Nº proyecto', copy=False)
     partner_siglas = fields.Char(related="partner_id.siglas")
-    tipo_servicio_id = fields.Many2one('tetrace.tipo_servicio', string="Tipo de servicio", copy=False)
+    tipo_servicio_id = fields.Many2one('tetrace.tipo_servicio', string="Tipo de servicio", copy=False,
+                                        domain="[('tipo_proyecto_ids', 'in', tipo_proyecto_id)]")
     proyecto_country_id = fields.Many2one('res.country', string="País", copy=False)
     nombre_proyecto = fields.Char('Nombre proyecto', copy=False)
     detalle_proyecto = fields.Char('Detalle proyecto', copy=False)
