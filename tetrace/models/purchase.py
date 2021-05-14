@@ -60,6 +60,12 @@ class PurchaseOrder(models.Model):
         for r in self:
             if r.cuenta_activo:
                 r.order_line.write({'cuenta_activo': True})
+                
+    @api.model
+    def _get_under_validation_exceptions(self):
+        res = super(PurchaseOrder, self)._get_under_validation_exceptions()
+        res += ["origin", "cuenta_activo"]
+        return res
 
 
 class PurchaseOrderLine(models.Model):

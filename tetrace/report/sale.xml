@@ -77,6 +77,13 @@
                         <t t-if="tipo_informe == 'proyecto'">
                             <div class="row" style="margin:32px auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
                                 <div class="col-md-12">
+                                    <div style="padding-left:25px;margin-top:8px;">
+                                        <span t-esc="doc.rfq" style="color:#872292;font-size:1.4em;font-weight:bold;"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin:0 auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
+                                <div class="col-md-12">
                                     <t t-foreach="doc.order_line" t-as="line">
                                         <t t-if="line.display_type == 'line_section'">
                                             <div style="color:#872292;text-decoration: underline; font-weight:bold;margin-top:26px;font-size:1.2em;">
@@ -97,7 +104,7 @@
                                                 </div>
                                                 <t t-if="line.price_subtotal == 0">
                                                     <div style="display:inline-block;float:right">
-                                                        INCLUIDO
+                                                        Refacturable
                                                     </div>
                                                 </t>
                                                 <t t-if="line.price_subtotal &gt; 0">
@@ -187,7 +194,7 @@
                         </t>
                         <p style="page-break-before:always;"> </p>
                         
-                        <div t-if="doc.note" class="row" style="margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
+                        <div t-if="doc.note" class="row" style="font-size:0.9em;margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
                             <div class="col-md-12">
                                 <div style="font-size:1.2em;margin-bottom:12px;">ESPECIFICACIONES</div>
                                 <span t-field="doc.note"/>
