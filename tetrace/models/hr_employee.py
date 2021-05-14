@@ -27,6 +27,7 @@ class Employee(models.Model):
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "employee_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
     documentacion_laboral = fields.Char("Documentación laboral")
+    formacion_ids = fields.One2many('tetrace.formacion', 'employee_id')
 
     def _compute_document_employee(self):
         for r in self:
