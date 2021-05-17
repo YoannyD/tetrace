@@ -22,7 +22,10 @@ class SaleOrderLine(models.Model):
     def product_id_change(self):
         if not self.product_id:
             return
-        self.individual = self.product_id.individual
+        self.update({
+            'individual': self.product_id.individual,
+            'no_imprimir': self.product_id.archivar_order_line,
+        })
         return super(SaleOrderLine, self).product_id_change()
 
     @api.onchange('product_uom', 'product_uom_qty')
