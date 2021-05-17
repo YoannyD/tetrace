@@ -20,6 +20,7 @@
                     <group>
                         <field name="name"/>
                         <field name="tipo"/>
+                        <field name="tipo_servicio_ids" widget="many2many_tags"/>
                     </group>
                 </sheet>
             </form>
@@ -33,6 +34,7 @@
             <tree>
                 <field name="name"/>
                 <field name="tipo"/>
+                <field name="tipo_servicio_ids" widget="many2many_tags"/>
             </tree>
         </field>
     </record>

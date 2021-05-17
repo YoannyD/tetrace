@@ -16,6 +16,7 @@ class ProductTemplate(models.Model):
     project_template_diseno_id = fields.Many2one("project.project", string="Plantilla proyecto preliminar")
     producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega", store=True)
     individual = fields.Boolean("Individual")
+    archivar_order_line = fields.Boolean("Archivados en líneas de venta")
 
     @api.depends("service_policy", "service_tracking")
     def _compute_producto_entrega(self):

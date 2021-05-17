@@ -55,6 +55,8 @@ class ProjectTask(models.Model):
                                      domain=[('res_model', '=', 'project.task')])
     ref_created = fields.Char("Referencia creación", copy=False, help="Compuesto por project_id-task_id de origen")
     notify_by_email = fields.Boolean("Notificado por email")
+    asginacion_ids = fields.One2many('tetrace.asignacion', 'task_id')
+    project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
@@ -217,7 +219,21 @@ class ProjectTask(models.Model):
             domain += [('ref_individual', '=', ref_individual)]
         task_count = self.search_count(domain)
         return True if task_count > 0 else False
+    
+    def get_responsable_y_seguidores(self):
+        self.ensure_one()
+        seguidores_ids = []
+        responsable_id = None
+        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == self.env.company.id)   
+        if asignaciones:
+            for asignacion in asignaciones:
+                for seguidor in asignacion.seguidor_ids.filtered(lambda x: x.partner_id):
+                    seguidores_ids.append(seguidor.partner_id.id)
+                if asignacion.responsable_id:
+                    responsable_id = asignacion.responsable_id.id
+        return responsable_id, seguidores_ids
 
+        
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'

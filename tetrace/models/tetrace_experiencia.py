@@ -37,5 +37,5 @@ class ExperienciaTecnicoProyecto(models.Model):
     experiencia_id = fields.Many2one('tetrace.experiencia', string="Experiencia", required=True, ondelete="cascade")
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True, ondelete="cascade")
     project_id = fields.Many2one('project.project', string="Proyecto", required=True, ondelete="cascade")
-    resume_line_id = fields.Many2one('hr.resume.line', string="Experiencia", required=True, ondelete="cascade")
+    resume_line_id = fields.Many2one('hr.resume.line', string="Experiencia Empleado", required=True, ondelete="cascade")
                 

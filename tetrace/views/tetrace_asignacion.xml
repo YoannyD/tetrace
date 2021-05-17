@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="tetrace_asignacion_action"
+                name="Matriz de responsables"
+                res_model="tetrace.asignacion"
+                view_mode="tree,form"/>
+    
+    <menuitem id="menu_tetrace_asignacion"
+              parent="project.menu_project_config"
+              action="tetrace_asignacion_action"
+              name="Matriz de responsables"
+              sequence="25"/>
+
+    <record model="ir.ui.view" id="tetrace_asginacion_tree">
+        <field name="name">tetrace.asignacion.tree</field>
+        <field name="model">tetrace.asignacion</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="task_id"/>
+                <field name="company_id"/>
+                <field name="responsable_id"/>
+                <field name="seguidor_ids" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_asignacion_form">
+        <field name="name">tetrace.asignacion.form</field>
+        <field name="model">tetrace.asignacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="task_id"/>
+                        <field name="company_id"/>
+                        <field name="responsable_id"/>
+                        <field name="seguidor_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_asignacion_search">
+        <field name="name">tetrace.asignacion.search</field>
+        <field name="model">tetrace.asignacion</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="task_id"/>
+                <field name="company_id"/>
+                <field name="responsable_id"/>
+                <field name="seguidor_ids"/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_task_id" string="Tarea" domain="[]" context="{'group_by' : 'task_id'}"/>
+                    <filter name="group_company_id" string="Compañia" context="{'group_by': 'company_id'}"/>
+                    <filter name="group_responsable_id" string="Responsable" context="{'group_by': 'responsable_id'}"/>
+                    <filter name="group_seguidor_ids" string="Seguidor" context="{'group_by': 'seguidor_ids'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

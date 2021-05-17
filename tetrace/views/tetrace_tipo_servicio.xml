@@ -19,6 +19,7 @@
                 <sheet>
                     <group>
                         <field name="name"/>
+                        <field name="tipo_proyecto_ids" widget="many2many_tags"/>
                     </group>
                 </sheet>
             </form>
@@ -31,6 +32,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="name"/>
+                <field name="tipo_proyecto_ids" widget="many2many_tags"/>
             </tree>
         </field>
     </record>

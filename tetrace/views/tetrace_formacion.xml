@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <act_window id="tetrace_tipo_formacion_action"
+                name="Tipo Formación"
+                res_model="tetrace.tipo_formacion"
+                view_mode="tree,form"/>
+    
+    <menuitem id="menu_tetrace_tipo_formacion"
+              parent="hr.menu_human_resources_configuration_employee"
+              action="tetrace_tipo_formacion_action"
+              name="Tipo Formación"
+              sequence="35"/>
+    
+    <act_window id="tetrace_formacion_action"
+                name="Formación"
+                res_model="tetrace.formacion"
+                view_mode="tree,form"/>
+    
+    <menuitem id="menu_tetrace_formacion"
+              parent="hr.menu_hr_employee_payroll"
+              action="tetrace_formacion_action"
+              name="Formación"
+              sequence="15"/>
+
+    <record model="ir.ui.view" id="tetrace_formacion_tree">
+        <field name="name">tetrace.formacion.tree</field>
+        <field name="model">tetrace.formacion</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="employee_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <field name="tipo_id"/>
+                <field name="curso"/>
+                <field name="fecha_vigencia"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_formacion_form">
+        <field name="name">tetrace.formacion.form</field>
+        <field name="model">tetrace.formacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="tipo_id"/>
+                            <field name="curso"/>
+                            <field name="fecha_vigencia"/>
+                        </group>
+                        <group>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_formacion_search">
+        <field name="name">tetrace.formacion.search</field>
+        <field name="model">tetrace.formacion</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="tipo_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <separator/>
+                <filter string="Formaciones caducadas" name="filter_caducadas" domain="[('fecha_vigencia', '&lt;', context_today())]"/>
+                <separator/>
+                <group expand="0" name="group_by" string="Group By">
+                    <filter name="group_employee_id" string="Empleado" context="{'group_by' : 'employee_id'}"/>
+                    <filter name="group_tipo_id" string="Tipo" context="{'group_by': 'tipo_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_tipo_formacion_tree">
+        <field name="name">tetrace.tipo_formacion.tree</field>
+        <field name="model">tetrace.tipo_formacion</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_tipo_formacion_form">
+        <field name="name">tetrace.tipo_formacion.form</field>
+        <field name="model">tetrace.tipo_formacion</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_tipo_formacion_search">
+        <field name="name">tetrace.tipo_formacion.search</field>
+        <field name="model">tetrace.tipo_formacion</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+</odoo>

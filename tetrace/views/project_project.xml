@@ -80,6 +80,10 @@
                         icon="fa-usd"/>
             </xpath>
 
+            <xpath expr="//page[@name='settings']//field[@name='user_id']" position="before">
+                <field name="tipo_proyecto_name"/>
+            </xpath>
+            
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="partner_ids">
                     <tree editable="bottom">

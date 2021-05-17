@@ -102,11 +102,16 @@
                                                 <div style="overflow:hidden;font-weight:bold;white-space: nowrap; text-overflow: ellipsis;display:inline-block;max-width:75%;">
                                                     <span t-field="line.name"/>
                                                 </div>
-                                                <t t-if="line.price_subtotal == 0">
+                                                <t t-if="line.price_subtotal == 0 and 'refacturable' not in line.name ">
+                                                    <div style="display:inline-block;float:right">
+                                                        Incluido
+                                                    </div>
+                                                </t>
+                                                <t t-if="'refacturable' in line.name">
                                                     <div style="display:inline-block;float:right">
                                                         Refacturable
                                                     </div>
-                                                </t>
+                                                </t>                                                
                                                 <t t-if="line.price_subtotal &gt; 0">
                                                     <div style="display:inline-block;float:right">
                                                         <span t-field="line.price_subtotal"/> / <span t-field="line.product_uom"/>
