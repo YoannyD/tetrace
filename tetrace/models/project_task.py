@@ -224,8 +224,8 @@ class ProjectTask(models.Model):
         self.ensure_one()
         seguidores_ids = []
         responsable_id = None
-        if self.company_id:
-            asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == self.company_id.id)
+        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == self.env.company.id)   
+        if asignaciones:
             for asignacion in asignaciones:
                 for seguidor in asignacion.seguidor_ids.filtered(lambda x: x.partner_id):
                     seguidores_ids.append(seguidor.partner_id.id)
@@ -233,6 +233,7 @@ class ProjectTask(models.Model):
                     responsable_id = asignacion.responsable_id.id
         return responsable_id, seguidores_ids
 
+        
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
