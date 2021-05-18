@@ -34,7 +34,7 @@ class Project(models.Model):
     _inherit = 'project.project'
 
     def _default_estado_id(self):
-        return self.env['tetrace.project_state'].search([], limit=1).id
+        return self.env['tetrace.project_state'].search([('id', '=', 3)], limit=1).id
 
     descripcion = fields.Text("Descripción", translate=True)
     estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True,
