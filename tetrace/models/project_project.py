@@ -34,7 +34,7 @@ class Project(models.Model):
     _inherit = 'project.project'
 
     def _default_estado_id(self):
-        return self.env['tetrace.project_state'].search([], limit=1).id
+        return self.env['tetrace.project_state'].search([('id', '=', 3)], limit=1).id
 
     descripcion = fields.Text("Descripción", translate=True)
     estado_id = fields.Many2one('tetrace.project_state', string='Estado', ondelete='restrict', tracking=True,
@@ -73,13 +73,10 @@ class Project(models.Model):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \
             .mapped('sale_line_id.order_id.order_line') \
-            .filtered(lambda
-                          sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
+            .filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense and not sol.is_downpayment)
         # include the service SO line of SO sharing the same project
         sale_order = self.env['sale.order'].search([('project_id', 'in', self.ids)])
-        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda
-                                                                                    sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(
-            so_lines.mapped('order_id').ids) | set(sale_order.ids)
+        return set(so_lines.ids) | set(sale_order.mapped('order_line').filtered(lambda sol: sol.is_service and sol.product_id.service_policy == 'delivered_timesheet' and not sol.is_expense).ids), set(so_lines.mapped('order_id').ids) | set(sale_order.ids)
 
     @api.depends("sale_order_id", "sale_order_state")
     def _compute_visible_btn_crear_tareas_faltantes(self):
@@ -420,10 +417,10 @@ class Project(models.Model):
             for user in users:
                 if estado == 'activacion':
                     subject = _("El proyecto %s ha sido activado" % r.name)
-                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and tipo == 'activacion')
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'activacion')
                 elif estado == 'desactivacion':
                     subject = _("El proyecto %s ha sido desactivado" % r.name)
-                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and tipo == 'desactivacion')
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'desactivacion')
                 elif estado == 'modificacion':
                     subject = _("El proyecto %s ha sido modificado" % r.name)
                     user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)

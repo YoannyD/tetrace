@@ -11,7 +11,15 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">hr.applicant</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('emp_id','=',active_id)]</field>
+        <field name="domain">[('emp_id', '=', active_id)]</field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_asignacion_view">
+        <field name="name">Asignaciones Calendario</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tetrace.tecnico_calendario</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('employee_id', '=', active_id)]</field>
     </record>
 
     <record model="ir.ui.view" id="view_employee_form">
@@ -27,8 +35,8 @@
                     <field name="applicant_count" string="P. Selección" widget="statinfo"/>
                 </button>
                 
-                <button name="action_task_employee_view"
-                        type="object"
+                <button name="%(action_asignacion_view)d"
+                        type="action"
                         class="oe_stat_button"
                         string="Proyectos"
                         icon="fa-puzzle-piece">

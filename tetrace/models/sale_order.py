@@ -262,8 +262,18 @@ class SaleOrder(models.Model):
         if vals.get('partner_id'):
             for r in self:
                 r.project_ids.write({'partner_id': r.partner_id.id})
+                
+        if 'company_id' in vals:
+            self.actualizar_company_project()
 
         return res
+
+    def actualizar_company_project(self):
+        for r in self:
+            company_id = r.company_id.id if r.company_id else None
+            for project in r.project_ids:
+                project.tasks.write({'company_id': company_id})
+                project.write({'company_id': company_id})
 
     def generar_ref_proyecto(self):
         self.ensure_one()
@@ -324,6 +334,12 @@ class SaleOrder(models.Model):
                             'company_id': None
                         })
 
+    def _prepare_analytic_account_data(self, prefix=None):
+        values = super(SaleOrder, self)._prepare_analytic_account_data(prefix)
+        values.update({'company_id': None})
+        return values
+        
+                        
     def action_crear_version(self):
         self.ensure_one()
         wizard = self.env['tetrace.crear_version'].create({

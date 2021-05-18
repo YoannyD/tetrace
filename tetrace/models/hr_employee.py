@@ -23,7 +23,8 @@ class Employee(models.Model):
     key_nomina = fields.Char('Cláve nómina')
     applicant_ids = fields.One2many('hr.applicant', 'emp_id')
     applicant_count = fields.Integer('Número de procesos de selección', compute="_compute_applicant")
-    nivel_validacion_compras_ids = fields.Many2many('tier.definition', string="Validación compras", domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]", check_company=True)
+    nivel_validacion_compras_ids = fields.Many2many('tier.definition', string="Validación compras", check_company=True, 
+                                                    domain="['&',('model_id','=',586),'|', ('company_id', '=', False), ('company_id', '=', company_id)]")
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "employee_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
     documentacion_laboral = fields.Char("Documentación laboral")
@@ -53,14 +54,3 @@ class Employee(models.Model):
                 ('res_id', '=', r.id)
             ])
             documents._compute_res_name()
-            
-    def action_task_employee_view(self):
-        self.ensure_one()
-        tasks = self.env['project.task'].search([
-            ('employee_id', '=', self.id),
-            ('tarea_individual', '=', True)
-        ])
-        project_ids = [task.project_id.id for task in tasks]
-        action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
-        action.update({'domain': [('id', 'in', project_ids)]})
-        return action

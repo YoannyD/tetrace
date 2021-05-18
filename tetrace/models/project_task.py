@@ -160,8 +160,6 @@ class ProjectTask(models.Model):
         return super(ProjectTask, self)._where_calc(domain, active_test)
 
     def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None):
-        _logger.warning("message_subscribe")
-        _logger.warning(self.env.context)
         if self.env.context.get("default_res_model") == 'project.project' or self.env.context.get("no_notify"):
             return
         return super(ProjectTask, self).message_subscribe(partner_ids, channel_ids, subtype_ids)
