@@ -99,6 +99,7 @@
         'views/tetrace_formacion.xml',
         'views/tetrace_asignacion.xml',
         'views/tetrace_tecnico_calendario.xml',
+        'views/tetrace_coordinador_company.xml',
         'views/base_tier_validation.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',

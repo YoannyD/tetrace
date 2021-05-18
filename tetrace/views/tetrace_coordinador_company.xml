@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="tetrace_coordinador_company_form">
+        <field name="name">tetrace.coordinador_company.form</field>
+        <field name="model">tetrace.coordinador_company</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="tipo_proyecto_id"/>
+                        <field name="company_id"/>
+                        <field name="coordinador_id"/>
+                        <field name="seguidor_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="tetrace_coordinador_company_tree">
+        <field name="name">tetrace.coordinador_company.tree</field>
+        <field name="model">tetrace.coordinador_company</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="tipo_proyecto_id"/>
+                <field name="company_id"/>
+                <field name="coordinador_id"/>
+                <field name="seguidor_ids" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
