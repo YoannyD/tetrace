@@ -15,6 +15,14 @@
                                 <field name="auto_add_followers" class="oe_inline"/>
                             </div>
                         </div>
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="dia_bloqueo" 
+                                       string="Día de bloqueo registro de horas mes anterior" 
+                                       class="col-3 col-lg-3 o_light_label"/>
+                                <field name="dia_bloqueo" class="oe_inline"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </xpath>

@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from dateutil.relativedelta import relativedelta
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -60,8 +61,27 @@ class AccountAnalyticLine(models.Model):
 
     def _check_imputar_tiempos(self):
         for r in self:
-            if r.task_id and r.task_id.stage_id and r.task_id.stage_id.bloquear_imputar_tiempos:
-                raise ValidationError(_("La inserción de tiempos en la tarea esta bloqueda."))
+            if r.task_id:
+                if r.task_id.stage_id and r.task_id.stage_id.bloquear_imputar_tiempos:
+                    raise ValidationError(_("La inserción de tiempos en la tarea esta bloqueda."))
+                
+                date_valid = True
+                if not r.date:
+                    date_valid = False
+                else:
+                    dia_bloqueo = self.env['ir.config_parameter'].sudo().get_param('dia_bloqueo', default=5)
+                    try:
+                        dia_bloqueo = int(dia_bloqueo)
+                    except:
+                        dia_bloqueo = 5
+                    fecha_desde =  (fields.Date.today() - relativedelta(months=1)).replace(day=dia_bloqueo)
+                    _logger.warning(r.date)
+                    _logger.warning(fecha_desde)
+                    if r.date < fecha_desde:
+                        date_valid = False
+                    
+                if not date_valid:
+                    raise ValidationError(_("Está intentando añadir un registro en un periodo ya cerrado."))
 
 
 class AccountAnalyticLineRel(models.Model):
