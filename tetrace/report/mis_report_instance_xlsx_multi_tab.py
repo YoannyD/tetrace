@@ -32,7 +32,12 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
         
-        analitycs = self.env['account.analytic.account'].search([])
+        grupo_cuentas = self.env['account.analytic.line.rel'].read_group([('date','>=','01/01/2021')],['analytic_account_id'],['analytic_account_id'])
+        cuentas = []
+        for cuenta in grupo_cuentas:
+            cuentas.append(cuenta.get('analytic_account_id')[0])
+        
+        analitycs = self.env['account.analytic.account'].search([('id', 'in', cuentas)])
         
         for analityc in analitycs:
             condition = {
@@ -41,6 +46,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
                     'operator': '='
                 }
             }
+
             self.env.context = dict(self.env.context, mis_report_filters=condition)
             data['context'].update({'mis_report_filters': condition})
             self.tab_anlitica(workbook, data, objects, analityc)

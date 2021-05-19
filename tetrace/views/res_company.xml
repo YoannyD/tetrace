@@ -11,6 +11,18 @@
                 <field name="tetrace_cuenta_analitica_diferencia_cambio"/>
                 <field name="grupo_tetrace"/>
             </xpath>
+            
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Coordinadores">
+                    <field name="coordinador_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="tipo_proyecto_id"/>
+                            <field name="coordinador_id"/>
+                            <field name="seguidor_ids"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -17,3 +17,4 @@ class Company(models.Model):
                                                                  string='Cuenta anlítica apuntes diferencias de cambio')
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
     tax_agency_id = fields.Many2one("aeat.tax.agency", string="Tax Agency ")
+    coordinador_ids = fields.One2many('tetrace.coordinador_company', 'company_id')

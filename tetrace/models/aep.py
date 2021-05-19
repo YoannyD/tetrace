@@ -112,6 +112,8 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
                 fecha_rate = datetime.strptime(acc["date:day"], "%d %b %Y")
                 fecha_rate = fecha_rate if self._informe_fecha_contable else date_to
                 company_rates = self._get_company_rates(fecha_rate)
+                _logger.warning(company_rates)
+                _logger.warning(acc)
                 rate, dp = company_rates[acc["company_id"][0]]
                 debit = acc["debit"] or 0.0
                 credit = acc["credit"] or 0.0
