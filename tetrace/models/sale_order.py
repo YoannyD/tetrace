@@ -68,6 +68,8 @@ class SaleOrder(models.Model):
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
                                                 compute="_compute_visible_btn_change_partner")
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora", 
+                                             default=lambda self: self.env.company)
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -200,6 +202,26 @@ class SaleOrder(models.Model):
                         break
             r.update({'visible_btn_generar_proyecto': visible})
 
+    @api.onchange('company_coordinador_id', 'tipo_proyecto_id')
+    def _onchange_company_coordinador_id(self):
+        for r in self:
+            coordinador_proyecto_id = None
+            seguidor_proyecto_ids = []
+            
+            if r.company_coordinador_id:
+                coordinador = self.env["tetrace.coordinador_company"].search([
+                    ('company_id', '=', r.company_coordinador_id.id),
+                    ('tipo_proyecto_id', '=', r.tipo_proyecto_id.id)
+                ], limit=1)
+                if coordinador:
+                    coordinador_proyecto_id = coordinador.coordinador_id.id
+                    seguidor_proyecto_ids = [c.id for c in coordinador.seguidor_ids]
+            
+            r.update({
+                'coordinador_proyecto_id': coordinador_proyecto_id,
+                'seguidor_proyecto_ids': [(6, 0, seguidor_proyecto_ids)]
+            })
+            
     @api.onchange('ejercicio_proyecto', 'tipo_proyecto_id', 'num_proyecto', 'referencia_proyecto_antigua')
     def _onchange_ref_proyecto(self):
         for r in self:

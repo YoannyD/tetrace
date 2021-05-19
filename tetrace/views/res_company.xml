@@ -18,7 +18,7 @@
                         <tree editable="bottom">
                             <field name="tipo_proyecto_id"/>
                             <field name="coordinador_id"/>
-                            <field name="seguidor_ids"/>
+                            <field name="seguidor_ids" widget="many2many_tags"/>
                         </tree>
                     </field>
                 </page>
