@@ -18,3 +18,5 @@ class Company(models.Model):
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
     tax_agency_id = fields.Many2one("aeat.tax.agency", string="Tax Agency ")
     coordinador_ids = fields.One2many('tetrace.coordinador_company', 'company_id')
+    coordinador_sale_order_ids = fields.One2many('sale.order', 'company_coordinador_id')
+    fecha_bloque_imputacion_horas = fields.Date("Fecha bloqueo imputación horas")

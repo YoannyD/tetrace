@@ -23,6 +23,5 @@ class ResConfigSettings(models.TransientModel):
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         get_param = self.env['ir.config_parameter'].sudo().get_param
-#         auto_add_followers = True if self.auto_add_followers else False
         res.update(auto_add_followers=get_param('auto_add_followers', default=False))
         return res

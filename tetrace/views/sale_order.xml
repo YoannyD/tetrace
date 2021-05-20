@@ -135,6 +135,7 @@
                 </div>
                 <field name="nombre_proyecto" invisible="1"/>
                 <field name="referencia_proyecto_antigua"/>
+                <field name="company_coordinador_id"/>
                 <field name="coordinador_proyecto_id"/>
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
                 <field name="analytic_account_id" 
@@ -251,6 +252,10 @@
                     </group>
                     <div class="oe_clear"/>
                 </page>
+            </xpath>
+            
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="groups"></attribute>
             </xpath>
         </field>
     </record>
