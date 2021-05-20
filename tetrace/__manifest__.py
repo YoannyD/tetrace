@@ -41,7 +41,8 @@
         'l10n_es_aeat',
         'l10n_es_aeat_mod303',
         'sale_timesheet_enterprise',
-        'purchase_tier_validation'
+        'purchase_tier_validation',
+        'account_accountant'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -101,6 +102,7 @@
         'views/tetrace_tecnico_calendario.xml',
         'views/tetrace_coordinador_company.xml',
         'views/base_tier_validation.xml',
+        'views/account_change_lock_date.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',

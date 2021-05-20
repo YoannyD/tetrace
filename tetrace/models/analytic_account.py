@@ -65,22 +65,8 @@ class AccountAnalyticLine(models.Model):
                 if r.task_id.stage_id and r.task_id.stage_id.bloquear_imputar_tiempos:
                     raise ValidationError(_("La inserción de tiempos en la tarea esta bloqueda."))
                 
-                date_valid = True
-                if not r.date:
-                    date_valid = False
-                else:
-                    dia_bloqueo = self.env['ir.config_parameter'].sudo().get_param('dia_bloqueo', default=5)
-                    try:
-                        dia_bloqueo = int(dia_bloqueo)
-                    except:
-                        dia_bloqueo = 5
-                    fecha_desde =  (fields.Date.today() - relativedelta(months=1)).replace(day=dia_bloqueo)
-                    _logger.warning(r.date)
-                    _logger.warning(fecha_desde)
-                    if r.date < fecha_desde:
-                        date_valid = False
-                    
-                if not date_valid:
+                if not r.date or (self.env.company.fecha_bloque_imputacion_horas and 
+                                  r.date < self.env.company.fecha_bloque_imputacion_horas):
                     raise ValidationError(_("Está intentando añadir un registro en un periodo ya cerrado."))
 
 
