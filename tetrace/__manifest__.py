@@ -12,6 +12,7 @@
         'base',
         'sale',
         'purchase',
+        'purchase_stock',
         'account',
         'stock',
         'account_reports',

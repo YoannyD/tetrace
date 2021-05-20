@@ -126,6 +126,9 @@
                 <field name="fecha_servicio"/>
             </xpath>
 
+            <xpath expr="//field[@name='amount_total_signed']" position="after">
+                <field name="amount_total" string="Total" sum="Total" optional="show"/>
+            </xpath>
         </field>
     </record>
     
