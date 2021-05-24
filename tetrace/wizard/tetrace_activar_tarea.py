@@ -39,22 +39,20 @@ class ActivarTarea(models.TransientModel):
         if self.recogida_equipos: opciones.append('equipos')
         if self.reubicacion_puesto: opciones.append('reubicacion')
         if self.facturacion: opciones.append('facturacion')
-            
-        if not opciones:
-            return
         
-        domain = [
-            ('project_id', '=', self.project_id.id),
-            ('tipo', '=', 'desactivacion'),
-            ('activada', '=', False),
-            ('opciones_desactivacion', 'in', opciones)
-        ]
-        tasks = self.env['project.task'].search(domain)
-        for task in tasks:
-            task.write({
-                'activada': True,
-                'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
-            })
+        if opciones:
+            domain = [
+                ('project_id', '=', self.project_id.id),
+                ('tipo', '=', 'desactivacion'),
+                ('activada', '=', False),
+                ('opciones_desactivacion', 'in', opciones)
+            ]
+            tasks = self.env['project.task'].search(domain)
+            for task in tasks:
+                task.write({
+                    'activada': True,
+                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+                })
 
         values_project = {}
         if self.accion == 'cancelar':
