@@ -80,6 +80,10 @@
                         icon="fa-usd"/>
             </xpath>
 
+            <xpath expr="//div[@name='options_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
             <xpath expr="//page[@name='settings']//field[@name='user_id']" position="before">
                 <field name="tipo_proyecto_name"/>
             </xpath>
@@ -114,6 +118,10 @@
                     <field name="descripcion"/>
                 </group>
             </xpath>
+            
+            <xpath expr="//page[@name='emails']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Técnicos">
@@ -141,6 +149,17 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="project_project_view_form_sale_timesheet_tetrace">
+        <field name="name">project.project.form.inherit.tetrace</field>
+        <field name="inherit_id" ref="sale_timesheet.project_project_view_form"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='billing_employee_rate']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.ui.view" id="project_invoice_form_timesheet_tetrace">
         <field name="name">Inherit project form : Invoicing Data Tetrace</field>
         <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
