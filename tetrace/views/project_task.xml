@@ -96,6 +96,7 @@
                     <field name="alojamiento_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="fecha"/>
+                            <field name="fecha_fin"/>
                             <field name="ciudad"/>
                             <field name="completado"/>
                             <field name="realizado"/>
