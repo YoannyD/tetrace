@@ -32,20 +32,10 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
         
-        fecha_desde = None
-        fecha_hasta = None
-        for period in objects.period_ids:
-            if period.date_from and (not fecha_desde or period.date_from < fecha_desde):
-                fecha_desde = period.date_from
-                
-            if period.date_to and (not fecha_hasta or period.date_to > fecha_hasta):
-                fecha_hasta = period.date_to
+        grupo_cuentas = self.env['account.analytic.line.rel'].read_group([
+            ('date','>=','01/01/2021')
+        ],['analytic_account_id'],['analytic_account_id'])
         
-        domain = []
-        if fecha_desde: domain += [('date', '>=', fecha_desde)]
-        if fecha_hasta: domain += [('date', '<=', fecha_hasta)]
-
-        grupo_cuentas = self.env['account.analytic.line.rel'].read_group(domain,['analytic_account_id'],['analytic_account_id'])
         cuentas = []
         for cuenta in grupo_cuentas:
             cuentas.append(cuenta.get('analytic_account_id')[0])
