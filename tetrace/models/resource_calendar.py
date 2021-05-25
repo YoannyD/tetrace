@@ -108,9 +108,9 @@ class ResourceCalendarAttendance(models.Model):
     name = fields.Char(default=lambda self: _('New'), copy=False)
     date_from = fields.Date(default=lambda self: fields.Date.today())
     date_to = fields.Date(default=lambda self: fields.Date.today())
-    horas = fields.Float('Horas')
+    horas = fields.Float('Horas empleado')
     horas_cliente = fields.Float('Horas cliente')
-    festivo = fields.Boolean('Festivo')
+    festivo = fields.Boolean('Festivo empleado')
     festivo_cliente = fields.Boolean('Festivo cliente')
 
     @api.model

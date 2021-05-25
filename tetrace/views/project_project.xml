@@ -57,12 +57,6 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button"
                         type="object"
-                        name="view_responsables_tree"
-                        string="Responsables"
-                        icon="fa-male"/>
-
-                <button class="oe_stat_button"
-                        type="object"
                         name="view_procesos_seleccion_tree"
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
@@ -80,6 +74,10 @@
                         icon="fa-usd"/>
             </xpath>
 
+            <xpath expr="//div[@name='options_active']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
             <xpath expr="//page[@name='settings']//field[@name='user_id']" position="before">
                 <field name="tipo_proyecto_name"/>
             </xpath>
@@ -100,8 +98,8 @@
 
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="fecha_inicio"/>
-                <field name="fecha_cancelacion"/>
-                <field name="fecha_finalizacion"/>
+                <field name="fecha_cancelacion" readonly="1"/>
+                <field name="fecha_finalizacion" readonly="1"/>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
                 <field name="resource_calendar_id" string="Calendario por defecto"/>
@@ -113,6 +111,10 @@
                 <group>
                     <field name="descripcion"/>
                 </group>
+            </xpath>
+            
+            <xpath expr="//page[@name='emails']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
@@ -141,6 +143,17 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="project_project_view_form_sale_timesheet_tetrace">
+        <field name="name">project.project.form.inherit.tetrace</field>
+        <field name="inherit_id" ref="sale_timesheet.project_project_view_form"/>
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='billing_employee_rate']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.ui.view" id="project_invoice_form_timesheet_tetrace">
         <field name="name">Inherit project form : Invoicing Data Tetrace</field>
         <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>

@@ -29,15 +29,7 @@ class CrearTareasActDesc(models.TransientModel):
     @api.depends('project_id')
     def _compute_tecnico_project_ids(self):
         for r in self:
-            employee_ids = []
-            tasks = self.env['project.task'].search([
-                ('project_id', '=', r.project_id.id),
-                ('employee_id', '!=', False),
-                ('activada', '=', False)
-            ])
-            for task in tasks:
-                employee_ids.append(task.employee_id.id)
-            r.tecnico_project_ids = employee_ids
+            r.tecnico_project_ids = [tc.employee_id.id for tc in self.project_id.tecnico_calendario_ids]
 
     def action_generar_tareas(self):
         self.ensure_one()
@@ -59,8 +51,13 @@ class CrearTareasActDesc(models.TransientModel):
                         if task.check_task_exist(ref_created, ref_individual):
                             break
 
-                        new_task = task.copy({
-                            'name': task.name,
+                        if puesto.job_id.id:
+                            name = "%s (%s)" % (task.name, puesto.job_id.name)
+                        else:
+                            name = task.name
+                            
+                        values.update({
+                            'name': name,
                             'job_id': puesto.job_id.id,
                             'employee_id': puesto.employee_id.id,
                             'project_id': self.project_id.id,
@@ -69,22 +66,30 @@ class CrearTareasActDesc(models.TransientModel):
                             "company_id": self.project_id.company_id.id,
                             'ref_created': ref_created
                         })
-                        new_task.actualizar_tareas_individuales()
+                        
+                        responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
+                        if responsable_id:
+                            values.update({'user_id': responsable_id})
+
+                        new_task = task.with_context(mail_notrack=True).copy(values)
+                        if seguidores_ids:
+                            new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
+                        
             elif not task.check_task_exist(ref_created):
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()  
                 new_task = task.copy({
                     'name': task.name,
                     'sale_line_id': None,
-                    'partner_id': self.project_id.sale_order_id.partner_id.id,
+                    'partner_id': responsable_id,
                     'email_from': self.project_id.sale_order_id.partner_id.email,
                     'desde_plantilla': True,
                     'project_id': self.project_id.id,
                     "company_id": self.project_id.company_id.id,
                     'ref_created': ref_created
                 })
-
-            if new_task and task.message_partner_ids:
-                new_task.with_context(add_follower=True).message_subscribe(task.message_partner_ids.ids, [])
-                new_task.notificar_asignacion_seguidores()
+                
+                if seguidores_ids:
+                    new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
 
     def crear_tareas_desactivacion(self):
         self.ensure_one()
