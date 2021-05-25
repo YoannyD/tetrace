@@ -143,6 +143,21 @@ class SaleOrder(models.Model):
                     partner_seguidores_ids.append(user.partner_id.id)
             r.update({'seguidor_partner_proyecto_ids': [(6, 0, partner_seguidores_ids)]})
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        super(SaleOrder, self)._onchange_company_id()
+        if self.company_id:
+            payment_mode_id = None
+            payment_term_id = None
+            if self.partner_id:
+                partner = self.partner_id.with_context(force_company=self.company_id.id)
+                payment_mode_id = partner.customer_payment_mode_id and partner.customer_payment_mode_id.id or False
+                payment_term_id = partner.property_payment_term_id and partner.property_payment_term_id.id or False
+            self.update({
+                'payment_mode_id': payment_mode_id,
+                'payment_term_id': payment_term_id
+            })
+            
     def _compute_purchase_order_count(self):
         for r in self:
             r.purchase_order_count = self.env['purchase.order'].search_count([('origin', 'like', r.name)])

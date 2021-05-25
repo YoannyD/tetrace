@@ -57,12 +57,6 @@
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button class="oe_stat_button"
                         type="object"
-                        name="view_responsables_tree"
-                        string="Responsables"
-                        icon="fa-male"/>
-
-                <button class="oe_stat_button"
-                        type="object"
                         name="view_procesos_seleccion_tree"
                         string="Procesos de selección"
                         icon="fa-user-circle-o"/>
