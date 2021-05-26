@@ -61,6 +61,17 @@
                             - <span t-field="company.country_id.name"/>
                         </t>
                     </div>
+                    <t t-if="o.user_id and o.user_id.partner_id">
+                        <div t-if="o.user_id.partner_id">
+                            <span t-field="o.user_id.partner_id"/>
+                        </div>
+                        <div t-if="o.user_id.partner_id.email">
+                            <span t-field="o.user_id.partner_id.email"/>
+                        </div>
+                        <div t-if="o.user_id.partner_id.phone">
+                            <span t-field="o.user_id.partner_id.phone"/>
+                        </div>
+                    </t>
                 </div>
             </div>
         </xpath>

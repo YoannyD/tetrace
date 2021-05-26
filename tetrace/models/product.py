@@ -28,18 +28,30 @@ class Product(models.Model):
 
         return super(Product, self)._name_search(name, args, operator, limit, name_get_uid)
 
-    def get_product_multiline_description_sale(self):
-        name = self.name
-        if self.description_sale:
-            return self.description_sale
-        return name
+#     def get_product_multiline_description_sale(self):
+#         name = self.name
+#         if self.description_sale:
+#             return self.description_sale
+#         return name
     
     def get_code_supplier_info(self, partner):
         self.ensure_one()
         supplier_info = self.env["product.customerinfo"].search([
             ('name', '=', partner.id),
+            ('product_code', '!=', False),
             '|',
             ('product_id', '=', self.id),
             ('product_tmpl_id', '=', self.product_tmpl_id.id)
         ], limit=1)
         return supplier_info.product_code if supplier_info else None
+    
+    def get_name_supplier_info(self, partner):
+        self.ensure_one()
+        supplier_info = self.env["product.customerinfo"].search([
+            ('product_name', '!=', False),
+            ('name', '=', partner.id),
+            '|',
+            ('product_id', '=', self.id),
+            ('product_tmpl_id', '=', self.product_tmpl_id.id)
+        ], limit=1)
+        return supplier_info.product_name if supplier_info else None

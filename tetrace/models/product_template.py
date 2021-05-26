@@ -89,9 +89,3 @@ class ProductTemplate(models.Model):
 
         code = "%s-%s-%s" % (tipo, categoria, secuencia)
         return secuencia_int, code
-    
-    def project_template_diseno(self):
-        self.ensure_one()
-        self.env['project.project'].sudo().search([
-            ('id', '')
-        ])

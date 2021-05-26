@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <template id="report_picking" inherit_id="stock.report_picking">
+        <xpath expr="//div[@name='div_origin']" position="after">
+            <div t-if="o.sale_id and o.sale_id.analytic_account_id" class="col-auto" name="div_analytic_account">
+                <strong>Order:</strong>
+                <p t-field="o.sale_id.analytic_account_id"/>
+            </div>
+        </xpath>
+        
+        <xpath expr="//t[@t-as='ml']/tr[1]/td[1]" position="replace">
+            <td>
+                <t t-if="ml.product_id">
+                    <span t-field="ml.product_id.display_name"/><br/>
+                </t>
+                <t t-if="ml.product_id.description_picking">
+                    <span t-field="ml.product_id.description_picking"/><br/>
+                </t>
+                <t t-if="o.partner_id">
+                    <span t-if="o.partner_id" t-esc="ml.product_id.get_name_supplier_info(o.partner_id)"/>
+                </t>
+            </td>
+        </xpath>
+        
+        <xpath expr="//div[@name='div_origin']" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+    </template>
+    
+    <template id="gst_report_picking_inherit" inherit_id="l10n_in_stock.gst_report_picking_inherit">
+        <xpath expr="//h6[1]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+    </template>
+    
     <template id="stock_picking_unit">
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
