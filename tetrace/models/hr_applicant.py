@@ -29,11 +29,17 @@ class Applicant(models.Model):
 
     def _compute_document_applicant(self):
         for r in self:
-            documents = self.env['documents.document'].search_count([
+            docs_applicant = self.env['documents.document'].search_count([
                 ('res_model', '=', 'hr.applicant'),
                 ('res_id', '=', r.id),
             ])
-            r.document_applicant_count = documents
+            
+            docs_employee = self.env['documents.document'].search_count([
+                ('res_model', '=', 'hr.employee'),
+                ('res_id', '=', r.emp_id.id),
+            ])
+            
+            r.document_applicant_count = docs_applicant + docs_employee
     
     def write(self, vals):
         res = super(Applicant, self).write(vals)
@@ -125,7 +131,27 @@ class Applicant(models.Model):
         action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
         action.update({'domain': [('id', 'in', project_ids)]})
         return action
-
+    
+    def view_documentos(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
+        document_ids = []
+        documents = self.env['documents.document'].search([
+            ('res_model', '=', 'hr.applicant'),
+            ('res_id', '=', self.id),
+        ])
+        document_ids += documents.ids
+        
+        if self.emp_id:
+            documents = self.env['documents.document'].search([
+                ('res_model', '=', 'hr.employee'),
+                ('res_id', '=', self.emp_id.id),
+            ])
+            document_ids += documents.ids
+        
+        action.update({'domain': [('id', 'in', document_ids)]})
+        return action
+    
 
 class ApplicationResumeLine(models.Model):
     _name = 'tetrace.resume.line'
