@@ -35,6 +35,8 @@ from . import tetrace_sale_order_version
 from . import purchase
 from . import analytic_account
 from . import stock_move
+from . import stock_picking
+from . import stock_warehouse
 from . import mis_report_instance
 from . import mis_report
 from . import aep

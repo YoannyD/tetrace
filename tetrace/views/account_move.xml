@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record model="ir.actions.act_window" id="l10n_cl.sale_invoices_credit_notes">
+        <field name="view_id" ref="account.view_invoice_tree"/>
+    </record>
+    
     <record model="ir.ui.view" id="view_move_form_inherit_l10n_cl">
         <field name="name">account.move.form.inherit.l10n.cl.tetrace</field>
         <field name="inherit_id" ref="l10n_cl.view_move_form_inherit_l10n_cl"/>

@@ -131,7 +131,7 @@ class SaleOrder(models.Model):
         for r in self:
             total = 0
             for invoice in r.invoice_ids:
-                total += invoice.amount_total
+                total += invoice.amount_total_signed
             r.invoice_total = total
                 
     @api.depends("seguidor_proyecto_ids")
@@ -336,7 +336,6 @@ class SaleOrder(models.Model):
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
-        self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
         return res
 
     def action_view_purchase_order(self):
