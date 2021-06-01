@@ -64,6 +64,7 @@ class SaleOrder(models.Model):
     ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
+    importe_total_facturado = fields.Monetary("Total facturado", compute="_compute_amt_to_invoice")
     purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
@@ -97,10 +98,15 @@ class SaleOrder(models.Model):
     @api.depends("order_line.untaxed_amount_to_invoice")
     def _compute_amt_to_invoice(self):
         for r in self:
-            total = 0
+            pendiente_facturar = 0
+            facturado = 0
             for line in r.order_line:
-                total += line.untaxed_amount_to_invoice
-            r.importe_pendiente_facturar = total
+                pendiente_facturar += line.untaxed_amount_to_invoice
+                facturado += line.untaxed_amount_invoiced
+            r.update({
+                'importe_total_facturado': facturado,
+                'importe_pendiente_facturar': pendiente_facturar
+            })
 
     @api.depends("invoice_ids", "state", "picking_ids")
     def _compute_visible_btn_change_partner(self):

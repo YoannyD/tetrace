@@ -15,6 +15,7 @@
         'purchase_stock',
         'account',
         'stock',
+        'crm',
         'account_reports',
         'account_intrastat',
         'l10n_ar',

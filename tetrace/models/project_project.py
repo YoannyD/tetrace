@@ -412,7 +412,7 @@ class Project(models.Model):
                     user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'desactivacion')
                 elif estado == 'modificacion':
                     subject = _("El proyecto %s ha sido modificado" % r.name)
-                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'activacion')
                 
                 if not user_tasks:
                     continue

@@ -62,8 +62,9 @@
                         <div class="row" style="margin:32px auto 0 auto;width:95%;padding-right:20px;float:right;clear:both;text-align:right;">
                             <div class="col-md-12">
                                 <div style="text-align:right;">
+                                    <t t-set="city_para_fecha" t-value="''"/>
                                     <t t-if="doc.company_id.city">
-                                        En <span t-field="doc.company_id.city"/>, a
+                                        <t t-set="city_para_fecha" t-value="'En %s, a' % doc.company_id.city"/>
                                     </t>
                                     <span t-field="doc.date_order" t-options="{&quot;format&quot;: &quot;d MMMM y&quot;}"/>.
                                 </div>
