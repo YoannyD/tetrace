@@ -315,8 +315,9 @@ class SaleOrder(models.Model):
         for r in self:
             company_id = r.company_id.id if r.company_id else None
             for project in r.project_ids:
-                project.tasks.write({'company_id': company_id})
                 project.write({'company_id': company_id})
+                project.tasks.write({'company_id': company_id})
+                
 
     def generar_ref_proyecto(self):
         self.ensure_one()
