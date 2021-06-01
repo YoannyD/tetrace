@@ -267,3 +267,14 @@ class SaleOrderLine(models.Model):
             ('activada', 'in', [True, False]),
         ], limit=1)
         return task
+    
+#     def _prepare_procurement_group_vals(self):
+#         values = super(SaleOrderLine, self)._prepare_procurement_group_vals()
+#         values.update({})
+#         return values
+#         return {
+#             'name': self.order_id.name,
+#             'move_type': self.order_id.picking_policy,
+#             'sale_id': self.order_id.id,
+#             'partner_id': self.order_id.partner_shipping_id.id,
+#         }
