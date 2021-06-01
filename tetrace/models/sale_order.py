@@ -64,7 +64,7 @@ class SaleOrder(models.Model):
     ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
-    importe_total_facturado = fields.Monetary("Total facturado", compute="_compute_amt_to_invoice")
+    importe_total_facturado = fields.Monetary("Total facturado ", compute="_compute_amt_to_invoice")
     purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
@@ -95,7 +95,7 @@ class SaleOrder(models.Model):
             if r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}', r.referencia_proyecto_antigua) == None:
                 raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
 
-    @api.depends("order_line.untaxed_amount_to_invoice")
+    @api.depends("order_line.untaxed_amount_to_invoice", "order_line.untaxed_amount_invoiced")
     def _compute_amt_to_invoice(self):
         for r in self:
             pendiente_facturar = 0
