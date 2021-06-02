@@ -63,15 +63,9 @@
                             <div class="col-md-12">
                                 <div style="text-align:right;">
                                     <t t-if="doc.company_id.city">
-                                        En <t t-esc="doc.company_id.city"/>, a
+                                        En <t t-esc="doc.company_id.city"/>,
                                     </t>
-                                    <span t-if="not doc.partner_id.lang or doc.partner_id.lang == 'es_ES'" 
-                                          t-field="doc.date_order" 
-                                          t-options="{&quot;format&quot;: &quot;d MMMM y&quot;}"/>
-                                    
-                                    <span t-if="doc.partner_id.lang and doc.partner_id.lang == 'en_US'" 
-                                          t-field="doc.date_order" 
-                                          t-options="{&quot;format&quot;: &quot;MMMM d&quot;}"/>.
+                                    <span t-field="doc.date_order" t-options="{&quot;format&quot;: &quot;d MMMM y&quot;}"/>.
                                 </div>
                             </div>
                         </div>
