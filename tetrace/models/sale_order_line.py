@@ -100,7 +100,7 @@ class SaleOrderLine(models.Model):
         self.ensure_one()
         self = self.sudo().with_context(no_notificar=True)
         self.validar_crear_proyecto()
-        if self.order_id.project_ids and self.product_id.service_tracking in ['task_global_project', 'task_in_project']:
+        if self.order_id.project_ids:
             return self.order_id.project_ids[0]
 
         values = self._timesheet_create_project_prepare_values()
@@ -108,11 +108,12 @@ class SaleOrderLine(models.Model):
         if project_template:
             project = project_template.copy(values)
             
-            project_tasks = self.env['project.task'].search([
-                ('project_id', '=', project_template.id),
-                ('activada', 'in', [True, False]),
-            ])
-            self.copy_tasks(project_tasks, project, False)
+            if self.product_id.service_tracking in ['task_global_project', 'task_in_project']:
+                project_tasks = self.env['project.task'].search([
+                    ('project_id', '=', project_template.id),
+                    ('activada', 'in', [True, False]),
+                ])
+                self.copy_tasks(project_tasks, project, False)
         else:
             project = self.env['project.project'].create(values)
 
@@ -141,13 +142,15 @@ class SaleOrderLine(models.Model):
             return new_tasks
         
         if self.project_id:
-            create_new_tasks(self.product_id.project_template_diseno_id.tasks, self.project_id)
+            if self.product_id.service_tracking in ['task_in_project', 'task_global_project']:
+                create_new_tasks(self.product_id.project_template_diseno_id.tasks, self.project_id)
             return self.project_id
 
         values = self._timesheet_create_project_prepare_values()
         if self.product_id.project_template_diseno_id:
             project = self.product_id.project_template_diseno_id.copy(values)
-            create_new_tasks(self.product_id.project_template_diseno_id.tasks, project)
+            if self.product_id.service_tracking in ['task_in_project', 'task_global_project']:
+                create_new_tasks(self.product_id.project_template_diseno_id.tasks, project)
         else:
             project = self.env['project.project'].create(values)
 

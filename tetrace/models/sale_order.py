@@ -403,7 +403,7 @@ class SaleOrder(models.Model):
         # Crear el proyecto con la plantilla diseño del primer producto si aún no hay un proyecto creado
         project_template_diseno_ids = []
         for line in self.order_line.sudo():
-            if line.product_id.service_tracking == 'task_in_project' and line.product_id.project_template_diseno_id:
+            if line.product_id.project_template_diseno_id:
                 project_template_diseno_ids.append(line.product_id.project_template_diseno_id.id)
                 project = line._timesheet_create_project_diseno()
                 break
@@ -413,14 +413,16 @@ class SaleOrder(models.Model):
         
         for line in self.order_line.sudo():
             if line.product_id.project_template_diseno_id and \
+                line.product_id.service_tracking in ['task_in_project', 'task_global_project'] and \
                 line.product_id.project_template_diseno_id.id not in project_template_diseno_ids:
                 template_tasks = self.env['project.task'].sudo().search([
                     ('project_id', '=', line.product_id.project_template_diseno_id.id),
                     ('activada', 'in', [True, False])
                 ])
                 line.copy_tasks(template_tasks, project, True)
-           
-            line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
+            
+            if line.product_id.service_tracking in ['task_in_project', 'task_global_project']:
+                line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
                 
         self.actualizar_datos_proyecto()
         if not self.env.context.get("no_enviar_email_tareas_asignadas"):
