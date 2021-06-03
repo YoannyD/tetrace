@@ -69,13 +69,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row" style="margin:32px auto 0 auto;max-width:80%;padding-right:20px;float:right;clear:both;">
+                            <div t-if="doc.cabecera_proyecto" class="row" style="margin:20px auto 0 auto;max-width:80%;padding-right:20px;float:right;clear:both;">
                             <div class="col-md-12">
                                 <span t-field="doc.cabecera_proyecto"/>
                             </div>
                         </div>
                         <t t-if="tipo_informe == 'proyecto'">
-                            <div class="row" style="margin:32px auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
+                            <div class="row" style="margin:10px auto 0 auto;width:90%;padding-right:30px;float:right;clear:both;">
                                 <div class="col-md-12">
                                     <div style="padding-left:25px;margin-top:8px;">
                                         <span t-esc="doc.rfq" style="color:#872292;font-size:1.4em;font-weight:bold;"/>
@@ -199,9 +199,9 @@
                         </t>
                         <p style="page-break-before:always;"> </p>
                         
-                        <div t-if="doc.note" class="row" style="font-size:0.9em;margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
+                        <div t-if="doc.note" class="row" style="font-size:0.7em;margin:32px auto 0 auto;width:90%;padding-right:20px;float:right;clear:both;">
                             <div class="col-md-12">
-                                <div style="font-size:1.2em;margin-bottom:12px;">ESPECIFICACIONES</div>
+                                <div style="color:#872292;font-size:1.4em;font-weight:bold;">ESPECIFICACIONES</div>
                                 <span t-field="doc.note"/>
                             </div>
                         </div>

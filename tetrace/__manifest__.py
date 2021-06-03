@@ -15,7 +15,6 @@
         'purchase_stock',
         'account',
         'stock',
-        'crm',
         'account_reports',
         'account_intrastat',
         'l10n_ar',
@@ -44,7 +43,7 @@
         'l10n_es_aeat_mod303',
         'sale_timesheet_enterprise',
         'purchase_tier_validation',
-        'account_accountant',
+        'account_accountant'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -60,6 +59,7 @@
         'report/tetrace_its.xml',
         'report/mis_report_instance_xlsx_multi_tab.xml',
         'report/purchase.xml',
+        'report/report_cv.xml',
         'report/stock_picking.xml',
         # 'report/l10n_ar.xml',
         'views/web.xml',
@@ -87,7 +87,6 @@
         'views/documents.xml',
         'views/purchase.xml',
         'views/sale_order.xml',
-        'views/stock_warehouse.xml',
         'views/res_partner.xml',
         'views/resource_calendar.xml',
         'views/stock_move.xml',

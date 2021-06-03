@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report id="action_report_curriculum"
+            string="Currículum Tetrace"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            file="tetrace.report_hr_employee_curriculum"
+            name="tetrace.report_hr_employee_curriculum"
+
+    />
+ <template id="report_hr_employee_curriculum">
+          <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="docs" t-as="employee">
+                    <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                        <strong><span><t t-esc="employee.codigo_trabajador_A3"/></span></strong><br/>
+                    </div>
+                    <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+          <strong><span>EDUCACIÓN:</span></strong><br/>
+                          
+        <span><t t-esc="employee.study_field"/></span><br/>
+               <span><t t-esc="employee.study_school"/></span><br/>               
+                           </div>
+                     <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                <div class="col-md-12">
+          <strong><span>FORMACIÓN COMPLEMENTARIA:</span></strong><br/>
+                                <t t-foreach="docs.formacion_ids" t-as="form">
+       <span><t t-esc="form.fecha_inicio"/></span><br/>
+                                    <span><t t-esc="form.fecha_fin"/></span><br/>
+                                    <span><t t-esc="form.curso"/></span><br/>
+                                     </t>
+                                   </div>    
+                                </div>
+                                       <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+          <strong><span>HABILIDADES:</span></strong><br/>
+                           <t t-foreach="docs.employee_skill_ids" t-as="skill">
+        <strong><span><t t-esc="skill.skill_id.name"/></span></strong><br/>
+                                </t>
+                           </div>
+                      
+                            <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                <div class="col-md-12">
+          <strong><span>EXPERIENCIA:</span></strong><br/>
+                                <t t-foreach="docs.resume_line_ids" t-as="line">
+        <strong><span><t t-esc="line.name"/></span></strong><br/>
+                                     <strong><span><t t-esc="line.date_start"/></span></strong><br/>
+                                     </t>
+                                   </div>    
+                                </div>
+         
+                 
+
+          </t>
+            </div>
+        </t>
+
+    </template>
+
+
+   
+</odoo>

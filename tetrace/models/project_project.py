@@ -318,6 +318,19 @@ class Project(models.Model):
     def action_activar_tareas(self):
         self.ensure_one()
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
+        
+        today = fields.Date.today()
+        tecnicos = self.env['tetrace.tecnico_calendario'].search([
+            ('fecha_inicio', '<=', today),
+            ('fecha_fin', '>=', today)
+        ])
+        for tecnico in tecnicos:
+            self.env['tetrace.activar_tarea_detalle'].create({
+                'activar_tarea_id': wizard.id,
+                'employee_id': tecnico.employee_id.id,
+                'fecha_fin': tecnico.fecha_fin
+            })
+            
         return wizard.open_wizard()
 
     def view_analitica_tree(self):
