@@ -38,7 +38,6 @@ class ActivarTarea(models.TransientModel):
             ('activada', '=', False),
         ]
         
-        tareas_a_activar_ids = []
         for detalle in self.detalle_ids:
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
@@ -51,13 +50,19 @@ class ActivarTarea(models.TransientModel):
                 ('employee_id', '=', detalle.employee_id.id)
             ]]) 
             tasks = self.env['project.task'].search(domain)
-            tareas_a_activar_ids.append(tasks.ids)
+            for task in tasks:
+                tasks.write({
+                    'activada': True,
+                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+                })
         
         if self.viaje:
-            domain = expression.AND([domain_base, [('opciones_desactivacion', '=', 'viaje')]])
+            domain = expression.AND([domain_base, [
+                ('viajes', '=', True),
+                ('opciones_desactivacion', '=', 'viaje')
+            ]])
             tasks = self.env['project.task'].search(domain)
-            for task in traks:
-                tareas_a_activar_ids.append(task.id)
+            for task in tasks:
                 task.viaje_ids.unlink()
                 for viaje in self.viaje_ids:
                     self.env["tetrace.viaje"].create({
@@ -99,12 +104,11 @@ class ActivarTarea(models.TransientModel):
                         'employee_id': alquiler.employee_id.id if alquiler.employee_id else None,
                         'observaciones': alquiler.observaciones
                     })
-        
-        tasks = self.env['project.task'].browse(tareas_a_activar_ids)
-        tasks.write({
-            'activada': True,
-            'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
-        })
+                    
+                tasks.write({
+                    'activada': True,
+                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+                })
         
         values_project = {}
         if self.accion == 'cancelar':
