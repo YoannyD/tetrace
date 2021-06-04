@@ -68,9 +68,11 @@ class ActivarTarea(models.TransientModel):
                         tc.write({'fecha_fin': detalle.fecha_fin})
         
         if self.viaje:
-            tasks = self.env['project.task'].search([('viajes', '=', True)])
+            tasks = self.env['project.task'].search([
+                ('viajes', '=', True),
+                ('project_id', '=', self.project_id.id)
+            ])
             for task in tasks:
-                task.viaje_ids.unlink()
                 for viaje in self.viaje_ids:
                     self.env["tetrace.viaje"].create({
                         'task_id': task.id,
@@ -84,7 +86,6 @@ class ActivarTarea(models.TransientModel):
                         'observaciones': viaje.observaciones
                     })
                     
-                task.alojamiento_ids.unlink()
                 for alojamiento in self.alojamiento_ids:
                     self.env["tetrace.alojamiento"].create({
                         'task_id': task.id,
@@ -98,7 +99,6 @@ class ActivarTarea(models.TransientModel):
                         'observaciones': viaje.observaciones
                     })
                     
-                task.alquiler_vehiculo_ids.unlink()
                 for alquiler in self.alquiler_ids:
                     self.env["tetrace.alquiler_vehiculo"].create({
                         'task_id': task.id,

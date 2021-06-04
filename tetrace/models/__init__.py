@@ -46,6 +46,7 @@ from . import tetrace_alquiler_vehiculo
 from . import tetrace_alojamiento
 from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
+from . import tetrace_ausencia
 from . import tetrace_tickelia
 from . import tetrace_viaje
 from . import tetrace_formacion

@@ -318,17 +318,7 @@ class Project(models.Model):
     def action_activar_tareas(self):
         self.ensure_one()
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
-        
-        today = fields.Date.today()
-        tecnicos = self.env['tetrace.tecnico_calendario'].search([
-            ('project_id', '=', self.id),
-            ('fecha_inicio', '!=', False),
-            ('fecha_inicio', '<=', today),
-            '|',
-            ('fecha_fin', '=', False),
-            ('fecha_fin', '>=', today)
-        ])
-        for tecnico in tecnicos:
+        for tecnico in self.tecnicos_activos():
             self.env['tetrace.activar_tarea_detalle'].create({
                 'activar_tarea_id': wizard.id,
                 'employee_id': tecnico.employee_id.id,
@@ -373,8 +363,38 @@ class Project(models.Model):
     def action_crear_tareas_act_desc(self):
         self.ensure_one()
         wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
+        for tecnico in self.tecnicos_activos():
+            self.env['tetrace.detalle_act'].create({
+                'tarea_act_id': wizard.id,
+                'employee_id': tecnico.employee_id.id,
+                'resource_calendar_id': tecnico.resource_calendar_id.id,
+                'fecha_inicio': tecnico.fecha_inicio,
+            })
+            
+            self.env['tetrace.detalle_desc'].create({
+                'tarea_act_id': wizard.id,
+                'employee_id': tecnico.employee_id.id,
+            })
+            
+            self.env['tetrace.detalle_ausencia'].create({
+                'tarea_act_id': wizard.id,
+                'employee_id': tecnico.employee_id.id,
+                'fecha_inicio': tecnico.fecha_inicio,
+            })
+        
         return wizard.open_wizard()
 
+    def tecnicos_activos(self):
+        today = fields.Date.today()
+        return self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            ('fecha_inicio', '!=', False),
+            ('fecha_inicio', '<=', today),
+            '|',
+            ('fecha_fin', '=', False),
+            ('fecha_fin', '>=', today)
+        ])
+    
     def action_crear_tareas_faltantes(self):
         self.ensure_one()
         if not self.sale_order_id:
