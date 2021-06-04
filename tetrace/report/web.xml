@@ -89,7 +89,7 @@
 
 <template id="argentinian_extra_info" inherit_id="l10n_ar.argentinian_extra_info">-->
        <xpath expr="//li[2]" position="attributes">-->
-           <attribute name="style">display:none</attribute>-->
+           <attribute name="style">display:none</attribute>
        </xpath>
    </template>
 </odoo>
