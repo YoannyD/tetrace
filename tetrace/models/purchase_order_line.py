@@ -35,3 +35,29 @@ class PurchaseOrderLine(models.Model):
         if self.cuenta_activo and self.product_id.categ_id:
             res.update({'account_id': self.product_id.categ_id.account_activo_id.id})
         return res
+    
+    def _get_product_purchase_description(self, product_lang):
+        self.ensure_one()
+        if self.order_id.partner_id:
+            supplier_info = self.env["product.supplierinfo"].search([
+                ('product_name', '!=', False),
+                ('name', '=', self.order_id.partner_id.id),
+                '|',
+                ('product_id', '=', product_lang.id),
+                ('product_tmpl_id', '=', product_lang.product_tmpl_id.id)
+            ], limit=1)
+            if supplier_info:
+                name = ""
+                if supplier_info.product_code:
+                    name = "[%s]" % supplier_info.product_code
+                name += " %s" % supplier_info.product_name
+                return name
+        
+        if product_lang.description_sale:
+            return product_lang.description_sale
+        
+        name = ""
+        if product_lang.default_code:
+            name = "[%s]" % product_lang.default_code 
+        name += " %s" % product_lang.name
+        return name

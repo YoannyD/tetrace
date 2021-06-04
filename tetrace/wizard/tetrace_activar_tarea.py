@@ -24,11 +24,17 @@ class ActivarTarea(models.TransientModel):
     fecha_fin = fields.Date("Fecha fin")
     viaje = fields.Boolean("Trips")
     detalle_ids = fields.One2many('tetrace.activar_tarea_detalle', 'activar_tarea_id')
+    tecnico_ids = fields.Many2many('hr.employee', compute="_compute_tecnico_ids", store=True)
     project_id = fields.Many2one("project.project", string="Proyecto", ondelete="cascade")
     motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
     viaje_ids = fields.One2many('tetrace.act_viaje', 'activar_tarea_id')
     alojamiento_ids = fields.One2many('tetrace.act_alojamiento', 'activar_tarea_id')
     alquiler_ids = fields.One2many('tetrace.act_alquiler', 'activar_tarea_id')
+
+    @api.depends("detalle_ids.employee_id")
+    def _compute_tecnico_ids(self):
+        for r in self:
+            r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.detalle_ids])]
     
     def action_activar_tareas(self):
         self.ensure_one()
@@ -55,13 +61,14 @@ class ActivarTarea(models.TransientModel):
                     'activada': True,
                     'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
                 })
+                
+            if detalle.fecha_fin:
+                for tc in self.project_id.tecnico_calendario_ids:
+                    if not tc.fecha_fin and detalle.employee_id.id == tc.employee_id.id:
+                        tc.write({'fecha_fin': detalle.fecha_fin})
         
         if self.viaje:
-            domain = expression.AND([domain_base, [
-                ('viajes', '=', True),
-                ('opciones_desactivacion', '=', 'viaje')
-            ]])
-            tasks = self.env['project.task'].search(domain)
+            tasks = self.env['project.task'].search([('viajes', '=', True)])
             for task in tasks:
                 task.viaje_ids.unlink()
                 for viaje in self.viaje_ids:
@@ -148,6 +155,16 @@ class ActivarTareaDetalle(models.TransientModel):
     reubicar = fields.Boolean("Reubicar", default=True)
     baja_it = fields.Boolean("Baja IT")
     recoger_equipos = fields.Boolean("Recoger equipos")
+    
+    @api.onchange("finalizar_contrato")
+    def _onchange_finalizar_contrato(self):
+        if self.finalizar_contrato:
+            self.reubicar = False
+            
+    @api.onchange("reubicar")
+    def _onchange_reubicar(self):
+        if self.reubicar:
+            self.finalizar_contrato = False
     
 
 class ActivarTareaViaje(models.TransientModel):

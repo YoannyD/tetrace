@@ -14,7 +14,7 @@
                     </group>
                     <group string="Detalle">
                         <field name="detalle_ids" nolabel="1">
-                            <tree editable="bottom">
+                            <tree editable="bottom" create="0" delete="0">
                                 <field name="employee_id"/>
                                 <field name="fecha_fin"/>
                                 <field name="finalizar_contrato"/>
@@ -28,15 +28,16 @@
                         <field name="viaje"/>
                     </group>
                     <notebook attrs="{'invisible': [('viaje', '=', False)]}">
+                        <field name="tecnico_ids" invisible="1"/>
                         <page name="viajes" string="Viajes">
-                            <field name="viaje_ids" nolabel="1">
+                            <field name="viaje_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
                                 <tree editable="bottom">
                                     <field name="fecha"/>
                                     <field name="origen"/>
                                     <field name="destino"/>
                                     <field name="contratado"/>
                                     <field name="realizado"/>
-                                    <field name="employee_id"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
                                     <field name="observaciones"/>
                                 </tree>
                                 <form>
@@ -58,21 +59,21 @@
                         </page>
 
                         <page name="alojamientos" string="Alojamientos">
-                            <field name="alojamiento_ids" nolabel="1">
+                            <field name="alojamiento_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
                                 <tree editable="bottom">
                                     <field name="fecha"/>
                                     <field name="fecha_fin"/>
                                     <field name="ciudad"/>
                                     <field name="completado"/>
                                     <field name="realizado"/>
-                                    <field name="employee_id"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
                                     <field name="observaciones"/>
                                 </tree>
                             </field>
                         </page>
 
                         <page name="alquiler_vehiculos" string="Alquiler vehículos">
-                            <field name="alquiler_ids" nolabel="1">
+                            <field name="alquiler_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
                                 <tree editable="bottom">
                                     <field name="fecha_inicio"/>
                                     <field name="fecha_fin"/>
@@ -80,7 +81,7 @@
                                     <field name="entrega"/>
                                     <field name="completado"/>
                                     <field name="realizado"/>
-                                    <field name="employee_id"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
                                     <field name="observaciones"/>
                                 </tree>
                             </field>

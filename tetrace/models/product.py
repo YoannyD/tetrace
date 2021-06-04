@@ -49,3 +49,28 @@ class Product(models.Model):
             ('product_tmpl_id', '=', self.product_tmpl_id.id)
         ], limit=1)
         return supplier_info.product_name if supplier_info else None
+    
+    def get_product_multiline_description_sale(self):
+        if self.env.context.get('partner_id'):
+            customer_info = self.env["product.customerinfo"].search([
+                ('product_name', '!=', False),
+                ('name', '=', self.env.context.get('partner_id')),
+                '|',
+                ('product_id', '=', self.id),
+                ('product_tmpl_id', '=', self.product_tmpl_id.id)
+            ], limit=1)
+            if customer_info:
+                name = ""
+                if customer_info.product_code:
+                    name = "[%s]" % customer_info.product_code
+                name += " %s" % customer_info.product_name
+                return name
+        
+        if self.description_sale:
+            return product_lang.description_sale
+        
+        name = ""
+        if self.default_code:
+            name = "[%s]" % self.default_code 
+        name += " %s" % product_lang.name
+        return name
