@@ -362,26 +362,14 @@ class Project(models.Model):
 
     def action_crear_tareas_act_desc(self):
         self.ensure_one()
-        wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
-        for tecnico in self.tecnicos_activos():
-            self.env['tetrace.detalle_act'].create({
-                'tarea_act_id': wizard.id,
-                'employee_id': tecnico.employee_id.id,
-                'resource_calendar_id': tecnico.resource_calendar_id.id,
-                'fecha_inicio': tecnico.fecha_inicio,
-            })
-            
-            self.env['tetrace.detalle_desc'].create({
-                'tarea_act_id': wizard.id,
-                'employee_id': tecnico.employee_id.id,
-            })
-            
-            self.env['tetrace.detalle_ausencia'].create({
-                'tarea_act_id': wizard.id,
-                'employee_id': tecnico.employee_id.id,
-                'fecha_inicio': tecnico.fecha_inicio,
-            })
         
+        tecnicos_inactivos = self.tecnicos_inactivos()
+        tecnicos_activos = self.tecnicos_activos()
+        wizard = self.env['tetrace.crear_tareas_act_desc'].create({
+            'project_id': self.id,
+            'tecnico_inactivos_ids': [(6, 0, [tc.employee_id.id for tc in tecnicos_inactivos])],
+            'tecnico_activo_ids': [(6, 0, [tc.employee_id.id for tc in tecnicos_activos])]
+        })
         return wizard.open_wizard()
 
     def tecnicos_activos(self):
@@ -393,6 +381,12 @@ class Project(models.Model):
             '|',
             ('fecha_fin', '=', False),
             ('fecha_fin', '>=', today)
+        ])
+    
+    def tecnicos_inactivos(self):
+        return self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            ('fecha_fin', '!=', False),
         ])
     
     def action_crear_tareas_faltantes(self):

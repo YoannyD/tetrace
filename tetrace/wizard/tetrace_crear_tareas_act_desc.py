@@ -6,6 +6,7 @@ import logging
 from odoo import models, fields, api, _
 from datetime import timedelta, datetime
 from odoo.addons.tetrace.models.tetrace_ausencia import TIPOS_AUSENCIAS
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -22,20 +23,37 @@ class CrearTareasActDesc(models.TransientModel):
 
     project_id = fields.Many2one('project.project', string="Proyecto", ondelete="cascade", required=True)
     accion = fields.Selection(ACCIONES, string="Acción")
-    project_theme_id = fields.Many2one('project.project', string="Plantilla proyecto", ondelete="cascade")
     detalle_act_ids = fields.One2many('tetrace.detalle_act', 'tarea_act_id')
     detalle_desc_ids = fields.One2many('tetrace.detalle_desc', 'tarea_act_id')
     detalle_ausencia_ids = fields.One2many('tetrace.detalle_ausencia', 'tarea_act_id')
+    tecnico_inactivos_ids = fields.Many2many("hr.employee", 'tecnicos_inactivos_rel', 'tec_inact_id', 'act_desd_inact_id')
+    tecnico_activo_ids = fields.Many2many("hr.employee", 'tecnicos_activos_rel', 'tec_act_id', 'act_desd_act_id')
     tecnico_ids = fields.Many2many('hr.employee', compute="_compute_tecnico_ids", store=True)
     viaje_ids = fields.One2many('tetrace.tareas_act_viaje', 'tarea_act_id')
     alojamiento_ids = fields.One2many('tetrace.tareas_act_alojamiento', 'tarea_act_id')
     alquiler_ids = fields.One2many('tetrace.tareas_act_alquiler', 'tarea_act_id')
     viaje = fields.Boolean("Trips")
 
-    @api.depends("project_id.tecnico_calendario_ids")
+    @api.onchange("accion")
+    def _onchange_accion(self):
+        self.update({
+            'viaje': False,
+            'alojamiento_ids': None,
+            'alquiler_ids': None,
+            'viaje_ids': None,
+        })
+    
+    @api.depends("accion", "detalle_act_ids.employee_id", "detalle_desc_ids.employee_id", "detalle_ausencia_ids.employee_id")
     def _compute_tecnico_ids(self):
         for r in self:
-            r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.project_id.tecnico_calendario_ids])]
+            if r.accion == "activacion":
+                r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.detalle_act_ids])]
+            elif r.accion == "desactivacion":
+                r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.detalle_desc_ids])]
+            elif r.accion == "ausencia":
+                r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.detalle_ausencia_ids])]
+            else:
+                r.tecnico_ids = None
 
     def action_generar_tareas(self):
         self.ensure_one()
@@ -92,8 +110,27 @@ class CrearTareasActDesc(models.TransientModel):
 
     def crear_tareas_activacion(self):
         self.ensure_one()
+        project_theme = None
+        try:
+            project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))
+            project_theme = self.env['project.project'].search([('id', '=', project_theme_id)], limit=1)
+        except:
+            pass
+        
+        if not project_theme:
+           raise UserError(_("Tiene que configurar una plantilla de proyecto.")) 
+
+        for detalle in self.detalle_act_ids:
+            self.env['tetrace.tecnico_calendario'].create({
+                'project_id': self.project_id.id,
+                'employee_id': detalle.employee_id.id,
+                'fecha_inicio': detalle.fecha_inicio,
+                'resource_calendar_id': detalle.resource_calendar_id.id,
+                'job_id': detalle.job_id.id
+            })
+        
         ref = datetime.now().timestamp()
-        for task in self.project_theme_id.tasks:
+        for task in project_theme.tasks:
             ref_created = "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
             if task.tarea_individual:
                 for detalle in self.detalle_act_ids:
@@ -231,6 +268,7 @@ class DetalleAusencia(models.TransientModel):
     ausencia = fields.Selection(TIPOS_AUSENCIAS, string="Tipo ausencia")
     fecha_inicio = fields.Date("Fecha inicio")
     fecha_fin = fields.Date("Fecha fin")
+    observaciones = fields.Text("Observaciones")
 
     
 class ActivarTareaViaje(models.TransientModel):
