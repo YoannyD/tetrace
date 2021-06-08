@@ -13,7 +13,7 @@
                     </group>
                     <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'activacion')]}">
                         <field name="detalle_act_ids" nolabel="1">
-                            <tree editable="bottom" create="0" delete="0">
+                            <tree editable="bottom">
                                 <field name="employee_id" required="1"/>
                                 <field name="job_id"/>
                                 <field name="resource_calendar_id"/>
@@ -25,7 +25,7 @@
                     
                     <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'desactivacion')]}">
                         <field name="detalle_desc_ids" nolabel="1">
-                            <tree editable="bottom" create="0" delete="0">
+                            <tree editable="bottom">
                                 <field name="employee_id"/>
                                 <field name="fecha_fin"/>
                                 <field name="finalizar_contrato"/>
@@ -38,7 +38,7 @@
                     
                     <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'ausencia')]}">
                         <field name="detalle_ausencia_ids" nolabel="1">
-                            <tree editable="bottom" create="0" delete="0">
+                            <tree editable="bottom">
                                 <field name="employee_id" required="1"/>
                                 <field name="ausencia"/>
                                 <field name="fecha_inicio"/>
