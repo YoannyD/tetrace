@@ -362,32 +362,34 @@ class Project(models.Model):
 
     def action_crear_tareas_act_desc(self):
         self.ensure_one()
-        
-        tecnicos_inactivos = self.tecnicos_inactivos()
-        tecnicos_activos = self.tecnicos_activos()
-        wizard = self.env['tetrace.crear_tareas_act_desc'].create({
-            'project_id': self.id,
-            'tecnico_inactivos_ids': [(6, 0, [tc.employee_id.id for tc in tecnicos_inactivos])],
-            'tecnico_activo_ids': [(6, 0, [tc.employee_id.id for tc in tecnicos_activos])]
-        })
-        return wizard.open_wizard()
-
-    def tecnicos_activos(self):
         today = fields.Date.today()
-        return self.env['tetrace.tecnico_calendario'].search([
+        tecnicos_proyecto = self.env['tetrace.tecnico_calendario'].search([('project_id', '=', self.id)]) 
+        
+        employees = self.env['hr.employee'].search([('id', 'not in', [tp.employee_id.id for tp in tecnicos_proyecto])])
+        
+        tecnico_proyecto_inactivos = self.env['tetrace.tecnico_calendario'].search([
             ('project_id', '=', self.id),
-            ('fecha_inicio', '!=', False),
-            ('fecha_inicio', '<=', today),
             '|',
-            ('fecha_fin', '=', False),
+            ('fecha_fin', '=', None),
+            ('fecha_fin', '<=', today),
+        ])
+        proyecto_employee_inactivos_ids = [ti.employee_id.id for ti in tecnico_proyecto_inactivos]
+        
+        
+        tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            '|',
+            ('fecha_fin', '=', None),
             ('fecha_fin', '>=', today)
         ])
-    
-    def tecnicos_inactivos(self):
-        return self.env['tetrace.tecnico_calendario'].search([
-            ('project_id', '=', self.id),
-            ('fecha_fin', '!=', False),
-        ])
+        proyecto_employee_activos_ids = [ta.employee_id.id for ta in tecnico_proyecto_activo]   
+            
+        wizard = self.env['tetrace.crear_tareas_act_desc'].create({
+            'project_id': self.id,
+            'tecnico_inactivos_ids': [(6, 0, employees.ids + proyecto_employee_inactivos_ids)],
+            'tecnico_activo_ids': [(6, 0, proyecto_employee_activos_ids)]
+        })
+        return wizard.open_wizard()
     
     def action_crear_tareas_faltantes(self):
         self.ensure_one()

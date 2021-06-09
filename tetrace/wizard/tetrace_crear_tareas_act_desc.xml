@@ -17,7 +17,7 @@
                             <tree editable="bottom">
                                 <field name="employee_id" 
                                        options="{'no_create_edit': True, 'no_create': True}"
-                                       domain="[('id', 'not in', context.get('tecnico_inactivos_ids'))]" 
+                                       domain="[('id', 'in', context.get('tecnico_inactivos_ids'))]" 
                                        required="1"/>
                                 <field name="job_id"/>
                                 <field name="resource_calendar_id"/>
