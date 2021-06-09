@@ -67,10 +67,10 @@ class Product(models.Model):
                 return name
         
         if self.description_sale:
-            return product_lang.description_sale
+            return self.description_sale
         
         name = ""
         if self.default_code:
             name = "[%s]" % self.default_code 
-        name += " %s" % product_lang.name
+        name += " %s" % self.name
         return name
