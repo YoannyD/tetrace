@@ -16,6 +16,9 @@
         <xpath expr="//span[@t-field='line.date_planned']" position="attributes">
             <attribute name="t-options-widget">"date"</attribute>
         </xpath> 
+         <xpath expr="//span[@t-field='line.product_uom.name']" position="attributes">
+             <attribute name="style">display:none</attribute>
+        </xpath> 
         
         <xpath expr="//span[@t-field='line.product_qty']" position="attributes">
             <attribute name="t-options-widget">"integer"</attribute>
@@ -35,6 +38,8 @@
             </div>
         </xpath> 
         
+
+        
         <xpath expr="//div[@t-field='o.dest_address_id']" position="attributes">
             <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
         </xpath> 
@@ -47,4 +52,6 @@
             </div>
         </xpath>
     </template>
+    
+    
 </odoo>
