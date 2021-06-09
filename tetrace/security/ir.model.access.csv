@@ -34,3 +34,4 @@ access_tetrace_asignacion,access_tetrace_asignacion,model_tetrace_asignacion,bas
 access_tetrace_formacion,access_tetrace_formacion,model_tetrace_formacion,base.group_user,1,1,1,1
 access_tetrace_tipo_formacion,access_tetrace_tipo_formacion,model_tetrace_tipo_formacion,base.group_user,1,1,1,1
 access_tetrace_coordinador_company,access_tetrace_coordinador_company,model_tetrace_coordinador_company,base.group_user,1,1,1,1
+access_tetrace_ausencia,access_tetrace_ausencia,model_tetrace_ausencia,base.group_user,1,1,1,1

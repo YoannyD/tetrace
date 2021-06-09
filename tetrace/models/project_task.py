@@ -57,6 +57,8 @@ class ProjectTask(models.Model):
     notify_by_email = fields.Boolean("Notificado por email")
     asginacion_ids = fields.One2many('tetrace.asignacion', 'task_id')
     project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
+    ausencia = fields.Boolean("Ausencia")
+    ausencia_ids = fields.One2many('tetrace.ausencia', 'task_id', string="Ausencias")
 
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):

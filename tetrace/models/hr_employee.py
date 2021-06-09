@@ -29,14 +29,21 @@ class Employee(models.Model):
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "employee_id")
     documentacion_laboral = fields.Char("Documentación laboral")
     formacion_ids = fields.One2many('tetrace.formacion', 'employee_id')
+    tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'employee_id')
 
     def _compute_document_employee(self):
         for r in self:
-            documents = self.env['documents.document'].search_count([
+            docs_applicant = self.env['documents.document'].search_count([
+                ('res_model', '=', 'hr.applicant'),
+                ('res_id', 'in', [a.id for a in self.applicant_ids]),
+            ])
+            
+            docs_employee = self.env['documents.document'].search_count([
                 ('res_model', '=', 'hr.employee'),
                 ('res_id', '=', r.id),
             ])
-            r.document_employee_count = documents
+            
+            r.document_employee_count = docs_applicant + docs_employee
 
     def _compute_applicant(self):
         for r in self:
@@ -54,3 +61,23 @@ class Employee(models.Model):
                 ('res_id', '=', r.id)
             ])
             documents._compute_res_name()
+            
+    def view_documentos(self):
+        self.ensure_one()
+        action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
+        document_ids = []
+        if self.applicant_ids:
+            documents = self.env['documents.document'].search([
+                ('res_model', '=', 'hr.applicant'),
+                ('res_id', 'in', [a.id for a in self.applicant_ids]),
+            ])
+            document_ids += documents.ids
+        
+        documents = self.env['documents.document'].search([
+            ('res_model', '=', 'hr.employee'),
+            ('res_id', '=', self.emp_id.id),
+        ])
+        document_ids += documents.ids
+        
+        action.update({'domain': [('id', 'in', document_ids)]})
+        return action

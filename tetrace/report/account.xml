@@ -28,7 +28,7 @@
             
             <address t-if="o.journal_id and o.journal_id.exportacion" style="padding-top:20px;">
                 <div>
-                    <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Importador</h5>
+                    <h5 style="margin-bottom:0;display:block;line-height:1.1em;font-size:30px;">Importador</h5>
                 </div>
                 <div>
                     <span class="text-uppercase" t-field="o.partner_id.name"/>
@@ -92,7 +92,7 @@
             <div class="col-auto mw-100 mb-2"
                  t-if="o.journal_id and o.journal_id.exportacion and o.incoterm_complemento"
                  name="incoterm_complemento">
-                <strong><br/></strong>
+                <strong>Complemento Incoterm</strong>
                 <p class="m-0" t-field="o.incoterm_complemento"/>
             </div>
         </xpath>
@@ -112,12 +112,15 @@
             <th name="th_quantity" class="text-right"><span>Quantity</span></th>
         </xpath>
         
+            <xpath expr="//table[@name='invoice_line_table']/thead/tr/th[@name='th_priceunit']" position="replace">
+            <th name="th_priceunit" class="text-right"><span>Precio</span></th>
+        </xpath>
         <xpath expr="//t[@name='account_invoice_line_accountable']/td[2]" position="replace"/>
         
         <xpath expr="//t[@name='account_invoice_line_accountable']/td[@t-if='display_discount']" position="after">
             <td class="text-right">
-                <span t-field="line.quantity"/>
-                <span t-field="line.product_uom_id" groups="uom.group_uom"/>
+                <span t-field="line.quantity" t-options='{"widget": "float", "precision": 0}'/>
+                <!--span t-field="line.product_uom_id" groups="uom.group_uom"/-->
             </td>
         </xpath>
 
@@ -163,4 +166,6 @@
             <attribute name="t-if">o.type != 'out_invoice' and o.type != 'out_refund' and o.narration</attribute>
         </xpath>
     </template>
+   
+
 </odoo>

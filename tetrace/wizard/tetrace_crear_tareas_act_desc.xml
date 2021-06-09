@@ -9,26 +9,117 @@
                     <group>
                         <field name="project_id" invisible="1"/>
                         <field name="accion" required="1"/>
+                        <field name="tecnico_inactivos_ids" invisible="1"/>
+                        <field name="tecnico_activo_ids" invisible="1"/>
                     </group>
-                    <group attrs="{'invisible': [('accion', '!=', 'activacion')]}">
-                        <field name="project_theme_id" attrs="{'required': [('accion', '=', 'activacion')]}"/>
-                        <field name="puesto_ids">
+                    <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'activacion')]}">
+                        <field name="detalle_act_ids" nolabel="1" context="{'tecnico_inactivos_ids': tecnico_inactivos_ids}">
                             <tree editable="bottom">
-                                <field name="employee_id" required="1"/>
+                                <field name="employee_id" 
+                                       options="{'no_create_edit': True, 'no_create': True}"
+                                       domain="[('id', 'in', context.get('tecnico_inactivos_ids'))]" 
+                                       required="1"/>
                                 <field name="job_id"/>
-                                <field name="cantidad" required="1"/>
+                                <field name="resource_calendar_id"/>
+                                <field name="fecha_inicio"/>
+                                <field name="fecha_fin"/>
                             </tree>
                         </field>
                     </group>
                     
-                    <group attrs="{'invisible': [('accion', '!=', 'desactivacion')]}">
-                        <field name="tecnico_project_ids" invisible="1"/>
-                        <field name="tecnico_ids" 
-                               options="{'no_create_edit': True}"
-                               domain="[('id', 'in', tecnico_project_ids)]" 
-                               attrs="{'required': [('accion', '=', 'desactivacion')]}"
-                               widget="many2many_tags"/>
+                    <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'desactivacion')]}">
+                        <field name="detalle_desc_ids" nolabel="1" context="{'tecnico_activo_ids': tecnico_activo_ids}">
+                            <tree editable="bottom">
+                                <field name="employee_id" 
+                                       options="{'no_create_edit': True, 'no_create': True}"
+                                       domain="[('id', 'in', context.get('tecnico_activo_ids'))]"/>
+                                <field name="fecha_fin"/>
+                                <field name="finalizar_contrato"/>
+                                <field name="reubicar"/>
+                                <field name="baja_it"/>
+                                <field name="recoger_equipos"/>
+                            </tree>
+                        </field>
                     </group>
+                    
+                    <group string="Detalle" attrs="{'invisible': [('accion', '!=', 'ausencia')]}">
+                        <field name="detalle_ausencia_ids" nolabel="1" context="{'tecnico_activo_ids': tecnico_activo_ids}">
+                            <tree editable="bottom">
+                                <field name="employee_id" 
+                                       options="{'no_create_edit': True, 'no_create': True}"
+                                       domain="[('id', 'in', context.get('tecnico_activo_ids'))]" 
+                                       required="1"/>
+                                <field name="ausencia"/>
+                                <field name="observaciones"/>
+                                <field name="fecha_inicio"/>
+                                <field name="fecha_fin"/>
+                            </tree>
+                        </field>
+                    </group>
+                    
+                    <group>
+                        <field name="viaje"/>
+                    </group>
+                    <notebook attrs="{'invisible': [('viaje', '=', False)]}">
+                        <field name="tecnico_ids" invisible="1"/>
+                        <page name="viajes" string="Viajes">
+                            <field name="viaje_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
+                                <tree editable="bottom">
+                                    <field name="fecha"/>
+                                    <field name="origen"/>
+                                    <field name="destino"/>
+                                    <field name="contratado"/>
+                                    <field name="realizado"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
+                                    <field name="observaciones"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="fecha"/>
+                                            <field name="origen"/>
+                                            <field name="destino"/>
+                                            <field name="contratado"/>
+                                            <field name="realizado"/>
+                                        </group>
+                                        <group>
+                                            <field name="employee_id"/>
+                                            <field name="observaciones"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+
+                        <page name="alojamientos" string="Alojamientos">
+                            <field name="alojamiento_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
+                                <tree editable="bottom">
+                                    <field name="fecha"/>
+                                    <field name="fecha_fin"/>
+                                    <field name="ciudad"/>
+                                    <field name="completado"/>
+                                    <field name="realizado"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
+                                    <field name="observaciones"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page name="alquiler_vehiculos" string="Alquiler vehículos">
+                            <field name="alquiler_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
+                                <tree editable="bottom">
+                                    <field name="fecha_inicio"/>
+                                    <field name="fecha_fin"/>
+                                    <field name="recogida"/>
+                                    <field name="entrega"/>
+                                    <field name="completado"/>
+                                    <field name="realizado"/>
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
+                                    <field name="observaciones"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <footer>
                     <button name="action_generar_tareas" string="Crear" type="object" class="btn-primary"/>

@@ -38,6 +38,7 @@
                             <field name="tarea_individual"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
+                            <field name="ausencia"/>
                             <field name="activada"/>
                             <field name="deadline_inicio"/>
                             <field name="deadline_fin"/>
@@ -46,6 +47,17 @@
                             <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>
                         </group>
                     </group>
+                </page>
+                
+                <page name="ausencias" string="Ausencias" attrs="{'invisible': [('ausencia', '=', False)]}">
+                    <field name="ausencia_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="employee_id" required="1"/>
+                            <field name="ausencia"/>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                        </tree>
+                    </field>
                 </page>
                 
                 <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">

@@ -318,6 +318,13 @@ class Project(models.Model):
     def action_activar_tareas(self):
         self.ensure_one()
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
+        for tecnico in self.tecnicos_activos():
+            self.env['tetrace.activar_tarea_detalle'].create({
+                'activar_tarea_id': wizard.id,
+                'employee_id': tecnico.employee_id.id,
+                'fecha_fin': tecnico.fecha_fin
+            })
+            
         return wizard.open_wizard()
 
     def view_analitica_tree(self):
@@ -355,9 +362,35 @@ class Project(models.Model):
 
     def action_crear_tareas_act_desc(self):
         self.ensure_one()
-        wizard = self.env['tetrace.crear_tareas_act_desc'].create({'project_id': self.id})
+        today = fields.Date.today()
+        tecnicos_proyecto = self.env['tetrace.tecnico_calendario'].search([('project_id', '=', self.id)]) 
+        
+        employees = self.env['hr.employee'].search([('id', 'not in', [tp.employee_id.id for tp in tecnicos_proyecto])])
+        
+        tecnico_proyecto_inactivos = self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            '|',
+            ('fecha_fin', '=', None),
+            ('fecha_fin', '<=', today),
+        ])
+        proyecto_employee_inactivos_ids = [ti.employee_id.id for ti in tecnico_proyecto_inactivos]
+        
+        
+        tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            '|',
+            ('fecha_fin', '=', None),
+            ('fecha_fin', '>=', today)
+        ])
+        proyecto_employee_activos_ids = [ta.employee_id.id for ta in tecnico_proyecto_activo]   
+            
+        wizard = self.env['tetrace.crear_tareas_act_desc'].create({
+            'project_id': self.id,
+            'tecnico_inactivos_ids': [(6, 0, employees.ids + proyecto_employee_inactivos_ids)],
+            'tecnico_activo_ids': [(6, 0, proyecto_employee_activos_ids)]
+        })
         return wizard.open_wizard()
-
+    
     def action_crear_tareas_faltantes(self):
         self.ensure_one()
         if not self.sale_order_id:
@@ -412,7 +445,7 @@ class Project(models.Model):
                     user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'desactivacion')
                 elif estado == 'modificacion':
                     subject = _("El proyecto %s ha sido modificado" % r.name)
-                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id)
+                    user_tasks = r.tasks.filtered(lambda x: x.user_id.id == user.id and x.tipo == 'activacion')
                 
                 if not user_tasks:
                     continue

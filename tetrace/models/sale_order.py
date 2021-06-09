@@ -64,6 +64,7 @@ class SaleOrder(models.Model):
     ], string='Motivo Cancelación')
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
+    importe_total_facturado = fields.Monetary("Total facturado ", compute="_compute_amt_to_invoice")
     purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
@@ -94,13 +95,18 @@ class SaleOrder(models.Model):
             if r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}', r.referencia_proyecto_antigua) == None:
                 raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
 
-    @api.depends("order_line.untaxed_amount_to_invoice")
+    @api.depends("order_line.untaxed_amount_to_invoice", "order_line.untaxed_amount_invoiced")
     def _compute_amt_to_invoice(self):
         for r in self:
-            total = 0
+            pendiente_facturar = 0
+            facturado = 0
             for line in r.order_line:
-                total += line.untaxed_amount_to_invoice
-            r.importe_pendiente_facturar = total
+                pendiente_facturar += line.untaxed_amount_to_invoice
+                facturado += line.untaxed_amount_invoiced
+            r.update({
+                'importe_total_facturado': facturado,
+                'importe_pendiente_facturar': pendiente_facturar
+            })
 
     @api.depends("invoice_ids", "state", "picking_ids")
     def _compute_visible_btn_change_partner(self):
@@ -131,7 +137,7 @@ class SaleOrder(models.Model):
         for r in self:
             total = 0
             for invoice in r.invoice_ids:
-                total += invoice.amount_total
+                total += invoice.amount_total_signed
             r.invoice_total = total
                 
     @api.depends("seguidor_proyecto_ids")
@@ -309,8 +315,9 @@ class SaleOrder(models.Model):
         for r in self:
             company_id = r.company_id.id if r.company_id else None
             for project in r.project_ids:
-                project.tasks.write({'company_id': company_id})
                 project.write({'company_id': company_id})
+                project.tasks.write({'company_id': company_id})
+                
 
     def generar_ref_proyecto(self):
         self.ensure_one()
@@ -336,7 +343,6 @@ class SaleOrder(models.Model):
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
-        self.project_ids.write({'estado_id': self.env.ref("tetrace.project_state_en_proceso").id})
         return res
 
     def action_view_purchase_order(self):
@@ -397,7 +403,7 @@ class SaleOrder(models.Model):
         # Crear el proyecto con la plantilla diseño del primer producto si aún no hay un proyecto creado
         project_template_diseno_ids = []
         for line in self.order_line.sudo():
-            if line.product_id.service_tracking == 'task_in_project' and line.product_id.project_template_diseno_id:
+            if line.product_id.project_template_diseno_id:
                 project_template_diseno_ids.append(line.product_id.project_template_diseno_id.id)
                 project = line._timesheet_create_project_diseno()
                 break
@@ -413,8 +419,9 @@ class SaleOrder(models.Model):
                     ('activada', 'in', [True, False])
                 ])
                 line.copy_tasks(template_tasks, project, True)
-           
-            line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
+            
+            if line.product_id.service_tracking in ['task_in_project', 'task_global_project']:
+                line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
                 
         self.actualizar_datos_proyecto()
         if not self.env.context.get("no_enviar_email_tareas_asignadas"):
