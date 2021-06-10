@@ -1,57 +1,99 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <template id="report_purchaseorder_document" inherit_id="purchase.report_purchaseorder_document">
-        <xpath expr="//p[@t-field='o.date_order']" position="attributes">
-            <attribute name="t-options-widget">"date"</attribute>
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@t-attf-class='header o_company_#{company.id}_layout']" position="attributes">
+            <attribute name="t-if">not informe_proyecto</attribute>
         </xpath>
-        
-        <xpath expr="//th[@name='th_taxes']" position="replace"/>
-        
-        <xpath expr="//th[@name='th_price_unit']" position="replace">
-         <th name="th_price_unit" class="text-right"><span>Precio</span></th>
-        </xpath>
-        
-        <xpath expr="//td[@name='td_taxes']" position="replace"/>
-        
-        <xpath expr="//span[@t-field='line.date_planned']" position="attributes">
-            <attribute name="t-options-widget">"date"</attribute>
-        </xpath> 
-         <xpath expr="//span[@t-field='line.product_uom.name']" position="attributes">
-             <attribute name="style">display:none</attribute>
-        </xpath> 
-        
-        <xpath expr="//span[@t-field='line.product_qty']" position="attributes">
-            <attribute name="t-options-widget">"integer"</attribute>
-        </xpath>   
-        
-        <xpath expr="//span[@t-field='line.price_unit']" position="attributes">
-            <attribute name="t-options-widget">"monetary"</attribute>
-        </xpath>
-        
-        <xpath expr="//div[@t-field='o.partner_id']" position="attributes">
-            <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
-        </xpath>
-                
-        <xpath expr="//p[@t-if='o.partner_id.vat']" position="after">
-            <div t-if="o.payment_term_id">
-                <span t-field="o.payment_term_id.display_name"/>
-            </div>
-        </xpath> 
-        
 
-        
-        <xpath expr="//div[@t-field='o.dest_address_id']" position="attributes">
-            <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
-        </xpath> 
-    </template>
-    
-    <template id="ps_report_purchaseorder_document" inherit_id="purchase_stock.report_purchaseorder_document">
-        <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="after">
-            <div style="margin-bottom:25px">
-                <span t-field="o.picking_type_id.warehouse_id.partner_id.comment"/>
+        <xpath expr="//div[@t-attf-class='footer o_standard_footer o_company_#{company.id}_layout']" position="attributes">
+            <attribute name="t-if">not informe_proyecto</attribute>
+        </xpath>
+
+        <xpath expr="//div[@t-attf-class='footer o_standard_footer o_company_#{company.id}_layout']" position="after">
+            <div t-if="informe_proyecto" t-attf-class="footer o_standard_footer" style="border-top: 4px solid #872292;">
+                <div class="text-center">
+                    <div class="row" style="margin:0 auto;max-width:80%;padding-left:20px;">
+                        <div class="col-12">
+                            <div style="float:left">
+                                <t t-set="base_url" t-value="request.env['ir.config_parameter'].sudo().get_param('web.base.url')"/>
+                                <img t-att-src="'%s/tetrace/static/src/img/logo_report_footer.png' % base_url" width="200px;"/>
+                            </div>
+
+                            <div style="float:right;width:50%;text-align:right;">
+                                <span t-field="company.name"/>
+                                <t t-if="company.vat">
+                                    | CIF: <span t-field="company.vat"/>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </xpath>
+
+        <xpath expr="//div[@t-field='company.partner_id']" position="replace">
+            <div style="display:block">
+                <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.exportacion">
+                    <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Exportador</h5>
+                </div>
+                <div>
+                    <span class="text-uppercase" t-field="company.name"/>
+                </div>
+                <div style="font-size:0.9em;">
+                    <div t-if="company.company_registry">
+                        NIF: <span t-field="company.company_registry"/> <br/>
+                    </div>
+        <span><t t-esc="company.street"/><t t-esc="company.street2"/>|<t t-esc="company.zip"/><t t-esc="company.state_id.name"/>|<t t-esc="company.country_id.name"/></span><br/>
+                    <!--div t-if="company.street">
+                        <span t-field="company.street"/> <br/>
+                    </div>
+                    <div t-if="company.street2">
+                        <span t-field="company.street2"/> <br/>
+                    </div-->
+                    
+                    <!--div t-if="company.city or company.zip or company.state_id or company.country_id">
+                        <span t-field="company.city"/>
+                        <t t-if="company.zip">
+                            - <span t-field="company.zip"/>
+                        </t>
+                        <t t-if="company.state_id">
+                            - <span t-field="company.state_id.name"/>
+                        </t>
+                        <t t-if="company.country_id">
+                            - <span t-field="company.country_id.name"/>
+                        </t>
+
+                    </div-->
+                    <t t-if="o.user_id and o.user_id.partner_id">
+                        <!--div t-if="o.user_id.partner_id">
+                            <span t-field="o.user_id.partner_id"/>
+                        </div-->
+                          <span><t t-esc="o.user_id.partner_id.name"/> | <t t-esc="o.user_id.partner_id.email"/></span>
+                       
+                        <!--div t-if="o.user_id.partner_id.email">
+                            <span t-field="o.user_id.partner_id.email"/>
+                        </div-->
+                        <div t-if="o.user_id.partner_id.phone">
+                            <span t-field="o.user_id.partner_id.phone"/>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//li[@t-if='company.email']/span[@t-field='company.email']" position="replace">
+            <t t-if="o and o._name == 'account.move'">
+                invoicing@tetrace.com
+            </t>
+            <t t-if="not o or o._name != 'account.move'">
+                <span t-field="company.email"/>
+            </t>
+        </xpath>
     </template>
-    
-    
+
+<template id="argentinian_extra_info" inherit_id="l10n_ar.argentinian_extra_info">
+       <xpath expr="//li[2]" position="attributes">
+           <attribute name="style">display:none</attribute>
+       </xpath>
+   </template>
 </odoo>
