@@ -37,6 +37,7 @@ from . import purchase_order_line
 from . import analytic_account
 from . import stock_move
 from . import stock_picking
+from . import stock_production_lot
 from . import stock_warehouse
 from . import mis_report_instance
 from . import mis_report
