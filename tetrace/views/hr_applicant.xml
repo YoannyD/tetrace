@@ -14,12 +14,6 @@
                         type="object">
                     <field name="document_applicant_count" widget="statinfo"/>
                 </button>
-                
-                <button class="oe_stat_button" 
-                        type="object" 
-                        name="view_procesos_seleccion_tree" 
-                        string="Proyectos"
-                        icon="fa-puzzle-piece"/>
             </xpath>
 
             <xpath expr="//field[@name='emp_id']" position="replace"/>
@@ -89,15 +83,13 @@
                             </div>
                         </div>
                     </page>
-                    <page string="Tareas" name="tareas">
-                        <field name="task_ids" nolabel="1">
-                            <tree editable="bottom">
-                                <field name="name"/>
-                                <field name="project_id"/>
-                                <field name="user_id"/>
-                                <field name="job_id"/>
-                                <field name="company_id" optional="hide"/>
-                            </tree>
+                    <page string="Proyectos">
+                        <field name="project_ids" nolabel="1">
+                            <field name="name"/>
+                            <field name="user_id"/>
+                            <field name="partner_id"/>
+                            <field name="company_id"/>
+                            <field name="estado_id"/>
                         </field>
                     </page>
                 </notebook>

@@ -16,10 +16,6 @@
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
-                <page name="jobs" string="Procesos de selección" attrs="{'invisible': [('tarea_seleccion', '=', False)]}">
-                    <field name="applicant_ids" nolabel="1"/>
-                </page>
-
                 <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">
                     <field name="producto_entrega" invisible="1"/>
                     <field name="desde_plantilla" invisible="1"/>

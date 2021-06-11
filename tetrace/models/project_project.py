@@ -62,6 +62,8 @@ class Project(models.Model):
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
+    proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
+    applicant_ids = fields.Many2many('hr.applicant')
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -294,15 +296,6 @@ class Project(models.Model):
     def default_etapa_tareas(self):
         for r in self:
             r.type_ids = [(4, 4), (4, 5), (4, 10), (4, 269)]
-
-    def view_procesos_seleccion_tree(self):
-        self.ensure_one()
-        applicant_ids = []
-        for task in self.tasks:
-            applicant_ids += task.applicant_ids.ids
-        action = self.env['ir.actions.act_window'].for_xml_id('hr_recruitment', 'crm_case_categ0_act_job')
-        action.update({'domain': [('id', 'in', applicant_ids)]})
-        return action
 
     def action_view_project(self):
         self.ensure_one()

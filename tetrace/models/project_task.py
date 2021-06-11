@@ -28,7 +28,6 @@ class ProjectTask(models.Model):
 
     tarea_seleccion = fields.Boolean("Tarea Selección")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
     entrega_ids = fields.One2many('project.task.entrega', 'task_id')
     entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")

@@ -94,6 +94,7 @@
         'views/mis_report.xml',
         'views/tetrace_tickelia.xml',
         'views/tetrace_vat_book.xml',
+        'views/hr_job.xml',
         'views/account_analytic_account.xml',
         'views/res_config_settings.xml',
         'views/tetrace_linea_analitica_rel.xml',

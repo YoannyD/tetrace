@@ -58,6 +58,7 @@ from . import tetrace_prevision_facturacion
 from . import tetrace_festivo
 from . import tetrace_tecnico_calendario
 from . import tetrace_coordinador_company
+from . import tetrace_proyecto_necesidad
 from . import mod303
 from . import mail_thread
 from . import mail_followers
