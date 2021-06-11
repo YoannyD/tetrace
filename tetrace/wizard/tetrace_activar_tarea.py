@@ -112,7 +112,7 @@ class ActivarTarea(models.TransientModel):
                         'observaciones': alquiler.observaciones
                     })
                     
-                tasks.write({
+                task.write({
                     'activada': True,
                     'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
                 })
