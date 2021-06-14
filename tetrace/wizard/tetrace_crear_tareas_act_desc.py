@@ -239,11 +239,10 @@ class DetalleActivacion(models.TransientModel):
     _description = "Detalles activacion"
 
     tarea_act_id = fields.Many2one('tetrace.crear_tareas_act_desc', string="Wizard creación")
-    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    employee_id = fields.Many2one('hr.employee', string="Empleado")
-    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario")
+    job_id = fields.Many2one('hr.job', string="Puesto de trabajo", required=True)
+    employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
+    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
     fecha_inicio = fields.Date('Fecha inicio')
-    fecha_fin = fields.Date('Fecha fin')
     
 
 class DetalleDesactivacion(models.TransientModel):
