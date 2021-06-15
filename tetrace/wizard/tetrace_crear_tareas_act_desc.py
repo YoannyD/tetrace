@@ -64,6 +64,9 @@ class CrearTareasActDesc(models.TransientModel):
         elif self.accion == 'ausencia':
             self.crear_tareas_ausencia()
             
+        if not self.viaje:
+            return
+            
         tasks = self.env['project.task'].search([
             ('viajes', '=', True),
             ('project_id', '=', self.project_id.id)
@@ -130,7 +133,7 @@ class CrearTareasActDesc(models.TransientModel):
             })
         
         ref = datetime.now().timestamp()
-        for task in project_theme.tasks:
+        for task in project_theme.sudo().tasks:
             ref_created = "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
             if task.tarea_individual:
                 for detalle in self.detalle_act_ids:
@@ -164,17 +167,22 @@ class CrearTareasActDesc(models.TransientModel):
                         new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
                         
             elif not task.check_task_exist(ref_created):
-                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()  
-                new_task = task.copy({
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()
+                values = {
                     'name': task.name,
                     'sale_line_id': None,
-                    'partner_id': responsable_id,
+                    'partner_id': self.project_id.sale_order_id.partner_id.id,
                     'email_from': self.project_id.sale_order_id.partner_id.email,
                     'desde_plantilla': True,
                     'project_id': self.project_id.id,
                     "company_id": self.project_id.company_id.id,
                     'ref_created': ref_created
-                })
+                }
+                
+                if responsable_id:
+                    values.update({'user_id': responsable_id})
+                
+                new_task = task.copy(values)
                 
                 if seguidores_ids:
                     new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
