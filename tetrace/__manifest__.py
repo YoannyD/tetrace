@@ -78,6 +78,7 @@
         'views/tetrace_sale_order_version.xml',
         'views/tetrace_tipo_proyecto.xml',
         'views/tetrace_tipo_servicio.xml',
+        'views/tetrace_proyecto_necesidad.xml',
         'views/hr_contract.xml',
         'views/hr_department.xml',
         'views/res_company.xml',

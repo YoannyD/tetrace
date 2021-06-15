@@ -5,6 +5,16 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="view_proyecto_necesidad_action" 
+                        type="object" 
+                        class="oe_stat_button" 
+                        icon="fa-list" 
+                        attrs="{'invisible' : [('busqueda_perfiles', '=', False)]}">
+                    <field string="Necesidades" name="proyecto_necesidad_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="department_id"/>
                 <field name="info_puesto_id" attrs="{'invisible': [('department_laboral', '=', False)]}"/>
@@ -34,6 +44,7 @@
                             <field name="tarea_individual"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
+                            <field name="busqueda_perfiles"/>
                             <field name="ausencia"/>
                             <field name="activada"/>
                             <field name="deadline_inicio"/>

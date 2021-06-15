@@ -58,7 +58,13 @@ class ProjectTask(models.Model):
     project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
     ausencia = fields.Boolean("Ausencia")
     ausencia_ids = fields.One2many('tetrace.ausencia', 'task_id', string="Ausencias")
+    busqueda_perfiles = fields.Boolean("Búsqueda perfiles")
+    proyecto_necesidad_count = fields.Integer("Nª Necesidades", compute="_compute_proyecto_necesidad")
 
+    def _compute_proyecto_necesidad(self):
+        for r in self:
+            r.proyecto_necesidad_count = len(r.project_id.proyecto_necesidad_ids)
+    
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
         for r in self:
@@ -232,6 +238,11 @@ class ProjectTask(models.Model):
                     responsable_id = asignacion.responsable_id.id
         return responsable_id, seguidores_ids
 
+    def view_proyecto_necesidad_action(self):
+        self.ensure_one()
+        action = self.env.ref("tetrace.tetrace_proyecto_necesidad_action").read()[0]
+        action.update({'domain': [('project_id', '=', self.project_id.id)]})
+        return action
         
 
 class ProjectTaskType(models.Model):

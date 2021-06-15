@@ -146,6 +146,8 @@ class Project(models.Model):
         res.actualizar_deadline_tareas_activacion()
         res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
+        if res.proyecto_necesidad_ids:
+            res.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
         return res
 
     def write(self, vals):
@@ -174,6 +176,11 @@ class Project(models.Model):
               
         if 'partner_id' in vals:
             self.actualizar_partner_task()
+            
+        if 'proyecto_necesidad_ids' in vals:
+            for r in self:
+                r.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
+            
         return res
 
     def actualizar_experiencias_tecnicos(self):
