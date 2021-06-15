@@ -378,10 +378,9 @@ class SaleOrder(models.Model):
                         })
 
     def _prepare_analytic_account_data(self, prefix=None):
-        values = super(SaleOrder, self)._prepare_analytic_account_data(prefix)
+        values = super(SaleOrder, self)._prepare_analytic_account_data(prefix) 
         values.update({'company_id': None})
         return values
-        
                         
     def action_crear_version(self):
         self.ensure_one()
