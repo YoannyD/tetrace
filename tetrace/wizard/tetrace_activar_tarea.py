@@ -59,7 +59,7 @@ class ActivarTarea(models.TransientModel):
             for task in tasks:
                 tasks.write({
                     'activada': True,
-                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline)
                 })
                 
             if detalle.fecha_fin:
@@ -114,7 +114,7 @@ class ActivarTarea(models.TransientModel):
                     
                 task.write({
                     'activada': True,
-                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
+                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline)
                 })
         
         values_project = {}

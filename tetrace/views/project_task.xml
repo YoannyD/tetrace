@@ -47,8 +47,7 @@
                             <field name="busqueda_perfiles"/>
                             <field name="ausencia"/>
                             <field name="activada"/>
-                            <field name="deadline_inicio"/>
-                            <field name="deadline_fin"/>
+                            <field name="deadline"/>
                         </group>
                         <group>
                             <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>

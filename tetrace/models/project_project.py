@@ -257,7 +257,7 @@ class Project(models.Model):
                 continue
 
             for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
-                date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
+                date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_deadline_tareas_desactivacion(self):
@@ -272,7 +272,7 @@ class Project(models.Model):
                 continue
 
             for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
-                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline_inicio)
+                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_partner_task(self):
