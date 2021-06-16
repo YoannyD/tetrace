@@ -142,7 +142,7 @@ class Project(models.Model):
     def create(self, vals):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
-        res.actualizar_geo_partner()
+        res.actualizar_geo_partner()deadline
         res.actualizar_deadline_tareas_activacion()
         res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
@@ -256,7 +256,7 @@ class Project(models.Model):
             if not r.fecha_inicio:
                 continue
 
-            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
+            for task in r.tasks.filtered(lambda x: x.tipo == 'activacion' and x.tarea_individual):
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
