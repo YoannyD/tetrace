@@ -11,6 +11,7 @@
                         <tree editable="bottom">
                             <field name="project_id"/>
                             <field name="necesidad"/>
+                            <field name="realizado"/>
                         </tree>
                     </field>
                 </group>

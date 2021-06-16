@@ -144,6 +144,7 @@
                         <tree editable="bottom">
                             <field name="job_id"/>
                             <field name="necesidad"/>
+                            <field name="realizado"/>
                         </tree>
                     </field>
                 </page>

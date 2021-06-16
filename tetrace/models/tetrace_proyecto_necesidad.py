@@ -15,4 +15,5 @@ class ProcesoSeleccion(models.Model):
     project_id = fields.Many2one('project.project', string="Proyecto")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     necesidad = fields.Integer("Necesidad")
+    realizado = fields.Boolean("Realizado")
     
