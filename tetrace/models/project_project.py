@@ -271,7 +271,7 @@ class Project(models.Model):
             if not fecha:
                 continue
 
-            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
+            for task in r.tasks.filtered(lambda x: x.tipo == 'desactivacion' and not x.tarea_individual):
                 date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
