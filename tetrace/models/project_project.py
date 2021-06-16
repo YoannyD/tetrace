@@ -142,7 +142,7 @@ class Project(models.Model):
     def create(self, vals):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
-        res.actualizar_geo_partner()deadline
+        res.actualizar_geo_partner()
         res.actualizar_deadline_tareas_activacion()
         res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
