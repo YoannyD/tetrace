@@ -127,9 +127,10 @@
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Técnicos">
                     <field name="tecnico_calendario_ids" 
-                           context="{'default_resource_calendar_id': resource_calendar_id, 'default_fecha_inicio': fecha_inicio}" 
+                           context="{'default_resource_calendar_id': resource_calendar_id, 'default_fecha_inicio': fecha_inicio}"
+
                            nolabel="1">
-                        <tree editable="bottom">
+                        <tree editable="bottom" create="0">
                             <field name="employee_id"/>
                             <field name="job_id"/>
                             <field name="resource_calendar_id"/>
