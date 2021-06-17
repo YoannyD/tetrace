@@ -203,10 +203,7 @@ class CrearTareasActDesc(models.TransientModel):
                 ('project_id', '=', self.project_id.id),
                 ('activada', '=', False)
             ])
-            tareas.write({
-                'activada': True,
-                'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline)
-            })
+            tareas.write({'activada': True})
             
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
                 ('project_id', '=', self.project_id.id),

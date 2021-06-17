@@ -41,11 +41,12 @@ class Alojamiento(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar alojamiento del proyecto %s' % self.task_id.project_id.name)
+                summary = _('Gestionar alojamiento del proyecto %s' % r.task_id.project_id.name)
             elif accion == "update":
-                summary = _('Gestionar modificación alojamiento del proyecto %s' % self.task_id.project_id.name)
-                
-            self.task_id.create_activity_viaje(summary, r.fecha)
+                summary = _('Gestionar modificación alojamiento del proyecto %s' % r.task_id.project_id.name)
+            
+            fecha = r.fecha - timedelta(days=5) if r.fecha else None
+            self.task_id.create_activity(summary, fecha)
     
     @api.constrains("fecha", "fecha_fin")
     def _check_fechas(self):

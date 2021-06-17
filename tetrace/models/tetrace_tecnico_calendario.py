@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from datetime import timedelta
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
@@ -25,4 +26,40 @@ class TecnicoCalendario(models.Model):
         for r in self:
             if r.fecha_inicio and r.fecha_fin and r.fecha_inicio > r.fecha_fin:
                 raise UserError(_("La fecha fin tiene que ser igual o posterior a la fecha inicio."))
+                
+    @api.model
+    def create(self, vals):
+        res = super(TecnicoCalendario, self).create(vals)
+        if 'fecha_inicio' in vals:
+            res.actualizar_deadline_tareas('activacion')
+        
+        if 'fecha_fin' in vals:
+            res.actualizar_deadline_tareas('desactivacion')
+        return res
+    
+    def write(self, vals):
+        res = super(TecnicoCalendario, self).write(vals)
+        if 'fecha_inicio' in vals:
+            self.actualizar_deadline_tareas('activacion')
+            
+        if 'fecha_fin' in vals:
+            self.actualizar_deadline_tareas('desactivacion')
+        return res
+    
+    def actualizar_deadline_tareas(self, tipo):
+        for r in self:
+            tasks = self.env['project.task'].search([
+                ('project_id', '=', r.project_id.id),
+                ('employee_id', '=', r.employee_id.id),
+                ('job_id', '=', r.job_id.id),
+                ('tarea_individual', '=', True),
+                ('tipo', '=', tipo)
+            ])
+            
+            for task in tasks:
+                if tipo == 'activacion':
+                    fecha = r.fecha_inicio + timedelta(days=task.deadline) if r.fecha_inicio else None
+                elif tipo == 'desactivacion':
+                    fecha = r.fecha_fin + timedelta(days=task.deadline) if r.fecha_fin else None
+                task.write({'date_deadline': fecha})
                 

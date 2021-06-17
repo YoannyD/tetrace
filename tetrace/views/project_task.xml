@@ -10,6 +10,7 @@
                         type="object" 
                         class="oe_stat_button" 
                         icon="fa-list" 
+                        context="{'default_project_id': project_id}"
                         attrs="{'invisible' : [('busqueda_perfiles', '=', False)]}">
                     <field string="Necesidades" name="proyecto_necesidad_count" widget="statinfo"/>
                 </button>
@@ -62,6 +63,7 @@
                             <field name="ausencia"/>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
+                            <field name="realizado"/>
                         </tree>
                     </field>
                 </page>

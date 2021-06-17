@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _, tools
+from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -53,11 +54,12 @@ class Viaje(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar viaje del proyecto %s' % self.task_id.project_id.name)
+                summary = _('Gestionar viaje del proyecto %s' % r.task_id.project_id.name)
             elif accion == "update":
-                summary = _('Gestionar modificación viaje del proyecto %s' % self.task_id.project_id.name)
+                summary = _('Gestionar modificación viaje del proyecto %s' % r.task_id.project_id.name)
                 
-            self.task_id.create_activity_viaje(summary, r.fecha)
+            fecha = r.fecha - timedelta(days=5) if r.fecha else None
+            self.task_id.create_activity(summary, fecha)
     
     def pasar_tarea_a_en_proceso(self):
         for r in self:

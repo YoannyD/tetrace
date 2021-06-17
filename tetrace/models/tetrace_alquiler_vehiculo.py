@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -40,10 +41,11 @@ class AlquilerVehiculo(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar alquiler de vehículo del proyecto %s' % self.task_id.project_id.name)
+                summary = _('Gestionar alquiler de vehículo del proyecto %s' % r.task_id.project_id.name)
             elif accion == "update":
-                summary = _('Gestionar modificación alquiler de vehículo del proyecto %s' % self.task_id.project_id.name)
+                summary = _('Gestionar modificación alquiler de vehículo del proyecto %s' % r.task_id.project_id.name)
                 
-            self.task_id.create_activity_viaje(summary, r.fecha_inicio)
+            fecha = r.fecha_inicio - timedelta(days=5) if r.fecha_inicio else None
+            self.task_id.create_activity(summary, fecha)
     
     
