@@ -155,6 +155,7 @@ class CrearTareasActDesc(models.TransientModel):
                         'ref_individual': ref_individual,
                         'desde_plantilla': True,
                         "company_id": self.project_id.company_id.id,
+                        'company_coordinador_id': self.project_id.company_coordinador_id.id,
                         'ref_created': ref_created
                     }
                         
@@ -176,6 +177,7 @@ class CrearTareasActDesc(models.TransientModel):
                     'desde_plantilla': True,
                     'project_id': self.project_id.id,
                     "company_id": self.project_id.company_id.id,
+                    'company_coordinador_id': self.project_id.company_coordinador_id.id,
                     'ref_created': ref_created
                 }
                 

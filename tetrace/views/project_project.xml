@@ -104,6 +104,7 @@
             </xpath>
 
             <xpath expr="//field[@name='company_id']" position="after">
+                <field name="company_coordinador_id"/>
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion" attrs="{'readonly': [('fecha_cancelacion', '=', False)]}"/>
                 <field name="fecha_finalizacion" attrs="{'readonly': [('fecha_finalizacion', '=', False)]}"/>

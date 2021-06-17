@@ -59,6 +59,7 @@ class ProjectTask(models.Model):
     ausencia_ids = fields.One2many('tetrace.ausencia', 'task_id', string="Ausencias")
     busqueda_perfiles = fields.Boolean("Búsqueda perfiles")
     proyecto_necesidad_count = fields.Integer("Nª Necesidades", compute="_compute_proyecto_necesidad")
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
 
     def _compute_proyecto_necesidad(self):
         for r in self:

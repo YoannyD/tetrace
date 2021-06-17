@@ -25,6 +25,10 @@
                 <field name="tipo"/>
                 <field name="ref_created" invisible="1"/>
             </xpath>
+            
+            <xpath expr="//page[@name='extra_info']//field[@name='company_id']" position="after">
+                <field name="company_coordinador_id"/>
+            </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
                 <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">

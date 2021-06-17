@@ -64,6 +64,7 @@ class Project(models.Model):
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
     applicant_ids = fields.Many2many('hr.applicant')
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
