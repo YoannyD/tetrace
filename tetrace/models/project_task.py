@@ -242,7 +242,20 @@ class ProjectTask(models.Model):
         action = self.env.ref("tetrace.tetrace_proyecto_necesidad_action").read()[0]
         action.update({'domain': [('project_id', '=', self.project_id.id)]})
         return action
+    
+    def create_activity_viaje(self, summary, fecha=None):
+        values = {
+            'summary': summary,
+            'activity_type_id': self.env.ref("mail.mail_activity_data_todo").id,
+            'res_model_id': self.env['ir.model'].search([('model', '=', 'project.task')], limit=1).id,
+            'res_id': self.id,
+            'user_id': self.user_id.id
+        }
         
+        if fecha:
+            values.update({'date_deadline': fecha - timedelta(days=5)})
+            
+        self.env['mail.activity'].create(values)
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'

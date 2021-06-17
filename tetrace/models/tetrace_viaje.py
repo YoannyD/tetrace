@@ -38,7 +38,26 @@ class Viaje(models.Model):
     def create(self, vals):
         res = super(Viaje, self).create(vals)
         res.pasar_tarea_a_en_proceso()
+        res.create_task_activity("create")
         return res
+    
+    def write(self, vals):
+        res = super(Viaje, self).write(vals)
+        res.create_task_activity("update")
+        return res
+    
+    def create_task_activity(self, accion):
+        for r in self:
+            if not r.task_id or (accion == "update" and r.realizado):
+                continue
+            
+            sumanry = None
+            if accion == "create":
+                summary = _('Gestionar viaje del proyecto %s' % self.task_id.project_id.name)
+            elif accion == "update":
+                summary = _('Gestionar modificación viaje del proyecto %s' % self.task_id.project_id.name)
+                
+            self.task_id.create_activity_viaje(summary, r.fecha)
     
     def pasar_tarea_a_en_proceso(self):
         for r in self:

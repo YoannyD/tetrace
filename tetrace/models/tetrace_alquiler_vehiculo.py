@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -21,5 +21,29 @@ class AlquilerVehiculo(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Persona")
     observaciones = fields.Text("Observaciones", translate=True)
     task_id = fields.Many2one("project.task", string="Tarea")
+    
+    @api.model
+    def create(self, vals):
+        res = super(AlquilerVehiculo, self).create(vals)
+        res.create_task_activity("create")
+        return res
+    
+    def write(self, vals):
+        res = super(AlquilerVehiculo, self).write(vals)
+        res.create_task_activity("update")
+        return res
+    
+    def create_task_activity(self, accion):
+        for r in self:
+            if not r.task_id or (accion == "update" and r.realizado):
+                continue
+            
+            sumanry = None
+            if accion == "create":
+                summary = _('Gestionar alquiler de vehículo del proyecto %s' % self.task_id.project_id.name)
+            elif accion == "update":
+                summary = _('Gestionar modificación alquiler de vehículo del proyecto %s' % self.task_id.project_id.name)
+                
+            self.task_id.create_activity_viaje(summary, r.fecha_inicio)
     
     
