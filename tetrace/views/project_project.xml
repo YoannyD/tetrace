@@ -81,6 +81,10 @@
                         icon="fa-usd"/>
             </xpath>
 
+            <xpath expr="//h1[1]/field[@name='name']" position="attributes">
+                <attribute name="attrs">{'readonly': [('sale_order_id', '!=', False)]}</attribute>
+            </xpath>
+            
             <xpath expr="//div[@name='options_active']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
