@@ -31,7 +31,7 @@ class AlquilerVehiculo(models.Model):
     
     def write(self, vals):
         res = super(AlquilerVehiculo, self).write(vals)
-        res.create_task_activity("update")
+        self.create_task_activity("update")
         return res
     
     def create_task_activity(self, accion):
@@ -41,9 +41,9 @@ class AlquilerVehiculo(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar alquiler de vehículo del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar alquiler de vehículo para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
             elif accion == "update":
-                summary = _('Gestionar modificación alquiler de vehículo del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar modificación alquiler de vehículo para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
                 
             fecha = r.fecha_inicio - timedelta(days=5) if r.fecha_inicio else None
             self.task_id.create_activity(summary, fecha)

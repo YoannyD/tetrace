@@ -44,7 +44,7 @@ class Viaje(models.Model):
     
     def write(self, vals):
         res = super(Viaje, self).write(vals)
-        res.create_task_activity("update")
+        self.create_task_activity("update")
         return res
     
     def create_task_activity(self, accion):
@@ -54,9 +54,9 @@ class Viaje(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar viaje del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar viaje para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
             elif accion == "update":
-                summary = _('Gestionar modificación viaje del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar modificación viaje para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
                 
             fecha = r.fecha - timedelta(days=5) if r.fecha else None
             self.task_id.create_activity(summary, fecha)

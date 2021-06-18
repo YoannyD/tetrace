@@ -45,9 +45,9 @@ class Ausencia(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar ausencia del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar ausencia para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
             elif accion == "update":
-                summary = _('Gestionar modificación ausencia del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar modificación ausencia para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
                 
             fecha = r.fecha_inicio - timedelta(days=5) if r.fecha_inicio else None
             self.task_id.create_activity(summary, fecha)

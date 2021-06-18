@@ -252,6 +252,9 @@ class ProjectTask(models.Model):
     
     def create_activity(self, summary, fecha=None):
         for r in self:
+            if not r.user_id:
+                continue
+                
             values = {
                 'summary': summary,
                 'activity_type_id': self.env.ref("mail.mail_activity_data_todo").id,

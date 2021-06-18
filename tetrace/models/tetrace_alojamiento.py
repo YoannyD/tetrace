@@ -31,7 +31,7 @@ class Alojamiento(models.Model):
     
     def write(self, vals):
         res = super(Alojamiento, self).write(vals)
-        res.create_task_activity("update")
+        self.create_task_activity("update")
         return res
     
     def create_task_activity(self, accion):
@@ -41,9 +41,9 @@ class Alojamiento(models.Model):
             
             sumanry = None
             if accion == "create":
-                summary = _('Gestionar alojamiento del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar alojamiento para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
             elif accion == "update":
-                summary = _('Gestionar modificación alojamiento del proyecto %s' % r.task_id.project_id.name)
+                summary = _('Gestionar modificación alojamiento para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
             
             fecha = r.fecha - timedelta(days=5) if r.fecha else None
             self.task_id.create_activity(summary, fecha)
