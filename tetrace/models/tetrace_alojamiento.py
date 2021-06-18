@@ -20,6 +20,7 @@ class Alojamiento(models.Model):
     completado = fields.Boolean("Completado")
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
+    employee_active_ids = fields.Many2many("hr.employee", related="task_id.project_id.tecnico_ids")
     observaciones = fields.Text("Observaciones", translate=True)
     task_id = fields.Many2one("project.task", string="Tarea")
     

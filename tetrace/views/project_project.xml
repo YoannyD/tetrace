@@ -131,6 +131,7 @@
 
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Técnicos">
+                    <field name="tecnico_ids" invisible="1"/>
                     <field name="tecnico_calendario_ids" 
                            context="{'default_resource_calendar_id': resource_calendar_id, 'default_fecha_inicio': fecha_inicio}"
 

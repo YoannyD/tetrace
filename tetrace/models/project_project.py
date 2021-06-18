@@ -58,6 +58,7 @@ class Project(models.Model):
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
+    tecnico_ids = fields.Many2many("hr.employee", compute="_compute_tecnico_ids", store=True, string="Técnicos")
     visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
@@ -72,6 +73,11 @@ class Project(models.Model):
             if r.fecha_cancelacion and not r.motivo_cancelacion_id:
                 raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
 
+    @api.depends("tecnico_calendario_ids.employee_id")
+    def _compute_tecnico_ids(self):
+        for r in self:
+            r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \

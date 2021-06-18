@@ -22,6 +22,7 @@ class Ausencia(models.Model):
     
     task_id = fields.Many2one('project.task', string="Tarea")
     employee_id = fields.Many2one("hr.employee", string="Persona")
+    employee_active_ids = fields.Many2many("hr.employee", related="task_id.project_id.tecnico_ids")
     ausencia = fields.Selection(TIPOS_AUSENCIAS, string="Tipo ausencia")
     fecha_inicio = fields.Date("Fecha inicio")
     fecha_fin = fields.Date("Fecha fin")

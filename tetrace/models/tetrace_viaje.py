@@ -20,6 +20,7 @@ class Viaje(models.Model):
     contratado = fields.Boolean("Contratado")
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
+    employee_active_ids = fields.Many2many("hr.employee", related="task_id.project_id.tecnico_ids")
     task_id = fields.Many2one("project.task", string="Tarea")
     observaciones = fields.Text("Observaciones", translate=True)
     
