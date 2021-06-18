@@ -158,6 +158,10 @@ class CrearTareasActDesc(models.TransientModel):
                         'company_coordinador_id': self.project_id.company_coordinador_id.id,
                         'ref_created': ref_created
                     }
+                    
+                    if detalle.fecha_inicio and task.tipo == 'activacion':
+                        date_deadline = fields.Date.from_string(detalle.fecha_inicio) + timedelta(days=task.deadline)
+                        values.update({'date_deadline': date_deadline})
                         
                     responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
                     if responsable_id:
@@ -181,6 +185,10 @@ class CrearTareasActDesc(models.TransientModel):
                     'ref_created': ref_created
                 }
                 
+                if self.project_id.fecha_inicio and task.tipo == 'activacion':
+                    date_deadline = fields.Date.from_string(self.project_id.fecha_inicio) + timedelta(days=task.deadline)
+                    values.update({'date_deadline': date_deadline})
+                
                 if responsable_id:
                     values.update({'user_id': responsable_id})
                 
@@ -191,6 +199,12 @@ class CrearTareasActDesc(models.TransientModel):
 
     def crear_tareas_desactivacion(self):
         self.ensure_one()
+        fecha_deadline = None
+        if r.fecha_finalizacion:
+            fecha_deadline = r.fecha_finalizacion
+        elif r.fecha_cancelacion:
+            fecha_deadline = r.fecha_cancelacion
+        
         for detalle in self.detalle_desc_ids:
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
@@ -206,7 +220,14 @@ class CrearTareasActDesc(models.TransientModel):
                 ('activada', '=', False)
             ])
             tareas.write({'activada': True})
-            
+            for tarea in tareas:
+                if fecha_deadline and not tarea.tarea_individual:
+                    date_deadline = fields.Date.from_string(fecha_deadline) + timedelta(days=task.deadline)
+                    
+                if tarea.tarea_individual and detalle.fecha_fin:
+                    date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
+                tarea.write({'date_deadline': date_deadline})
+         
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
                 ('project_id', '=', self.project_id.id),
                 ('employee_id', '=', detalle.employee_id.id),
