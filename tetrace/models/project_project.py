@@ -322,9 +322,7 @@ class Project(models.Model):
         
         tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
             ('project_id', '=', self.id),
-            '|',
             ('fecha_fin', '=', None),
-            ('fecha_fin', '>=', fields.Date.today())
         ])  
         
         for tecnico in tecnico_proyecto_activo:
