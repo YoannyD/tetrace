@@ -17,7 +17,7 @@ class MailThread(models.AbstractModel):
     def create(self, vals):
         context = dict(self.env.context)
         auto_add_follower = self.env['ir.config_parameter'].sudo().get_param('auto_add_followers', default=False)
-        if not auto_add_follower:
+        if "add_follower" not in self.env.context and not auto_add_follower:
             context.update({
                 "mail_create_nosubscribe": True,
                 "add_follower": False

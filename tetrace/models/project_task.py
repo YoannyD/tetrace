@@ -92,7 +92,13 @@ class ProjectTask(models.Model):
             if r.tarea_seleccion:
                 r.tarea_individual = True
 
+    @api.model
+    def create(self, vals):
+        self = self.with_context(add_follower=True)
+        return super(ProjectTask, self).create(vals)
+                
     def write(self, vals):
+        self = self.with_context(add_follower=True)
         entregas = {}
         for r in self:
             entregas.update({
