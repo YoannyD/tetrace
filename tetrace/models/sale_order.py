@@ -347,7 +347,11 @@ class SaleOrder(models.Model):
         return res
 
     def send_email_confirm(self):
-        partner_ids = self.message_partner_ids.ids
+        partner_ids = []
+        for seguidor in self.seguidor_proyecto_ids:
+            if seguidor.partner_id and seguidor.partner_id.email:
+                partner_ids.append(seguidor.partner_id.id)
+                
         if self.coordinador_proyecto_id and self.coordinador_proyecto_id.partner_id and \
             self.coordinador_proyecto_id.partner_id.email:
             partner_ids.append(self.coordinador_proyecto_id.partner_id.id)
