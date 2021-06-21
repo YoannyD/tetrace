@@ -62,6 +62,7 @@
                                     <span><t t-esc="line.name"/></span><br/>
                                     <span><t t-esc="line.date_start"/></span><br/>
                                     <span><t t-esc="line.date_end"/></span><br/>
+                                    <span><t t-esc="line.description"/></span><br/>
                                      </t>
                                     </t>   
                                 </div>
@@ -114,7 +115,7 @@
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="applicant">
-                        <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                        <div class="row" style="margin:30px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
           <strong><span>EDUCACIÓN:</span></strong><br/>
                        <strong>Título:</strong>   
         <span><t t-esc="applicant.type_id.name"/></span><br/>
@@ -134,6 +135,7 @@
                                     <span><t t-esc="line.name"/></span><br/>
                                     <span><t t-esc="line.date_start"/></span><br/>
                                     <span><t t-esc="line.date_end"/></span><br/>
+                                    <span><t t-esc="line.description"/></span><br/>
                                      </t>
                                     </t>   
                                 </div>
