@@ -90,8 +90,9 @@ class SaleOrderLine(models.Model):
         values.update({
             "name": "%s %s" % (self.order_id.ref_proyecto, self.order_id.nombre_proyecto),
             "tasks": None,
-            "company_id": self.env.company.id,
-            'user_id': self.order_id.coordinador_proyecto_id.id
+            "company_id": self.order_id.company_id.id or self.env.company.id,
+            'user_id': self.order_id.coordinador_proyecto_id.id,
+            'company_coordinador_id': self.order_id.company_coordinador_id.id
         })
         return values
 
@@ -221,11 +222,12 @@ class SaleOrderLine(models.Model):
                 values = {
                     'name': name,
                     'partner_id': self.order_id.partner_id.id,
+                    'company_coordinador_id': self.order_id.company_coordinador_id.id,
                     'job_id': self.job_id.id,
                     'project_id': project.id,
                     'ref_individual': "%s-%s" % (self.id, i),
                     'desde_plantilla': desde_plantilla,
-                    "company_id": self.env.company.id,
+                    "company_id": self.order_id.company_id.id or self.env.company.id,
                     'ref_created': ref_created,
                 }
                 
@@ -254,8 +256,9 @@ class SaleOrderLine(models.Model):
                 'sale_line_id': None,
                 'partner_id': self.order_id.partner_id.id,
                 'email_from': self.order_id.partner_id.email,
+                'company_coordinador_id': self.order_id.company_coordinador_id.id,
                 'desde_plantilla': desde_plantilla,
-                "company_id": self.env.company.id,
+                "company_id": self.order_id.company_id.id or self.env.company.id,
                 'ref_created': ref_created,
                 'user_id': responsable_id
             })

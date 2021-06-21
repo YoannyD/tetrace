@@ -16,3 +16,4 @@ class Job(models.Model):
     sale_order_line_ids = fields.One2many('sale.order.line', 'job_id')
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'job_id')
     experiencia_ids = fields.One2many('tetrace.experiencia', 'job_id')
+    proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'job_id')

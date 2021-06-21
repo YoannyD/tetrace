@@ -6,6 +6,13 @@
             report_type="qweb-pdf"
             file="tetrace.report_hr_employee_curriculum"
             name="tetrace.report_hr_employee_curriculum"
+    />
+        <report id="action_report_curriculum_name"
+            string="Currículum Tetrace Nombre"
+            model="hr.employee"
+            report_type="qweb-pdf"
+            file="tetrace.report_hr_employee_curriculum_name"
+            name="tetrace.report_hr_employee_curriculum_name"
 
     />
         <report id="action_report_curriculum_name"

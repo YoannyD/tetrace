@@ -22,7 +22,6 @@
                                 <field name="job_id"/>
                                 <field name="resource_calendar_id"/>
                                 <field name="fecha_inicio"/>
-                                <field name="fecha_fin"/>
                             </tree>
                         </field>
                     </group>

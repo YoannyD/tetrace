@@ -343,8 +343,28 @@ class SaleOrder(models.Model):
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.actualizar_datos_proyecto()
+        self.send_email_confirm()
         return res
 
+    def send_email_confirm(self):
+        partner_ids = []
+        for seguidor in self.seguidor_proyecto_ids:
+            if seguidor.partner_id and seguidor.partner_id.email:
+                partner_ids.append(seguidor.partner_id.id)
+                
+        if self.coordinador_proyecto_id and self.coordinador_proyecto_id.partner_id and \
+            self.coordinador_proyecto_id.partner_id.email:
+            partner_ids.append(self.coordinador_proyecto_id.partner_id.id)
+        
+        template_id = self.env['ir.model.data'].xmlid_to_res_id('sale.mail_template_sale_confirmation', raise_if_not_found=False)
+        lang = self.env.context.get('lang')
+        template = self.env['mail.template'].browse(template_id)
+        
+        for partner_id in partner_ids:
+            template_copy = template.copy({'partner_to': partner_id})
+            template_copy.send_mail(self.id, force_send=True)
+            template_copy.unlink()
+        
     def action_view_purchase_order(self):
         self.ensure_one()
         return {
@@ -378,10 +398,9 @@ class SaleOrder(models.Model):
                         })
 
     def _prepare_analytic_account_data(self, prefix=None):
-        values = super(SaleOrder, self)._prepare_analytic_account_data(prefix)
+        values = super(SaleOrder, self)._prepare_analytic_account_data(prefix) 
         values.update({'company_id': None})
         return values
-        
                         
     def action_crear_version(self):
         self.ensure_one()

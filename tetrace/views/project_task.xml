@@ -5,6 +5,17 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="view_proyecto_necesidad_action" 
+                        type="object" 
+                        class="oe_stat_button" 
+                        icon="fa-list" 
+                        context="{'default_project_id': project_id}"
+                        attrs="{'invisible' : [('busqueda_perfiles', '=', False)]}">
+                    <field string="Necesidades" name="proyecto_necesidad_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="department_id"/>
                 <field name="info_puesto_id" attrs="{'invisible': [('department_laboral', '=', False)]}"/>
@@ -14,12 +25,12 @@
                 <field name="tipo"/>
                 <field name="ref_created" invisible="1"/>
             </xpath>
+            
+            <xpath expr="//page[@name='extra_info']//field[@name='company_id']" position="after">
+                <field name="company_coordinador_id"/>
+            </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
-                <page name="jobs" string="Procesos de selección" attrs="{'invisible': [('tarea_seleccion', '=', False)]}">
-                    <field name="applicant_ids" nolabel="1"/>
-                </page>
-
                 <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">
                     <field name="producto_entrega" invisible="1"/>
                     <field name="desde_plantilla" invisible="1"/>
@@ -38,10 +49,10 @@
                             <field name="tarea_individual"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
+                            <field name="busqueda_perfiles"/>
                             <field name="ausencia"/>
                             <field name="activada"/>
-                            <field name="deadline_inicio"/>
-                            <field name="deadline_fin"/>
+                            <field name="deadline"/>
                         </group>
                         <group>
                             <field name="opciones_desactivacion" widget="radio" attrs="{'invisible': [('tipo', '!=', 'desactivacion')]}"/>
@@ -52,10 +63,12 @@
                 <page name="ausencias" string="Ausencias" attrs="{'invisible': [('ausencia', '=', False)]}">
                     <field name="ausencia_ids" nolabel="1">
                         <tree editable="bottom">
-                            <field name="employee_id" required="1"/>
+                            <field name="employee_active_ids" invisible="1"/>
+                            <field name="employee_id" required="1" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="ausencia"/>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
+                            <field name="realizado"/>
                         </tree>
                     </field>
                 </page>
@@ -63,12 +76,14 @@
                 <page name="viajes" string="Viajes" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="viaje_ids" nolabel="1">
                         <tree editable="bottom">
+                            <field name="task_id" invisible="1"/>
                             <field name="fecha"/>
                             <field name="origen"/>
                             <field name="destino"/>
                             <field name="contratado"/>
                             <field name="realizado"/>
-                            <field name="employee_id"/>
+                            <field name="employee_active_ids" invisible="1"/>
+                            <field name="employee_id" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="observaciones"/>
                         </tree>
                         <form>
@@ -81,7 +96,8 @@
                                     <field name="realizado"/>
                                 </group>
                                 <group>
-                                    <field name="employee_id"/>
+                                    <field name="employee_active_ids" invisible="1"/>
+                                    <field name="employee_id" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                                     <field name="observaciones"/>
                                 </group>
                             </group>
@@ -92,13 +108,15 @@
                 <page name="alquiler_vehiculos" string="Alquiler vehículos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alquiler_vehiculo_ids" nolabel="1">
                         <tree editable="bottom">
+                            <field name="task_id" invisible="1"/>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
                             <field name="recogida"/>
                             <field name="entrega"/>
                             <field name="completado"/>
                             <field name="realizado"/>
-                            <field name="employee_id"/>
+                            <field name="employee_active_ids" invisible="1"/>
+                            <field name="employee_id" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="observaciones"/>
                         </tree>
                     </field>
@@ -107,12 +125,14 @@
                 <page name="alojamientos" string="Alojamientos" attrs="{'invisible': [('viajes', '=', False)]}">
                     <field name="alojamiento_ids" nolabel="1">
                         <tree editable="bottom">
+                            <field name="task_id" invisible="1"/>
                             <field name="fecha"/>
                             <field name="fecha_fin"/>
                             <field name="ciudad"/>
                             <field name="completado"/>
                             <field name="realizado"/>
-                            <field name="employee_id"/>
+                            <field name="employee_active_ids" invisible="1"/>
+                            <field name="employee_id" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="observaciones"/>
                         </tree>
                     </field>
@@ -139,8 +159,28 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='user_id']" position="after">
                 <field name="job_id"/>
+                <field name="employee_id"/>
                 <field name="date_deadline"/>
                 <field name="ref_created" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_task_kanban">
+        <field name="name">project.task.kanban.tetrace</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="employee_id"/>
+            </xpath>
+            
+            <xpath expr="//t[@t-if='record.partner_id.value']" position="before">
+                <t t-if="record.employee_id.value">
+                    <span>
+                        Empleado: <field name="employee_id"/>
+                    </span>
+                </t>
             </xpath>
         </field>
     </record>

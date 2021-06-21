@@ -8,6 +8,15 @@
             <xpath expr="//group[@name='group_standard_price']" position="inside">
                 <field name="archivar_order_line"/>
             </xpath>
+          <xpath expr="//field[@name='supplier_taxes_id']" position="attributes">
+            <attribute name="required">True</attribute>
+        </xpath>
+          <xpath expr="//field[@name='categ_id']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        <xpath expr="//field[@name='type']" position="after">
+           <field name="categ_id_new" string="Categoría de Producto" required="True"/>
+        </xpath>
         </field>
     </record>
     
@@ -23,4 +32,5 @@
         </field>
     </record>
 
+    
 </odoo>

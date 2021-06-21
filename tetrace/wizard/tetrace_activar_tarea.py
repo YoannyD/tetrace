@@ -57,10 +57,7 @@ class ActivarTarea(models.TransientModel):
             ]]) 
             tasks = self.env['project.task'].search(domain)
             for task in tasks:
-                tasks.write({
-                    'activada': True,
-                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
-                })
+                tasks.write({'activada': True})
                 
             if detalle.fecha_fin:
                 for tc in self.project_id.tecnico_calendario_ids:
@@ -112,10 +109,7 @@ class ActivarTarea(models.TransientModel):
                         'observaciones': alquiler.observaciones
                     })
                     
-                tasks.write({
-                    'activada': True,
-                    'date_deadline': fields.Date.from_string(self.fecha_fin) + timedelta(days=task.deadline_fin)
-                })
+                task.write({'activada': True})
         
         values_project = {}
         if self.accion == 'cancelar':

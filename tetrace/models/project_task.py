@@ -28,7 +28,6 @@ class ProjectTask(models.Model):
 
     tarea_seleccion = fields.Boolean("Tarea Selección")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    applicant_ids = fields.Many2many('hr.applicant', 'task_applicant_rel', 'task_id', 'applicant_id')
     entrega_ids = fields.One2many('project.task.entrega', 'task_id')
     entrega_total = fields.Float('Total entrega', compute="_compute_entrega_total")
     producto_entrega = fields.Boolean(related="sale_line_id.product_entregado")
@@ -44,8 +43,7 @@ class ProjectTask(models.Model):
     opciones_desactivacion = fields.Selection(OPCIONES_DESACTIVACION, string="Desactivación")
     sale_line_id = fields.Many2one('sale.order.line', default=_default_sale_line_id)
     employee_id = fields.Many2one('hr.employee', string="Empleado")
-    deadline_inicio = fields.Integer("Deadline inicio")
-    deadline_fin = fields.Integer("Deadline fin")
+    deadline = fields.Integer("Deadline ")
     alquiler_vehiculo_ids = fields.One2many("tetrace.alquiler_vehiculo", "task_id")
     alojamiento_ids = fields.One2many("tetrace.alojamiento", "task_id")
     ref_individual = fields.Char("Referencia individual")
@@ -59,7 +57,14 @@ class ProjectTask(models.Model):
     project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
     ausencia = fields.Boolean("Ausencia")
     ausencia_ids = fields.One2many('tetrace.ausencia', 'task_id', string="Ausencias")
+    busqueda_perfiles = fields.Boolean("Búsqueda perfiles")
+    proyecto_necesidad_count = fields.Integer("Nª Necesidades", compute="_compute_proyecto_necesidad")
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
 
+    def _compute_proyecto_necesidad(self):
+        for r in self:
+            r.proyecto_necesidad_count = len(r.project_id.proyecto_necesidad_ids)
+    
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
         for r in self:
@@ -87,7 +92,13 @@ class ProjectTask(models.Model):
             if r.tarea_seleccion:
                 r.tarea_individual = True
 
+    @api.model
+    def create(self, vals):
+        self = self.with_context(add_follower=True)
+        return super(ProjectTask, self).create(vals)
+                
     def write(self, vals):
+        self = self.with_context(add_follower=True)
         entregas = {}
         for r in self:
             entregas.update({
@@ -233,7 +244,29 @@ class ProjectTask(models.Model):
                     responsable_id = asignacion.responsable_id.id
         return responsable_id, seguidores_ids
 
-        
+    def view_proyecto_necesidad_action(self):
+        self.ensure_one()
+        action = self.env.ref("tetrace.tetrace_proyecto_necesidad_action").read()[0]
+        action.update({'domain': [('project_id', '=', self.project_id.id)]})
+        return action
+    
+    def create_activity(self, summary, fecha=None):
+        for r in self:
+            if not r.user_id:
+                continue
+                
+            values = {
+                'summary': summary,
+                'activity_type_id': self.env.ref("mail.mail_activity_data_todo").id,
+                'res_model_id': self.env['ir.model'].search([('model', '=', 'project.task')], limit=1).id,
+                'res_id': r.id,
+                'user_id': r.user_id.id
+            }
+
+            if fecha:
+                values.update({'date_deadline': fecha})
+
+            self.env['mail.activity'].create(values)
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'

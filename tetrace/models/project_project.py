@@ -58,10 +58,14 @@ class Project(models.Model):
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
+    tecnico_ids = fields.Many2many("hr.employee", compute="_compute_tecnico_ids", store=True, string="Técnicos")
     visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
+    proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
+    applicant_ids = fields.Many2many('hr.applicant')
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -69,6 +73,11 @@ class Project(models.Model):
             if r.fecha_cancelacion and not r.motivo_cancelacion_id:
                 raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
 
+    @api.depends("tecnico_calendario_ids.employee_id")
+    def _compute_tecnico_ids(self):
+        for r in self:
+            r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
         so_lines = self.sudo() \
@@ -144,6 +153,8 @@ class Project(models.Model):
         res.actualizar_deadline_tareas_activacion()
         res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
+        if res.proyecto_necesidad_ids:
+            res.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
         return res
 
     def write(self, vals):
@@ -172,6 +183,11 @@ class Project(models.Model):
               
         if 'partner_id' in vals:
             self.actualizar_partner_task()
+            
+        if 'proyecto_necesidad_ids' in vals:
+            for r in self:
+                r.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
+            
         return res
 
     def actualizar_experiencias_tecnicos(self):
@@ -247,8 +263,8 @@ class Project(models.Model):
             if not r.fecha_inicio:
                 continue
 
-            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
-                date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline_inicio)
+            for task in r.tasks.filtered(lambda x: x.tipo == 'activacion' and x.tarea_individual):
+                date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_deadline_tareas_desactivacion(self):
@@ -262,8 +278,8 @@ class Project(models.Model):
             if not fecha:
                 continue
 
-            for task in r.tasks.filtered(lambda x: x.tipo != 'activacion' or not x.stage_id.no_update_deadline):
-                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline_inicio)
+            for task in r.tasks.filtered(lambda x: x.tipo == 'desactivacion' and not x.tarea_individual):
+                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_partner_task(self):
@@ -295,15 +311,6 @@ class Project(models.Model):
         for r in self:
             r.type_ids = [(4, 4), (4, 5), (4, 10), (4, 269)]
 
-    def view_procesos_seleccion_tree(self):
-        self.ensure_one()
-        applicant_ids = []
-        for task in self.tasks:
-            applicant_ids += task.applicant_ids.ids
-        action = self.env['ir.actions.act_window'].for_xml_id('hr_recruitment', 'crm_case_categ0_act_job')
-        action.update({'domain': [('id', 'in', applicant_ids)]})
-        return action
-
     def action_view_project(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
@@ -318,7 +325,13 @@ class Project(models.Model):
     def action_activar_tareas(self):
         self.ensure_one()
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
-        for tecnico in self.tecnicos_activos():
+        
+        tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
+            ('project_id', '=', self.id),
+            ('fecha_fin', '=', None),
+        ])  
+        
+        for tecnico in tecnico_proyecto_activo:
             self.env['tetrace.activar_tarea_detalle'].create({
                 'activar_tarea_id': wizard.id,
                 'employee_id': tecnico.employee_id.id,

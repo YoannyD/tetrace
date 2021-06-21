@@ -64,6 +64,9 @@ class CrearTareasActDesc(models.TransientModel):
         elif self.accion == 'ausencia':
             self.crear_tareas_ausencia()
             
+        if not self.viaje:
+            return
+            
         tasks = self.env['project.task'].search([
             ('viajes', '=', True),
             ('project_id', '=', self.project_id.id)
@@ -130,7 +133,7 @@ class CrearTareasActDesc(models.TransientModel):
             })
         
         ref = datetime.now().timestamp()
-        for task in project_theme.tasks:
+        for task in project_theme.sudo().tasks:
             ref_created = "%s-%s-%s" % (self.project_id.sale_order_id.id, task.project_id.id, task.id)
             if task.tarea_individual:
                 for detalle in self.detalle_act_ids:
@@ -152,8 +155,13 @@ class CrearTareasActDesc(models.TransientModel):
                         'ref_individual': ref_individual,
                         'desde_plantilla': True,
                         "company_id": self.project_id.company_id.id,
+                        'company_coordinador_id': self.project_id.company_coordinador_id.id,
                         'ref_created': ref_created
                     }
+                    
+                    if detalle.fecha_inicio and task.tipo == 'activacion':
+                        date_deadline = fields.Date.from_string(detalle.fecha_inicio) + timedelta(days=task.deadline)
+                        values.update({'date_deadline': date_deadline})
                         
                     responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
                     if responsable_id:
@@ -164,23 +172,39 @@ class CrearTareasActDesc(models.TransientModel):
                         new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
                         
             elif not task.check_task_exist(ref_created):
-                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()  
-                new_task = task.copy({
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()
+                values = {
                     'name': task.name,
                     'sale_line_id': None,
-                    'partner_id': responsable_id,
+                    'partner_id': self.project_id.sale_order_id.partner_id.id,
                     'email_from': self.project_id.sale_order_id.partner_id.email,
                     'desde_plantilla': True,
                     'project_id': self.project_id.id,
                     "company_id": self.project_id.company_id.id,
+                    'company_coordinador_id': self.project_id.company_coordinador_id.id,
                     'ref_created': ref_created
-                })
+                }
+                
+                if self.project_id.fecha_inicio and task.tipo == 'activacion':
+                    date_deadline = fields.Date.from_string(self.project_id.fecha_inicio) + timedelta(days=task.deadline)
+                    values.update({'date_deadline': date_deadline})
+                
+                if responsable_id:
+                    values.update({'user_id': responsable_id})
+                
+                new_task = task.copy(values)
                 
                 if seguidores_ids:
                     new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
 
     def crear_tareas_desactivacion(self):
         self.ensure_one()
+        fecha_deadline = None
+        if r.fecha_finalizacion:
+            fecha_deadline = r.fecha_finalizacion
+        elif r.fecha_cancelacion:
+            fecha_deadline = r.fecha_cancelacion
+        
         for detalle in self.detalle_desc_ids:
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
@@ -196,6 +220,20 @@ class CrearTareasActDesc(models.TransientModel):
                 ('activada', '=', False)
             ])
             tareas.write({'activada': True})
+            for tarea in tareas:
+                if fecha_deadline and not tarea.tarea_individual:
+                    date_deadline = fields.Date.from_string(fecha_deadline) + timedelta(days=task.deadline)
+                    
+                if tarea.tarea_individual and detalle.fecha_fin:
+                    date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
+                tarea.write({'date_deadline': date_deadline})
+         
+            tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
+                ('project_id', '=', self.project_id.id),
+                ('employee_id', '=', detalle.employee_id.id),
+                ('fecha_fin', '=', False)
+            ])
+            tecnico_calendario.write({'fecha_fin': detalle.fecha_fin})
             
     def crear_tareas_ausencia(self):
         tareas = self.env['project.task'].search([
@@ -229,11 +267,10 @@ class DetalleActivacion(models.TransientModel):
     _description = "Detalles activacion"
 
     tarea_act_id = fields.Many2one('tetrace.crear_tareas_act_desc', string="Wizard creación")
-    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
-    employee_id = fields.Many2one('hr.employee', string="Empleado")
-    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario")
+    job_id = fields.Many2one('hr.job', string="Puesto de trabajo", required=True)
+    employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
+    resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
     fecha_inicio = fields.Date('Fecha inicio')
-    fecha_fin = fields.Date('Fecha fin')
     
 
 class DetalleDesactivacion(models.TransientModel):

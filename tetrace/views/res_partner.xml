@@ -14,4 +14,35 @@
             </xpath>
         </field>
     </record>
+    <record model="ir.ui.view" id="view_partner_form">
+        <field name="name">res.partner.form</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">      
+       <xpath expr="//field[@name='country_id']" position="attributes">
+            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath> 
+        <xpath expr="//field[@name='vat']" position="attributes">
+            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath>     
+        <xpath expr="//field[@name='property_payment_term_id']" position="attributes">
+            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath> 
+         <xpath expr="//field[@name='customer_payment_mode_id']" position="attributes">
+            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath> 
+          <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
+            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath>
+             <xpath expr="//field[@name='supplier_payment_mode_id']" position="attributes">
+           <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
+        </xpath>
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="labels_type" string="Tipo de Etiquetas" attrs="{'required': [('company_type', '=', 'company')]}"/>
+               
+            </xpath>
+        </field>
+    </record>
+    
+    
 </odoo>

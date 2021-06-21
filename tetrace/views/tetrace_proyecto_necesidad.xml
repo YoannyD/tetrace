@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <act_window id="tetrace_proyecto_necesidad_action"
+                name="Necesidades proyecto"
+                view_mode="tree,form"
+                res_model="tetrace.proyecto_necesidad"/>
+    
+    <record id="tetrace_proyecto_necesidad_form" model="ir.ui.view">
+        <field name="name">tetrace.proyecto_necesidad.form</field>
+        <field name="model">tetrace.proyecto_necesidad</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="project_id"/>
+                        <field name="job_id"/>
+                        <field name="necesidad"/>
+                        <field name="realizado"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record id="tetrace_proyecto_necesidad_tree" model="ir.ui.view">
+        <field name="name">tetrace.proyecto_necesidad.tree</field>
+        <field name="model">tetrace.proyecto_necesidad</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id"/>
+                <field name="job_id"/>
+                <field name="necesidad"/>
+                <field name="realizado"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="tetrace_proyecto_necesidad_search" model="ir.ui.view">
+        <field name="name">tetrace.proyecto_necesidad.search</field>
+        <field name="model">tetrace.proyecto_necesidad</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id"/>
+                <field name="job_id"/>
+            </search>
+        </field>
+    </record>
+    
+    <menuitem action="tetrace_proyecto_necesidad_action"
+              id="menu_tetrace_proyecto_necesidad"
+              name="Necesidades proyectos"
+              parent="project.menu_project_config"
+              sequence="7"/>
+</odoo>

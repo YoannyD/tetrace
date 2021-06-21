@@ -23,9 +23,8 @@ class Applicant(models.Model):
     resume_line_ids = fields.One2many('tetrace.resume.line', 'applicant_id', string="Resumé lines")
     applicant_skill_ids = fields.One2many('tetrace.applicant.skill', 'applicant_id', string="Habilidades")
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
-    task_ids = fields.Many2many("project.task", 'task_applicant_rel', 'applicant_id', 'task_id', 
-                                domain="[('tarea_seleccion', '=', True)]")
-    proceso_seleccion_id= fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
+    proceso_seleccion_id = fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
+    project_ids = fields.Many2many('project.project')
 
     def _compute_document_applicant(self):
         for r in self:
@@ -124,13 +123,6 @@ class Applicant(models.Model):
                 if folder_id:
                     values.update({'folder_id': folder_id})
                 document.write(values)
-                    
-    def view_procesos_seleccion_tree(self):
-        self.ensure_one()
-        project_ids = [task.project_id.id for task in self.task_ids]
-        action = self.env['ir.actions.act_window'].for_xml_id('project', 'open_view_project_all')
-        action.update({'domain': [('id', 'in', project_ids)]})
-        return action
     
     def view_documentos(self):
         self.ensure_one()

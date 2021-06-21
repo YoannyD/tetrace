@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+# © 2020 Ingetive - <info@ingetive.com>
+
+import logging
+
+from odoo import models, fields, api, _
+
+_logger = logging.getLogger(__name__)
+
+
+class ProcesoSeleccion(models.Model):
+    _name = "tetrace.proyecto_necesidad"
+    _description = "Necesidades proyectos"
+    
+    project_id = fields.Many2one('project.project', string="Proyecto")
+    job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    necesidad = fields.Integer("Necesidad")
+    realizado = fields.Boolean("Realizado")
+    
+    @api.model
+    def create(self, vals):
+        res = super(ProcesoSeleccion, self).create(vals)
+        res.create_task_activity("create")
+        return res
+    
+    def write(self, vals):
+        res = super(ProcesoSeleccion, self).write(vals)
+        res.create_task_activity("update")
+        return res
+    
+    def create_task_activity(self, accion):
+        for r in self:
+            if not r.project_id or r.realizado:
+                continue
+            
+            sumanry = None
+            if accion == "create":
+                summary = _('Gestionar necesidad del proyecto %s' % r.project_id.name)
+            elif accion == "update":
+                summary = _('Gestionar modificación necesidad del proyecto %s' % r.project_id.name)
+                
+            tasks = self.env['project.task'].search([
+                ('activada', 'in', [True, False]),
+                ('busqueda_perfiles', '=', True)
+            ])
+            if tasks:
+                tasks.create_activity(summary)
