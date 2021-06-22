@@ -24,6 +24,7 @@ from . import tetrace_tipo_contrato
 from . import tetrace_nomina
 from . import hr_contract
 from . import hr_resume
+from . import hr_skill
 from . import res_partner
 from . import res_company
 from . import res_users
