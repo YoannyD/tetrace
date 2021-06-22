@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <form>
                 <group>
+                    <field name="import_option"/>
                     <field name="file" filename="name"/>
                 </group>
                 <footer>

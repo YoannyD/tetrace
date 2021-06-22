@@ -38,7 +38,6 @@ class ImportarTickelia(models.TransientModel):
                 line = list(
                     map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value),
                         sheet.row(row_no)))
-
                 if len(line) == 66:
                     cuenta_gasto = str(line[6]).split('.',1)[0]
                     cuenta_contrapartida_63 = str(line[63]).split('.',1)[0]
