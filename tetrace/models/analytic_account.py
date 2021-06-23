@@ -16,7 +16,15 @@ class AccountAnalyticAccount(models.Model):
     
     estructurales = fields.Boolean(string='Estructurales', default=False)
     update_from_sale_order = fields.Boolean("Actualizar desde Pedido de Venta", default=True)
+    sale_order_ids = fields.One2many("sale.order", "analytic_account_id")
+    sale_order_count = fields.Integer("Nº Pedidos de venta", store=True,
+                                      compute="_compute_sale_order")
 
+    @api.depends("sale_order_ids")
+    def _compute_sale_order(self):
+        for r in self:
+            r.sale_order_count = len(r.sale_order_ids)
+    
     @api.constrains('company_id')
     def _check_company_id(self):
         for record in self:
