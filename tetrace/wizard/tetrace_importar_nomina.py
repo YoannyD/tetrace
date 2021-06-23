@@ -4,8 +4,12 @@
 import logging
 import base64
 import io
+import tempfile
+import binascii
+import xlrd
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -17,15 +21,86 @@ class ImportarNonmina(models.TransientModel):
     nomina_id = fields.Many2one('tetrace.nomina', string="Nómina", ondelete="cascade", required=True)
     company_id = fields.Many2one(related='nomina_id.company_id')
     file = fields.Binary('File')
+    import_option = fields.Selection([
+        ('dat', _('DAT File')), 
+        ('xls', _('XLS File'))
+    ], string='Selecciona', required=True, default='dat')
 
     def action_import(self):
         self.ensure_one()
+        self.nomina_id.nomina_trabajador_ids.unlink()
+        if self.import_option == "dat":
+            self.import_dat_file()
+        elif self.import_option == "xls":
+            self.import_xls_file()
+            
+    def import_xls_file(self):
+        fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
+        fp.write(binascii.a2b_base64(self.file))
+        fp.seek(0)
+        workbook = xlrd.open_workbook(fp.name)
+        sheet = workbook.sheet_by_index(0)
+        for row_no in range(sheet.nrows):
+            if row_no <= 1:
+                continue
+                
+            if row_no <= 0:
+                fields = map(lambda row: row.value.encode('utf-8'), sheet.row(row_no))
+            else:
+                line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
+                if len(line) >= 8:
+                    employee = self.env['hr.employee'].search([
+                        ('codigo_trabajador_A3', '=', line[6]), 
+                        ('company_id', '=', self.company_id.id)
+                    ], limit=1)
+                    
+                    account = self.env['account.account'].search([
+                        ('code', '=', line[4]),
+                        ('company_id', '=', self.company_id.id)
+                    ], limit=1)
+                    
+                    try:
+                        fecha_inicio = datetime.strptime(line[2], '%Y-%m-%d')
+                    except:
+                        fecha_inicio = None
+                        
+                    try:
+                        fecha_fin = datetime.strptime(line[3], '%Y-%m-%d')
+                    except:
+                        fecha_fin = None
+                    
+                    try:
+                        debe = float(line[7])
+                    except:
+                        debe = 0.0
+                        
+                    try:
+                        haber = float(line[8])
+                    except:
+                        haber = 0.0
+                    
+                    values = {
+                        'nomina_id': self.nomina_id.id,
+                        'employee_id': employee.id,
+                        'account_id': account.id,
+                        'fecha_inicio': fecha_inicio,
+                        'fecha_fin': fecha_fin,
+                        'descripcion': line[5],
+                        'debe': debe,
+                        'haber': haber,
+                    }
+             
+                    nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values)
+                    nomina_trabajador.generar_distribucion_analitica()
+                else:
+                    raise Warning(_('Your File has less column please refer sample file'))
+            
+    def import_dat_file(self):
         data = base64.b64decode(self.file)
         data_file = io.StringIO(data.decode('iso-8859-1'))
         data_file.seek(0)
         lineas = data_file.readlines()
 
-        self.nomina_id.nomina_trabajador_ids.unlink()
         for linea in lineas:
             linea = linea.encode('utf8').decode('utf8')
             ano = linea[6:10]

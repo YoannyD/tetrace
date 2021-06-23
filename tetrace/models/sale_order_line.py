@@ -32,6 +32,13 @@ class SaleOrderLine(models.Model):
     def product_uom_change(self):
         return
 
+#     def write(self, vals):
+#         res = super(SaleOrderLine, self).write(vals)
+#         if "price_unit" in vals:
+#             for r in self:
+#                 r.imputacion_variable_line_ids.unlink()
+#         return res
+    
     def _timesheet_service_generation(self):
         self = self.sudo().with_context(no_notificar=True)
         project_sale = []

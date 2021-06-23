@@ -13,10 +13,10 @@ class Experiencia(models.Model):
     _name = 'tetrace.experiencia'
     _description = "Experiencias"
 
-    name = fields.Char("Nombre", required=True)
+    name = fields.Char("Nombre", required=True, translate=True)
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo", required=True)
     project_id = fields.Many2one('project.project', string="Proyecto", required=True, ondelete="cascade")
-    descripcion = fields.Text('Descripción')
+    descripcion = fields.Text('Descripción', translate=True)
     experiencia_tecnico_proyecto_ids = fields.One2many('tetrace.experiencia_tecnico_proyecto', 'experiencia_id')
     
     _sql_constraints = [
