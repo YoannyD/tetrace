@@ -71,6 +71,7 @@ class SaleOrder(models.Model):
                                                 compute="_compute_visible_btn_change_partner")
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora", 
                                              default=lambda self: self.env.company)
+    prevision_facturacion = fields.Boolean("Generada previsión facturación")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")

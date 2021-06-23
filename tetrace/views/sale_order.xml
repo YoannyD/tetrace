@@ -143,6 +143,7 @@
                        attrs="{'readonly': [('invoice_count','!=',0),('state','=','sale')]}" 
                        groups="analytic.group_analytic_accounting" 
                        force_save="1"/>
+                <field name="prevision_facturacion"/>
             </xpath>
             
             <xpath expr="//field[@name='validity_date']" position="attributes">
@@ -275,6 +276,7 @@
                 <field name="coordinador_proyecto_id"/>
                 <field name="proyecto_country_id"/>
                 <field name="validity_date" string="Fecha Límite"/>
+                <field name="prevision_facturacion" optional="hiden"/>
             </xpath>
             <xpath expr="//field[@name='amount_total']" position="after">
                 <field name="estado_tetrace"/>
