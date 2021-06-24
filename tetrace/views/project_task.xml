@@ -276,6 +276,8 @@
                 <group expand="0" string="Group By">
                     <filter name="filter_task" string="Tareas" context="{'group_by': 'task_id'}"/>
                     <filter name="filter_employee" string="Técnicos" context="{'group_by': 'employee_id'}"/>
+                    <filter name="filter_fecha_inicio" string="Fecha inicio" context="{'group_by': 'fecha_inicio'}"/>
+                    <filter name="filter_fecha_fin" string="Fecha fin" context="{'group_by': 'fecha_fin'}"/>
                 </group>
             </search>
         </field>
