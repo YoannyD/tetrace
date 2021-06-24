@@ -40,10 +40,7 @@ class ImportarNonmina(models.TransientModel):
         fp.seek(0)
         workbook = xlrd.open_workbook(fp.name)
         sheet = workbook.sheet_by_index(0)
-        for row_no in range(sheet.nrows):
-            if row_no <= 1:
-                continue
-                
+        for row_no in range(sheet.nrows):   
             if row_no <= 0:
                 fields = map(lambda row: row.value.encode('utf-8'), sheet.row(row_no))
             else:
