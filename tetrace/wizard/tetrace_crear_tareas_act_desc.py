@@ -116,7 +116,7 @@ class CrearTareasActDesc(models.TransientModel):
         project_theme = None
         try:
             project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))
-            project_theme = self.env['project.project'].search([('id', '=', project_theme_id)], limit=1)
+            project_theme = self.env['project.project'].sudo().search([('id', '=', project_theme_id)], limit=1)
         except:
             pass
         

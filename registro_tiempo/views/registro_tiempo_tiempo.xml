@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <act_window id="action_registro_tiempo_tiempo"
-                name="Tiempos"
+                name="Horas técnico"
                 res_model="registro_tiempo.tiempo"
                 view_mode="tree,form"/>
 
@@ -10,7 +10,7 @@
                 res_model="registro_tiempo.tipo_parada"
                 view_mode="tree,form"/>
 
-    <menuitem name="Tiempos"
+    <menuitem name="Horas técnico"
               action="action_registro_tiempo_tiempo"
               id="menu_registro_tiempo_tiempo"
               parent="hr_attendance.menu_hr_attendance_manage_attendances"

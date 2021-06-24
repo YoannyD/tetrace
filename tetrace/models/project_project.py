@@ -348,7 +348,6 @@ class Project(models.Model):
         return action
 
     def action_gastos(self):
-        self.ensure_one()
         return {
             'name': _('Gastos'),
             'view_mode': 'tree,form',
@@ -361,7 +360,6 @@ class Project(models.Model):
         }
 
     def action_ingresos(self):
-        self.ensure_one()
         return {
             'name': _('Ingresos'),
             'view_mode': 'tree,form',
@@ -371,6 +369,16 @@ class Project(models.Model):
                 ('analytic_account_id', '=', self.analytic_account_id.id),
                 ('move_id.type', 'in', ['out_invoice', 'out_refund', 'out_receipt'])
             ]
+        }
+    
+    def action_view_entregas(self):
+        return {
+            'name': _('Entregas'),
+            'view_mode': 'tree,form',
+            'res_model': 'project.task.entrega',
+            'type': 'ir.actions.act_window',
+            'domain': [('task_id.project_id', '=', self.id)],
+            'context': {'project_id': self.id, 'employee_ids': self.tecnico_ids.ids}
         }
 
     def action_crear_tareas_act_desc(self):

@@ -79,6 +79,12 @@
                         name="action_ingresos"
                         string="Ingresos"
                         icon="fa-usd"/>
+                
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_view_entregas"
+                        string="Entregas"
+                        icon="fa-calendar-o"/>
             </xpath>
 
             <xpath expr="//h1[1]/field[@name='name']" position="attributes">

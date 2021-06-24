@@ -19,6 +19,7 @@
         'security/ir.model.access.csv',
         'views/registro_tiempo_tiempo.xml',
         'views/project_project.xml',
+        'views/project_task.xml',
         'views/hr_attendance.xml',
         'templates/assets.xml',
         'templates/registro_tiempo.xml'

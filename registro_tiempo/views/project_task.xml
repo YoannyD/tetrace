@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>    
+    <record id="edit_project" model="ir.ui.view">
+        <field name="name">roject.task.form.registro_tiempo</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="tetrace.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='entrega_ids']/tree[1]" position="inside">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_tiempo_view"
+                        icon="fa-external-link"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
