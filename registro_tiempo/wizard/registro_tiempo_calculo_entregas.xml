@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="asset_modify_form">
+        <field name="name">registro_tiempo.calculo_entregas.form</field>
+        <field name="model">registro_tiempo.calculo_entregas</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <label for="fecha_inicio" string="Periodo"/>
+                        <div class="o_row">
+                            <field name="fecha_inicio" 
+                                   widget="daterange" 
+                                   nolabel="1" 
+                                   class="oe_inline" 
+                                   options="{'related_end_date': 'fecha_fin'}"/>
+                            <i class="fa fa-long-arrow-right mx-2" aria-label="Arrow icon" title="Arrow"/>
+                            <field name="fecha_fin" 
+                                   widget="daterange" 
+                                   nolabel="1" 
+                                   class="oe_inline" 
+                                   options="{'related_start_date': 'fecha_inicio'}"/>
+                        </div>
+                    </group>
+                    <footer>
+                        <button name="action_calcular" string="Calcular" type="object" class="btn-primary"/>
+                        <button string="_Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
