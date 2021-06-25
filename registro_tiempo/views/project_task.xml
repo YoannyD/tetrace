@@ -13,4 +13,18 @@
             </xpath>
         </field>
     </record>
+    
+    <record id="project_task_entrega_tree" model="ir.ui.view">
+        <field name="name">project.task.entrega.tree.registro_tiempo</field>
+        <field name="model">project.task.entrega</field>
+        <field name="inherit_id" ref="tetrace.project_task_entrega_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='entregado']" position="after">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_tiempo_view"
+                        icon="fa-external-link"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>
