@@ -54,6 +54,7 @@ class RegistroTiempo(models.Model):
     horas_trabajadas = fields.Float("Horas trabajadas", compute='_compute_horas_trabajadas', store=True, readonly=True)
     horas_extra = fields.Float('Horas extras')
     horas_extra_cliente = fields.Float('Horas extras cliente')
+    horas_laborables = fields.Float("Horas laborables", compute="_compute_horas_laborables")
 
     @api.constrains("fecha_hora_entrada", "fecha_hora_salida", "employee_id", "project_id")
     def _check_fechas_hora(self):
@@ -72,6 +73,11 @@ class RegistroTiempo(models.Model):
             if tiempo:
                 raise ValidationError(_("Ya existe un registro en ese periodo de tiempo."))
 
+    @api.depends("horas_trabajadas")
+    def _compute_horas_laborables(self):
+        for r in self:
+            r.horas_laborables = r.horas_trabajadas - r.horas_extra
+           
     @api.depends('fecha_entrada', 'hora_entrada')
     def _compute_fecha_hora_entrada(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
