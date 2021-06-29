@@ -72,7 +72,7 @@ class Project(models.Model):
         for r in self:
             if r.fecha_cancelacion and not r.motivo_cancelacion_id:
                 raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
-
+                
     @api.depends("tecnico_calendario_ids.employee_id")
     def _compute_tecnico_ids(self):
         for r in self:
@@ -324,6 +324,9 @@ class Project(models.Model):
 
     def action_activar_tareas(self):
         self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+        
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
         
         tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
