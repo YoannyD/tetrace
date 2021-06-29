@@ -22,43 +22,47 @@
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="applicant">
-                    <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                    <div class="row" style="margin:100px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                     <div t-if="applicant.name" class="col-auto mw-100 mb-2">
-                    <strong style="color:white;">Nombre del Solicitante:</strong>
-                    <p class="m-0" style="color:white;" t-field="applicant.name"/>
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Nombre del Solicitante:</strong>
+                    <p class="m-0" t-field="applicant.name"/>
                 </div>
                            <div t-if="applicant.email_from" class="col-auto mw-100 mb-2">
-                    <strong style="color:white;">Correo:</strong>
-                    <p class="m-0" style="color:white;" t-field="applicant.email_from"/>
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Correo:</strong>
+                    <p class="m-0" t-field="applicant.email_from"/>
                 </div>
                            <div t-if="applicant.partner_phone" class="col-auto mw-100 mb-2">
-                    <strong style="color:white;">Teléfono:</strong>
-                    <p class="m-0" style="color:white;" t-field="applicant.partner_phone"/>
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Teléfono:</strong>
+                    <p class="m-0" t-field="applicant.partner_phone"/>
                 </div>
                     <div t-if="applicant.partner_mobile" class="col-auto mw-100 mb-2">
-                    <strong style="color:white;">Móvil:</strong>
-                    <p class="m-0" style="color:white;" t-field="applicant.partner_mobile"/>
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Móvil:</strong>
+                    <p class="m-0" t-field="applicant.partner_mobile"/>
                 </div>
   
                         
                     </div>
                     <div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">EDUCACIÓN:</span></strong><br/>
+          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">Educación:</span></strong><br/>
                        <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Título:</strong>   
         <span><t t-esc="applicant.type_id.name"/></span><br/>
                            </div>
         <div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">FORMACIÓN COMPLEMENTARIA:</span></strong><br/>
+          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">Formación Complementaria:</span></strong><br/>
                <t t-foreach="docs.categ_ids" t-as="x">
         <span><t t-esc="x.name"/></span><br/>
                     </t>        
                            </div>
                      <div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                                 
+                         
+                         
           <!--strong><span>EXPERIENCIA:</span></strong><br/-->
+                         
                                 <t  t-foreach="docs.resume_line_ids" t-as="form">
                                     <t t-foreach="form" t-as="line">
-                                    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line.line_type_id.name"/></span><br/>
+                                 
+                                        <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line.line_type_id.name"/></span><br/>
                                     <span><t t-esc="line.name"/></span><br/>
                                     <span><t t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/>
                                     <span><t t-esc="line.description"/></span><br/>
@@ -70,7 +74,8 @@
           
                                 <t t-foreach="docs.applicant_skill_ids" t-as="forms">
                                     <t t-foreach="forms" t-as="lines">
-                                    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="lines.skill_id.name"/></span><br/>
+                                        <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="lines.skill_type_id.name"/></span><br/>
+                                    <span><t t-esc="lines.skill_id.name"/></span><br/>
                                     <span><t t-esc="lines.skill_level_id.name"/></span><br/>
                                    
                                      </t>
