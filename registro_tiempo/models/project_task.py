@@ -47,7 +47,7 @@ class Entrega(models.Model):
             'domain': [('id', '=', self.search_tiempos())],
         }
     
-    def search_tiempos(self, fecha_inicio, fecha_fin):
+    def search_tiempos(self):
         tiempos = self.env['registro_tiempo.tiempo'].search([
             ('employee_id', '=', self.employee_id.id),
             ('project_id', '=', self.task_id.project_id.id)
