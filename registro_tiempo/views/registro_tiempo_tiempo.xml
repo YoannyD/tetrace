@@ -35,6 +35,9 @@
                             <field name="tipo" required="1"/>
                             <field name="unidades_realizadas"/>
                             <field name="observaciones"/>
+                            <field name="entregado"/>
+                            <field name="validacion"/>
+                            <field name="validacion_observaciones"/>
                         </group>
                         <group>
                             <field name="dia_semana_fecha_entrada"/>
@@ -88,6 +91,8 @@
                 <field name="horas_trabajadas" widget="float_time"/>
                 <field name="horas_extra" widget="float_time"/>
                 <field name="horas_extra_cliente" widget="float_time"/>
+                <field name="validacion"/>
+                <field name="entregado"/>
             </tree>
         </field>
     </record>
