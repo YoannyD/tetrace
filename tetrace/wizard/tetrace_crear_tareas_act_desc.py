@@ -218,7 +218,7 @@ class CrearTareasActDesc(models.TransientModel):
                 if not detalle.fecha_fin:
                     continue
 
-                date_deadline = fields.Date.from_string(fecha_deadline) + timedelta(days=task.deadline)
+                date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
                 tarea.write({'date_deadline': date_deadline})
          
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
