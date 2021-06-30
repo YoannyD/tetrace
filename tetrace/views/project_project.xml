@@ -117,7 +117,7 @@
                 <field name="company_coordinador_id"/>
                 <field name="fecha_inicio"/>
                 <field name="fecha_cancelacion" attrs="{'readonly': [('fecha_cancelacion', '=', False)]}"/>
-                <field name="fecha_finalizacion"/>
+                <field name="fecha_finalizacion" attrs="{'readonly': [('fecha_finalizacion', '=', False)]}"/>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
                 <field name="resource_calendar_id" string="Calendario por defecto"/>

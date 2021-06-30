@@ -385,7 +385,9 @@ class Project(models.Model):
         }
 
     def action_crear_tareas_act_desc(self):
-        self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+        
         today = fields.Date.today()
         tecnicos_proyecto = self.env['tetrace.tecnico_calendario'].search([('project_id', '=', self.id)]) 
         
@@ -416,7 +418,9 @@ class Project(models.Model):
         return wizard.open_wizard()
     
     def action_crear_tareas_faltantes(self):
-        self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+            
         if not self.sale_order_id:
             return
 
