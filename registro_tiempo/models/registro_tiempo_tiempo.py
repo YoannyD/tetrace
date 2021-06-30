@@ -55,6 +55,7 @@ class RegistroTiempo(models.Model):
     horas_extra = fields.Float('Horas extras')
     horas_extra_cliente = fields.Float('Horas extras cliente')
     horas_laborables = fields.Float("Horas laborables", compute="_compute_horas_laborables")
+    entregado = fields.Boolean("Entregado")
 
     @api.constrains("fecha_hora_entrada", "fecha_hora_salida", "employee_id", "project_id")
     def _check_fechas_hora(self):

@@ -33,7 +33,7 @@
         </field>
     </record>
     
-    <record id="edit_project" model="ir.ui.view">
+    <record id="view_task_form2" model="ir.ui.view">
         <field name="name">roject.task.form.registro_tiempo</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="tetrace.view_task_form2"/>

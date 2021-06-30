@@ -174,7 +174,7 @@ class Project(models.Model):
             self.actualizar_deadline_tareas_activacion()
             projects_activacion.enviar_email_estado_proyecto('activacion')
             projects_modificacion.enviar_email_estado_proyecto('modificacion')
-
+            
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
             
