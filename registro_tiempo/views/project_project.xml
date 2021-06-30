@@ -6,6 +6,12 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[('project_id', '=', active_id)]</field>
     </record>
+    
+    <menuitem name="Horas técnico"
+              action="action_registro_tiempo_tiempo"
+              id="menu_registro_tiempo_tiempo_project"
+              parent="project.menu_main_pm"
+              sequence="81"/>
 
     <record id="edit_project" model="ir.ui.view">
         <field name="name">project.project.form.registro_tiempo</field>
