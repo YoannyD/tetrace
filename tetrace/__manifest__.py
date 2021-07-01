@@ -43,7 +43,8 @@
         'l10n_es_aeat_mod303',
         'sale_timesheet_enterprise',
         'purchase_tier_validation',
-        'account_accountant'
+        'account_accountant',
+        'report_qweb_element_page_visibility'
     ],
     'data': [
         'security/tetrace_security.xml',

@@ -18,10 +18,7 @@
                         - <span t-field="o.partner_id.city"/>
                     </div>
                     <div>
-                        <span t-field="o.partner_id.state_id.name"/>
-                    </div>
-                    <div>
-                        <span t-field="o.partner_id.country_id.name"/>
+                        <span t-field="o.partner_id.state_id.name"/> | <span t-field="o.partner_id.country_id.name"/>
                     </div>
                 </div>
             </address>
