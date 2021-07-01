@@ -60,6 +60,7 @@ class ProjectTask(models.Model):
     busqueda_perfiles = fields.Boolean("Búsqueda perfiles")
     proyecto_necesidad_count = fields.Integer("Nª Necesidades", compute="_compute_proyecto_necesidad")
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
+    project_tecnico_ids = fields.Many2many("hr.employee", related="project_id.tecnico_ids")
 
     def _compute_proyecto_necesidad(self):
         for r in self:
@@ -279,7 +280,14 @@ class ProjectTaskEntrega(models.Model):
     _name = 'project.task.entrega'
     _description = "Entregas (Tareas)"
 
-    name = fields.Char("Observaciones", translate=True)
-    fecha = fields.Date("Fecha")
+    fecha_inicio = fields.Date("Fecha inicio")
+    fecha_fin = fields.Date("Fecha fin")
+    employee_id = fields.Many2one("hr.employee", string="Técnico")
     entregado = fields.Float("Entregado")
-    task_id = fields.Many2one("project.task")
+    task_id = fields.Many2one("project.task", string="Tarea")
+    
+    @api.constrains("fecha_inicio", "fecha_fin")
+    def _check_fechas(self):
+        for r in self:
+            if r.fecha_inicio and r.fecha_fin and r.fecha_inicio > r.fecha_fin:
+                raise ValidationError(_("La fecha fin tiene que se superior a la de inicio"))

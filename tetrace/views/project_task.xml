@@ -32,12 +32,16 @@
 
             <xpath expr="//notebook[1]" position="inside">
                 <page name="entregas" string="Entregas" attrs="{'invisible': ['|', ('desde_plantilla', '=', True), ('producto_entrega', '=', False)]}">
+                    <field name="project_tecnico_ids" invisible="1"/>
                     <field name="producto_entrega" invisible="1"/>
                     <field name="desde_plantilla" invisible="1"/>
-                    <field name="entrega_ids" nolabel="1">
+                    <field name="entrega_ids" context="{'tecnico_ids': project_tecnico_ids}" nolabel="1">
                         <tree editable="bottom">
-                            <field name="fecha"/>
-                            <field name="name"/>
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin"/>
+                            <field name="employee_id" 
+                                   options="{'no_create': True}"
+                                   domain="[('id', 'in', context.get('tecnico_ids'))]"/>
                             <field name="entregado" sum="total"/>
                         </tree>
                     </field>
@@ -221,6 +225,61 @@
                 <field name="bloquear_imputar_tiempos"/>
                 <field name="no_update_deadline"/>
             </xpath>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_task_entrega_tree">
+        <field name="name">project.task.entrega.tree.tetrace</field>
+        <field name="model">project.task.entrega</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="task_id" 
+                       options="{'no_create': True}"
+                       domain="[('project_id', '=', context.get('project_id')), ('desde_plantilla', '=', False), ('producto_entrega', '=', True)]"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <field name="employee_id" 
+                       options="{'no_create': True}"
+                       domain="[('id', 'in', context.get('employee_ids'))]"/>
+                <field name="entregado"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_task_entrega_form">
+        <field name="name">project.task.entrega.form.tetrace</field>
+        <field name="model">project.task.entrega</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="task_id"/>
+                        <field name="fecha_inicio"/>
+                        <field name="fecha_fin"/>
+                        <field name="employee_id"/>
+                        <field name="entregado"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="project_task_entrega_search">
+        <field name="name">project.task.entrega.tree.search</field>
+        <field name="model">project.task.entrega</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="task_id"/>
+                <field name="employee_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin"/>
+                <group expand="0" string="Group By">
+                    <filter name="filter_task" string="Tareas" context="{'group_by': 'task_id'}"/>
+                    <filter name="filter_employee" string="Técnicos" context="{'group_by': 'employee_id'}"/>
+                    <filter name="filter_fecha_inicio" string="Fecha inicio" context="{'group_by': 'fecha_inicio'}"/>
+                    <filter name="filter_fecha_fin" string="Fecha fin" context="{'group_by': 'fecha_fin'}"/>
+                </group>
+            </search>
         </field>
     </record>
 </odoo>

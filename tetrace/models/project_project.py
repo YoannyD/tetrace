@@ -72,7 +72,7 @@ class Project(models.Model):
         for r in self:
             if r.fecha_cancelacion and not r.motivo_cancelacion_id:
                 raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
-
+                
     @api.depends("tecnico_calendario_ids.employee_id")
     def _compute_tecnico_ids(self):
         for r in self:
@@ -174,7 +174,7 @@ class Project(models.Model):
             self.actualizar_deadline_tareas_activacion()
             projects_activacion.enviar_email_estado_proyecto('activacion')
             projects_modificacion.enviar_email_estado_proyecto('modificacion')
-
+            
         if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
             self.actualizar_deadline_tareas_desactivacion()
             
@@ -324,6 +324,9 @@ class Project(models.Model):
 
     def action_activar_tareas(self):
         self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+        
         wizard = self.env['tetrace.activar_tarea'].create({"project_id": self.id})
         
         tecnico_proyecto_activo = self.env['tetrace.tecnico_calendario'].search([
@@ -348,7 +351,6 @@ class Project(models.Model):
         return action
 
     def action_gastos(self):
-        self.ensure_one()
         return {
             'name': _('Gastos'),
             'view_mode': 'tree,form',
@@ -361,7 +363,6 @@ class Project(models.Model):
         }
 
     def action_ingresos(self):
-        self.ensure_one()
         return {
             'name': _('Ingresos'),
             'view_mode': 'tree,form',
@@ -372,9 +373,21 @@ class Project(models.Model):
                 ('move_id.type', 'in', ['out_invoice', 'out_refund', 'out_receipt'])
             ]
         }
+    
+    def action_view_entregas(self):
+        return {
+            'name': _('Entregas'),
+            'view_mode': 'tree,form',
+            'res_model': 'project.task.entrega',
+            'type': 'ir.actions.act_window',
+            'domain': [('task_id.project_id', '=', self.id)],
+            'context': {'project_id': self.id, 'employee_ids': self.tecnico_ids.ids}
+        }
 
     def action_crear_tareas_act_desc(self):
-        self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+        
         today = fields.Date.today()
         tecnicos_proyecto = self.env['tetrace.tecnico_calendario'].search([('project_id', '=', self.id)]) 
         
@@ -405,7 +418,9 @@ class Project(models.Model):
         return wizard.open_wizard()
     
     def action_crear_tareas_faltantes(self):
-        self.ensure_one()
+        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
+            raise UserError(_("El proyecto ya está finalizado"))
+            
         if not self.sale_order_id:
             return
 

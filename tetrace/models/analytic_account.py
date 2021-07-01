@@ -19,6 +19,7 @@ class AccountAnalyticAccount(models.Model):
     sale_order_ids = fields.One2many("sale.order", "analytic_account_id")
     sale_order_count = fields.Integer("Nº Pedidos de venta", store=True,
                                       compute="_compute_sale_order")
+#     horas_laborables = fields.Float("Horas laborables",)
 
     @api.depends("sale_order_ids")
     def _compute_sale_order(self):

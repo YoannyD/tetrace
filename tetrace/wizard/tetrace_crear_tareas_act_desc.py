@@ -116,7 +116,7 @@ class CrearTareasActDesc(models.TransientModel):
         project_theme = None
         try:
             project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))
-            project_theme = self.env['project.project'].search([('id', '=', project_theme_id)], limit=1)
+            project_theme = self.env['project.project'].sudo().search([('id', '=', project_theme_id)], limit=1)
         except:
             pass
         
@@ -199,12 +199,6 @@ class CrearTareasActDesc(models.TransientModel):
 
     def crear_tareas_desactivacion(self):
         self.ensure_one()
-        fecha_deadline = None
-        if r.fecha_finalizacion:
-            fecha_deadline = r.fecha_finalizacion
-        elif r.fecha_cancelacion:
-            fecha_deadline = r.fecha_cancelacion
-        
         for detalle in self.detalle_desc_ids:
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
@@ -221,11 +215,10 @@ class CrearTareasActDesc(models.TransientModel):
             ])
             tareas.write({'activada': True})
             for tarea in tareas:
-                if fecha_deadline and not tarea.tarea_individual:
-                    date_deadline = fields.Date.from_string(fecha_deadline) + timedelta(days=task.deadline)
-                    
-                if tarea.tarea_individual and detalle.fecha_fin:
-                    date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
+                if not detalle.fecha_fin:
+                    continue
+
+                date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
                 tarea.write({'date_deadline': date_deadline})
          
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([

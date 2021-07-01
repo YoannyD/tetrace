@@ -38,7 +38,7 @@
            <attribute name="attrs">{'required': [('company_type', '=', 'company')]}</attribute>
         </xpath>
             <xpath expr="//field[@name='category_id']" position="after">
-                <field name="labels_type" string="Tipo de Etiquetas" attrs="{'required': [('company_type', '=', 'company')]}"/>
+                <field name="labels_type" attrs="{'required': [('company_type', '=', 'company')]}" placeholder="Compañías" widget="many2many_tags"/>
                
             </xpath>
         </field>

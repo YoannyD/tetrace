@@ -18,10 +18,7 @@
                         - <span t-field="o.partner_id.city"/>
                     </div>
                     <div>
-                        <span t-field="o.partner_id.state_id.name"/>
-                    </div>
-                    <div>
-                        <span t-field="o.partner_id.country_id.name"/>
+                        <span t-field="o.partner_id.state_id.name"/> | <span t-field="o.partner_id.country_id.name"/>
                     </div>
                 </div>
             </address>
@@ -119,7 +116,7 @@
         
         <xpath expr="//t[@name='account_invoice_line_accountable']/td[@t-if='display_discount']" position="after">
             <td class="text-right">
-                <span t-field="line.quantity" t-options='{"widget": "float", "precision": 0}'/>
+                <span t-field="line.quantity" t-options='{"widget": "float", "precision": 2}'/>
                 <!--span t-field="line.product_uom_id" groups="uom.group_uom"/-->
             </td>
         </xpath>

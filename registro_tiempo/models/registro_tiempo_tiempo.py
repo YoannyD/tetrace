@@ -54,6 +54,10 @@ class RegistroTiempo(models.Model):
     horas_trabajadas = fields.Float("Horas trabajadas", compute='_compute_horas_trabajadas', store=True, readonly=True)
     horas_extra = fields.Float('Horas extras')
     horas_extra_cliente = fields.Float('Horas extras cliente')
+    horas_laborables = fields.Float("Horas laborables", compute="_compute_horas_laborables")
+    entregado = fields.Boolean("Entregado")
+    validacion = fields.Boolean("Validación")
+    validacion_observaciones = fields.Text("Observaciones validación")
 
     @api.constrains("fecha_hora_entrada", "fecha_hora_salida", "employee_id", "project_id")
     def _check_fechas_hora(self):
@@ -72,6 +76,11 @@ class RegistroTiempo(models.Model):
             if tiempo:
                 raise ValidationError(_("Ya existe un registro en ese periodo de tiempo."))
 
+    @api.depends("horas_trabajadas")
+    def _compute_horas_laborables(self):
+        for r in self:
+            r.horas_laborables = r.horas_trabajadas - r.horas_extra
+           
     @api.depends('fecha_entrada', 'hora_entrada')
     def _compute_fecha_hora_entrada(self):
         user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
@@ -121,6 +130,28 @@ class RegistroTiempo(models.Model):
                 'resource_calendar_id': tecnico_calendario.resource_calendar_id.id if tecnico_calendario.resource_calendar_id else False
             })
 
+    @api.model
+    def create(self, vals):
+        res = super(RegistroTiempo, self).create(vals)
+        if res.validacion:
+            res.crear_parte_hora()
+        return res
+        
+    def write(self, vals):
+        res = super(RegistroTiempo, self).write(vals)
+        if vals.get("validacion"):
+            self.crear_parte_hora()
+        return res
+        
+    def crear_parte_hora(self):
+        for r in self:
+            self.env['account.analytic.line'].sudo().create({
+                'project_id': r.project_id.id,
+                'date': r.fecha_entrada,
+                'employee_id': r.employee_id.id,
+                'unit_amount': r.horas_trabajadas
+            })
+        
     def es_festivo(self):
         self.ensure_one()
         if self.fecha_entrada and self.resource_calendar_id and \

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>    
+    <record model="ir.ui.view" id="view_task_form2">
+        <field name="name">project.task.form.registro_tiempo</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Facturación" attrs="{'invisible': [('sale_line_id', '=', False)]}">
+                    <group>
+                        <group string="Frecuencia">
+                            <field name="frecuencia_facturacion" 
+                                   attrs="{'required': [('sale_line_id', '!=', False)]}"
+                                   string="Frecuencia" 
+                                   widget="radio"/>
+                        </group>
+                        <group string="Cálculo unidades entregadas">
+                            <field name="variable_facturacion" 
+                                   attrs="{'required': [('sale_line_id', '!=', False)]}"
+                                   string="Variable"/>
+                            <field name="min_horas_facturacion" string="Mínimo"/>
+                            <field name="exceso_facturacion" 
+                                   attrs="{'required': [('sale_line_id', '!=', False)]}"
+                                   string="Exceso"/>
+                            <field name="tarea_exceso_id" 
+                                   options="{'no_create': True}"
+                                   domain="[('project_id', '=', project_id), ('sale_line_id', '!=', False)]"
+                                   string="Tarea extra"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="view_task_form2" model="ir.ui.view">
+        <field name="name">roject.task.form.registro_tiempo</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="tetrace.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='entrega_ids']/tree[1]" position="inside">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_tiempo_view"
+                        icon="fa-external-link"/>
+                
+                <button class="oe_stat_button"
+                        type="object"
+                        name="open_wizard_calculo_entregas"
+                        icon="fa-cog"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="project_task_entrega_tree" model="ir.ui.view">
+        <field name="name">project.task.entrega.tree.registro_tiempo</field>
+        <field name="model">project.task.entrega</field>
+        <field name="inherit_id" ref="tetrace.project_task_entrega_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='entregado']" position="after">
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_tiempo_view"
+                        icon="fa-external-link"/>
+                
+                <button class="oe_stat_button"
+                        type="object"
+                        name="open_wizard_calculo_entregas"
+                        icon="fa-cog"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

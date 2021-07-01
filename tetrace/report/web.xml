@@ -32,7 +32,7 @@
         </xpath>
 
         <xpath expr="//div[@t-field='company.partner_id']" position="replace">
-            <div style="display:block">
+            <div class="first-page">
                 <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.exportacion">
                     <h5 style="margin-bottom:0;display:block;line-height:1.1em;">Exportador</h5>
                 </div>
@@ -43,36 +43,18 @@
                     <div t-if="company.company_registry">
                         NIF: <span t-field="company.company_registry"/> <br/>
                     </div>
-        <span><t t-esc="company.street"/><t t-esc="company.street2"/>|<t t-esc="company.zip"/><t t-esc="company.state_id.name"/>|<t t-esc="company.country_id.name"/></span><br/>
-                    <!--div t-if="company.street">
-                        <span t-field="company.street"/> <br/>
+                    <div>
+                        <t t-esc="company.street_name"/> 
+                        <t t-esc="company.street2"/> 
+                        <t t-esc="company.street_number"/> |
+                        <span t-esc="company.zip"/> 
+                        <span t-field="company.state_id"/> |
+                        <span t-field="company.country_id"/>
                     </div>
-                    <div t-if="company.street2">
-                        <span t-field="company.street2"/> <br/>
-                    </div-->
                     
-                    <!--div t-if="company.city or company.zip or company.state_id or company.country_id">
-                        <span t-field="company.city"/>
-                        <t t-if="company.zip">
-                            - <span t-field="company.zip"/>
-                        </t>
-                        <t t-if="company.state_id">
-                            - <span t-field="company.state_id.name"/>
-                        </t>
-                        <t t-if="company.country_id">
-                            - <span t-field="company.country_id.name"/>
-                        </t>
+                    <t t-if="o and o.user_id and o.user_id.partner_id">
+                        <span><t t-esc="o.user_id.partner_id.name"/> | <t t-esc="o.user_id.partner_id.email"/></span>
 
-                    </div-->
-                    <t t-if="o.user_id and o.user_id.partner_id">
-                        <!--div t-if="o.user_id.partner_id">
-                            <span t-field="o.user_id.partner_id"/>
-                        </div-->
-                          <span><t t-esc="o.user_id.partner_id.name"/> | <t t-esc="o.user_id.partner_id.email"/></span>
-                       
-                        <!--div t-if="o.user_id.partner_id.email">
-                            <span t-field="o.user_id.partner_id.email"/>
-                        </div-->
                         <div t-if="o.user_id.partner_id.phone">
                             <span t-field="o.user_id.partner_id.phone"/>
                         </div>
@@ -91,7 +73,13 @@
         </xpath>
     </template>
 
-<template id="argentinian_extra_info" inherit_id="l10n_ar.argentinian_extra_info">
+    <template id="external_layout_standard_ar" inherit_id="l10n_ar.external_layout_standard">
+        <xpath expr="//t[@t-call='l10n_ar.argentinian_extra_info']" position="attributes">
+            <attribute name="t-if">company.id != 8</attribute>
+        </xpath>
+    </template>
+    
+    <template id="argentinian_extra_info" inherit_id="l10n_ar.argentinian_extra_info">
        <xpath expr="//li[2]" position="attributes">
            <attribute name="style">display:none</attribute>
        </xpath>
