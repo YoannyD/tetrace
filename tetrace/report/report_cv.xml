@@ -15,52 +15,64 @@
             name="tetrace.report_hr_employee_curriculum_name"
 
     />
-        <report id="action_report_curriculum_name"
-            string="Currículum Tetrace Nombre"
-            model="hr.employee"
-            report_type="qweb-pdf"
-            file="tetrace.report_hr_employee_curriculum_name"
-            name="tetrace.report_hr_employee_curriculum_name"
 
-    />
- <template id="report_hr_employee_curriculum">
+<template id="report_hr_employee_curriculum">
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="employee">
-                    <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-                        <strong><span><t t-esc="employee.codigo_trabajador_A3"/></span></strong><br/>
-                    </div>
-                    <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span>EDUCACIÓN:</span></strong><br/>
+                    
+                    <div class="row" style="margin:100px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">EDUCACIÓN:</span></strong><br/>
                           
         <span><t t-esc="employee.study_field"/></span><br/>
                <span><t t-esc="employee.study_school"/></span><br/>               
                            </div>
-                     <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-                                <div class="col-md-12">
-          <strong><span>FORMACIÓN COMPLEMENTARIA:</span></strong><br/>
-                                <t t-foreach="docs.formacion_ids" t-as="form">
-       <span><t t-esc="form.fecha_inicio"/></span><br/>
-                                    <span><t t-esc="form.fecha_fin"/></span><br/>
-                                    <span><t t-esc="form.curso"/></span><br/>
+                     <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                               
+          <!--strong><span>FORMACIÓN COMPLEMENTARIA:</span></strong><br/-->
+                                <t t-foreach="docs.resume_line_ids" t-as="form">
+                                    <t t-foreach="form" t-as="line">
+                                    <span style="color:#872292;font-size:1.2em;font-weight:bold;"><t t-esc="line.line_type_id.name"/></span><br/>
+                                        <span><t t-esc="line.name"/></span><br/>
+       <span><t t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/>
+                                    <!--span><t t-esc="form.fecha_fin"/></span><br/-->
+                                    <span><t t-esc="line.description"/></span><br/>
                                      </t>
-                                   </div>    
+                                     </t>
+                                   
                                 </div>
-                                       <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                       <!--div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
           <strong><span>HABILIDADES:</span></strong><br/>
                            <t t-foreach="docs.employee_skill_ids" t-as="skill">
         <strong><span><t t-esc="skill.skill_id.name"/></span></strong><br/>
                                 </t>
-                           </div>
+                           </div-->
                       
-                            <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-                                <div class="col-md-12">
-          <strong><span>EXPERIENCIA:</span></strong><br/>
-                                <t t-foreach="docs.resume_line_ids" t-as="line">
-        <strong><span><t t-esc="line.name"/></span></strong><br/>
-                                     <strong><span><t t-esc="line.date_start"/></span></strong><br/>
+                            <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                               
+          <!--strong><span>EXPERIENCIA:</span></strong><br/-->
+                                <t t-foreach="docs.employee_skill_ids" t-as="skill">
+                                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="skill.skill_type_id.name"/></span></strong><br/>
+        <strong><span><t t-esc="skill.skill_id.name"/></span></strong><br/>
+                                    <strong><span><t t-esc="skill.skill_level_id.name"/></span></strong><br/>
+                                    <strong><span><t t-esc="skill.level_progress"/></span></strong><br/>
+                                     
                                      </t>
-                                   </div>    
+                                    
+                                </div>
+                                                <div class="row" style="margin:5px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                               
+          <!--strong><span>EXPERIENCIA:</span></strong><br/-->
+                                <t t-foreach="docs.formacion_ids" t-as="forms">
+                                      <t t-foreach="forms" t-as="fr">
+                                                 
+                                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="fr.curso"/></span></strong><br/>
+                                    <strong><span><t t-esc="fr.tipo_id.name"/></span></strong><br/>
+
+                                    <strong><span><t t-esc="fr.fecha_inicio"/>|<t t-esc="fr.fecha_fin"/></span></strong><br/>
+                                     
+                                     </t>
+                                     </t>
                                 </div>
 
           </t>
@@ -74,54 +86,75 @@
                 <t t-foreach="docs" t-as="employee">
                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                     <div t-if="employee.name" class="col-auto mw-100 mb-2">
-                    <strong>Nombre Empleado:</strong>
-                    <p class="m-0" t-field="employee.name"/>
+                    <strong style="color:white;">Nombre Empleado:</strong>
+                    <p class="m-0" style="color:white;" t-field="employee.name"/>
                 </div>
                            <div t-if="employee.codigo_trabajador_A3" class="col-auto mw-100 mb-2">
-                    <strong>Código del trabajador:</strong>
-                    <p class="m-0" t-field="employee.codigo_trabajador_A3"/>
+                    <strong style="color:white;">Código del trabajador:</strong>
+                    <p class="m-0" style="color:white;" t-field="employee.codigo_trabajador_A3"/>
                 </div>
                            <div t-if="employee.mobile_phone" class="col-auto mw-100 mb-2">
-                    <strong>Teléfono:</strong>
-                    <p class="m-0" t-field="employee.mobile_phone"/>
+                    <strong style="color:white;">Teléfono:</strong>
+                    <p class="m-0" style="color:white;" t-field="employee.mobile_phone"/>
                 </div>
                         <div t-if="employee.department_id.name" class="col-auto mw-100 mb-2">
-                    <strong>Departamento:</strong>
-                    <p class="m-0" t-field="employee.department_id.name"/>
+                    <strong style="color:white;">Departamento:</strong>
+                    <p class="m-0" style="color:white;" t-field="employee.department_id.name"/>
                 </div>   
                         
                     </div>
                     <div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span>EDUCACIÓN:</span></strong><br/>
+          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">EDUCACIÓN:</span></strong><br/>
                           
         <span><t t-esc="employee.study_field"/></span><br/>
                <span><t t-esc="employee.study_school"/></span><br/>               
                            </div>
                      <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-                                <div class="col-md-12">
-          <strong><span>FORMACIÓN COMPLEMENTARIA:</span></strong><br/>
-                                <t t-foreach="docs.formacion_ids" t-as="form">
-       <span><t t-esc="form.fecha_inicio"/></span><br/>
-                                    <span><t t-esc="form.fecha_fin"/></span><br/>
-                                    <span><t t-esc="form.curso"/></span><br/>
+                               
+          <!--strong><span>FORMACIÓN COMPLEMENTARIA:</span></strong><br/-->
+                                <t t-foreach="docs.resume_line_ids" t-as="form">
+                                    <t t-foreach="form" t-as="line">
+                                    <span style="color:#872292;font-size:1.2em;font-weight:bold;"><t t-esc="line.line_type_id.name"/></span><br/>
+                                        <span><t t-esc="line.name"/></span><br/>
+       <span><t t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/>
+                                    <!--span><t t-esc="form.fecha_fin"/></span><br/-->
+                                    <span><t t-esc="line.description"/></span><br/>
                                      </t>
-                                   </div>    
+                                     </t>
+                                   
                                 </div>
-                                       <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                       <!--div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
           <strong><span>HABILIDADES:</span></strong><br/>
                            <t t-foreach="docs.employee_skill_ids" t-as="skill">
         <strong><span><t t-esc="skill.skill_id.name"/></span></strong><br/>
                                 </t>
-                           </div>
+                           </div-->
                       
-                            <div class="row" style="margin:160px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-                                <div class="col-md-12">
-          <strong><span>EXPERIENCIA:</span></strong><br/>
-                                <t t-foreach="docs.resume_line_ids" t-as="line">
-        <strong><span><t t-esc="line.name"/></span></strong><br/>
-                                     <strong><span><t t-esc="line.date_start"/></span></strong><br/>
+                            <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                               
+          <!--strong><span>EXPERIENCIA:</span></strong><br/-->
+                                <t t-foreach="docs.employee_skill_ids" t-as="skill">
+                                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="skill.skill_type_id.name"/></span></strong><br/>
+        <strong><span><t t-esc="skill.skill_id.name"/></span></strong><br/>
+                                    <strong><span><t t-esc="skill.skill_level_id.name"/></span></strong><br/>
+                                    <strong><span><t t-esc="skill.level_progress"/></span></strong><br/>
+                                     
                                      </t>
-                                   </div>    
+                                    
+                                </div>
+                                                <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                               
+          <!--strong><span>EXPERIENCIA:</span></strong><br/-->
+                                <t t-foreach="docs.formacion_ids" t-as="forms">
+                                      <t t-foreach="forms" t-as="fr">
+                                                 
+                                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="fr.curso"/></span></strong><br/>
+                                    <strong><span><t t-esc="fr.tipo_id.name"/></span></strong><br/>
+
+                                    <strong><span><t t-esc="fr.fecha_inicio"/>|<t t-esc="fr.fecha_fin"/></span></strong><br/>
+                                     
+                                     </t>
+                                     </t>
                                 </div>
 
           </t>

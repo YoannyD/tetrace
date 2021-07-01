@@ -19,7 +19,7 @@ class Partner(models.Model):
     project_geo_ids = fields.One2many("project.project", "partner_geo_id")
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
     project_ids = fields.Many2many("project.project")
-    labels_type = fields.Many2one('res.company', string='Tipo de Etiquetas')
+    labels_type = fields.Many2many('res.company', string='Compañías')
     
             
     @api.model
