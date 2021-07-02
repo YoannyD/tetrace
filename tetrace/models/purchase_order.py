@@ -56,6 +56,12 @@ class PurchaseOrder(models.Model):
         self.actualizar_cuenta_activo()
         return res
         
+    def action_view_invoice(self):
+        result = super(PurchaseOrder, self).action_view_invoice()
+        result['context']['default_validacion_id'] = self.validacion_id.id
+        result['context']['default_tipo_proyecto_id'] = self.tipo_proyecto_id.id
+        return result
+        
     def actualizar_cuenta_activo(self):
         for r in self:
             if r.cuenta_activo:

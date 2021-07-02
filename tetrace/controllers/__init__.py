@@ -3,4 +3,5 @@
 
 from . import documents
 from . import api
+from . import portal
 

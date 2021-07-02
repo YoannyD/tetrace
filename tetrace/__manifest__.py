@@ -44,7 +44,8 @@
         'sale_timesheet_enterprise',
         'purchase_tier_validation',
         'account_accountant',
-        'report_qweb_element_page_visibility'
+        'report_qweb_element_page_visibility',
+        'portal'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -120,6 +121,7 @@
         'wizard/tetrace_prevision_facturacion_cancelar.xml',
         'wizard/tetrace_crear_tareas_act_desc.xml',
         'wizard/tetrace_change_partner_sale_order.xml',
+        'templates/portal.xml'
     ],
     'demo': [],
     'installable': True,
