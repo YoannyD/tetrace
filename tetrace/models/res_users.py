@@ -15,4 +15,10 @@ class User(models.Model):
     rango_validaciones = fields.Integer("Rango", default= 6)
     sale_order_coordinador_ids = fields.One2many("sale.order", "coordinador_proyecto_id")
     warehouse_ids = fields.One2many('stock.warehouse', 'responsable_exportacion_id')
+    employee_ids = fields.Many2many("hr.employee", string="Empleados", compute="_compute_employee_ids")
+    
+    def _compute_employee_ids(self):
+        for r in self:
+            employees = self.env['hr.employee'].sudo().search([('user_id', '=', r.id)])
+            r.employee_ids = [(6, 0, employees.ids)]
     

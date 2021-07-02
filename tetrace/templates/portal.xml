@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="portal_breadcrumbs" name="Portal layout: menu entry" inherit_id="portal.portal_breadcrumbs" priority="35">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'equipment' or equipment" t-attf-class="breadcrumb-item #{'active ' if not equipment else ''}">
+                <a t-if="project" t-attf-href="/my/equipments?{{ keep_query() }}">Equipos</a>
+                <t t-else="">Equipos</t>
+            </li>
+            <li t-if="equipment" class="breadcrumb-item active">
+                <t t-esc="equipment.name"/>
+            </li>
+            <li t-if="page_name == 'document' or document" t-attf-class="breadcrumb-item #{'active' if not document else ''}">
+                <t>Documentos</t>
+            </li>
+        </xpath>
+    </template>
+    
+    <template id="portal_my_home" name="Portal My Home" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="equipment_count" t-call="portal.portal_docs_entry">
+                <t t-set="title">Equipos</t>
+                <t t-set="url" t-value="'/my/equipments'"/>
+                <t t-set="count" t-value="equipment_count"/>
+            </t>
+            <t t-if="document_count" t-call="portal.portal_docs_entry">
+                <t t-set="title">Documentos</t>
+                <t t-set="url" t-value="'/my/documents'"/>
+                <t t-set="count" t-value="document_count"/>
+            </t>
+        </xpath>
+    </template>
+    
+    <template id="portal_my_equipments" name="My Equipments">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Equipos</t>
+            </t>
+            <t t-if="not grouped_equipments">
+                <div class="alert alert-warning mt8" role="alert">
+                    No hay equipos.
+                </div>
+            </t>
+            <t t-if="grouped_equipments">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_equipments" t-as="equipments">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <th>Nombre</th>
+                                <th t-if="groupby == 'none'">Categoría</th>
+                                <th t-else="">
+                                    <em class="font-weight-normal text-muted">Equipos por categoría:</em>
+                                    <span t-field="equipments[0].category_id.name"/></th>
+                                <th>Empleado</th>
+                                <th>Fecha de asignación</th>
+                                <th>Nº de serie</th>
+                                <th>Compañia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="equipments" t-as="equipment">
+                                <tr>
+                                    <td><a t-attf-href="/my/equipment/#{equipment.id}?{{ keep_query() }}"><span t-field="equipment.name"/></a></td>
+                                    <td><span t-field="equipment.category_id"/></td>
+                                    <td><span t-field="equipment.owner_user_id"/></td>
+                                    <td><span t-field="equipment.assign_date" t-options='{"widget": "date"}'/></td>
+                                    <td><span t-field="equipment.serial_no"/></td>
+                                    <td><span t-field="equipment.company_id"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <template id="portal_my_equipment" name="My Equipment">
+        <t t-call="portal.portal_layout">
+            <t t-call="portal.portal_record_layout">
+                <t t-set="card_header">
+                    <h5 class="mb-0">
+                        <small class="text-muted">Equipo - </small><span t-field="equipment.name"/>
+                    </h5>
+                </t>
+                <t t-set="card_body">
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6 mb-1">
+                            <div><strong>Categoría:</strong> <span t-field="equipment.category_id"/></div>
+                            <div><strong>Compañia:</strong> <span t-field="equipment.company_id"/></div>
+                            <div><strong>Usado por:</strong> <span t-field="equipment.equipment_assign_to"/></div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div><strong>Equipo de mantenimiento:</strong> <span t-field="equipment.maintenance_team_id"/></div>
+                            <div><strong>Técnico:</strong> <span t-field="equipment.technician_user_id"/></div>
+                            <div><strong>Fecha de asignación:</strong> <span t-field="equipment.assign_date" t-options='{"widget": "date"}'/></div>
+                            <div><strong>Fecha de deshecho:</strong> <span t-field="equipment.scrap_date" t-options='{"widget": "date"}'/></div>
+                            <div><strong>Usado en la ubicación:</strong> <span t-field="equipment.location"/></div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12 col-md-6 mb-1">
+                            <div><strong>Producto:</strong> <span t-field="equipment.product_id"/></div>
+                            <div><strong>Modelo:</strong> <span t-field="equipment.model"/></div>
+                            <div><strong>Nº Serie:</strong> <span t-field="equipment.serial_no"/></div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div><strong>Fecha efectiva:</strong> <span t-field="equipment.effective_date" t-options='{"widget": "date"}'/></div>
+                            <div><strong>Coste:</strong> <span t-field="equipment.cost"/></div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <span t-raw="equipment.note"/>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+    <template id="portal_my_documents" name="My Documents">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Documentos</t>
+            </t>
+            <t t-if="not grouped_documents">
+                <div class="alert alert-warning mt8" role="alert">
+                    No hay documentos.
+                </div>
+            </t>
+            <t t-if="grouped_documents">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_documents" t-as="documents">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <th>Nombre</th>
+                                <th t-if="groupby == 'none'">Carpeta</th>
+                                <th t-else="">
+                                    <em class="font-weight-normal text-muted">Documentos por carpeta:</em>
+                                    <span t-field="documents[0].folder_id.name"/></th>
+                                <th>Fecha creación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="documents" t-as="document">
+                                <tr>
+                                    <td><a target="_blank" t-att-href="'/documents/content/%s' % document.id"><span t-field="document.name"/></a></td>
+                                    <td><span t-field="document.folder_id"/></td>
+                                    <td><span t-field="document.create_date" t-options='{"widget": "date"}'/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
