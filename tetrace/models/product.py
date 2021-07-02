@@ -30,18 +30,31 @@ class Product(models.Model):
     
     def get_code_supplier_info(self, partner):
         self.ensure_one()
-        supplier_info = self.env["product.customerinfo"].search([
+        supplier_info = self.env["product.supplierinfo"].search([
             ('name', '=', partner.id),
             ('product_code', '!=', False),
             '|',
             ('product_id', '=', self.id),
             ('product_tmpl_id', '=', self.product_tmpl_id.id)
         ], limit=1)
+        
         return supplier_info.product_code if supplier_info else None
+    
+    def get_code_customer_info(self, partner):
+        self.ensure_one()
+        customer_info = self.env["product.customerinfo"].search([
+            ('name', '=', partner.id),
+            ('product_code', '!=', False),
+            '|',
+            ('product_id', '=', self.id),
+            ('product_tmpl_id', '=', self.product_tmpl_id.id)
+        ], limit=1)
+        
+        return customer_info.product_code if customer_info else None
     
     def get_name_supplier_info(self, partner):
         self.ensure_one()
-        supplier_info = self.env["product.customerinfo"].search([
+        supplier_info = self.env["product.supplierinfo"].search([
             ('product_name', '!=', False),
             ('name', '=', partner.id),
             '|',
@@ -49,6 +62,17 @@ class Product(models.Model):
             ('product_tmpl_id', '=', self.product_tmpl_id.id)
         ], limit=1)
         return supplier_info.product_name if supplier_info else None
+    
+    def get_name_customer_info(self, partner):
+        self.ensure_one()
+        customer_info = self.env["product.customerinfo"].search([
+            ('product_name', '!=', False),
+            ('name', '=', partner.id),
+            '|',
+            ('product_id', '=', self.id),
+            ('product_tmpl_id', '=', self.product_tmpl_id.id)
+        ], limit=1)
+        return customer_info.product_name if customer_info else None
     
     def get_product_multiline_description_sale(self):
         if self.env.context.get('partner_id'):

@@ -22,15 +22,29 @@
         </xpath> 
         
         <xpath expr="//span[@t-field='line.product_qty']" position="attributes">
-            <attribute name="t-options-widget">"integer"</attribute>
+            <attribute name="t-options">{"widget": "float", "precision": 2}</attribute>
         </xpath>   
         
         <xpath expr="//span[@t-field='line.price_unit']" position="attributes">
             <attribute name="t-options-widget">"monetary"</attribute>
         </xpath>
         
-        <xpath expr="//div[@t-field='o.partner_id']" position="attributes">
-            <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
+        <xpath expr="//div[@t-field='o.partner_id']" position="replace">
+            <div>
+                <span t-field="o.with_context(no_display_commercial=True).partner_id.display_name"/> <br/>
+                <t t-esc="o.partner_id.street_name"/> 
+                <t t-esc="o.partner_id.street2"/> 
+                <t t-esc="o.partner_id.street_number"/> <br/>
+                <span t-field="o.partner_id.zip"/> 
+                <span t-field="o.partner_id.state_id"/> 
+                <span t-field="o.partner_id.country_id"/>
+                <t t-if="o.partner_id.phone">
+                    <br/> <span t-field="o.partner_id.phone"/>
+                </t>
+                <t t-if="o.partner_id.email">
+                    <br/> <span t-field="o.partner_id.email"/>
+                </t>
+            </div>
         </xpath>
                 
         <xpath expr="//p[@t-if='o.partner_id.vat']" position="after">
@@ -39,9 +53,30 @@
             </div>
         </xpath> 
         
-        <xpath expr="//div[@t-field='o.dest_address_id']" position="attributes">
-            <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
+        <xpath expr="//div[@t-field='o.dest_address_id']" position="replace">
+            <div>
+                <t t-esc="o.dest_address_id.street_name"/> 
+                <t t-esc="o.dest_address_id.street2"/> 
+                <t t-esc="o.dest_address_id.street_number"/> <br/>
+                <span t-field="o.dest_address_id.zip"/> 
+                <span t-field="o.dest_address_id.state_id"/> 
+                <span t-field="o.dest_address_id.country_id"/>
+                <t t-if="o.dest_address_id.phone">
+                    <br/> <span t-field="o.dest_address_id.phone"/>
+                </t>
+                <t t-if="o.dest_address_id.email">
+                    <br/> <span t-field="o.dest_address_id.email"/>
+                </t>
+            </div>
         </xpath> 
+        
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_description"><strong>Código</strong></th>
+        </xpath>
+        
+        <xpath expr="////t[@t-foreach='o.order_line']//td[1]" position="before">
+            <td><span t-field="line.product_id.default_code"/></td>
+        </xpath>
     </template>
     
     <template id="ps_report_purchaseorder_document" inherit_id="purchase_stock.report_purchaseorder_document">
@@ -50,6 +85,29 @@
                 <span t-field="o.picking_type_id.warehouse_id.partner_id.comment"/>
             </div>
         </xpath>
+        
+        <xpath expr="//div[@t-field='o.picking_type_id.warehouse_id.partner_id']" position="replace">
+            <div>
+                <t t-esc="o.picking_type_id.warehouse_id.partner_id.street_name"/> 
+                <t t-esc="o.picking_type_id.warehouse_id.partner_id.street2"/> 
+                <t t-esc="o.picking_type_id.warehouse_id.partner_id.street_number"/> <br/>
+                <span t-field="o.picking_type_id.warehouse_id.partner_id.zip"/> 
+                <span t-field="o.picking_type_id.warehouse_id.partner_id.state_id"/> 
+                <span t-field="o.picking_type_id.warehouse_id.partner_id.country_id"/>
+            </div>
+        </xpath>
     </template>
-
+    
+    <template id="gst_report_purchaseorder_document_inherit" inherit_id="l10n_in_purchase.gst_report_purchaseorder_document_inherit">
+        <xpath expr="//span[@t-field='line.name'][1]" position="before">
+            <t t-set="supplier_code" t-value="line.product_id.get_code_supplier_info(o.partner_id)"/>
+            <t t-if="supplier_code">
+                [<t t-esc="supplier_code"/>]
+            </t>
+        </xpath>
+        
+        <xpath expr="//span[@t-field='line.name']" position="replace">
+            <span t-esc="line.name.replace('[%s]' % line.product_id.default_code, '')"/>
+        </xpath>
+    </template>
 </odoo>
