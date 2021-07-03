@@ -30,6 +30,8 @@ class Employee(models.Model):
     documentacion_laboral = fields.Char("Documentación laboral")
     formacion_ids = fields.One2many('tetrace.formacion', 'employee_id')
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'employee_id')
+    country_visado_id = fields.Many2one('res.country', string="País Visado")
+    type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
 
     def _compute_document_employee(self):
         for r in self:
@@ -81,3 +83,8 @@ class Employee(models.Model):
         
         action.update({'domain': [('id', 'in', document_ids)]})
         return action
+
+class HrVisado(models.Model):
+    _name = "hr.visado"
+    
+    name = fields.Char(string="Tipo")

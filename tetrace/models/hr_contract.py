@@ -12,6 +12,7 @@ class Contract(models.Model):
     _inherit = "hr.contract"
 
     tipo_contrato_id = fields.Many2one('tetrace.tipo_contrato', string="Tipo de contrato")
+    percentage = fields.Char(string="Porcentaje Jornada")
     
     def write(self, vals):
         res = super(Contract, self).write(vals)
