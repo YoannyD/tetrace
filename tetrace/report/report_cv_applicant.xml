@@ -60,8 +60,9 @@
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> 
                                 
-                                 <span><t class="text-right" t-esc="line.name"/>-<t t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/> 
+                                 <span><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>-<t t-esc="line.date_end"/></span><br/> 
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
+     &#160;
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
     </t> 
 </t>

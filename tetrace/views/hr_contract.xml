@@ -8,6 +8,9 @@
             <xpath expr="//field[@name='date_start']" position="before">
                 <field name="tipo_contrato_id"/>
             </xpath>
+                <xpath expr="//field[@name='hr_responsible_id']" position="before">
+                <field name="percentage"/>
+            </xpath>
         </field>
     </record>
 </odoo>

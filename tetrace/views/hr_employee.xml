@@ -27,6 +27,10 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="model">hr.employee</field>
         <field name="arch" type="xml">
+             <xpath expr="//field[@name='visa_expire']" position="after">
+                <field name="country_visado_id"/>
+                 <field name="type_visado_id"/>
+            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="%(action_applicant)d"
                         type="action"
