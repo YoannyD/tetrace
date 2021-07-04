@@ -86,5 +86,5 @@ class Employee(models.Model):
 
 class HrVisado(models.Model):
     _name = "hr.visado"
-    
+    _description = "Tipo Visado"
     name = fields.Char(string="Tipo")
