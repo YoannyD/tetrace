@@ -3,3 +3,4 @@
 
 from . import account_move
 from . import importa_asientos_contables
+from . import actualizar_inventario
