@@ -55,7 +55,7 @@ class ActualizarInventario(models.AbstractModel):
                 self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 3, item['linea_id'])
                 continue
             lote = self.env['stock.production.lot'].search([('product_id','=',item['product_id']),('name','=',item['lote'])], limit = 1)
-            if lote == False and producto_plantilla.tracking in ['serial','lot']:
+            if not lote and producto_plantilla.tracking in ['serial','lot']:
                 #No podemos añadir la línea de inventario ya que el producto requiere de un numero de serie o lote y no lo tenemos
                 #Marcamos el registro con 4
                 self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 4, item['linea_id'])
