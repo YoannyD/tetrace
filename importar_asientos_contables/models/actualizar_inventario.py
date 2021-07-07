@@ -47,30 +47,48 @@ class ActualizarInventario(models.AbstractModel):
             return
         linea_inventario = self.env['stock.inventory.line']
         for item in data:
+            _logger.warning("Procesando línea %s " % item['linea_id'])
             producto_plantilla = self.env['product.template'].search([('id','=', item['producto_template_id'])])
             if producto_plantilla.type !='product':
+                #No podemos añadir la línea de inventario ya que el producto no es almacenable
+                #Marcamos el registro con 3
+                self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 3, item['linea_id'])
+                continue
+            lote = self.env['stock.production.lot'].search([('product_id','=',item['product_id']),('name','=',item['lote'])], limit = 1)
+            if lote == False and producto_plantilla.tracking in ['serial','lot']:
+                #No podemos añadir la línea de inventario ya que el producto requiere de un numero de serie o lote y no lo tenemos
+                #Marcamos el registro con 4
+                self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 4, item['linea_id'])
                 continue
             ubicacion = self.env['stock.location'].search([('name','=', item['ubicacion'])], limit = 1)
-            lote = self.env['stock.production.lot'].search([('product_id','=',item['product_id']),('name','=',item['lote'])])
             linea_inventario_existente = linea_inventario.search([('inventory_id','=', item['inventory_id']),\
                                                                   ('location_id','=', ubicacion.id if ubicacion else 8),\
                                                                   ('product_id','=', item['product_id']),\
                                                                   ('prod_lot_id','=', lote.id if lote else False),\
                                                                  ])
-            if linea_inventario_existente:
+            if linea_inventario_existente and producto_plantilla.tracking == "serial":
+                #No podemos añadir la línea de inventario ya que el número de serie es único y ya existe una linea de ajuste
+                #Marcamos el registro con 5
+                self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 5, item['linea_id'])
+            elif linea_inventario_existente:
+                #Si el producto no tiene seguimiento o es por lotes, en lugar de generar una nueva linea, incrementamos la cantidad de la existente
+                #Marcamos el registro con 2
                 linea_inventario_existente.write({
                     'product_qty' : linea_inventario_existente.product_qty + float(item['product_qty'])
                 })
+                self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 2, item['linea_id'])                                                
             else:
+                #Creamos la linea de inventario
+                #Marcamos el registro con 1                                                        
                 linea_inventario.create({
                     'inventory_id' : item['inventory_id'],
                     'location_id' : ubicacion.id if ubicacion else 8,
                     'product_id' : item['product_id'],
                     'prod_lot_id' : lote.id if lote else False,
                     'product_qty' : item['product_qty'],
-                })
-            _logger.warning("Linea inventario creada para producto %s " % item['product_id'])
-            self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, item['product_id'])
+                })                                               
+                self._marcar_registro_inventario(db_name, db_user, db_pass, db_host, db_table, 1, item['linea_id'])
+            
                 
     def execute(self, db_name, db_user, db_pass, db_host, query, params=None, commit=False):
         data = []
@@ -115,7 +133,7 @@ class ActualizarInventario(models.AbstractModel):
         _logger.warning("Consulta %s " % query)
         self.execute(db_name, db_user, db_pass, db_host, query, commit=True)
 
-    def _marcar_registro_inventario(self, db_name, db_user, db_pass, db_host, db_table, item):
-        query = "UPDATE %s SET actualizado = 1 where product_id = %s;" % (db_table, item)
+    def _marcar_registro_inventario(self, db_name, db_user, db_pass, db_host, db_table, valor, item):
+        query = "UPDATE %s SET actualizado = %s where linea_id = %s;" % (db_table, valor, item)
         _logger.warning("Consulta %s " % query)
         self.execute(db_name, db_user, db_pass, db_host, query, commit=True)
