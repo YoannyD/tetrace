@@ -48,17 +48,6 @@
   
                         
                     </div>
-                    <!--div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">Educación:</span></strong><br/>
-                       <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Título:</strong>   
-        <span><t t-esc="applicant.type_id.name"/></span><br/>
-                           </div>
-        <div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">Formación Complementaria:</span></strong><br/>
-               <t t-foreach="docs.categ_ids" t-as="x">
-        <span><t t-esc="x.name"/></span><br/>
-                    </t>        
-                           </div-->
                     
                      <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
