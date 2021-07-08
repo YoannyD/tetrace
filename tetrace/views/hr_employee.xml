@@ -51,7 +51,7 @@
                 <field name="codigo_trabajador_A3"/>
                 <field name="nivel_validacion_compras_ids" widget="many2many_tags"/>
             </xpath>
-
+       
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="codigo_drive"/>
                 <field name="key_nomina"/>
