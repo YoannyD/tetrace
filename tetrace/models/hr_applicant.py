@@ -25,7 +25,11 @@ class Applicant(models.Model):
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
     proceso_seleccion_id = fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
     project_ids = fields.Many2many('project.project')
+    reference = fields.Char(compute="_compute_reference")
 
+    def _compute_reference(self):
+        self.reference = self.id + 1
+    
     def _compute_document_applicant(self):
         for r in self:
             docs_applicant = self.env['documents.document'].search_count([
