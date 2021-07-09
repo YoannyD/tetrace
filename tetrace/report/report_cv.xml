@@ -21,12 +21,6 @@
             <div class="page">
                 <t t-foreach="docs" t-as="employee">
                     
-                    <!--div class="row" style="margin:100px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;"></span></strong><br/>
-                          
-        <span><t t-esc="employee.study_field"/></span><br/>
-               <span><t t-esc="employee.study_school"/></span><br/>               
-                           </div-->
                      
                     <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
