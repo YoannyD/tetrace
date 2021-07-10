@@ -568,6 +568,7 @@ class RefProducto(models.Model):
 class Invoice(models.Model):
 
     _name = "tetrace.invoice"
+    _description = "Tipo facturación"
     
     name = fields.Char(string = "Nombre")
     
