@@ -26,12 +26,26 @@ class Nomina(models.Model):
         for r in self:
             r.move_count = len(r.move_ids)
     
-    def action_importar_nominas(self):
+    def action_importar_nominas_a3(self):
         self.ensure_one()
         if self.move_ids:
             raise UserError(_("No se puede importar el fichero si existen asientos contables."))
 
-        wizard = self.env['tetrace.importar_nomina'].create({'nomina_id': self.id})
+        wizard = self.env['tetrace.importar_nomina'].create({
+            'nomina_id': self.id,
+            'import_option': 'dat'
+        })
+        return wizard.open_wizard()
+    
+    def action_importar_nominas_excel(self):
+        self.ensure_one()
+        if self.move_ids:
+            raise UserError(_("No se puede importar el fichero si existen asientos contables."))
+
+        wizard = self.env['tetrace.importar_nomina'].create({
+            'nomina_id': self.id,
+            'import_option': 'xls'
+        })
         return wizard.open_wizard()
 
     def action_generar_asientos(self):

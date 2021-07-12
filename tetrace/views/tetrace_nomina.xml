@@ -24,11 +24,17 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_importar_nominas"
+                    <button name="action_importar_nominas_a3"
                             type="object"
                             class="btn btn-primary"
                             attrs="{'invisible': [('move_ids', '!=', [])]}"
-                            string="Importar nóminas"/>
+                            string="Importar nóminas A3"/>
+                    
+                    <button name="action_importar_nominas_excel"
+                            type="object"
+                            class="btn btn-primary"
+                            attrs="{'invisible': [('move_ids', '!=', [])]}"
+                            string="Importar nóminas excel"/>
 
                     <button name="action_generar_asientos"
                             type="object"

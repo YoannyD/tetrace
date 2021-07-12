@@ -194,7 +194,7 @@ class RegistroTiempoAPI(http.Controller):
             hora_salida = time_str_to_float(kw.get("hora_salida"))
         except:
             hora_salida = 0
-
+            
         values = {
             'project_id': project_id,
             "employee_id": employee_id,
@@ -203,7 +203,8 @@ class RegistroTiempoAPI(http.Controller):
             "hora_entrada": hora_entrada,
             "fecha_salida": fecha_salida,
             "hora_salida": hora_salida,
-            "observaciones": kw.get("observaciones")
+            "observaciones": kw.get("observaciones"),
+            "covid": kw.get("covid")
         }
 
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)

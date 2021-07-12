@@ -58,7 +58,11 @@ class RegistroTiempo(models.Model):
     entregado = fields.Boolean("Entregado")
     validacion = fields.Boolean("Validación")
     validacion_observaciones = fields.Text("Observaciones validación")
-
+    standby_meteo = fields.Float("Standby Meteo", compute="_compute_standby", store=True)
+    standby_cliente = fields.Float("Standby Cliente", compute="_compute_standby", store=True)
+    standby_tetrace = fields.Float("Standby Tetrace", compute="_compute_standby", store=True)
+    covid = fields.Boolean("Covid")
+    
     @api.constrains("fecha_hora_entrada", "fecha_hora_salida", "employee_id", "project_id")
     def _check_fechas_hora(self):
         for r in self:
@@ -130,6 +134,16 @@ class RegistroTiempo(models.Model):
                 'resource_calendar_id': tecnico_calendario.resource_calendar_id.id if tecnico_calendario.resource_calendar_id else False
             })
 
+    @api.depends("tiempo_parada_ids.tipo_parada_id", "tiempo_parada_ids.tipo_parada_id.standby_meteo",
+                "tiempo_parada_ids.tipo_parada_id.standby_cliente", "tiempo_parada_ids.tipo_parada_id.standby_tetrace")
+    def _compute_standby(self):
+        for r in self:
+             r.update({
+                 'standby_meteo': sum(r.tiempo_parada_ids.filtered(lambda x: x.tipo_parada_id.standby_meteo).mapped('horas_parada')),
+                 'standby_cliente': sum(r.tiempo_parada_ids.filtered(lambda x: x.tipo_parada_id.standby_cliente).mapped('horas_parada')),
+                 'standby_tetrace': sum(r.tiempo_parada_ids.filtered(lambda x: x.tipo_parada_id.standby_tetrace).mapped('horas_parada'))
+             })
+        
     @api.model
     def create(self, vals):
         res = super(RegistroTiempo, self).create(vals)
@@ -266,6 +280,9 @@ class TipoParada(models.Model):
 
     name = fields.Char("Nombre", translate=True)
     tiempo_parada_ids = fields.One2many("registro_tiempo.tiempo_parada", "tipo_parada_id")
+    standby_meteo = fields.Boolean("Standby Meteo")
+    standby_cliente = fields.Boolean("Standby Cliente")
+    standby_tetrace = fields.Boolean("Standby Tetrace")
 
     def get_data_api(self):
         self.ensure_one()
