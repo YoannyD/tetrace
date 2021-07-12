@@ -142,6 +142,10 @@ $(function() {
                 }
             }
         }).dxRadioGroup("instance");
+        
+        var covid_dx = $("#covid_dx").dxCheckBox({
+            value: false
+        }).dxCheckBox("instance");
 
         var fecha_entrada_dx = $("#fecha_entrada_dx").dxDateBox({
             type: "date",
@@ -335,7 +339,7 @@ $(function() {
             e.preventDefault();
             var hora_entrada = hora_entrada_dx.option("value");
             var hora_salida = hora_salida_dx.option("value");
-
+            
             var params = {
                 'employee_id': employee_id_dx.option("value"),
                 'project_id': project_id_dx.option("value"),
@@ -347,6 +351,7 @@ $(function() {
                 'paradas': paradas_dx.option('dataSource'),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
                 'observaciones': observaciones_dx.option("value"),
+                'covid': covid_dx.option("value"),
             };
 
             ajax.jsonRpc("/api/time/register", 'call', params)
