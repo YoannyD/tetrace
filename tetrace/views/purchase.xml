@@ -19,6 +19,18 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="tipo_proyecto_id" required="1"/>
                 <field name="cuenta_activo"/>
+                <field name="date_planned" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/notebook[1]/page[@name='purchase_delivery_invoice']/group[1]/group[@name='planning']/div[1]" position="replace">
+            <xpath expr="//field[@name='user_id']" position="move"/>
+            <xpath expr="//field[@name='l10n_in_journal_id']" position="move"/>
+            <xpath expr="//field[@name='invoice_status']" position="move"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='cuenta_activo']" position="after">
+            <xpath expr="//field[@name='picking_type_id']" position="move"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_planned']" position="after">
+            <xpath expr="//field[@name='incoterm_id']" position="move"/>
             </xpath>
             
             <xpath expr="//field[@name='order_line']/tree[1]" position="inside">
@@ -49,6 +61,7 @@
               <xpath expr="//field[@name='product_id']" position="after">
                 <field name="date_planned"/>
               </xpath>
+            
               <xpath expr="//search[1]/group[1]/filter[@name='order_date']" position="after">
                 <filter context="{'group_by': 'state'}" name="studio_group_by_w9rqj" string="Estado"/>
               </xpath>

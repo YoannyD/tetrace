@@ -72,6 +72,7 @@ class SaleOrder(models.Model):
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora", 
                                              default=lambda self: self.env.company)
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
+    invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
 
     sql_constraints = [
@@ -576,4 +577,11 @@ class RefProducto(models.Model):
     name = fields.Char("Referencia")
     order_id = fields.Many2one("sale.order", string="Pedido de venta")
     cantidad = fields.Float("Cantidad")
+    
+class Invoice(models.Model):
+
+    _name = "tetrace.invoice"
+    _description = "Tipo facturación"
+    
+    name = fields.Char(string = "Nombre")
 

@@ -37,3 +37,4 @@ access_tetrace_coordinador_company,access_tetrace_coordinador_company,model_tetr
 access_tetrace_ausencia,access_tetrace_ausencia,model_tetrace_ausencia,base.group_user,1,1,1,1
 access_tetrace_proyecto_necesidad,access_tetrace_proyecto_necesidad,model_tetrace_proyecto_necesidad,base.group_user,1,1,1,1
 access_hr_visado,access_hr_visado,model_hr_visado,base.group_user,1,1,1,1
+access_tetrace_invoice,access_tetrace_invoice,model_tetrace_invoice,base.group_user,1,1,1,1 
