@@ -56,6 +56,8 @@
                 <field name="estado_tetrace" string="Estado Tetrace"/>
                 <field name="motivo_cancelacion" string="Motivo cancelación" attrs="{'invisible': [['estado_tetrace', '!=', 'Rechazado']], 'required': [['estado_tetrace','=','Rechazado']]}"/>
                 <field name="feedbacktetrace" string="Feedback" attrs="{'required': [['estado_tetrace', '=', 'Rechazado']]}"/>
+                <field name="prevision_facturacion"/>
+                <field name="invoicing_id" required="True"/>
             </xpath>
 
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -140,10 +142,11 @@
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
                 <field name="analytic_account_id" 
                        context="{'default_partner_id':partner_invoice_id, 'default_name':name}" 
-                       attrs="{'readonly': [('invoice_count','!=',0),('state','=','sale')]}" 
+                       attrs="{'readonly': ['|', '|', ('invoice_count', '!=', 0), ('state','=','sale'), ('asignar_cuenta_analitica_manual', '=', False)]}" 
                        groups="analytic.group_analytic_accounting" 
                        force_save="1"/>
-                <field name="prevision_facturacion"/>
+                <field name="asignar_cuenta_analitica_manual"
+                       attrs="{'readonly': ['|', ('invoice_count', '!=', 0), ('state','=','sale')]}"/>
             </xpath>
             
             <xpath expr="//field[@name='validity_date']" position="attributes">

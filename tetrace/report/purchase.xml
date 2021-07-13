@@ -29,6 +29,10 @@
             <attribute name="t-options-widget">"monetary"</attribute>
         </xpath>
         
+        <xpath expr="//div[@t-field='o.partner_id']" position="before">
+            <div><br/><br/><br/><br/></div>
+        </xpath>
+        
         <xpath expr="//div[@t-field='o.partner_id']" position="replace">
             <div>
                 <span t-field="o.with_context(no_display_commercial=True).partner_id.display_name"/> <br/>
@@ -52,6 +56,10 @@
                 <span t-field="o.payment_term_id.display_name"/>
             </div>
         </xpath> 
+        
+        <xpath expr="//t[@t-set='information_block']/strong[1]" position="before">
+            <div><br/><br/><br/><br/></div>
+        </xpath>
         
         <xpath expr="//div[@t-field='o.dest_address_id']" position="replace">
             <div>

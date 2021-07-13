@@ -72,6 +72,8 @@ class SaleOrder(models.Model):
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora", 
                                              default=lambda self: self.env.company)
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
+    invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
+    asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -96,6 +98,11 @@ class SaleOrder(models.Model):
             if r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}', r.referencia_proyecto_antigua) == None:
                 raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
 
+    @api.onchange("asignar_cuenta_analitica_manual")
+    def _onchange_asignar_cuenta_analitica_manual(self):
+        if not self.asignar_cuenta_analitica_manual:
+            self.analytic_account_id = False
+                
     @api.depends("order_line.untaxed_amount_to_invoice", "order_line.untaxed_amount_invoiced")
     def _compute_amt_to_invoice(self):
         for r in self:
@@ -339,6 +346,12 @@ class SaleOrder(models.Model):
             self.detalle_proyecto or ''
         )
 
+    def _create_analytic_account(self, prefix=None):
+        for order in self:
+            if not order.asignar_cuenta_analitica_manual:
+                analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
+                order.analytic_account_id = analytic
+    
     def _action_confirm(self):
         for order in self:
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
@@ -390,13 +403,14 @@ class SaleOrder(models.Model):
 
                 name = "%s %s" % (r.ref_proyecto, r.nombre_proyecto)
                 r.project_ids.write({'name': name})
-                for p in r.project_ids:
-                    if p.analytic_account_id.update_from_sale_order:
-                        p.analytic_account_id.write({
-                            'name': name,
-                            'partner_id': r.partner_id.id,
-                            'company_id': None
-                        })
+                if not r.asignar_cuenta_analitica_manual:
+                    for p in r.project_ids:
+                        if p.analytic_account_id.update_from_sale_order:
+                            p.analytic_account_id.write({
+                                'name': name,
+                                'partner_id': r.partner_id.id,
+                                'company_id': None
+                            })
 
     def _prepare_analytic_account_data(self, prefix=None):
         values = super(SaleOrder, self)._prepare_analytic_account_data(prefix) 
@@ -563,4 +577,11 @@ class RefProducto(models.Model):
     name = fields.Char("Referencia")
     order_id = fields.Many2one("sale.order", string="Pedido de venta")
     cantidad = fields.Float("Cantidad")
+    
+class Invoice(models.Model):
+
+    _name = "tetrace.invoice"
+    _description = "Tipo facturación"
+    
+    name = fields.Char(string = "Nombre")
 
