@@ -30,7 +30,11 @@
                 </div>
             </div>
         </xpath>
-
+        
+        <xpath expr="//t[@t-call='web.address_layout']" position="before">
+            <br/>
+        </xpath>
+        
         <xpath expr="//div[@t-field='company.partner_id']" position="replace">
             <div class="first-page">
                 <div t-if="o and o._name == 'account.move' and o.journal_id and o.journal_id.exportacion">
