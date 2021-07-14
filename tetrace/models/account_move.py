@@ -58,6 +58,7 @@ class AccountMove(models.Model):
     baremo = fields.Boolean("Fuera Baremo")
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
+    prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", 'invoice_id')
 
     @api.onchange("purchase_vendor_bill_id", "purchase_id")
     def _onchange_purchase_auto_complete(self):
