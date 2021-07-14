@@ -28,6 +28,7 @@
                             <field name="invoice_ids" invisible="1"/>
                             <field name="invoice_id" readonly="1"/>
                             <field name="invoice_state_validation" readonly="1"/>
+                            <field name="invoice_estado_tetrace" readonly="1"/>
                         </group>
                         <group>
                             <field name="fecha" readonly="1"/>
