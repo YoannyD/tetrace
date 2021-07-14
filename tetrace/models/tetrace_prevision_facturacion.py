@@ -31,7 +31,7 @@ class PrevisionFacturacion(models.Model):
     invoice_ids = fields.Many2many('account.move', 'prev_fact_inv_rel', 'prev_fact_id', 'inv_id', 
                                    compute="_compute_invoice_ids", store=True)
     invoice_id = fields.Many2one('account.move', string="Factura")
-    invoice_state_validation = fields.Selection(STATES_INVOICE, store=True, string="Estado validación"
+    invoice_state_validation = fields.Selection(STATES_INVOICE, store=True, string="Estado validación",
                                                 compute="_compute_invoice_state_validation")
     fecha = fields.Date('Fecha')
     importe = fields.Monetary("Importe previsto")
