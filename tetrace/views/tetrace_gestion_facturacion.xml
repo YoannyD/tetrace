@@ -67,6 +67,7 @@
                        options="{'no_create':True, 'no_create_edit': True}"
                        domain="[('id', 'in', invoice_ids), ('prevision_facturacion_ids', '=', False)]"/>
                 <field name="invoice_state_validation"/>
+                <field name="invoice_estado_tetrace"/>
                 <field name="cancelado"/>
                 <field name="currency_id" invisible="1"/>
             </tree>

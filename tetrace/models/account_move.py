@@ -22,6 +22,14 @@ CODIGOS_SII = [
     ('61', _('Nota de crédito electrónica'))
 ]
 
+ESTADOS_TETRACE = [
+    ('validada', 'Validada'),
+    ('pendiente_oc', 'Pendiente OC'),
+    ('ok_cliente', 'OK Cliente'),
+    ('publicada', 'Publicada'),
+    ('enviada', 'Enviada'),
+]
+
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
 
 
@@ -59,6 +67,7 @@ class AccountMove(models.Model):
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", 'invoice_id')
+    estado_tetrace = fields.Selection(ESTADOS_TETRACE, string="Estado")
 
     @api.onchange("purchase_vendor_bill_id", "purchase_id")
     def _onchange_purchase_auto_complete(self):
@@ -354,7 +363,17 @@ class AccountMove(models.Model):
             
         if 'asiento_anticipo_id' in vals:
             self.actualizar_fecha_vencimiento_asiento_anticipo()
-  
+            
+        if 'validated' in vals:
+            for r in self:
+                if r.validated:
+                    r.write({'estado_tetrace': 'validada'})
+            
+        return res
+
+    def action_post(self):
+        res = super(AccountMove, self).action_post()
+        self.write({'estado_tetrace': 'publicada'})
         return res
 
     def actualizar_fecha_vencimiento_asiento_anticipo(self):

@@ -76,6 +76,8 @@
                        context="{'mostrar_tipo_nombre': True}" 
                        attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice'))]}"/>
                        <!--attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice')), ('baremo', '=', True)]}"/>-->
+                <field name="estado_tetrace" 
+                       attrs="{'readonly': [('validated', '=', False), ('state', 'in', ['draft']), ('rejected', '=', False), ('review_ids', '!=', [])]}"/>
             </xpath>
 
 
