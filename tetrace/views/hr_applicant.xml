@@ -21,6 +21,11 @@
             <xpath expr="//field[@name='emp_id']" position="replace"/>
 
             <xpath expr="//group[1]" position="inside">
+                <group string="Feedback">
+                    <field name="habilidad_ids" widget="many2many_tags"/>
+                    <field name="observaciones"/>
+                </group>
+                
                 <group string="Empleado">
                     <field name="emp_id"/>
                 </group>

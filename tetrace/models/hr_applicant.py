@@ -26,6 +26,8 @@ class Applicant(models.Model):
     proceso_seleccion_id = fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
     project_ids = fields.Many2many('project.project')
     reference = fields.Char(compute="_compute_reference")
+    habilidad_ids = fields.Many2many('tetrace.habilidad_applicant')
+    observaciones = fields.Text("Observaciones")
 
     def _compute_reference(self):
         self.reference = self.id + 1
@@ -164,4 +166,16 @@ class ApplicationResumeLine(models.Model):
 
     _sql_constraints = [
         ('date_check', "CHECK ((date_start <= date_end OR date_end = NULL))", _("The start date must be anterior to the end date.")),
+    ]
+
+    
+class HabilidadApplicant(models.Model):
+    _name = "tetrace.habilidad_applicant"
+    _description = "Habilidades proceso de selección"
+    
+    name = fields.Char("name", required=True, index=True)
+    applicant_ids = fields.Many2many("hr.applicant")
+    
+    _sql_constraints = [
+        ("name_unique", "unique(name)", "El nombre",)
     ]
