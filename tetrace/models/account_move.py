@@ -364,11 +364,6 @@ class AccountMove(models.Model):
         if 'asiento_anticipo_id' in vals:
             self.actualizar_fecha_vencimiento_asiento_anticipo()
             
-        if 'validated' in vals:
-            for r in self:
-                if r.validated:
-                    r.write({'estado_tetrace': 'validada'})
-            
         return res
 
     def action_post(self):
@@ -410,7 +405,7 @@ class AccountMove(models.Model):
                 "partner_id", "fiscal_position_id", "partner_shipping_id", "access_token","tipo_proyecto_id",
                 "l10n_latam_document_number", "name", "message_main_attachment_id", 
                 "invoice_paymnet_terms_id", "invoice_payment_bank_id", "asiento_anticipo_id",
-                "l10n_latam_document_type_id"]
+                "l10n_latam_document_type_id", "estado_tetrace"]
         return res
     
     @api.model

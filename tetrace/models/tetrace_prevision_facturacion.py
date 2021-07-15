@@ -12,6 +12,7 @@ _logger = logging.getLogger(__name__)
 
 STATES_INVOICE = [
     ('validated', 'Validado'),
+    ('without_validation', 'Sin validación'),
     ('need_validation', 'Necesita validación'),
     ('rejected', 'Rechazado'),
 ]
@@ -51,15 +52,19 @@ class PrevisionFacturacion(models.Model):
         for r in self:
             r.invoice_ids = r.order_id.invoice_ids.ids
             
-    @api.depends('invoice_id', 'invoice_id.validated', 'invoice_id.need_validation', 'invoice_id.rejected')
+    @api.depends('invoice_id', 'invoice_id.validated', 'invoice_id.need_validation', 
+                 'invoice_id.rejected', 'invoice_id.review_ids')
     def _compute_invoice_state_validation(self):
         for r in self:
             if not r.invoice_id:
                 r.invoice_state_validation = None
             elif r.invoice_id.validated:
                 r.invoice_state_validation = 'validated'
-            elif r.invoice_id.need_validation:
-                r.invoice_state_validation = 'need_validation'
             elif r.invoice_id.rejected:
                 r.invoice_state_validation = 'rejected'
+            elif r.invoice_id.need_validation:
+                r.invoice_state_validation = 'without_validation'
+            elif r.invoice_id.review_ids:
+                r.invoice_state_validation = 'need_validation'
+            
             
