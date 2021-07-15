@@ -381,7 +381,7 @@ class AccountMove(models.Model):
         secuencia_num = 1
         move = self.search([
             ('journal_id.type', '=', 'sale'),
-            ('company_id', '=', self.env.company.id),
+            ('company_id', '=', self.company_id.id),
             ('secuencia_num', '!=', False)
         ], limit=1, order="secuencia_num desc")
 
