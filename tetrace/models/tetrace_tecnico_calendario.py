@@ -20,6 +20,8 @@ class TecnicoCalendario(models.Model):
     fecha_inicio = fields.Date('Fecha inicio')
     fecha_fin = fields.Date('Fecha fin')
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    rating = fields.Char("Evaluación")
+    observaciones = fields.Text("Observaciones")
     
     @api.constrains("fecha_inicio", "fecha_fin")	
     def _check_fechas(self):

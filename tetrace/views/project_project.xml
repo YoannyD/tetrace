@@ -146,6 +146,8 @@
                             <field name="employee_id"/>
                             <field name="job_id"/>
                             <field name="resource_calendar_id"/>
+                            <field name="rating"/>
+                            <field name="observaciones"/>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
                         </tree>
