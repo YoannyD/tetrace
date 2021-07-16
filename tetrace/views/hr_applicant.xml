@@ -92,11 +92,23 @@
                     </page>
                     <page string="Proyectos">
                         <field name="project_ids" nolabel="1">
-                            <field name="name"/>
-                            <field name="user_id"/>
-                            <field name="partner_id"/>
-                            <field name="company_id"/>
-                            <field name="estado_id"/>
+                            <tree editable="bottom">
+                                <field name="name"/>
+                                <field name="user_id"/>
+                                <field name="partner_id"/>
+                                <field name="company_id"/>
+                                <field name="estado_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Feedback">
+                        <field name="feedback_ids" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="fecha"/>
+                                <field name="origen"/>
+                                <field name="user_id"/>
+                                <field name="comentarios"/>
+                            </tree>
                         </field>
                     </page>
                 </notebook>

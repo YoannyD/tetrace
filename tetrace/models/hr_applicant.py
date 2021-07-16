@@ -28,6 +28,7 @@ class Applicant(models.Model):
     reference = fields.Char(compute="_compute_reference")
     habilidad_ids = fields.Many2many('tetrace.habilidad_applicant')
     observaciones = fields.Text("Observaciones")
+    feedback_ids = fields.One2many("tetrace.feedback_applicant", "applicant_id")
 
     def _compute_reference(self):
         self.reference = self.id + 1
@@ -179,3 +180,15 @@ class HabilidadApplicant(models.Model):
     _sql_constraints = [
         ("name_unique", "unique(name)", "El nombre",)
     ]
+    
+
+class FeedbackApplicant(models.Model):
+    _name = "tetrace.feedback_applicant"
+    _description = "Feedback proceso de selección"
+    _rec_name = "origen"
+    
+    fecha = fields.Date("Fecha")
+    origen = fields.Char("Origen")
+    user_id = fields.Many2one("res.users", string="Usuario")
+    comentarios = fields.Text("Comentarios")
+    applicant_id = fields.Many2one('hr.applicant', string="Proceso de selección")
