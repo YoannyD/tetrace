@@ -29,6 +29,8 @@ class PrevisionFacturacion(models.Model):
     order_nombre_proyecto = fields.Char(related="order_id.nombre_proyecto", store=True)
     order_project_estado_id = fields.Many2one("tetrace.project_state", 
                                               related="order_id.project_estado_id", store=True)
+    order_company_id = fields.Many2one('res.company', related="order_id.company_id")
+    order_coordinador_proyecto_id = fields.Many2one("res.users", related="order_id.coordinador_proyecto_id")
     invoice_ids = fields.Many2many('account.move', 'prev_fact_inv_rel', 'prev_fact_id', 'inv_id', 
                                    compute="_compute_invoice_ids", store=True)
     invoice_id = fields.Many2one('account.move', string="Factura")
@@ -44,8 +46,6 @@ class PrevisionFacturacion(models.Model):
     importe_factura = fields.Monetary("Importe factura")
     no_aplica = fields.Boolean("No aplica")
     cancelado = fields.Boolean("Cancelado")
-    company_id = fields.Many2one('res.company', string="Compañia")
-    coordinador_proyecto_id = fields.Many2one("res.users", string="Coordinador proyecto")
     
     @api.depends('order_id.invoice_ids')
     def _compute_invoice_ids(self):
