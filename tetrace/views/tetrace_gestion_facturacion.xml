@@ -34,7 +34,7 @@
                             <field name="fecha" readonly="1"/>
                             <field name="feedbak" readonly="1"/>
                             <field name="observaciones" readonly="1"/>
-                            <field name="importe_factura" readonly="1"/>
+                            <field name="invoice_amount_total" readonly="1"/>
                             <field name="importe" readonly="1"/>
                             <field name="facturado" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
@@ -50,11 +50,11 @@
         <field name="model">tetrace.prevision_facturacion</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
-                <field name="fecha"/>
+                <field name="fecha" readonly="1"/>
                 <field name="order_id" invisible="1"/>
                 <field name="order_partner_id" readonly="1"/>
-                <field name="order_nombre_proyecto" readonly="1"/>
-                <field name="order_company_id"/>
+                <field name="order_num_proyecto"/>
+                <field name="order_company_id" readonly="1"/>
                 <field name="order_project_estado_id" readonly="1"/>
                 <field name="order_coordinador_proyecto_id"/>
                 <field name="importe"/>
@@ -62,7 +62,7 @@
                 <field name="invoice_id" 
                        options="{'no_create':True, 'no_create_edit': True}"
                        domain="[('id', 'in', invoice_ids), ('prevision_facturacion_ids', '=', False)]"/>
-                <field name="importe_factura"/>
+                <field name="invoice_amount_total"/>
                 <field name="invoice_state_validation"/>
                 <field name="invoice_estado_tetrace"/>
                 <field name="cancelado"/>

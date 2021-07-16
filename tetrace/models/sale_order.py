@@ -97,7 +97,7 @@ class SaleOrder(models.Model):
         for r in self:
             if r.referencia_proyecto_antigua and re.fullmatch(r'\d{4}\.\d{4}', r.referencia_proyecto_antigua) == None:
                 raise ValidationError(_("La referencia de proyecto antigua tiene que seguir el patrón 9999.9999."))
-
+                
     @api.onchange("asignar_cuenta_analitica_manual")
     def _onchange_asignar_cuenta_analitica_manual(self):
         if not self.asignar_cuenta_analitica_manual:
