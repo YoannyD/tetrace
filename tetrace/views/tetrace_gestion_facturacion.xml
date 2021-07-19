@@ -53,11 +53,14 @@
                 <field name="fecha" readonly="1"/>
                 <field name="order_id" invisible="1"/>
                 <field name="order_partner_id" readonly="1"/>
-                <field name="order_num_proyecto"/>
+                <field name="order_ref_proyecto"/>
                 <field name="order_company_id" readonly="1"/>
                 <field name="order_project_estado_id" readonly="1"/>
                 <field name="order_coordinador_proyecto_id"/>
                 <field name="importe"/>
+                <field name="trips"/>
+                <field name="compras"/>
+                <field name="coordinador"/>
                 <field name="invoice_ids" invisible="1"/>
                 <field name="invoice_id" 
                        options="{'no_create':True, 'no_create_edit': True}"

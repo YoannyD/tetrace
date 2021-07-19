@@ -26,7 +26,8 @@ class PrevisionFacturacion(models.Model):
     order_date_order = fields.Datetime(related="order_id.date_order", store=True)
     order_partner_id = fields.Many2one(related="order_id.partner_id", store=True)
     order_amount_total = fields.Monetary(realted="order_id.partner_id", store=True)
-    order_num_proyecto = fields.Char(related="order_id.num_proyecto", store=True)
+    #order_num_proyecto = fields.Char(related="order_id.num_proyecto", store=True)
+    order_ref_proyecto = fields.Char(related="order_id.ref_proyecto", store=True)
     order_nombre_proyecto = fields.Char(related="order_id.nombre_proyecto", store=True)
     order_project_estado_id = fields.Many2one("tetrace.project_state", 
                                               related="order_id.project_estado_id", store=True)
@@ -47,6 +48,9 @@ class PrevisionFacturacion(models.Model):
     observaciones = fields.Text("Observaciones", translate=True)
     no_aplica = fields.Boolean("No aplica")
     cancelado = fields.Boolean("Cancelado")
+    trips = fields.Boolean("Trips")
+    compras = fields.Boolean("Compras")
+    coordinador = fields.Boolean("Coordinador")
     
     @api.depends('order_id.invoice_ids')
     def _compute_invoice_ids(self):
