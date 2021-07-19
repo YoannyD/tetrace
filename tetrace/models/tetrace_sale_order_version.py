@@ -38,13 +38,18 @@ class SaleOrderVersion(models.Model):
         return res
 
     def siguiente_version(self, order_id):
-        _logger.warning(order_id)
         version = self.search([('sale_order_id', '=', order_id)], limit=1)
         if version:
             return version.version + 1
         return 1
 
     def crear_pdf(self, order_id):
-        report = self.env["ir.actions.report"]._get_report_from_name("sale.report_saleorder")
+        order = self.env['sale.order'].browse(order_id)
+        if order.visible_btn_generar_proyecto or order.project_ids:
+            name_report = "tetrace.report_saleorder_proyecto"
+        else:
+            name_report = "sale.report_saleorder"
+            
+        report = self.env["ir.actions.report"]._get_report_from_name(name_report)
         pdf_bin, _ = report.render_qweb_pdf(order_id)
         return base64.b64encode(pdf_bin)

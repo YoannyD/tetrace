@@ -15,7 +15,10 @@
             <attribute name="invisible">1</attribute>
         </xpath>
         <xpath expr="//field[@name='type']" position="after">
-           <field name="categ_id_new" string="Categoría de Producto" required="True"/>
+           <field name="categ_id" string="Categoría contable" required="True"/>
+        </xpath>
+        <xpath expr="//field[@name='type']" position="after">
+           <field name="public_categ_ids" string="Familias/subfamilias" required="True"/>
         </xpath>
         <xpath expr="//group[@name='bill']" position="attributes">
             <attribute name="groups">__export__.res_groups_1301_ad93fb96</attribute>

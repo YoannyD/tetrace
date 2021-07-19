@@ -22,6 +22,14 @@ CODIGOS_SII = [
     ('61', _('Nota de crédito electrónica'))
 ]
 
+ESTADOS_TETRACE = [
+    ('validada', 'Validada'),
+    ('pendiente_oc', 'Pendiente OC'),
+    ('ok_cliente', 'OK Cliente'),
+    ('publicada', 'Publicada'),
+    ('enviada', 'Enviada'),
+]
+
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
 
 
@@ -58,6 +66,8 @@ class AccountMove(models.Model):
     baremo = fields.Boolean("Fuera Baremo")
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
+    prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", 'invoice_id')
+    estado_tetrace = fields.Selection(ESTADOS_TETRACE, string="Estado")
 
     @api.onchange("purchase_vendor_bill_id", "purchase_id")
     def _onchange_purchase_auto_complete(self):
@@ -353,7 +363,12 @@ class AccountMove(models.Model):
             
         if 'asiento_anticipo_id' in vals:
             self.actualizar_fecha_vencimiento_asiento_anticipo()
-  
+            
+        return res
+
+    def action_post(self):
+        res = super(AccountMove, self).action_post()
+        self.write({'estado_tetrace': 'publicada'})
         return res
 
     def actualizar_fecha_vencimiento_asiento_anticipo(self):
@@ -366,7 +381,7 @@ class AccountMove(models.Model):
         secuencia_num = 1
         move = self.search([
             ('journal_id.type', '=', 'sale'),
-            ('company_id', '=', self.env.company.id),
+            ('company_id', '=', self.company_id.id),
             ('secuencia_num', '!=', False)
         ], limit=1, order="secuencia_num desc")
 
@@ -390,7 +405,7 @@ class AccountMove(models.Model):
                 "partner_id", "fiscal_position_id", "partner_shipping_id", "access_token","tipo_proyecto_id",
                 "l10n_latam_document_number", "name", "message_main_attachment_id", 
                 "invoice_paymnet_terms_id", "invoice_payment_bank_id", "asiento_anticipo_id",
-                "l10n_latam_document_type_id"]
+                "l10n_latam_document_type_id", "estado_tetrace"]
         return res
     
     @api.model

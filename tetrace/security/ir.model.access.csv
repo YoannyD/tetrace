@@ -38,3 +38,5 @@ access_tetrace_ausencia,access_tetrace_ausencia,model_tetrace_ausencia,base.grou
 access_tetrace_proyecto_necesidad,access_tetrace_proyecto_necesidad,model_tetrace_proyecto_necesidad,base.group_user,1,1,1,1
 access_hr_visado,access_hr_visado,model_hr_visado,base.group_user,1,1,1,1
 access_tetrace_invoice,access_tetrace_invoice,model_tetrace_invoice,base.group_user,1,1,1,1 
+access_tetrace_habilidad_applicant,access_tetrace_habilidad_applicant,model_tetrace_habilidad_applicant,base.group_user,1,1,1,1
+access_tetrace_feedback_applicant,access_tetrace_feedback_applicant,model_tetrace_feedback_applicant,base.group_user,1,1,1,1

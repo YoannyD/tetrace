@@ -23,12 +23,18 @@
                             <field name="order_partner_id" readonly="1"/>
                             <field name="order_nombre_proyecto" readonly="1"/>
                             <field name="order_project_estado_id" readonly="1"/>
+                            <field name="order_company_id" readonly="1"/>
+                            <field name="order_coordinador_proyecto_id" readonly="1"/>
+                            <field name="invoice_ids" invisible="1"/>
+                            <field name="invoice_id" readonly="1"/>
+                            <field name="invoice_state_validation" readonly="1"/>
+                            <field name="invoice_estado_tetrace" readonly="1"/>
                         </group>
                         <group>
                             <field name="fecha" readonly="1"/>
                             <field name="feedbak" readonly="1"/>
                             <field name="observaciones" readonly="1"/>
-                            <field name="importe_factura" readonly="1"/>
+                            <field name="invoice_amount_total" readonly="1"/>
                             <field name="importe" readonly="1"/>
                             <field name="facturado" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
@@ -44,17 +50,28 @@
         <field name="model">tetrace.prevision_facturacion</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
+                <field name="fecha" readonly="1"/>
                 <field name="order_id" invisible="1"/>
                 <field name="order_partner_id" readonly="1"/>
-                <field name="order_nombre_proyecto" readonly="1"/>
+                <field name="order_ref_proyecto"/>
+                <field name="order_company_id" readonly="1"/>
                 <field name="order_project_estado_id" readonly="1"/>
-                <field name="fecha"/>
-                <field name="feedbak"/>
-                <field name="importe_factura"/>
+                <field name="order_coordinador_proyecto_id"/>
                 <field name="importe"/>
+                <field name="trips"/>
+                <field name="compras"/>
+                <field name="coordinador"/>
+                <field name="invoice_ids" invisible="1"/>
+                <field name="invoice_id" 
+                       options="{'no_create':True, 'no_create_edit': True}"
+                       domain="[('id', 'in', invoice_ids), ('prevision_facturacion_ids', '=', False)]"/>
+                <field name="invoice_amount_total"/>
+                <field name="invoice_state_validation"/>
+                <field name="invoice_estado_tetrace"/>
+                <field name="cancelado"/>
                 <field name="facturado"/>
                 <field name="no_aplica"/>
-                <field name="cancelado"/>
+                <field name="feedbak"/>
                 <field name="currency_id" invisible="1"/>
             </tree>
         </field>

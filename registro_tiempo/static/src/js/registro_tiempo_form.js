@@ -60,36 +60,12 @@ $(function() {
 
         $("#summary").dxValidationSummary({});
 
-        var employee_id_dx = $("#employee_id_dx").dxSelectBox({
-            dataSource: tecnicosDataSource,
-            displayExpr: "name",
-            valueExpr: "id",
-            searchEnabled: true,
-            onValueChanged: function(data) {
-                $(".form_fields").hide();
-                project_id_dx.option("value", null);
-                var project_data_source = project_id_dx.getDataSource();
-                project_data_source.reload();
-                if(data.value){
-                    $(".dx-field-project_id").show();
-                }else{
-                    $(".dx-field-project_id").hide();
-                }
-            }
-        }).dxValidator({
-            validationRules: [{
-                type: "required",
-                message: "El técnico es obligatorio."
-            }]
-        }).dxSelectBox("instance");
-
         var projectDataSource = new DevExpress.data.CustomStore({
             key: "id",
             load: function(loadOptions) {
                 var params = {
                     "offset": loadOptions.skip,
                     "limit": loadOptions.take,
-                    "employee_id": employee_id_dx.option("value")
                 }
 
                 if(loadOptions.searchValue){
@@ -171,7 +147,6 @@ $(function() {
 
                 var params = {
                     'project_id': project_id,
-                    'employee_id': employee_id_dx.option("value"),
                     'fecha': fecha_str
                 }
 
@@ -235,7 +210,6 @@ $(function() {
 
                 var params = {
                     'project_id': project_id,
-                    'employee_id': employee_id_dx.option("value"),
                     'fecha': fecha_str
                 }
 
@@ -326,7 +300,6 @@ $(function() {
             text: "Limpiar",
             type: "normal",
             onClick: function() {
-                employee_id_dx.reset();
                 project_id_dx.option("value", null);
                 tipo_dx.option("value", "Parte");
                 paradas_dx.option("dataSource", []);
@@ -341,7 +314,6 @@ $(function() {
             var hora_salida = hora_salida_dx.option("value");
             
             var params = {
-                'employee_id': employee_id_dx.option("value"),
                 'project_id': project_id_dx.option("value"),
                 'fecha_entrada': date_to_string(fecha_entrada_dx.option("value")),
                 'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
@@ -384,7 +356,6 @@ $(function() {
                     var params = {
                         "offset": loadOptions.skip,
                         "limit": loadOptions.take,
-                        'employee_id': employee_id_dx.option("value"),
                         'project_id': project_id_dx.option("value")
                     }
 
