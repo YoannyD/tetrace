@@ -29,7 +29,7 @@
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></strong></span><br/> 
+                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/></strong></span><br/> 
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
     </t> 
 </t>
@@ -77,9 +77,9 @@
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Nombre Empleado:</strong>
                     <p class="m-0" t-field="employee.name"/>
                 </div>
-                           <div t-if="employee.codigo_trabajador_A3" class="col-auto mw-100 mb-2">
+                           <div t-if="employee.reference" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código del trabajador:</strong>
-                    <p class="m-0" t-field="employee.codigo_trabajador_A3"/>
+                    <p class="m-0" t-field="employee.reference"/>
                 </div>
                            <!--div t-if="employee.mobile_phone" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Teléfono:</strong>
@@ -104,7 +104,7 @@
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/> 
+                                 <span><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/></span><br/> 
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
         
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
