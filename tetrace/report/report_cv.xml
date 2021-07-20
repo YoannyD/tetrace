@@ -22,21 +22,19 @@
                 <t t-foreach="docs" t-as="employee">
                     
                      
-                    <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
+                    <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:10px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
  
-<t t-foreach="line_type_ids" t-as="line_type"> 
-    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
-    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> 
+<t t-foreach="line_type_ids" t-as="line_type"><br/>
+    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
+    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/> 
-                                    <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
-       
+                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></strong></span><br/> 
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
     </t> 
 </t>
                                 </div>
-                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
                                 
            <t t-set="skill_type_ids" t-value="docs.employee_skill_ids.mapped('skill_type_id')"/> 
  
@@ -50,7 +48,7 @@
 </t>
                                 </div>
                         
-                                                <div class="row" style="margin:5px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                                <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
                                
       
                                 <t t-foreach="docs.formacion_ids" t-as="forms">
@@ -74,7 +72,7 @@
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="employee">
-                    <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                    <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:10px;float:right;clear:both;">
                     <div t-if="employee.name" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Nombre Empleado:</strong>
                     <p class="m-0" t-field="employee.name"/>
@@ -83,10 +81,10 @@
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código del trabajador:</strong>
                     <p class="m-0" t-field="employee.codigo_trabajador_A3"/>
                 </div>
-                           <div t-if="employee.mobile_phone" class="col-auto mw-100 mb-2">
+                           <!--div t-if="employee.mobile_phone" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Teléfono:</strong>
                     <p class="m-0" t-field="employee.mobile_phone"/>
-                </div>
+                </div-->
                         <div t-if="employee.department_id.name" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Departamento:</strong>
                     <p class="m-0" t-field="employee.department_id.name"/>
@@ -99,12 +97,12 @@
         <span><t t-esc="employee.study_field"/></span><br/>
                <span><t t-esc="employee.study_school"/></span><br/>               
                            </div-->
-                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
+                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
  
-<t t-foreach="line_type_ids" t-as="line_type"> 
-    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
-    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> 
+<t t-foreach="line_type_ids" t-as="line_type"><br/>
+    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
+    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
                                  <span><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/> 
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
@@ -114,7 +112,7 @@
 </t>
                                 </div>
                       
-                            <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                            <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
                                 
            <t t-set="skill_type_ids" t-value="docs.employee_skill_ids.mapped('skill_type_id')"/> 
  
@@ -127,7 +125,7 @@
     </t> 
 </t>
                                 </div>
-                                                <div class="row" style="margin:50px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                                <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
                                
           
                                 <t t-foreach="docs.formacion_ids" t-as="forms">
