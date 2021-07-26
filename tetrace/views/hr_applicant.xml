@@ -177,6 +177,7 @@
                     <group>
                         <field name="date_start" required="True"/>
                         <field name="date_end"/>
+                        <field name="date_actual"/>
                     </group>
                 </group>
                 <field name="description" placeholder="Description"/>

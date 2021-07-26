@@ -147,6 +147,10 @@
                        force_save="1"/>
                 
             </xpath>
+            <xpath expr="//field[@name='company_coordinador_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="required">1</attribute>
+            </xpath>
             
             <xpath expr="//field[@name='validity_date']" position="attributes">
                 <attribute name="string">Fecha Límite</attribute>

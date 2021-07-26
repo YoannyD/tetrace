@@ -58,6 +58,7 @@
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
                                  <span><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>/<t t-esc="line.date_end"/></span><br/> 
+         <!--input type="checkbox" checked="checked"  t-field="line.date_actual"/-->
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
      &#160;
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
