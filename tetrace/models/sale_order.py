@@ -69,8 +69,7 @@ class SaleOrder(models.Model):
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
                                                 compute="_compute_visible_btn_change_partner")
-    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora", 
-                                             default=lambda self: self.env.company)
+    company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
     invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
@@ -585,3 +584,11 @@ class Invoice(models.Model):
     
     name = fields.Char(string = "Nombre")
 
+class Invoice(models.Model):
+
+    _name = "tetrace.invoice"
+    _description = "Tipo facturación"
+    
+    name = fields.Char(string = "Nombre")
+    
+    

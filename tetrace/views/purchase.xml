@@ -5,6 +5,8 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="model">purchase.order</field>
         <field name="arch" type="xml">
+             <xpath expr="//label[@for='date_planned']" position="replace"/>
+        
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="create_uid" invisible="1"/>
                 <field name="validacion_id" required="1" domain="[('user_id', 'in', [create_uid, uid])]"/>

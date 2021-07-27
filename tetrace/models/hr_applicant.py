@@ -164,7 +164,7 @@ class ApplicationResumeLine(models.Model):
     description = fields.Text("Description", translate=True)
     line_type_id = fields.Many2one('hr.resume.line.type', string="Tipo")
     display_type = fields.Selection([('classic', 'Classic')], string="Display Type", default='classic')
-
+    date_actual = fields.Boolean('Actual')
     _sql_constraints = [
         ('date_check', "CHECK ((date_start <= date_end OR date_end = NULL))", _("The start date must be anterior to the end date.")),
     ]
