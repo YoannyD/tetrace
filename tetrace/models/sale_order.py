@@ -284,6 +284,10 @@ class SaleOrder(models.Model):
 
         res = super(SaleOrder, self).write(vals)
 
+        if "company_coordinador_id" in vals:
+            for r in self:
+                r.project_ids.write({'company_coordinador_id': r.company_coordinador_id.id})
+        
         if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals:
             for r in self:
                 ref_proyecto = r.generar_ref_proyecto()
