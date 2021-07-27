@@ -17,58 +17,49 @@
     />
 
 <template id="report_hr_employee_curriculum">
-          <t t-call="web.basic_layout">
-            <div class="page">
-                <t t-foreach="docs" t-as="employee">
-                    
-                     
-                    <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:10px;float:right;clear:both;">                      
-                                <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
- 
-
-<t t-foreach="line_type_ids" t-as="line_type"><br/>
-    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
-    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
-                                
-                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
-                                    <span><t class="text-right" t-esc="line.description"/></span><br/> 
-    </t> 
-</t>
-                                </div>
-                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
-                                
-           <t t-set="skill_type_ids" t-value="docs.employee_skill_ids.mapped('skill_type_id')"/> 
- 
-<t t-foreach="skill_type_ids" t-as="skill_type"> 
-     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="skill_type.name"/></span><br/>
-    <t t-foreach="docs.employee_skill_ids.filtered(lambda type: type.skill_type_id.id == skill_type.id)" t-as="skill">
-        
-                                    <span><strong><t t-esc="skill.skill_id.name"/>-<t t-esc="skill.skill_level_id.name"/></strong></span><br/> 
-                                    <!--span><t t-esc="skill.skill_level_id.name"/></span><br/--> 
-    </t> 
-</t>
-                                </div>
-                        
-                                                <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
-                               
-      
-                                <t t-foreach="docs.formacion_ids" t-as="forms">
-                                      <t t-foreach="forms" t-as="fr">
-                                                 
-                                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="fr.curso"/></span></strong><br/>
-                                    <strong><span><t t-esc="fr.tipo_id.name"/></span></strong><br/>
-
-                                    <strong><span><t t-esc="fr.fecha_inicio"/>|<t t-esc="fr.fecha_fin"/></span></strong><br/>
-                                     
-                                     </t>
-                                     </t>
-                                </div>
-
-          </t>
+  <t t-call="web.basic_layout">
+    <div class="page">
+        <t t-foreach="docs" t-as="employee">
+            <div class="row" style="margin:90px auto 32px auto;width:95%;padding-right:10px;float:right;clear:both;">                      
+              <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
+              <t t-foreach="line_type_ids" t-as="line_type">
+                  <br/>
+                  <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
+                  <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> 
+                    <br/>
+                    <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span>
+                    <br/> 
+                    <span><t class="text-right" t-esc="line.description"/></span>
+                    <br/> 
+                  </t> 
+              </t>
             </div>
-        </t>
+            <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+              <t t-set="skill_type_ids" t-value="docs.employee_skill_ids.mapped('skill_type_id')"/> 
+              <t t-foreach="skill_type_ids" t-as="skill_type"> 
+                   <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="skill_type.name"/></span><br/>
+                  <t t-foreach="docs.employee_skill_ids.filtered(lambda type: type.skill_type_id.id == skill_type.id)" t-as="skill">
+                      
+                                                  <span><strong><t t-esc="skill.skill_id.name"/>-<t t-esc="skill.skill_level_id.name"/></strong></span><br/> 
+                                                  <!--span><t t-esc="skill.skill_level_id.name"/></span><br/--> 
+                  </t> 
+              </t>
+            </div>
+            <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+              <t t-foreach="docs.formacion_ids" t-as="forms">
+                  <t t-foreach="forms" t-as="fr">
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;"><span><t t-esc="fr.curso"/></span></strong><br/>
+                    <strong><span><t t-esc="fr.tipo_id.name"/></span></strong><br/>
 
-    </template>
+                    <strong><span><t t-esc="fr.fecha_inicio"/>|<t t-esc="fr.fecha_fin"/></span></strong><br/>
+                   </t>
+              </t>
+            </div>
+          </t>
+    </div>
+  </t>
+</template>
+
  <template id="report_hr_employee_curriculum_name">
           <t t-call="web.basic_layout">
             <div class="page">
