@@ -164,6 +164,11 @@ class Project(models.Model):
         
         res = super(Project, self).write(vals)
         vals = self.actualizar_vals(vals)
+        
+        if 'company_coordinador_id' in vals:
+            for r in self:
+                r.tasks.write({'company_coordinador_id': r.company_coordinador_id.id})
+        
         if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
             self.actualizar_geo_partner()
 
@@ -418,19 +423,21 @@ class Project(models.Model):
         return wizard.open_wizard()
     
     def action_crear_tareas_faltantes(self):
-        if self.fecha_finalizacion and self.fecha_finalizacion < fields.Date.today():
-            raise UserError(_("El proyecto ya está finalizado"))
-            
-        if not self.sale_order_id:
-            return
-
         if self.sale_order_id.state != 'sale':
             raise UserError(_("El pedido de venta tiene que estar confirmado"))
-
-        self.sale_order_id.action_generar_proyecto()
-        self.sale_order_id.mapped('order_line').sudo().with_context(
-            force_company=self.sale_order_id.company_id.id,
-        )._timesheet_service_generation()
+        
+        project_theme = None
+        try:
+            project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))
+            project_theme = self.env['project.project'].sudo().search([('id', '=', project_theme_id)], limit=1)
+        except:
+            pass
+        
+        if not project_theme:
+           raise UserError(_("Tiene que configurar una plantilla de proyecto.")) 
+        
+        _logger.warning(self.sale_line_id)
+        self.sale_line_id.copy_tasks(project_theme.sudo().tasks, self)
         
     def enviar_email_tareas_asignadas(self):
         email_template = self.env.ref('tetrace.email_template_project_task_assigned', raise_if_not_found=False)
