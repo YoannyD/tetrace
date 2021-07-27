@@ -176,7 +176,7 @@
                     </group>
                     <group>
                         <field name="date_start" required="True"/>
-                        <field name="date_end"/>
+                        <field name="date_end" attrs="{'invisible':[('date_actual', '=', True)]}"/>
                         <field name="date_actual"/>
                     </group>
                 </group>

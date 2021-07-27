@@ -29,7 +29,7 @@
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/></strong></span><br/> 
+                                 <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
     </t> 
 </t>
@@ -91,12 +91,7 @@
                 </div>   
                         
                     </div>
-                    <!--div class="row" style="margin:40px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
-          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">EDUCACIÓN:</span></strong><br/>
-                          
-        <span><t t-esc="employee.study_field"/></span><br/>
-               <span><t t-esc="employee.study_school"/></span><br/>               
-                           </div-->
+         
                        <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
  
@@ -104,7 +99,7 @@
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span>
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/></span><br/> 
+                                  <span><strong><t t-esc="line.name"/>&#160;&#160;&#160;<t class="text-right" t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
         
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
