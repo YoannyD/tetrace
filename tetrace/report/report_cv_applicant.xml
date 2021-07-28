@@ -22,41 +22,44 @@
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="applicant">
-                    <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+       <!-- quitar codigo             <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                         <div t-if="applicant.reference" class="col-auto mw-100 mb-2">
                         <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código:</strong>
                     <p class="m-0" t-field="applicant.reference"/>
                         </div>
-                        </div>
+                        </div>-->
+  
                     <div class="row" style="margin:10px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                    <div t-if="applicant.name" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Nombre del Solicitante:</strong>
                     <p class="m-0" t-field="applicant.name"/>
               </div>
-                           <div t-if="applicant.email_from" class="col-auto mw-100 mb-2">
+                           <!--div t-if="applicant.email_from" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Correo:</strong>
                     <p class="m-0" t-field="applicant.email_from"/>
-                </div>
-                           <div t-if="applicant.partner_phone" class="col-auto mw-100 mb-2">
+                </div-->
+                           <!--div t-if="applicant.partner_phone" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Teléfono:</strong>
                     <p class="m-0" t-field="applicant.partner_phone"/>
                 </div>
                     <div t-if="applicant.partner_mobile" class="col-auto mw-100 mb-2">
                     <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Móvil:</strong>
                     <p class="m-0" t-field="applicant.partner_mobile"/>
-                </div>
+                </div-->
   
                         
                     </div>
                     
-                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
  
-<t t-foreach="line_type_ids" t-as="line_type"> 
+<t t-foreach="line_type_ids" t-as="line_type"> <br/>
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>-<t t-esc="line.date_end"/></span><br/> 
+                                 <span><strong><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
+        
+         <!--input type="checkbox" checked="checked"  t-field="line.date_actual"/-->
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
      &#160;
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
@@ -99,11 +102,11 @@
                     <div class="row" style="margin:10px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
                                 <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
  
-<t t-foreach="line_type_ids" t-as="line_type"> 
+<t t-foreach="line_type_ids" t-as="line_type"> <br/>
     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
     <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
                                 
-                                 <span><t t-esc="line.name"/>-<t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/> 
+                                <span><strong><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
                                     <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
                                     <span><t class="text-right" t-esc="line.description"/></span><br/> 
     </t> 

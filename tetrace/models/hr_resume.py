@@ -13,7 +13,7 @@ class ResumeLine(models.Model):
     
     name = fields.Char(translate=True)
     description = fields.Text(translate=True)
-    
+    date_actual = fields.Boolean('Actual')
 
 class ResumeLineType(models.Model):
     _inherit = 'hr.resume.line.type'

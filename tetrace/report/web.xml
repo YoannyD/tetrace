@@ -56,7 +56,7 @@
                         <span t-field="company.country_id"/>
                     </div>
                     
-                    <t t-if="o and o.user_id and o.user_id.partner_id">
+                    <t t-if="o and 'user_id' in request.env[o._name]._fields and o.user_id.partner_id">
                         <span><t t-esc="o.user_id.partner_id.name"/> | <t t-esc="o.user_id.partner_id.email"/></span>
 
                         <div t-if="o.user_id.partner_id.phone">

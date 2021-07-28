@@ -27,7 +27,8 @@
                             <field name="order_coordinador_proyecto_id" readonly="1"/>
                             <field name="invoice_ids" invisible="1"/>
                             <field name="invoice_id" readonly="1"/>
-                            <field name="invoice_state_validation" readonly="1"/>
+                            <field name="invoice_last_review_status" readonly="1"/>
+                            <field name="invoice_last_review_name" readonly="1"/>
                             <field name="invoice_estado_tetrace" readonly="1"/>
                         </group>
                         <group>
@@ -66,7 +67,8 @@
                        options="{'no_create':True, 'no_create_edit': True}"
                        domain="[('id', 'in', invoice_ids), ('prevision_facturacion_ids', '=', False)]"/>
                 <field name="invoice_amount_total"/>
-                <field name="invoice_state_validation"/>
+                <field name="invoice_last_review_status"/>
+                <field name="invoice_last_review_name"/>
                 <field name="invoice_estado_tetrace"/>
                 <field name="cancelado"/>
                 <field name="facturado"/>

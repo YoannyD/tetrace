@@ -59,7 +59,7 @@
                 <field name="prevision_facturacion"/>
                 <field name="invoicing_id" required="True"/>
             </xpath>
-
+            
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
                 <button name="%(action_version_view)d"
@@ -147,6 +147,11 @@
                        force_save="1"/>
                 <field name="asignar_cuenta_analitica_manual"
                        attrs="{'readonly': ['|', ('invoice_count', '!=', 0), ('state','=','sale')]}"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='company_coordinador_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="required">1</attribute>
             </xpath>
             
             <xpath expr="//field[@name='validity_date']" position="attributes">
