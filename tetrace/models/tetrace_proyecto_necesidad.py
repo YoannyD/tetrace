@@ -25,7 +25,7 @@ class ProcesoSeleccion(models.Model):
     
     def write(self, vals):
         res = super(ProcesoSeleccion, self).write(vals)
-        res.create_task_activity("update")
+        self.create_task_activity("update")
         return res
     
     def create_task_activity(self, accion):
