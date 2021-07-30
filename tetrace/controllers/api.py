@@ -211,7 +211,7 @@ class TetraceAPI(http.Controller):
             'debe': analytic.debit,
             'haber': analytic.credit,
             'balance': analytic.balance,
-            'moneda' : analytic.currency_id.name,
+            'importe_euro': analytic.importe_euro,
         }
         
         return values
