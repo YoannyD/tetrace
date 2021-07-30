@@ -6,6 +6,7 @@ import json
 
 from odoo import http
 from odoo.http import Controller, route, request
+from odoo.tools.float_utils import float_round
 
 _logger = logging.getLogger(__name__)
 
@@ -196,6 +197,15 @@ class TetraceAPI(http.Controller):
         return request.make_response(json.dumps(data), headers=[('Content-Type', 'application/json')])
     
     def get_values_account_analytic_line_rel(self, analytic):
+        company = request.env['res.company'].browse(1)
+        cr = analytic.currency_id._get_rates(company, analytic.date)
+        rate = 1.0
+        for key, value in cr.items():
+            rate = value
+            break
+            
+        importe_euro = abs(analytic.analytic_line_id.amount) * rate
+        
         values = {
             'id': analytic.id,
             'company_id': analytic.company_id.id or '',
@@ -210,8 +220,7 @@ class TetraceAPI(http.Controller):
             'asiento_contable': analytic.asiento_id.name or '', 
             'debe': analytic.debit,
             'haber': analytic.credit,
-            'balance': analytic.balance,
-            'importe_euro': analytic.importe_euro,
+            'importe_euro': float_round(importe_euro, precision_digits=company.currency_id.decimal_places),
         }
         
         return values
