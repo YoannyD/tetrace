@@ -10,6 +10,7 @@
                     <field name="proyecto_necesidad_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="project_id"/>
+                            <field name="observaciones"/>
                             <field name="necesidad"/>
                             <field name="realizado"/>
                         </tree>
