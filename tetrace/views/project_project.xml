@@ -112,6 +112,30 @@
                 <field name="direccion"/>
                 <field name="nombre_parque"/>
             </xpath>
+            <xpath expr="//group[@name='extra_settings']" position="replace"/>
+            <xpath expr="//field[@name='subtask_project_id']" position="replace"/>
+            <xpath expr="//field[@name='privacy_visibility']" position="replace"/>
+            <xpath expr="//page[@name='settings']" position="attributes">
+                <attribute name="string">Información</attribute>
+            </xpath>
+            <xpath expr="//field[@name='active']" position="before">
+            <xpath expr="//field[@name='tipo_proyecto_name']" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+          <xpath expr="//field[@name='company_id']" position="attributes">
+            <attribute name="attrs">{}</attribute>
+            <attribute name="force_save">True</attribute>
+            <attribute name="readonly">1</attribute>
+          </xpath>
 
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="company_coordinador_id"/>
@@ -158,6 +182,7 @@
                     <field name="proyecto_necesidad_ids" nolabe="1">
                         <tree editable="bottom">
                             <field name="job_id"/>
+                            <field name="observaciones"/>
                             <field name="necesidad"/>
                             <field name="realizado"/>
                         </tree>

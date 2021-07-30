@@ -95,7 +95,7 @@ class CrearTareasActDesc(models.TransientModel):
                     'realizado': alojamiento.realizado,
                     'fecha': alojamiento.fecha,
                     'employee_id': alojamiento.employee_id.id if alojamiento.employee_id else None,
-                    'observaciones': viaje.observaciones
+                    'observaciones': alojamiento.observaciones
                 })
                 
             for alquiler in self.alquiler_ids:

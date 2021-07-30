@@ -16,6 +16,7 @@ class ProcesoSeleccion(models.Model):
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
     necesidad = fields.Integer("Necesidad")
     realizado = fields.Boolean("Realizado")
+    observaciones = fields.Text("Observaciones")
     
     @api.model
     def create(self, vals):

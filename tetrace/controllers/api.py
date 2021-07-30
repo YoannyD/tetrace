@@ -203,12 +203,15 @@ class TetraceAPI(http.Controller):
             'fecha': analytic.date.strftime("%d/%m/%Y") if analytic.date else '',
             'cuenta': analytic.account_id.code  or '',
             'cuenta_consolidacion': analytic.account_id.tetrace_account_id.name  or '',
+            'codigo_cuenta_consolidacion': analytic.account_id.tetrace_account_id.code  or '',
             'cuenta_analitica': analytic.analytic_account_id.name  or '',
             'estructurales': analytic.estructurales,
             'moneda' : analytic.currency_id.name,
             'asiento_contable': analytic.asiento_id.name or '', 
             'debe': analytic.debit,
             'haber': analytic.credit,
+            'balance': analytic.balance,
+            'importe_euro': analytic.importe_euro,
         }
         
         return values
