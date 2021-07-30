@@ -220,7 +220,6 @@ class TetraceAPI(http.Controller):
             'asiento_contable': analytic.asiento_id.name or '', 
             'debe': analytic.debit,
             'haber': analytic.credit,
-            'importe_euro': float_round(importe_euro, precision_digits=company.currency_id.decimal_places),
         }
         
         return values
