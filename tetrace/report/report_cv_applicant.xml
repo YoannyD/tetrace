@@ -66,6 +66,9 @@
     </t> 
 </t>
                                 </div>
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+                       <strong style="color:#872292;font-size:1.4em;font-weight:bold;">Formación Complementaria</strong>
+                           </div>
                          <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                                 
            <t t-set="skill_type_ids" t-value="docs.applicant_skill_ids.mapped('skill_type_id')"/> 
@@ -112,6 +115,9 @@
     </t> 
 </t>
                                 </div>
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+                       <strong style="color:#872292;font-size:1.4em;font-weight:bold;">Formación Complementaria</strong>
+                           </div>
                     
                         <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                                 

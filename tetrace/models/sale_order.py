@@ -72,6 +72,7 @@ class SaleOrder(models.Model):
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
     invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
+    send_date = fields.Datetime(string="Fecha Envío")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
