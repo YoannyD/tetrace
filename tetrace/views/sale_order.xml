@@ -69,6 +69,9 @@
             <xpath expr="//field[@name='pricelist_id']" position="before">
                 <field name="send_date" attrs="{'required': [('state', 'in', ['sale', 'done'])], 'invisible': [('state', 'in', ['draft', 'sent'])]}"/>
             </xpath>
+              <xpath expr="//field[@name='validity_date']" position="after">
+                <field name="send_date" string="Fecha Presupuesto" groups="base.group_no_one" attrs="{'invisible': [('state', 'in', ['sale', 'done', 'cancel'])]}"/>
+            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
                 <button name="%(action_version_view)d"
@@ -277,6 +280,7 @@
             <xpath expr="//field[@name='date_order']" position="attributes">
                 <attribute name="groups"></attribute>
             </xpath>
+
         </field>
     </record>
 
