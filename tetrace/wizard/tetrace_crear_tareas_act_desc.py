@@ -112,7 +112,6 @@ class CrearTareasActDesc(models.TransientModel):
                 })
 
     def crear_tareas_activacion(self):
-        self.ensure_one()
         project_theme = None
         try:
             project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))

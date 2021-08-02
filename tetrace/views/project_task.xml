@@ -84,6 +84,7 @@
                             <field name="fecha"/>
                             <field name="origen"/>
                             <field name="destino"/>
+                            <field name="pcr"/>
                             <field name="contratado"/>
                             <field name="realizado"/>
                             <field name="employee_active_ids" invisible="1"/>
@@ -138,6 +139,17 @@
                             <field name="employee_active_ids" invisible="1"/>
                             <field name="employee_id" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="observaciones"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page name="pcrs" string="PCR" attrs="{'invisible': [('viajes', '=', False)]}">
+                    <field name="pcr_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="employee_active_ids" invisible="1"/>
+                            <field name="employee_id" required="1" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
+                            <field name="fecha"/>
+                            <field name="realizado"/>
                         </tree>
                     </field>
                 </page>
