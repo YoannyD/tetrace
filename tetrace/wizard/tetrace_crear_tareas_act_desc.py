@@ -205,14 +205,18 @@ class CrearTareasActDesc(models.TransientModel):
             if detalle.recoger_equipos: opciones.append('equipos')
             if detalle.reubicar: opciones.append('reubicacion')
             if detalle.finalizar_contrato: opciones.append('facturacion')
-            
-            tareas = self.env['project.task'].search([
+                
+            domain = [
                 ('tipo', '=', 'desactivacion'),
-                ('opciones_desactivacion', 'in', opciones),
                 ('employee_id', '=', detalle.employee_id.id),
                 ('project_id', '=', self.project_id.id),
                 ('activada', '=', False)
-            ])
+            ]
+            
+            if opciones:
+                domain += [('opciones_desactivacion', 'in', opciones)]
+            
+            tareas = self.env['project.task'].search(domain)
             tareas.write({'activada': True})
             for tarea in tareas:
                 if not detalle.fecha_fin:
