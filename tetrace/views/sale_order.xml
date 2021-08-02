@@ -97,7 +97,6 @@
                     <field name="purchase_order_count" widget="statinfo" string="Compras"/>
                 </button>
             </xpath>
-
             <xpath expr="//div[hasclass('oe_title')]" position="replace">
                 <div class="oe_title">
                     <div class="row">
@@ -285,6 +284,8 @@
             <xpath expr="//field[@name='estado_tetrace']" position="move"/>
             </xpath>
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date'][2]" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="replace"/>
 
             
         </field>
