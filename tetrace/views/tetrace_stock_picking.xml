@@ -8,6 +8,24 @@
               <xpath expr="//field[@name='scheduled_date']" position="after">
                 <field name="date_done"/>
               </xpath>
+              <xpath expr="//field[@name='company_id']" position="after">
+                <field name="efectivacliente_date" optional="hide"/>
+                <field name="previstacliente_date" optional="hide"/>
+              </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="tetrace.stock_picking_view_form">
+        <field name="name">tetrace.stock_picking_view_form</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="model">stock.picking</field>
+        <field name="arch" type="xml">
+              <xpath expr="//field[@name='origin']" position="after">
+   		 <field name="previstacliente_date"/>
+    		<field name="efectivacliente_date"/>
+  	</xpath>
+            
+        </field>
+    </record>
+
 </odoo>
