@@ -73,6 +73,7 @@ class SaleOrder(models.Model):
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
     invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
     send_date = fields.Datetime(string="Fecha Envío")
+    rfq_date = fields.Datetime(string="Fecha RFQ")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")

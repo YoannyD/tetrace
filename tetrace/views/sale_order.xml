@@ -66,19 +66,23 @@
                 <attribute name="string">Frecuencia Facturación</attribute>
             </xpath>
             
-            <xpath expr="//field[@name='pricelist_id']" position="before">
-                <field name="send_date" attrs="{'required': [('state', 'in', ['sale', 'done'])], 'invisible': [('state', 'in', ['draft', 'sent'])]}"/>
-            </xpath>
+
               <xpath expr="//field[@name='date_order']" position="after">
                 <field name="send_date" string="Fecha Presupuesto"/>
             </xpath>
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="attrs">{"readonly": [["state","not in",["draft","sent"]]], "invisible": [["estado_tetrace","!=","asignado"]]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
+                 <field name="rfq_date" attrs="{}" required="1"/>
+            </xpath>
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[1]/label[1]" position="replace"/>
             <xpath expr="//field[@name='validity_date']" position="after">
-                <field name="date_order" string="Fecha cotización"/>
+                <field name="date_order" string="Fecha asignación"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
@@ -284,7 +288,7 @@
             <xpath expr="//field[@name='estado_tetrace']" position="move"/>
             </xpath>
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
-            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date'][2]" position="replace"/>
+            
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="replace"/>
 
             
