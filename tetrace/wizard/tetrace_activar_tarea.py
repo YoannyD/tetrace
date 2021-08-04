@@ -37,7 +37,6 @@ class ActivarTarea(models.TransientModel):
             r.tecnico_ids = [(6, 0, [d.employee_id.id for d in r.detalle_ids])]
     
     def action_activar_tareas(self):
-        self.ensure_one()
         domain_base = [
             ('project_id', '=', self.project_id.id),
             ('tipo', '=', 'desactivacion'),
@@ -45,16 +44,17 @@ class ActivarTarea(models.TransientModel):
         ]
         
         for detalle in self.detalle_ids:
+            domain = expression.AND([domain_base, [('employee_id', '=', detalle.employee_id.id)]]) 
+            
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
             if detalle.recoger_equipos: opciones.append('equipos')
             if detalle.reubicar: opciones.append('reubicacion')
             if detalle.finalizar_contrato: opciones.append('facturacion')
             
-            domain = expression.AND([domain_base, [
-                ('opciones_desactivacion', 'in', opciones),
-                ('employee_id', '=', detalle.employee_id.id)
-            ]]) 
+            if opciones:
+                domain = expression.AND([domain, [('employee_id', '=', detalle.employee_id.id)]]) 
+            
             tasks = self.env['project.task'].search(domain)
             for task in tasks:
                 tasks.write({'activada': True})

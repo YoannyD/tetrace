@@ -60,10 +60,12 @@ from . import tetrace_festivo
 from . import tetrace_tecnico_calendario
 from . import tetrace_coordinador_company
 from . import tetrace_proyecto_necesidad
+from . import tetrace_pcr
 from . import mod303
 from . import mail_thread
 from . import mail_followers
 from . import documents
+from . import documents_folder
 from . import account_change_lock_date
 from . import tetrace_proceso_seleccion
 from . import tier_review

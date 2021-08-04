@@ -23,6 +23,7 @@ class Viaje(models.Model):
     employee_active_ids = fields.Many2many("hr.employee", related="task_id.project_id.tecnico_ids")
     task_id = fields.Many2one("project.task", string="Tarea")
     observaciones = fields.Text("Observaciones", translate=True)
+    pcr = fields.Boolean("PCR")
     
     @api.depends("fecha", "origen", "destino")
     def _compute_name(self):
@@ -41,12 +42,32 @@ class Viaje(models.Model):
         res = super(Viaje, self).create(vals)
         res.pasar_tarea_a_en_proceso()
         res.create_task_activity("create")
+        if vals.get("pcr"):
+            res.create_pcr()
         return res
     
     def write(self, vals):
         res = super(Viaje, self).write(vals)
         self.create_task_activity("update")
+        if vals.get("pcr"):
+            self.create_pcr()
         return res
+    
+    def create_pcr(self):
+        PCR = self.env['tetrace.pcr']
+        for r in self:
+            if r.pcr:
+                pcr = PCR.search([
+                    ('task_id', '=', r.task_id.id),
+                    ('fecha', '=', r.fecha),
+                    ('employee_id', '=', r.employee_id.id),
+                ])
+                if not pcr:
+                    PCR.create({
+                        'task_id': r.task_id.id,
+                        'fecha': r.fecha,
+                        'employee_id': r.employee_id.id,
+                    })
     
     def create_task_activity(self, accion):
         for r in self:

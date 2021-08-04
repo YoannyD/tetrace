@@ -61,6 +61,7 @@ class ProjectTask(models.Model):
     proyecto_necesidad_count = fields.Integer("Nª Necesidades", compute="_compute_proyecto_necesidad")
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
     project_tecnico_ids = fields.Many2many("hr.employee", related="project_id.tecnico_ids")
+    pcr_ids = fields.One2many('tetrace.pcr', 'task_id')
 
     def _compute_proyecto_necesidad(self):
         for r in self:

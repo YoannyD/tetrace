@@ -112,7 +112,6 @@ class CrearTareasActDesc(models.TransientModel):
                 })
 
     def crear_tareas_activacion(self):
-        self.ensure_one()
         project_theme = None
         try:
             project_theme_id = int(self.env['ir.config_parameter'].sudo().get_param('template_act_project_id'))
@@ -205,20 +204,24 @@ class CrearTareasActDesc(models.TransientModel):
             if detalle.recoger_equipos: opciones.append('equipos')
             if detalle.reubicar: opciones.append('reubicacion')
             if detalle.finalizar_contrato: opciones.append('facturacion')
-            
-            tareas = self.env['project.task'].search([
+                
+            domain = [
                 ('tipo', '=', 'desactivacion'),
-                ('opciones_desactivacion', 'in', opciones),
                 ('employee_id', '=', detalle.employee_id.id),
                 ('project_id', '=', self.project_id.id),
                 ('activada', '=', False)
-            ])
+            ]
+            
+            if opciones:
+                domain += [('opciones_desactivacion', 'in', opciones)]
+            
+            tareas = self.env['project.task'].search(domain)
             tareas.write({'activada': True})
             for tarea in tareas:
                 if not detalle.fecha_fin:
                     continue
 
-                date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=task.deadline)
+                date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=tarea.deadline)
                 tarea.write({'date_deadline': date_deadline})
          
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
