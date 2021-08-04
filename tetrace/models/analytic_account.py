@@ -95,6 +95,7 @@ class AccountAnalyticLineRel(models.Model):
     balance = fields.Monetary('Balance', compute="_compute_debit_credit", store=True)
     analytic_account_id = fields.Many2one(related="analytic_line_id.account_id", store=True)
     estructurales = fields.Boolean(related="analytic_line_id.account_id.estructurales", store=True)
+    importe_euro = fields.Float("Importe EUR", compute="_compute_debit_credit", store=True)
 
     @api.depends('analytic_line_id', 'analytic_line_id.amount')
     def _compute_debit_credit(self):
@@ -107,8 +108,18 @@ class AccountAnalyticLineRel(models.Model):
             else:
                 debit = -amount
 
+            company = self.env['res.company'].browse(1)
+            cr = r.currency_id._get_rates(company, r.date)
+            rate = 1.0
+            for key, value in cr.items():
+                rate = value
+                break
+
+            importe_euro = abs(r.analytic_line_id.amount) * rate
+                
             r.update({
                 'credit': credit,
                 'debit': debit,
-                'balance': debit - credit
+                'balance': debit - credit,
+                'importe_euro': importe_euro
             })

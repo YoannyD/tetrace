@@ -89,6 +89,7 @@
         'views/project_project.xml',
         'views/project_task.xml',
         'views/documents.xml',
+        'views/documents_folder.xml',
         'views/purchase.xml',
         'views/sale_order.xml',
         'views/res_partner.xml',

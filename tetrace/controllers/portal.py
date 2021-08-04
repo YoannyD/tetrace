@@ -10,7 +10,7 @@ from odoo import fields, http, _
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.tools import date_utils, groupby as groupbyelem
-from odoo.osv.expression import AND
+from odoo.osv.expression import AND, OR
 
 _logger = logging.getLogger(__name__)
 
@@ -146,10 +146,25 @@ class TetracePortal(CustomerPortal):
     def portal_my_documents(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
         Document = request.env['documents.document'].sudo()
         values = self._prepare_portal_layout_values()
-        domain = [
+        domain = [('folder_id.view_all', '=', True),]
+        domain = OR(domain, [
+            ('folder_id.view_employee', '=', True)
             ('res_model', '=', 'hr.employee'),
-            ('res_id', 'in', request.env.user.employee_ids.ids)
-        ]
+            ('res_id', 'in', request.env.user.employee_ids.ids),  
+        ])
+        
+#         project = self.env['project.project'].search([
+#             ('employee_id', 'in', request.env.user.employee_ids.ids),
+#             ('tecnico_project_ids.fecha_fin', '=', None),
+#             ('tecnico_project_ids.fecha_fin', '<', fields.Date.today())
+#         ])
+        
+#         if project:
+#             domain = OR(domain, [
+#                 ('folder_id.view_employee', '=', True)
+#                 ('res_model', '=', 'project.project'), 
+#                 ('res_id', 'in', project.ids)
+#             ])
 
         searchbar_sortings = {
             'create_date': {'label': _('Fecha creación'), 'order': 'create_date desc'},
