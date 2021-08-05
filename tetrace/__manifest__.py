@@ -111,7 +111,7 @@
         'views/tetrace_coordinador_company.xml',
         'views/base_tier_validation.xml',
         'views/account_change_lock_date.xml',
-        'views/tetrace_stock_picking.xml',
+        'views/stock_picking.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',

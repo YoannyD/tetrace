@@ -3,7 +3,7 @@
 
 import logging
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -28,6 +28,28 @@ class PurchaseOrder(models.Model):
                                                compute="_compute_importe_validacion_euros")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
     cuenta_activo = fields.Boolean('Activo')
+    sale_order_ids = fields.Many2many('sale.order', compute="_compute_sale_order_ids", string="Pedidos de Venta")
+    sale_order_count = fields.Integer("Nº Pedidos de venta", compute="_compute_sale_order_ids")
+
+    @api.depends('origin')
+    def _compute_sale_order_ids(self):
+        for r in self:
+            if r.origin:
+                order_ids = []
+                for o in r.origin.replace(" ", "").split(","):
+                    order = self.env['sale.order'].search([('name', '=', o)], limit=1)
+                    if order:
+                        order_ids.append(order.id)
+
+                r.update({
+                    'sale_order_ids': [(6, 0, order_ids)],
+                    'sale_order_count': len(order_ids),
+                })
+            else:
+                r.update({
+                    'sale_order_ids': None,
+                    'sale_order_count': 0,
+                })
     
     @api.depends("amount_untaxed", "date_order")
     def _compute_importe_validacion_euros(self):
@@ -61,6 +83,24 @@ class PurchaseOrder(models.Model):
         result['context']['default_validacion_id'] = self.validacion_id.id
         result['context']['default_tipo_proyecto_id'] = self.tipo_proyecto_id.id
         return result
+    
+    def action_view_sale_orders(self):
+        action = {
+            'res_model': 'sale.order',
+            'type': 'ir.actions.act_window',
+        }
+        if len(self.sale_order_ids) == 1:
+            action.update({
+                'view_mode': 'form',
+                'res_id': self.sale_order_ids[0].id,
+            })
+        else:
+            action.update({
+                'name': _('Sources Sale Orders %s' % self.name),
+                'domain': [('id', 'in', self.sale_order_ids.ids)],
+                'view_mode': 'tree,form',
+            })
+        return action
         
     def actualizar_cuenta_activo(self):
         for r in self:
