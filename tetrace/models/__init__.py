@@ -46,6 +46,7 @@ from . import aep
 from . import kpimatrix
 from . import tetrace_alquiler_vehiculo
 from . import tetrace_alojamiento
+from . import tetrace_financiacion
 from . import tetrace_tipo_proyecto
 from . import tetrace_tipo_servicio
 from . import tetrace_ausencia

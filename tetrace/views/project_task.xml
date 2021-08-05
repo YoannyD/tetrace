@@ -144,6 +144,19 @@
                     </field>
                 </page>
                 
+                <page name="financiacion" string="Financiacion" attrs="{'invisible': [('viajes', '=', False)]}">
+                    <field name="financiacion_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="task_id" invisible="1"/>
+                            <field name="employee_id"/>
+                            <field name="importe"/>
+                            <field name="fecha"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="realizado"/>
+                        </tree>
+                    </field>
+                </page>
+                
                 <page name="pcrs" string="PCR" attrs="{'invisible': [('pcr', '=', False)]}">
                     <field name="pcr_ids" nolabel="1">
                         <tree editable="bottom">

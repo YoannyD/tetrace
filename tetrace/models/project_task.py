@@ -63,6 +63,7 @@ class ProjectTask(models.Model):
     project_tecnico_ids = fields.Many2many("hr.employee", related="project_id.tecnico_ids")
     pcr_ids = fields.One2many('tetrace.pcr', 'task_id')
     pcr = fields.Boolean("PCR")
+    financiacion_ids = fields.One2many('tetrace.financiacion', 'task_id')
 
     def _compute_proyecto_necesidad(self):
         for r in self:
