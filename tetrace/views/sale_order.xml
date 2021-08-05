@@ -59,7 +59,31 @@
                 <field name="prevision_facturacion"/>
                 <field name="invoicing_id" required="True"/>
             </xpath>
+            <xpath expr="//field[@name='estado_tetrace']" position="after">
+            <xpath expr="//field[@name='feedbacktetrace']" position="move"/>
+            </xpath>
+            <xpath expr="//field[@name='invoicing_id']" position="attributes">
+                <attribute name="string">Frecuencia Facturación</attribute>
+            </xpath>
             
+
+              <xpath expr="//field[@name='date_order']" position="after">
+                <field name="send_date" string="Fecha Presupuesto"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="attrs">{"readonly": [["state","not in",["draft","sent"]]], "invisible": [["estado_tetrace","!=","asignado"]]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order']" position="after">
+                 <field name="rfq_date" attrs="{}" required="1"/>
+            </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[1]/label[1]" position="replace"/>
+            <xpath expr="//field[@name='validity_date']" position="after">
+                <field name="date_order" string="Fecha asignación"/>
+            </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
                 <button name="%(action_version_view)d"
@@ -77,7 +101,6 @@
                     <field name="purchase_order_count" widget="statinfo" string="Compras"/>
                 </button>
             </xpath>
-
             <xpath expr="//div[hasclass('oe_title')]" position="replace">
                 <div class="oe_title">
                     <div class="row">
@@ -262,10 +285,15 @@
                     <div class="oe_clear"/>
                 </page>
             </xpath>
-            
-            <xpath expr="//field[@name='date_order']" position="attributes">
-                <attribute name="groups"></attribute>
+             <xpath expr="//field[@name='invoicing_id']" position="after">
+            <xpath expr="//field[@name='prevision_facturacion']" position="move"/>
+            <xpath expr="//field[@name='estado_tetrace']" position="move"/>
             </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
+            
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="replace"/>
+
+            
         </field>
     </record>
 

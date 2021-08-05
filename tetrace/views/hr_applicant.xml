@@ -141,6 +141,12 @@
                         domain="[]"
                         context="{'group_by': 'referencia'}"/>
             </xpath>
+                        <xpath expr="//group[1]/filter[@name='job']" position="before">
+                <filter string="Referencia"
+                        name="filter_reference"
+                        domain="[]"
+                        context="{'group_by': 'reference'}"/>
+            </xpath>
         </field>
     </record>
 

@@ -11,6 +11,9 @@ _logger = logging.getLogger(__name__)
 class Picking(models.Model):
     _inherit = "stock.picking"
     
+    efectivacliente_date = fields.Datetime(string="Fecha efectiva cliente")
+    previstacliente_date = fields.Datetime(string="Fecha prevista cliente")
+    
     @api.model
     def create(self, vals):
         res = super(Picking, self).create(vals)
