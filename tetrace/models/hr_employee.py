@@ -32,7 +32,7 @@ class Employee(models.Model):
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'employee_id')
     country_visado_id = fields.Many2one('res.country', string="País Visado")
     type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
-    reference_employee = fields.Char(compute="_compute_reference")
+    reference_employee = fields.Char(compute="_compute_reference", string="Código")
   
 
     def _compute_reference(self):
