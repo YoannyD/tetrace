@@ -40,34 +40,42 @@ class Viaje(models.Model):
     @api.model
     def create(self, vals):
         res = super(Viaje, self).create(vals)
-        res.pasar_tarea_a_en_proceso()
-        res.create_task_activity("create")
         if vals.get("pcr"):
             res.create_pcr()
+        res.pasar_tarea_a_en_proceso()
+        res.create_task_activity("create")
         return res
     
     def write(self, vals):
         res = super(Viaje, self).write(vals)
-        self.create_task_activity("update")
         if vals.get("pcr"):
             self.create_pcr()
+        self.create_task_activity("update")
         return res
     
     def create_pcr(self):
         PCR = self.env['tetrace.pcr']
         for r in self:
             if r.pcr:
-                pcr = PCR.search([
-                    ('task_id', '=', r.task_id.id),
-                    ('fecha', '=', r.fecha),
-                    ('employee_id', '=', r.employee_id.id),
+                tasks_pcr = self.env['project.task'].search([
+                    ('project_id', '=', r.task_id.project_id.id),
+                    ('pcr', '=', True)
                 ])
-                if not pcr:
-                    PCR.create({
-                        'task_id': r.task_id.id,
-                        'fecha': r.fecha,
-                        'employee_id': r.employee_id.id,
-                    })
+                
+                for t_pcr in tasks_pcr:
+                    pcr = PCR.search([
+                        ('task_id', '=', t_pcr.id),
+                        ('fecha', '=', r.fecha),
+                        ('ubiacion', '=', r.destino),
+                        ('employee_id', '=', r.employee_id.id),
+                    ], limit=1)
+                    if not pcr:
+                        PCR.create({
+                            'task_id': t_pcr.id,
+                            'fecha': r.fecha,
+                            'ubiacion': r.destino,
+                            'employee_id': r.employee_id.id,
+                        })
     
     def create_task_activity(self, accion):
         for r in self:
@@ -81,7 +89,17 @@ class Viaje(models.Model):
                 summary = _('Gestionar modificación viaje para %s del proyecto %s' % (r.employee_id.name, r.task_id.project_id.name))
                 
             fecha = r.fecha - timedelta(days=5) if r.fecha else None
-            self.task_id.create_activity(summary, fecha)
+            
+            tasks_activity = None
+            if r.pcr:
+                tasks_activity = self.env['project.task'].search([
+                    ('project_id', '=', r.task_id.project_id.id),
+                    ('pcr', '=', True)
+                ])
+            else:
+                tasks_activity = r.task_id
+            
+            tasks_activity.create_activity(summary, fecha)
     
     def pasar_tarea_a_en_proceso(self):
         for r in self:

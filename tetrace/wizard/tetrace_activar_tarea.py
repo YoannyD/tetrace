@@ -80,7 +80,8 @@ class ActivarTarea(models.TransientModel):
                         'realizado': viaje.realizado,
                         'fecha': viaje.fecha,
                         'employee_id': viaje.employee_id.id if viaje.employee_id else None,
-                        'observaciones': viaje.observaciones
+                        'observaciones': viaje.observaciones,
+                        'pcr': viaje.pcr,
                     })
                     
                 for alojamiento in self.alojamiento_ids:
@@ -173,6 +174,7 @@ class ActivarTareaViaje(models.TransientModel):
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
     observaciones = fields.Text("Observaciones", translate=True)
+    pcr = fields.Boolean("PCR")
     
     
 class ActivarTareaAlojamiento(models.TransientModel):

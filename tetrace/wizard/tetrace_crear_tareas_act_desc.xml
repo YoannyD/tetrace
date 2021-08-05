@@ -67,6 +67,7 @@
                                     <field name="fecha"/>
                                     <field name="origen"/>
                                     <field name="destino"/>
+                                    <field name="pcr"/>
                                     <field name="contratado"/>
                                     <field name="realizado"/>
                                     <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>

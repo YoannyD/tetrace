@@ -20,3 +20,5 @@ class PCR(models.Model):
     employee_active_ids = fields.Many2many("hr.employee", related="task_id.project_id.tecnico_ids")
     fecha = fields.Date("Fecha")
     realizado = fields.Boolean("Realizado")
+    ubiacion = fields.Char("Ubicación")
+    na = fields.Char("N/A")
