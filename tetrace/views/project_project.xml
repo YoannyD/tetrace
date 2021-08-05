@@ -86,6 +86,22 @@
                         string="Entregas"
                         icon="fa-calendar-o"/>
             </xpath>
+            
+            <xpath expr="//button[@name='attachment_tree_view']" position="after">
+                <field name="id" invisible="1"/>
+                <button name="view_documentos"
+                        context="{'search_default_res_model': 'project.project', 'search_default_res_id': str(id)}"
+                        class="oe_stat_button"
+                        groups="documents.group_documents_user"
+                        icon="fa-file-text"
+                        type="object">
+                    <field name="document_project_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            
+            <xpath expr="//button[@name='attachment_tree_view']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
 
             <xpath expr="//h1[1]/field[@name='name']" position="attributes">
                 <attribute name="attrs">{'readonly': [('sale_order_id', '!=', False)]}</attribute>

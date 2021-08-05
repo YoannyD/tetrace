@@ -132,7 +132,6 @@ class Applicant(models.Model):
                 document.write(values)
     
     def view_documentos(self):
-        self.ensure_one()
         action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
         document_ids = []
         documents = self.env['documents.document'].search([

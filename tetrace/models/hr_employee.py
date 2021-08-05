@@ -33,8 +33,6 @@ class Employee(models.Model):
     country_visado_id = fields.Many2one('res.country', string="País Visado")
     type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
     reference = fields.Char(string="Código")
-  
-    
     
     def _compute_document_employee(self):
         for r in self:
@@ -68,7 +66,6 @@ class Employee(models.Model):
             documents._compute_res_name()
             
     def view_documentos(self):
-        self.ensure_one()
         action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
         document_ids = []
         if self.applicant_ids:

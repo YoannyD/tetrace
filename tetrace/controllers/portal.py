@@ -146,25 +146,40 @@ class TetracePortal(CustomerPortal):
     def portal_my_documents(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
         Document = request.env['documents.document'].sudo()
         values = self._prepare_portal_layout_values()
-        domain = [('folder_id.view_all', '=', True),]
-        domain = OR(domain, [
-            ('folder_id.view_employee', '=', True)
+        
+        employee_companies = []
+        for employee in request.env.user.employee_ids:
+            if employee.company_id:
+                employee_companies.append(employee.company_id.id)
+            
+        domain = [
+            ('folder_id.view_all', '=', True),
+            ('company_id', 'in', employee_companies)
+        ]
+        
+        domain = OR([domain, [
+            ('folder_id.view_employee', '=', True),
             ('res_model', '=', 'hr.employee'),
-            ('res_id', 'in', request.env.user.employee_ids.ids),  
-        ])
+            ('res_id', 'in', request.env.user.employee_ids.ids) 
+        ]])
         
-#         project = self.env['project.project'].search([
-#             ('employee_id', 'in', request.env.user.employee_ids.ids),
-#             ('tecnico_project_ids.fecha_fin', '=', None),
-#             ('tecnico_project_ids.fecha_fin', '<', fields.Date.today())
-#         ])
+        project_group = request.env['tetrace.tecnico_calendario'].read_group(
+            [
+                ('employee_id', 'in', request.env.user.employee_ids.ids),
+                '|',
+                ('fecha_fin', '=', None),
+                ('fecha_fin', '<', fields.Date.today())
+            ],
+            ['project_id'], ['project_id']
+        )
+        project_ids = [pg['project_id'][0] for pg in project_group]
         
-#         if project:
-#             domain = OR(domain, [
-#                 ('folder_id.view_employee', '=', True)
-#                 ('res_model', '=', 'project.project'), 
-#                 ('res_id', 'in', project.ids)
-#             ])
+        if project_ids:
+            domain = OR([domain, [
+                ('folder_id.view_employee', '=', True),
+                ('res_model', '=', 'project.project'), 
+                ('res_id', 'in', project_ids)
+            ]])
 
         searchbar_sortings = {
             'create_date': {'label': _('Fecha creación'), 'order': 'create_date desc'},
@@ -210,6 +225,7 @@ class TetracePortal(CustomerPortal):
         if search and search_in:
             domain = AND([domain, [('name', 'ilike', search)]])
 
+        _logger.warning(domain)
         document_count = Document.search_count(domain)
 
         pager = portal_pager(

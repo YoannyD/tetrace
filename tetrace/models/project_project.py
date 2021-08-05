@@ -66,6 +66,7 @@ class Project(models.Model):
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
+    document_project_count = fields.Integer('Documentos', compute="_compute_document_project")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -77,6 +78,15 @@ class Project(models.Model):
     def _compute_tecnico_ids(self):
         for r in self:
             r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
+    def _compute_document_project(self):
+        for r in self:
+            docs_project = self.env['documents.document'].search_count([
+                ('res_model', '=', 'project.project'),
+                ('res_id', '=', r.id),
+            ])
+            
+            r.document_project_count = docs_project
             
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
@@ -472,9 +482,21 @@ class Project(models.Model):
                     })
         
     def get_all_user_assigned_task(self):
-        self.ensure_one()
         user_ids = []
         for task in self.tasks:
             if task.user_id and task.user_id.id not in user_ids:
                 user_ids.append(task.user_id.id)
         return user_ids
+    
+    def view_documentos(self):
+        action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
+        documents = self.env['documents.document'].search([
+            ('res_model', '=', 'project.project'),
+            ('res_id', '=', self.id),
+        ])
+    
+        action.update({
+            'context': {'res_model': 'project.project', 'res_id': self.id},
+            'domain': [('id', 'in', documents.ids)]
+        })
+        return action
