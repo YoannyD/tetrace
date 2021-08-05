@@ -12,6 +12,12 @@
                 <field name="efectivacliente_date" optional="hide"/>
                 <field name="previstacliente_date" optional="hide"/>
               </xpath>
+          <xpath expr="//field[@name='previstacliente_date']" position="attributes">
+            <attribute name="string">Fecha prevista entrega cliente</attribute>
+          </xpath>
+          <xpath expr="//field[@name='efectivacliente_date']" position="attributes">
+            <attribute name="string">Fecha efectiva  entrega cliente</attribute>
+          </xpath>
         </field>
     </record>
 
@@ -23,7 +29,19 @@
               <xpath expr="//field[@name='origin']" position="after">
    		 <field name="previstacliente_date"/>
     		<field name="efectivacliente_date"/>
-  	</xpath>
+            </xpath>
+             <xpath expr="//field[@name='previstacliente_date']" position="attributes">
+            <attribute name="attrs">{"invisible": [["picking_type_code","!=","outgoing"]]}</attribute>
+          </xpath>
+          <xpath expr="//field[@name='efectivacliente_date']" position="attributes">
+            <attribute name="attrs">{"invisible": [["picking_type_code","!=","outgoing"]]}</attribute>
+          </xpath>
+          <xpath expr="//field[@name='previstacliente_date']" position="attributes">
+            <attribute name="string">Fecha prevista entrega cliente</attribute>
+          </xpath>
+          <xpath expr="//field[@name='efectivacliente_date']" position="attributes">
+            <attribute name="string">Fecha efectiva  entrega cliente</attribute>
+          </xpath>
             
         </field>
     </record>

@@ -73,17 +73,18 @@
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='date_order']" position="attributes">
-                <attribute name="attrs">{"readonly": [["state","not in",["draft","sent"]]], "invisible": [["estado_tetrace","!=","asignado"]]}</attribute>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order']" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="attributes">
+                <attribute name="string">Fecha asignado</attribute>
             </xpath>
             <xpath expr="//field[@name='date_order']" position="after">
                  <field name="rfq_date" attrs="{}" required="1"/>
             </xpath>
-            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
-            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[1]/label[1]" position="replace"/>
-            <xpath expr="//field[@name='validity_date']" position="after">
-                <field name="date_order" string="Fecha asignación"/>
+            <xpath expr="//field[@name='date_order']" position="attributes">
+                <attribute name="attrs">{"readonly": [["state","not in",["draft","sent"]]], "invisible": [["estado_tetrace","!=","asignado"]]}</attribute>
             </xpath>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[1]/label[1]" position="replace"/>
+
             <xpath expr="//div[@name='button_box']" position="inside">
                 <field name="version_ids" invisible="1"/>
                 <button name="%(action_version_view)d"
@@ -287,9 +288,6 @@
             <xpath expr="//field[@name='prevision_facturacion']" position="move"/>
             <xpath expr="//field[@name='estado_tetrace']" position="move"/>
             </xpath>
-            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order'][2]" position="replace"/>
-            
-            <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="replace"/>
 
             
         </field>
@@ -333,7 +331,19 @@
               <xpath expr="//field[@name='commitment_date']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-              <xpath expr="//tree[1]/field[@name='name']" position="replace"/>          
+              <xpath expr="//tree[1]/field[@name='name']" position="replace"/> 
+                          <xpath expr="//field[@name='user_id']" position="before">
+                <field name="rfq_date"/>
+                <field name="send_date" string="Fecha Presupuesto"/>
+                <field name="date_order" string="Fecha asignación"/>
+              </xpath>
+              <xpath expr="//field[@name='create_date']" position="attributes">
+                <attribute name="optional">hide</attribute>
+              </xpath>
+                    <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="optional">hide</attribute>
+              </xpath>
+
         </field>
     </record>
     
@@ -345,7 +355,13 @@
             <xpath expr="//field[@name='amount_total']" position="after">
                 <field name="importe_pendiente_facturar" sum="Total a facturar" widget="monetary"/>
                 <field name="importe_total_facturado" sum="Total facturado" widget="monetary"/>
-            </xpath>
+            </xpath>   
+                          <xpath expr="//field[@name='user_id']" position="before">
+                <field name="rfq_date"/>
+                <field name="send_date" string="Fecha Presupuesto"/>
+                <field name="date_order" string="Fecha asignación"/>
+              </xpath>
+                 
         </field>
     </record>
 
@@ -370,6 +386,7 @@
             <xpath expr="//filter[@name='customer']" position="after">
                 <filter context="{'group_by': 'estado_tetrace'}" name="studio_group_by_HmLe8" string="Estado Tetrace"/>
             </xpath>
+            
         </field>
     </record>
 </odoo>
