@@ -99,7 +99,7 @@ class TetracePortal(CustomerPortal):
             page=page,
             step=self._items_per_page
         )
-
+        
         if groupby == 'category_id':
             order = "category_id, %s" % order
         equipments = Equipment.search(domain, order=order, limit=self._items_per_page, offset=pager['offset'])
@@ -143,7 +143,7 @@ class TetracePortal(CustomerPortal):
         })
     
     @http.route(['/my/documents', '/my/documents/page/<int:page>'], type='http', auth="user", website=True)
-    def portal_my_documents(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
+    def portal_my_documents(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='folder_id', **kw):
         Document = request.env['documents.document'].sudo()
         values = self._prepare_portal_layout_values()
         
