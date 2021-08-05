@@ -150,8 +150,6 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
-        res.actualizar_deadline_tareas_activacion()
-        res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
         if res.proyecto_necesidad_ids:
             res.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
@@ -176,12 +174,8 @@ class Project(models.Model):
             self.actualizar_experiencias_tecnicos()
             
         if 'fecha_inicio' in vals:
-            self.actualizar_deadline_tareas_activacion()
             projects_activacion.enviar_email_estado_proyecto('activacion')
             projects_modificacion.enviar_email_estado_proyecto('modificacion')
-            
-        if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
-            self.actualizar_deadline_tareas_desactivacion()
             
         if vals.get('fecha_cancelacion') or vals.get('fecha_finalizacion'):
             self.enviar_email_estado_proyecto('desactivacion')
@@ -270,21 +264,6 @@ class Project(models.Model):
 
             for task in r.tasks.filtered(lambda x: x.tipo == 'activacion' and x.tarea_individual):
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
-                task.write({'date_deadline': date_deadline})
-
-    def actualizar_deadline_tareas_desactivacion(self):
-        for r in self:
-            fecha = None
-            if r.fecha_finalizacion:
-                fecha = r.fecha_finalizacion
-            elif r.fecha_cancelacion:
-                fecha = r.fecha_cancelacion
-
-            if not fecha:
-                continue
-
-            for task in r.tasks.filtered(lambda x: x.tipo == 'desactivacion' and not x.tarea_individual):
-                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_partner_task(self):
