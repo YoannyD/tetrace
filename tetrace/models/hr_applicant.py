@@ -28,7 +28,8 @@ class Applicant(models.Model):
     reference = fields.Char(compute="_compute_reference")
 
     def _compute_reference(self):
-        self.reference = self.id + 1
+        self.reference = "P" + str(self.id + 1)
+        
     
     def _compute_document_applicant(self):
         for r in self:
