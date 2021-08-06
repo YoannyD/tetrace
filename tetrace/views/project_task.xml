@@ -53,6 +53,7 @@
                             <field name="tarea_individual"/>
                             <field name="tarea_seleccion" attrs="{'invisible': [('tipo', '!=', 'activacion')]}"/>
                             <field name="viajes"/>
+                            <field name="pcr"/>
                             <field name="busqueda_perfiles"/>
                             <field name="ausencia"/>
                             <field name="activada"/>
@@ -143,12 +144,27 @@
                     </field>
                 </page>
                 
-                <page name="pcrs" string="PCR" attrs="{'invisible': [('viajes', '=', False)]}">
+                <page name="financiacion" string="Financiacion" attrs="{'invisible': [('viajes', '=', False)]}">
+                    <field name="financiacion_ids" nolabel="1">
+                        <tree editable="bottom">
+                            <field name="task_id" invisible="1"/>
+                            <field name="employee_id"/>
+                            <field name="importe"/>
+                            <field name="fecha"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="realizado"/>
+                        </tree>
+                    </field>
+                </page>
+                
+                <page name="pcrs" string="PCR" attrs="{'invisible': [('pcr', '=', False)]}">
                     <field name="pcr_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="employee_active_ids" invisible="1"/>
                             <field name="employee_id" required="1" options="{'no_create': True}" domain="[('id', 'in', employee_active_ids)]"/>
                             <field name="fecha"/>
+                            <field name="ubiacion"/>
+                            <field name="na"/>
                             <field name="realizado"/>
                         </tree>
                     </field>

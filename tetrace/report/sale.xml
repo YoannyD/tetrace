@@ -283,10 +283,28 @@
         <xpath expr="//div[@t-field='doc.partner_id']" position="attributes">
             <attribute name="t-options-fields">['address', 'name', 'phone', 'email']</attribute>
         </xpath> 
-        
         <xpath expr="//p[@t-if='doc.payment_term_id.note']/span[1]" position="attributes">
             <attribute name="style">display:none</attribute>
         </xpath>
+        <xpath expr="//div[@t-if='doc.user_id.name']" position="after">
+            <div class="col-auto mw-100 mb-2">
+            <strong>Fecha Envío:</strong>
+            <p class="m-0" t-field="doc.send_date"/>
+            </div>
+        </xpath>
+        
+        <xpath expr="/t[1]/t[1]/div[1]/div[2]/div[4]/p[1]" position="replace"/>
+        <xpath expr="/t[1]/t[1]/div[1]/div[2]/div[4]" position="replace"/>
+        <xpath expr="/t[1]/t[1]/div[1]/div[2]/div[3]/p[1]" position="attributes">
+                <attribute name="t-field"></attribute>
+        </xpath>
+        <xpath expr="/t[1]/t[1]/div[1]/div[2]/div[3]" position="replace"/>
+        <xpath expr="/t/t/div/div[2]/div[5]/strong" position="replace">
+                <strong>Fecha Presupuesto:</strong>
+        </xpath>
+     
+        
+
     </template>
 
     <template id="report_invoice_document_inherit_sale" inherit_id="sale.report_invoice_document_inherit_sale">

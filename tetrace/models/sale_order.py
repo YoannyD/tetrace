@@ -65,7 +65,8 @@ class SaleOrder(models.Model):
     feedbacktetrace = fields.Text("Feedback")
     importe_pendiente_facturar = fields.Monetary("Total a facturar", compute="_compute_amt_to_invoice")
     importe_total_facturado = fields.Monetary("Total facturado ", compute="_compute_amt_to_invoice")
-    purchase_order_count = fields.Integer("Pedidos de Compra", compute="_compute_purchase_order_count")
+    purchase_order_ids = fields.Many2many("purchase.order", "Pedidos de Compra", compute="_compute_purchase_order_count")
+    purchase_order_count = fields.Integer("Nº Pedidos de Compra", compute="_compute_purchase_order_count")
     invoice_total = fields.Monetary("Total facturado", compute="_compute_invoice_total")
     visible_btn_change_partner = fields.Boolean("Mostrar botón cambiar cliente", store=True,
                                                 compute="_compute_visible_btn_change_partner")
@@ -73,6 +74,8 @@ class SaleOrder(models.Model):
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
     invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
+    send_date = fields.Datetime(string="Fecha Envío")
+    rfq_date = fields.Datetime(string="Fecha RFQ")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
@@ -173,7 +176,11 @@ class SaleOrder(models.Model):
             
     def _compute_purchase_order_count(self):
         for r in self:
-            r.purchase_order_count = self.env['purchase.order'].search_count([('origin', 'like', r.name)])
+            orders = self.env['purchase.order'].search([('origin', 'like', r.name)])
+            r.update({
+                'purchase_order_ids': orders.ids,
+                'purchase_order_count': len(orders)
+            })
 
     def _compute_version(self):
         for r in self:

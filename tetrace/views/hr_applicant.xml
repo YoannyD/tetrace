@@ -15,7 +15,7 @@
                     <field name="document_applicant_count" widget="statinfo"/>
                 </button>
             </xpath>
-         <xpath expr="//field[@name='email_from']" position="before">
+             <xpath expr="//field[@name='email_from']" position="before">
                     <field name="reference" string="Referencia"/>
             </xpath>
             <xpath expr="//field[@name='emp_id']" position="replace"/>
@@ -140,6 +140,12 @@
                         name="filter_referencia"
                         domain="[]"
                         context="{'group_by': 'referencia'}"/>
+            </xpath>
+                        <xpath expr="//group[1]/filter[@name='job']" position="before">
+                <filter string="Referencia"
+                        name="filter_reference"
+                        domain="[]"
+                        context="{'group_by': 'reference'}"/>
             </xpath>
         </field>
     </record>

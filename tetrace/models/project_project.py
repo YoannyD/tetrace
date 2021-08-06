@@ -66,6 +66,7 @@ class Project(models.Model):
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
+    document_project_count = fields.Integer('Documentos', compute="_compute_document_project")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
@@ -77,6 +78,15 @@ class Project(models.Model):
     def _compute_tecnico_ids(self):
         for r in self:
             r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
+    def _compute_document_project(self):
+        for r in self:
+            docs_project = self.env['documents.document'].search_count([
+                ('res_model', '=', 'project.project'),
+                ('res_id', '=', r.id),
+            ])
+            
+            r.document_project_count = docs_project
             
     def _table_get_empty_so_lines(self):
         """ get the Sale Order Lines having no timesheet but having generated a task or a project """
@@ -150,8 +160,6 @@ class Project(models.Model):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
         res.actualizar_geo_partner()
-        res.actualizar_deadline_tareas_activacion()
-        res.actualizar_deadline_tareas_desactivacion()
         res.default_etapa_tareas()
         if res.proyecto_necesidad_ids:
             res.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
@@ -176,12 +184,8 @@ class Project(models.Model):
             self.actualizar_experiencias_tecnicos()
             
         if 'fecha_inicio' in vals:
-            self.actualizar_deadline_tareas_activacion()
             projects_activacion.enviar_email_estado_proyecto('activacion')
             projects_modificacion.enviar_email_estado_proyecto('modificacion')
-            
-        if 'fecha_cancelacion' in vals or 'fecha_finalizacion' in vals:
-            self.actualizar_deadline_tareas_desactivacion()
             
         if vals.get('fecha_cancelacion') or vals.get('fecha_finalizacion'):
             self.enviar_email_estado_proyecto('desactivacion')
@@ -270,21 +274,6 @@ class Project(models.Model):
 
             for task in r.tasks.filtered(lambda x: x.tipo == 'activacion' and x.tarea_individual):
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
-                task.write({'date_deadline': date_deadline})
-
-    def actualizar_deadline_tareas_desactivacion(self):
-        for r in self:
-            fecha = None
-            if r.fecha_finalizacion:
-                fecha = r.fecha_finalizacion
-            elif r.fecha_cancelacion:
-                fecha = r.fecha_cancelacion
-
-            if not fecha:
-                continue
-
-            for task in r.tasks.filtered(lambda x: x.tipo == 'desactivacion' and not x.tarea_individual):
-                date_deadline = fields.Date.from_string(fecha) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
 
     def actualizar_partner_task(self):
@@ -493,9 +482,21 @@ class Project(models.Model):
                     })
         
     def get_all_user_assigned_task(self):
-        self.ensure_one()
         user_ids = []
         for task in self.tasks:
             if task.user_id and task.user_id.id not in user_ids:
                 user_ids.append(task.user_id.id)
         return user_ids
+    
+    def view_documentos(self):
+        action = self.env['ir.actions.act_window'].for_xml_id('documents', 'document_action')
+        documents = self.env['documents.document'].search([
+            ('res_model', '=', 'project.project'),
+            ('res_id', '=', self.id),
+        ])
+    
+        action.update({
+            'context': {'res_model': 'project.project', 'res_id': self.id},
+            'domain': [('id', 'in', documents.ids)]
+        })
+        return action

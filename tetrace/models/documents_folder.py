@@ -11,5 +11,5 @@ _logger = logging.getLogger(__name__)
 class DocumentFolder(models.Model):
     _inherit = 'documents.folder'
     
-    view_employee = fields.Boolean("Portal empleado")
-    view_all = fields.Boolean("Portal todos empleados")
+    view_employee = fields.Boolean("Carpeta empleado portal")
+    view_all = fields.Boolean("Carpeta compañia portal")
