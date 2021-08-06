@@ -22,7 +22,7 @@
                 <t t-foreach="docs" t-as="employee">
                       <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                         <div t-if="employee.reference_employee" class="col-auto mw-100 mb-2">
-                        <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código: E<p class="m-0" t-field="employee.reference_employee"/></strong>
+                        <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código:<p class="m-0" t-field="employee.reference_employee"/></strong>
                    
                         </div>
                         </div>

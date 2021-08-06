@@ -31,7 +31,8 @@ class Applicant(models.Model):
     feedback_ids = fields.One2many("tetrace.feedback_applicant", "applicant_id")
 
     def _compute_reference(self):
-        self.reference = self.id + 1
+        self.reference = "P" + str(self.id + 1)
+        
     
     def _compute_document_applicant(self):
         for r in self:

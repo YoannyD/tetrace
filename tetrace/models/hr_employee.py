@@ -35,7 +35,7 @@ class Employee(models.Model):
     reference_employee = fields.Char(compute="_compute_reference", string="Código")
   
     def _compute_reference(self):
-        self.reference_employee = self.id + 1
+        self.reference_employee = "E" + str(self.id + 1)
     
     def _compute_document_employee(self):
         for r in self:
