@@ -11,6 +11,7 @@
     'depends': [
         'base',
         'sale',
+        'mail',
         'purchase',
         'purchase_stock',
         'account',
@@ -123,7 +124,7 @@
         'wizard/tetrace_prevision_facturacion_cancelar.xml',
         'wizard/tetrace_crear_tareas_act_desc.xml',
         'wizard/tetrace_change_partner_sale_order.xml',
-        'templates/portal.xml'
+        'templates/portal.xml',
     ],
     'demo': [],
     'installable': True,
