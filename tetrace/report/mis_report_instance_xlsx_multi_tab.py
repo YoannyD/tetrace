@@ -46,6 +46,9 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         domain = [('id', 'in', cuentas)]
         if objects[0].filtro_estado_cuentas_analiticas:
             domain += [('analitica_cerrada', '=', True if objects[0].filtro_estado_cuentas_analiticas == 'cerradas' else False)]
+            
+        if objects[0].tipo_proyecto_id:
+            domain += [('project_ids.sale_order_id.tipo_proyecto_id', '=', objects[0].tipo_proyecto_id.id)]
         
         analitycs = self.env['account.analytic.account'].search(domain)
         
