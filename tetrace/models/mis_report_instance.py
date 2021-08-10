@@ -25,6 +25,11 @@ class MisReportInstance(models.Model):
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
     informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
     filtro_estructurales = fields.Selection(FILTROS_ESTRUCTURALES, string=_("Filtro estructurales"))
+    filtro_estado_cuentas_analiticas = fields.Selection([
+        ('todos', _("Todos")),
+        ('cerradas', _("Cerradas")),
+        ('abiertas', _("Abiertas")),
+    ], string="Filtro estado cuenta analítica")
 
     def _add_analytic_filters_to_context(self, context):
         self.ensure_one()
@@ -32,6 +37,12 @@ class MisReportInstance(models.Model):
         if self.filtro_estructurales in ['sin', 'con']:
             context["mis_report_filters"]["analytic_account_id.estructurales"] = {
                 "value": True if self.filtro_estructurales == 'con' else False,
+                "operator": "=",
+            }
+            
+        if self.filtro_estado_cuentas_analiticas in ['cerradas', 'abiertas']:
+            context["mis_report_filters"]["analytic_account_id.analitica_cerrada"] = {
+                "value": True if self.filtro_estado_cuentas_analiticas == 'cerradas' else False,
                 "operator": "=",
             }
     
