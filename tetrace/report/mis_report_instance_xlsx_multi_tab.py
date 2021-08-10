@@ -27,6 +27,9 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
     _inherit = "report.report_xlsx.abstract"
     
     def generate_xlsx_report(self, workbook, data, objects):
+        _logger.warning(data)
+        _logger.warning(objects)
+        
         # create worksheet
         report_name = u"{} - {}".format(
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
@@ -40,7 +43,14 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         for cuenta in grupo_cuentas:
             cuentas.append(cuenta.get('analytic_account_id')[0])
         
-        analitycs = self.env['account.analytic.account'].search([('id', 'in', cuentas)])
+        domain = [('id', 'in', cuentas)]
+        if objects[0].filtro_estado_cuentas_analiticas:
+            domain += [('analitica_cerrada', '=', True if objects[0].filtro_estado_cuentas_analiticas == 'cerradas' else False)]
+            
+        if objects[0].tipo_proyecto_id:
+            domain += [('project_ids.sale_order_id.tipo_proyecto_id', '=', objects[0].tipo_proyecto_id.id)]
+        
+        analitycs = self.env['account.analytic.account'].search(domain)
         
         for analityc in analitycs:
             condition = {

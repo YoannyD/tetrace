@@ -25,18 +25,35 @@ class MisReportInstance(models.Model):
     informe_fecha_contable = fields.Boolean('Informe con fecha contable')
     informe_con_cuentas_analiticas = fields.Boolean("Generar pestaña por cuenta analítica con datos")
     filtro_estructurales = fields.Selection(FILTROS_ESTRUCTURALES, string=_("Filtro estructurales"))
+    filtro_estado_cuentas_analiticas = fields.Selection([
+        ('todos', _("Todos")),
+        ('cerradas', _("Cerradas")),
+        ('abiertas', _("Abiertas")),
+    ], string="Filtro estado cuenta analítica")
+    tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", 
+                                       context='{"display_tipo": True}')
 
     def _add_analytic_filters_to_context(self, context):
-        self.ensure_one()
         super(MisReportInstance, self)._add_analytic_filters_to_context(context)
         if self.filtro_estructurales in ['sin', 'con']:
             context["mis_report_filters"]["analytic_account_id.estructurales"] = {
                 "value": True if self.filtro_estructurales == 'con' else False,
                 "operator": "=",
             }
-    
+            
+        if self.filtro_estado_cuentas_analiticas in ['cerradas', 'abiertas']:
+            context["mis_report_filters"]["analytic_account_id.analitica_cerrada"] = {
+                "value": True if self.filtro_estado_cuentas_analiticas == 'cerradas' else False,
+                "operator": "=",
+            }
+            
+        if self.tipo_proyecto_id:
+            context["mis_report_filters"]["analytic_account_id.project_ids.sale_order_id.tipo_proyecto_id"] = {
+                "value": self.tipo_proyecto_id.id,
+                "operator": "=",
+            }
+            
     def _compute_matrix(self):
-        self.ensure_one()
         aep = self.report_id._prepare_aep(self.query_company_ids, self.currency_id, self.informe_fecha_contable)
         kpi_matrix = self.report_id.prepare_kpi_matrix(self.multi_company)
         for period in self.period_ids:

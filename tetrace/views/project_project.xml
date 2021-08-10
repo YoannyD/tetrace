@@ -45,6 +45,15 @@
                         name="action_crear_tareas_faltantes"
                         attrs="{'invisible':[('visible_btn_crear_tareas_faltantes', '=', False)]}"
                         string="Crear tareas faltantes"/>
+                
+                <field name="sale_order_ref_proyecto" invisible="1"/>
+                <field name="analytic_account_code" invisible="1"/>
+                <field name="mostrar_btn_cerrar_analitica" invisible="1"/>
+                <button class="oe_stat_button"
+                        type="object"
+                        name="cerrar_cuenta_analitica"
+                        attrs="{'invisible':['|', ('analitica_cerrada', '=', True), ('mostrar_btn_cerrar_analitica', '=', False)]}"
+                        string="Cerrar analítica"/>
 
                 <field name="estado_id"
                        widget="statusbar"
@@ -129,25 +138,34 @@
                 <field name="nombre_parque"/>
             </xpath>
 
-          <xpath expr="//group[@name='extra_settings']" position="replace"/>
-          <xpath expr="//field[@name='subtask_project_id']" position="replace"/>
-          <xpath expr="//field[@name='privacy_visibility']" position="replace"/>
+            <xpath expr="//group[@name='extra_settings']" position="replace"/>
+            <xpath expr="//field[@name='subtask_project_id']" position="replace"/>
+            <xpath expr="//field[@name='privacy_visibility']" position="replace"/>
+            
           <xpath expr="//page[@name='settings']" position="attributes">
             <attribute name="string">Información</attribute>
           </xpath>
+            
           <xpath expr="//field[@name='active']" position="before">
             <xpath expr="//field[@name='tipo_proyecto_name']" position="move"/>
           </xpath>
+            
           <xpath expr="//field[@name='partner_id']" position="attributes">
             <attribute name="attrs">{}</attribute>
             <attribute name="force_save">True</attribute>
             <attribute name="readonly">1</attribute>
           </xpath>
+            
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="analitica_cerrada"/>
+            </xpath>
+            
           <xpath expr="//field[@name='analytic_account_id']" position="attributes">
             <attribute name="attrs">{}</attribute>
             <attribute name="force_save">True</attribute>
             <attribute name="readonly">1</attribute>
           </xpath>
+            
           <xpath expr="//field[@name='company_id']" position="attributes">
             <attribute name="attrs">{}</attribute>
             <attribute name="force_save">True</attribute>

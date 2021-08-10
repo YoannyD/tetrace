@@ -8,7 +8,18 @@
             <xpath expr="//field[@name='comparison_mode']" position="after">
                 <field name="informe_fecha_contable"/>
                 <field name="informe_con_cuentas_analiticas"/>
-                <field name="filtro_estructurales" widget="radio"/>
+                <field name="tipo_proyecto_id"/>
+            </xpath>
+            
+            <xpath expr="//group[1]" position="after">
+                <group>
+                    <group>
+                        <field name="filtro_estructurales" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="filtro_estado_cuentas_analiticas"  widget="radio"/>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>

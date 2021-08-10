@@ -43,6 +43,7 @@ class Project(models.Model):
     product_tmpl_diseno_ids = fields.One2many("product.template", "project_template_diseno_id")
     color = fields.Integer(related="sale_order_id.tipo_servicio_id.color")
     sale_order_state = fields.Selection(related="sale_order_id.state")
+    sale_order_ref_proyecto = fields.Char(related="sale_order_id.ref_proyecto")
     partner_latitude = fields.Float('Geo Latitude', digits=(16, 5))
     partner_longitude = fields.Float('Geo Longitude', digits=(16, 5))
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
@@ -67,13 +68,21 @@ class Project(models.Model):
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
     document_project_count = fields.Integer('Documentos', compute="_compute_document_project")
+    analitica_cerrada = fields.Boolean(related="analytic_account_id.analitica_cerrada")
+    analytic_account_code = fields.Char(related="analytic_account_id.code")
+    mostrar_btn_cerrar_analitica = fields.Boolean("Mostrar botón cerrar cuenta analítica", 
+                                                  compute="_compute_mostrar_btn_cerrar_analitica")
 
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
         for r in self:
             if r.fecha_cancelacion and not r.motivo_cancelacion_id:
                 raise ValidationError(_("Si hay fecha de cancelación es olbigatorio indicar el motivo"))
-                
+            
+    def _compute_mostrar_btn_cerrar_analitica(self):
+        for r in self:
+            r.mostrar_btn_cerrar_analitica = True if self.analytic_account_code == self.sale_order_ref_proyecto else False
+            
     @api.depends("tecnico_calendario_ids.employee_id")
     def _compute_tecnico_ids(self):
         for r in self:
@@ -500,3 +509,12 @@ class Project(models.Model):
             'domain': [('id', 'in', documents.ids)]
         })
         return action
+    
+    def cerrar_cuenta_analitica(self):
+        if not self.analytic_account_id:
+            return
+        
+        if self.analytic_account_code != self.sale_order_ref_proyecto:
+            raise UserError(_("No puedes cerrar una cuenta analítica que no sea del proyecto."))
+            
+        self.analytic_account_id.write({'analitica_cerrada': True})
