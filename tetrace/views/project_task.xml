@@ -222,6 +222,14 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_search_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//separator[1]" position="before">
+                <separator/>
+                <filter string="Viajes" name="viajes_filter" domain="[('viajes', '=', True)]"/>
+                <filter string="PCRs" name="pcr_filter" domain="[('pcr', '=', True)]"/>
+                <filter string="Búsqueda perfiles" name="busqueda_perfiles_filter" domain="[('busqueda_perfiles', '=', True)]"/>
+                <filter string="Ausencias" name="ausencia_filter" domain="[('ausencia', '=', True)]"/>
+            </xpath>
+            
             <xpath expr="//filter[@name='inactive']" position="after">
                 <filter string="Desactivadas" name="no_activada" domain="[('activada', '=', False)]"/>
             </xpath>

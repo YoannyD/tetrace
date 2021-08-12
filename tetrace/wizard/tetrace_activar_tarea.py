@@ -30,6 +30,7 @@ class ActivarTarea(models.TransientModel):
     viaje_ids = fields.One2many('tetrace.act_viaje', 'activar_tarea_id')
     alojamiento_ids = fields.One2many('tetrace.act_alojamiento', 'activar_tarea_id')
     alquiler_ids = fields.One2many('tetrace.act_alquiler', 'activar_tarea_id')
+    financiacion_ids = fields.One2many('tetrace.act_financiacion', 'activar_tarea_id')
 
     @api.depends("detalle_ids.employee_id")
     def _compute_tecnico_ids(self):
@@ -108,6 +109,16 @@ class ActivarTarea(models.TransientModel):
                         'completado': alquiler.completado,
                         'employee_id': alquiler.employee_id.id if alquiler.employee_id else None,
                         'observaciones': alquiler.observaciones
+                    })
+                    
+                for financiacion in self.financiacion_ids:
+                    self.env["tetrace.financiacion"].create({
+                        'task_id': task.id,
+                        'employee_id': financiacion.employee_id.id if financiacion.employee_id else None,
+                        'importe': financiacion.importe,
+                        'currency_id': financiacion.currency_id.id,
+                        'fecha': financiacion.fecha,
+                        'realizado': financiacion.realizado,
                     })
                     
                 task.write({'activada': True})
@@ -210,3 +221,15 @@ class ActivarTareaAlquiler(models.TransientModel):
     realizado = fields.Boolean("Realizado")
     employee_id = fields.Many2one("hr.employee", string="Persona")
     observaciones = fields.Text("Observaciones", translate=True)
+    
+    
+class ActivarTareaFinanciacion(models.TransientModel):
+    _name = 'tetrace.act_financiacion'
+    _description = "Activar tareas financiacion"
+    
+    activar_tarea_id = fields.Many2one('tetrace.activar_tarea', string="Detalles")
+    employee_id = fields.Many2one('hr.employee', string="Persona")
+    importe = fields.Monetary('Importe')
+    currency_id = fields.Many2one("res.currency", related="activar_tarea_id.project_id.currency_id")
+    fecha = fields.Date('Fecha')
+    realizado = fields.Boolean('Realizado')

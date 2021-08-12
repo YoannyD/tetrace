@@ -87,6 +87,18 @@
                                 </tree>
                             </field>
                         </page>
+                        
+                        <page name="financiacion" string="Financiación">
+                            <field name="financiacion_ids" nolabel="1" context="{'tecnico_ids': tecnico_ids}">
+                                <tree editable="bottom">
+                                    <field name="employee_id" domain="[('id', 'in', context.get('tecnico_ids'))]"/>
+                                    <field name="importe"/>
+                                    <field name="fecha"/>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="realizado"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <footer>
