@@ -4,6 +4,7 @@
 import logging
 
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -33,6 +34,12 @@ class MisReportInstance(models.Model):
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", 
                                        context='{"display_tipo": True}')
 
+    @api.constrains('filtro_estructurales', 'tipo_proyecto_id')
+    def _check_filtro_estructurales(self):
+        for r in self:
+            if r.filtro_estructurales == "con" and r.tipo_proyecto_id:
+                raise ValidationError(_('No es compatible filtrar por Solo estructurales y por un Tipo de proyecto.'))
+    
     def _add_analytic_filters_to_context(self, context):
         super(MisReportInstance, self)._add_analytic_filters_to_context(context)
         if self.filtro_estructurales in ['sin', 'con']:
@@ -75,7 +82,6 @@ class MisReportInstance(models.Model):
         return kpi_matrix
     
     def export_xls(self):
-        self.ensure_one()
         context = dict(self._context_with_filters())
         if self.informe_con_cuentas_analiticas:
             report = self.env.ref("tetrace.xls_export_multi_tab")

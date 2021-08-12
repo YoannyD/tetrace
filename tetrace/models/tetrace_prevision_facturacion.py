@@ -24,7 +24,7 @@ class PrevisionFacturacion(models.Model):
     order_nombre_proyecto = fields.Char(related="order_id.nombre_proyecto", store=True)
     order_project_estado_id = fields.Many2one("tetrace.project_state", 
                                               related="order_id.project_estado_id", store=True)
-    order_company_id = fields.Many2one('res.company', related="order_id.company_id")
+    order_company_id = fields.Many2one('res.company', related="order_id.company_id", store=True)
     order_coordinador_proyecto_id = fields.Many2one("res.users", related="order_id.coordinador_proyecto_id")
     invoice_ids = fields.Many2many('account.move', 'prev_fact_inv_rel', 'prev_fact_id', 'inv_id', 
                                    compute="_compute_invoice_ids", store=True)

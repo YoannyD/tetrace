@@ -32,6 +32,7 @@ class CrearTareasActDesc(models.TransientModel):
     viaje_ids = fields.One2many('tetrace.tareas_act_viaje', 'tarea_act_id')
     alojamiento_ids = fields.One2many('tetrace.tareas_act_alojamiento', 'tarea_act_id')
     alquiler_ids = fields.One2many('tetrace.tareas_act_alquiler', 'tarea_act_id')
+    financiacion_ids = fields.One2many('tetrace.tareas_act_financiacion', 'tarea_act_id')
     viaje = fields.Boolean("Trips")
 
     @api.onchange("accion")
@@ -110,6 +111,16 @@ class CrearTareasActDesc(models.TransientModel):
                     'completado': alquiler.completado,
                     'employee_id': alquiler.employee_id.id if alquiler.employee_id else None,
                     'observaciones': alquiler.observaciones
+                })
+                
+            for financiacion in self.financiacion_ids:
+                self.env["tetrace.financiacion"].create({
+                    'task_id': task.id,
+                    'employee_id': financiacion.employee_id.id if financiacion.employee_id else None,
+                    'importe': financiacion.importe,
+                    'currency_id': financiacion.currency_id.id,
+                    'fecha': financiacion.fecha,
+                    'realizado': financiacion.realizado,
                 })
 
     def crear_tareas_activacion(self):
@@ -318,6 +329,18 @@ class ActivarTareaViaje(models.TransientModel):
     employee_id = fields.Many2one("hr.employee", string="Persona")
     observaciones = fields.Text("Observaciones", translate=True)
     pcr = fields.Boolean("PCR")
+    
+    
+class ActivarTareaFinanciacion(models.TransientModel):
+    _name = 'tetrace.tareas_act_financiacion'
+    _description = "Crear tareas financiacion"
+    
+    tarea_act_id = fields.Many2one('tetrace.crear_tareas_act_desc', string="Wizard creación")
+    employee_id = fields.Many2one('hr.employee', string="Persona")
+    importe = fields.Monetary('Importe')
+    currency_id = fields.Many2one("res.currency", related="tarea_act_id.project_id.currency_id")
+    fecha = fields.Date('Fecha')
+    realizado = fields.Boolean('Realizado')
     
     
 class ActivarTareaAlojamiento(models.TransientModel):
