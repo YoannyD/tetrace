@@ -33,9 +33,33 @@ class Employee(models.Model):
     country_visado_id = fields.Many2one('res.country', string="País Visado")
     type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
     reference_employee = fields.Char(compute="_compute_reference", string="Código")
+    project_asignado_id = fields.Many2one('project.project', string="Proyecto asignado",
+                                          compute="_compute_project_asginado")
+    project_country_asignado_id = fields.Many2one('res.country', string="País del proyecto asignado",
+                                                 compute="_compute_project_asginado")
   
     def _compute_reference(self):
         self.reference_employee = "E" + str(self.id + 1)
+    
+    def _compute_project_asginado(self):
+        for r in self:
+            tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
+                ('employee_id', '=', r.id),
+                ('fecha_inicio', '<=', fields.Date.today()),
+                '|',
+                ('fecha_fin', '=', None),
+                ('fecha_fin', '>=', fields.Date.today()),
+            ], limit=1)
+            project_id = None
+            country_id = None
+            if tecnico_calendario:
+                project_id = tecnico_calendario.project_id.id
+                country_id = tecnico_calendario.project_id.company_id.country_id.id
+            
+            r.update({
+                'project_asignado_id': project_id,
+                'project_country_asignado_id': country_id
+            })
     
     def _compute_document_employee(self):
         for r in self:

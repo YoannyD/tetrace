@@ -57,6 +57,8 @@
                 <field name="codigo_drive"/>
                 <field name="key_nomina"/>
                 <field name="documentacion_laboral" widget="url"/>
+                <field name="project_asignado_id"/>
+                <field name="project_country_asignado_id"/>
             </xpath>
 
             <xpath expr="//field[@name='passport_id']" position="before">
