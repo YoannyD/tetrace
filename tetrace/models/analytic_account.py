@@ -52,12 +52,13 @@ class AccountAnalyticLine(models.Model):
 
         return vals
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
-        res = super(AccountAnalyticLine, self).create(vals)
-        res._check_imputar_tiempos()
-        self.env['account.analytic.line.rel'].create({'analytic_line_id': res.id})
-        return res
+        lines = super(AccountAnalyticLine, self).create(vals)
+        for line in lines:
+            line._check_imputar_tiempos()
+            self.env['account.analytic.line.rel'].create({'analytic_line_id': line.id})
+        return lines
                 
     def write(self, vals):
         self._check_imputar_tiempos()
