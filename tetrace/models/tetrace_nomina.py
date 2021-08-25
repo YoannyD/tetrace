@@ -20,6 +20,12 @@ class Nomina(models.Model):
     nomina_trabajador_ids = fields.One2many('tetrace.nomina.trabajador', 'nomina_id')
     move_ids = fields.One2many('account.move', 'nomina_id')
     move_count = fields.Integer("Nº asientos", compute="_compute_move_ids")
+    state = fields.Selection(selection=[
+        ('importado', 'Importado'),
+        ('rrhh', 'RRHH'),
+        ('contabilidad', 'Contabilidad'),
+        ('contabilizado', 'Contabilizado'),
+    ], string='Estado nomina', default='importado')
 
     @api.depends('move_ids')
     def _compute_move_ids(self):
