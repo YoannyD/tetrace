@@ -33,7 +33,6 @@ class Applicant(models.Model):
     def _compute_reference(self):
         self.reference = "P" + str(self.id + 1)
         
-    
     def _compute_document_applicant(self):
         for r in self:
             docs_applicant = self.env['documents.document'].search_count([

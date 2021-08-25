@@ -78,7 +78,13 @@ class Employee(models.Model):
     def _compute_applicant(self):
         for r in self:
             r.applicant_count = len(r.applicant_ids)
-            
+        
+    @api.onchange('job_id')
+    def _onchange_job_id(self):
+        super(Employee, self)._onchange_job_id()
+        if self.job_id:
+            self.department_id = self.job_id.department_id.id
+        
     def write(self, vals):
         res = super(Employee, self).write(vals)
         self.actualizar_nombre_adjunto_a_documento()
