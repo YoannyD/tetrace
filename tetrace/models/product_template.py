@@ -18,6 +18,7 @@ class ProductTemplate(models.Model):
     producto_entrega = fields.Boolean("Producto entrega", compute="_compute_producto_entrega", store=True)
     individual = fields.Boolean("Individual")
     archivar_order_line = fields.Boolean("Archivados en líneas de venta")
+    mantenimiento = fields.Boolean("Mantenimiento")
     #categ_id_new = fields.Many2one(
    #     'product.category', 'Categoría de Producto')
 
