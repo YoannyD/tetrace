@@ -19,8 +19,6 @@ class ProductTemplate(models.Model):
     individual = fields.Boolean("Individual")
     archivar_order_line = fields.Boolean("Archivados en líneas de venta")
     mantenimiento = fields.Boolean("Mantenimiento")
-    #categ_id_new = fields.Many2one(
-   #     'product.category', 'Categoría de Producto')
 
     @api.depends("service_policy", "service_tracking")
     def _compute_producto_entrega(self):
@@ -93,3 +91,34 @@ class ProductTemplate(models.Model):
 
         code = "%s-%s-%s" % (tipo, categoria, secuencia)
         return secuencia_int, code
+    
+    def crear_equipo(self):
+        Equipment = self.env['maintenance.equipment']
+        for r in self:
+            if not r.mantenimiento:
+                continue
+               
+            values = {
+                'name': r.name,
+                'company_id': r.company_id.id,
+                'product_id': r.product_variant_id.id,
+                'cost': r.standard_price,
+                'serial_no': r.default_code
+            }
+            
+            if r.seller_ids:
+                values.update({
+                    'partner_id': r.seller_ids[0].name.id,
+                    'partner_ref': r.seller_ids[0].product_code
+                })
+            
+            lotes = None
+            if r.tracking in ['lot', 'serial']:
+                lotes = self.env['stock.production.lot'].search([('product_id', '=', r.product_variant_id.id)])
+                for lot in lotes:
+                    values.update({'serial_no': lot.name})
+                    Equipment.create(values)
+
+            if not lotes:
+                Equipment.create(values)
+            

@@ -46,7 +46,8 @@
         'purchase_tier_validation',
         'account_accountant',
         'report_qweb_element_page_visibility',
-        'portal'
+        'portal',
+        'hr_maintenance'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -113,6 +114,7 @@
         'views/base_tier_validation.xml',
         'views/account_change_lock_date.xml',
         'views/stock_picking.xml',
+        'views/maintenance_equipment.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',
