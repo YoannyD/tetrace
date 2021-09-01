@@ -33,7 +33,7 @@
             
             <xpath expr="//field[@name='type']" position="after">
                 <field name="categ_id" string="Categoría contable" required="True"/>
-                 <field name="public_categ_ids" string="Familias/subfamilias" required="True"/>
+                 <field name="public_categ_ids" string="Familias/subfamilias"/>
             </xpath>
         
             <xpath expr="//group[@name='bill']" position="attributes">
