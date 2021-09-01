@@ -5,6 +5,13 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="model">product.template</field>
         <field name="arch" type="xml">
+            <xpath expr="//header[1]" position="inside">
+                <button string="Crear equipo" 
+                        type="object" 
+                        name="crear_equipo" 
+                        attrs="{'invisible': [('mantenimiento', '=', False)]}"/>
+            </xpath>
+            
             <xpath expr="//div[@name='options']" position="inside">
                 <div>
                     <field name="mantenimiento"/>

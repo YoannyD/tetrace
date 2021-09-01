@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="maintenance_equipment_view_form_inherit_hr">
+        <field name="name">maintenance.equipment.view.form.inherit.hr.tetrace</field>
+        <field name="inherit_id" ref="hr_maintenance.maintenance_equipment_view_form_inherit_hr"/>
+        <field name="model">maintenance.equipment</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('equipment_assign_to', 'not in', ['department', 'other'])]}</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="project_id" attrs="{'invisible': [('equipment_assign_to', 'not in', ['project', 'tecnico_proyecto'])]}"/>
+                <field name="project_tecnico_ids" invisible="1"/>
+                <field name="tecnico_id"
+                       domain="[('id', 'in', project_tecnico_ids)]"
+                       attrs="{'invisible': [('equipment_assign_to', '!=', 'tecnico_proyecto')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

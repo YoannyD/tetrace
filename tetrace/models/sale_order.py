@@ -56,7 +56,7 @@ class SaleOrder(models.Model):
         ('Revisado', 'Revisado'),
         ('standby', 'Stand by'),
         ('terminado', 'Terminado'),
-    ], string='Estado Tetrace', default='Pttrealizar')
+    ], string='Estado Tetrace', default='Pttrealizar',copy=False)
     motivo_cancelacion = fields.Selection(selection=[
         ('precio', 'Valor económico de la propuesta'),
         ('tarde', 'Tardanza en contestar al cliente'),
@@ -74,8 +74,8 @@ class SaleOrder(models.Model):
     prevision_facturacion = fields.Boolean("Generada previsión facturación")
     invoicing_id = fields.Many2one('tetrace.invoice', string="Tipo de Facturación")
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
-    send_date = fields.Datetime(string="Fecha Envío")
-    rfq_date = fields.Datetime(string="Fecha RFQ")
+    send_date = fields.Datetime(string="Fecha Envío",copy=False)
+    rfq_date = fields.Datetime(string="Fecha RFQ",copy=False)
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")

@@ -52,7 +52,10 @@
                                 <th t-else="">
                                     <em class="font-weight-normal text-muted">Equipos por categoría:</em>
                                     <span t-field="equipments[0].category_id.name"/></th>
+                                <th>Usado por</th>
                                 <th>Empleado</th>
+                                <th>Proyecto</th>
+                                <th>Técnico proyecto</th>
                                 <th>Fecha de asignación</th>
                                 <th>Nº de serie</th>
                                 <th>Compañia</th>
@@ -63,7 +66,10 @@
                                 <tr>
                                     <td><a t-attf-href="/my/equipment/#{equipment.id}?{{ keep_query() }}"><span t-field="equipment.name"/></a></td>
                                     <td><span t-field="equipment.category_id"/></td>
+                                    <td><span t-field="equipment.equipment_assign_to"/></td>
                                     <td><span t-field="equipment.owner_user_id"/></td>
+                                    <td><span t-field="equipment.project_id"/></td>
+                                    <td><span t-field="equipment.tecnico_id"/></td>
                                     <td><span t-field="equipment.assign_date" t-options='{"widget": "date"}'/></td>
                                     <td><span t-field="equipment.serial_no"/></td>
                                     <td><span t-field="equipment.company_id"/></td>
