@@ -88,7 +88,6 @@ class SaleOrderLine(models.Model):
             tasks_departamento_plantilla.actualizar_info_puesto()
 
     def validar_crear_proyecto(self):
-        self.ensure_one()
         if not self.order_id.ref_proyecto or not self.order_id.nombre_proyecto:
             raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
             
@@ -104,7 +103,6 @@ class SaleOrderLine(models.Model):
         return values
 
     def _timesheet_create_project(self):
-        self.ensure_one()
         self = self.sudo().with_context(no_notificar=True)
         self.validar_crear_proyecto()
 
@@ -147,7 +145,6 @@ class SaleOrderLine(models.Model):
         return new_tasks
     
     def _timesheet_create_project_diseno(self):
-        self.ensure_one()
         self.validar_crear_proyecto()
 
         if self.project_id:
@@ -177,7 +174,6 @@ class SaleOrderLine(models.Model):
         return project
 
     def seguidores_proyecto_diseno(self):
-        self.ensure_one()
         follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
         if self.product_id and self.product_id.project_template_diseno_id and \
             self.product_id.project_template_diseno_id.message_partner_ids:
@@ -238,7 +234,7 @@ class SaleOrderLine(models.Model):
                     'ref_created': ref_created,
                 }
                 
-                responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores(self.order_id.company_coordinador_id) 
                 if responsable_id:
                     values.update({'user_id': responsable_id})
                 
@@ -256,7 +252,7 @@ class SaleOrderLine(models.Model):
             if task.check_task_exist(ref_created) or task.tarea_individual:
                 continue
 
-            responsable_id, seguidores_ids = task.get_responsable_y_seguidores()   
+            responsable_id, seguidores_ids = task.get_responsable_y_seguidores(self.order_id.company_coordinador_id)   
             new_task = task.with_context(tracking_disable=True).copy({
                 'name': task.name,
                 'project_id': project.id if project else task.project_id.id,

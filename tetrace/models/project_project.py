@@ -434,7 +434,6 @@ class Project(models.Model):
         if not project_theme:
            raise UserError(_("Tiene que configurar una plantilla de proyecto.")) 
         
-        _logger.warning(self.sale_line_id)
         self.sale_line_id.copy_tasks(project_theme.sudo().tasks, self)
         
     def enviar_email_tareas_asignadas(self):
