@@ -235,21 +235,22 @@ class ProjectTask(models.Model):
         task_count = self.search_count(domain)
         return True if task_count > 0 else False
     
-    def get_responsable_y_seguidores(self):
-        self.ensure_one()
+    def get_responsable_y_seguidores(self, company_coordinador=None):
         seguidores_ids = []
         responsable_id = None
-        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == self.env.company.id)   
-        if asignaciones:
-            for asignacion in asignaciones:
-                for seguidor in asignacion.seguidor_ids.filtered(lambda x: x.partner_id):
-                    seguidores_ids.append(seguidor.partner_id.id)
-                if asignacion.responsable_id:
-                    responsable_id = asignacion.responsable_id.id
+        if not company_coordinador:
+            return responsable_id, seguidores_ids
+        
+        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == company_coordinador.id) 
+        for asignacion in asignaciones:
+            for seguidor in asignacion.seguidor_ids.filtered(lambda x: x.partner_id):
+                seguidores_ids.append(seguidor.partner_id.id)
+            if asignacion.responsable_id:
+                responsable_id = asignacion.responsable_id.id
+    
         return responsable_id, seguidores_ids
 
     def view_proyecto_necesidad_action(self):
-        self.ensure_one()
         action = self.env.ref("tetrace.tetrace_proyecto_necesidad_action").read()[0]
         action.update({'domain': [('project_id', '=', self.project_id.id)]})
         return action

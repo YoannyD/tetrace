@@ -20,7 +20,8 @@ class SaleOrder(models.Model):
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", copy=False,
                                        context='{"display_tipo": True}')
     tipo_proyecto_name = fields.Char(related="tipo_proyecto_id.name", string="Nombre Tipo proyecto", store=True)
-    num_proyecto = fields.Char('Nº proyecto', copy=False)
+    num_proyecto = fields.Char('Nº proyecto', copy=False, readonly=True)
+    sequence_num_proyecto = fields.Integer("Secuencia nº de proyecto")
     partner_siglas = fields.Char(related="partner_id.siglas")
     tipo_servicio_id = fields.Many2one('tetrace.tipo_servicio', string="Tipo de servicio", copy=False,
                                         domain="[('tipo_proyecto_ids', 'in', tipo_proyecto_id)]")
@@ -117,7 +118,7 @@ class SaleOrder(models.Model):
                 'importe_total_facturado': facturado,
                 'importe_pendiente_facturar': pendiente_facturar
             })
-
+            
     @api.depends("invoice_ids", "state", "picking_ids")
     def _compute_visible_btn_change_partner(self):
         for r in self:
@@ -270,13 +271,8 @@ class SaleOrder(models.Model):
     @api.model
     def create(self, vals):
         res = super(SaleOrder, self).create(vals)
-        if 'tipo_proyecto_id' in vals or 'num_proyecto' in vals:
-            ref_proyecto = res.generar_ref_proyecto()
-            res.with_context(cambiar_ref_proyecto=True).write({'ref_proyecto': ref_proyecto})
-
         if 'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals:
             res.with_context(cambiar_nombre_proyecto=True).write({'nombre_proyecto': res.generar_nombre_proyecto()})
-
         return res
 
     def write(self, vals):
@@ -299,12 +295,6 @@ class SaleOrder(models.Model):
             for r in self:
                 ref_proyecto = r.generar_ref_proyecto()
                 r.with_context(cambiar_ref_proyecto=True).write({'ref_proyecto': ref_proyecto})
-
-        if 'tipo_proyecto_id' in vals or 'nombre_proyecto' in vals or 'num_proyecto' in vals or \
-            'state' in vals:
-            for r in self:
-                if r.state == 'sale' and not r.ref_proyecto:
-                    raise ValidationError("¡La referencia de proyecto tiene que ser única!")
 
         if 'tipo_servicio_id' in vals or 'proyecto_country_id' in vals or 'detalle_proyecto' in vals:
             for r in self:
@@ -338,10 +328,8 @@ class SaleOrder(models.Model):
                 
 
     def generar_ref_proyecto(self):
-        self.ensure_one()
         if self.ejercicio_proyecto and self.tipo_proyecto_id and self.num_proyecto:
-            return "P%s%s.%s" % (
-            self.ejercicio_proyecto, self.tipo_proyecto_id.tipo if self.tipo_proyecto_id else '', self.num_proyecto)
+            return "P%s%s.%s" % (self.ejercicio_proyecto, self.tipo_proyecto_id.tipo if self.tipo_proyecto_id else '', self.num_proyecto)
         elif self.referencia_proyecto_antigua:
             return self.referencia_proyecto_antigua
         else:
@@ -362,11 +350,44 @@ class SaleOrder(models.Model):
                 analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
                 order.analytic_account_id = analytic
     
+    @api.model
+    def siguiente_num_proyecto(self, sequence_num_proyecto=0):
+        last_order = self.search([
+            ('sequence_num_proyecto', '>', sequence_num_proyecto),
+            ('sequence_num_proyecto', '!=', sequence_num_proyecto)
+        ], limit=1, order="sequence_num_proyecto desc")
+
+        if last_order:
+            num = last_order.sequence_num_proyecto + 1
+        else:
+            num = sequence_num_proyecto + 1
+            
+        num_str = str(num)
+        for i in range(len(num_str), 4):
+            num_str = "0%s" % num_str
+          
+        order_exist = self.search([('num_proyecto', '=', num_str)], limit=1)
+        if order_exist:
+            return self.siguiente_num_proyecto(int(order_exist.num_proyecto))
+        
+        return num, num_str
+            
+    def crear_num_proyecto(self):
+        for r in self:
+            if r.num_proyecto:
+                continue
+                
+            sequence_num_proyecto, num_proyecto = r.siguiente_num_proyecto()
+            r.write({
+                'num_proyecto': num_proyecto,
+                'sequence_num_proyecto': sequence_num_proyecto
+            })
+        
     def _action_confirm(self):
         for order in self:
+            order.crear_num_proyecto()
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
-        self.actualizar_datos_proyecto()
         self.send_email_confirm()
         return res
 
@@ -390,7 +411,6 @@ class SaleOrder(models.Model):
             template_copy.unlink()
         
     def action_view_purchase_order(self):
-        self.ensure_one()
         return {
             'name': 'Pedidos de Compra',
             'type': 'ir.actions.act_window',
@@ -436,9 +456,9 @@ class SaleOrder(models.Model):
         return wizard.open_wizard()
 
     def action_generar_proyecto(self):
-        self.ensure_one()
-        if not self.ref_proyecto or not self.nombre_proyecto:
-            raise ValidationError(_("Para crear el proyecto es obligatorio indicar el nombre y la referencia."))
+        self.crear_num_proyecto()
+        if not self.ref_proyecto:
+            raise ValidationError(_("Para crear el proyecto es obligatorio indicar la referencia."))
 
         project = None
         if self.project_ids:
@@ -484,7 +504,6 @@ class SaleOrder(models.Model):
         return action
 
     def action_view_project_ids(self):
-        self.ensure_one()
         view_form_id = self.env.ref('project.edit_project').id
         view_kanban_id = self.env.ref('project.view_project_kanban').id
         action = {

@@ -174,7 +174,7 @@ class CrearTareasActDesc(models.TransientModel):
                         date_deadline = fields.Date.from_string(detalle.fecha_inicio) + timedelta(days=task.deadline)
                         values.update({'date_deadline': date_deadline})
                         
-                    responsable_id, seguidores_ids = task.get_responsable_y_seguidores() 
+                    responsable_id, seguidores_ids = task.get_responsable_y_seguidores(self.project_id.sale_order_id.company_coordinador_id) 
                     if responsable_id:
                         values.update({'user_id': responsable_id})
 
@@ -183,7 +183,7 @@ class CrearTareasActDesc(models.TransientModel):
                         new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
                         
             elif not task.check_task_exist(ref_created):
-                responsable_id, seguidores_ids = task.get_responsable_y_seguidores()
+                responsable_id, seguidores_ids = task.get_responsable_y_seguidores(self.project_id.sale_order_id.company_coordinador_id)
                 values = {
                     'name': task.name,
                     'sale_line_id': None,
