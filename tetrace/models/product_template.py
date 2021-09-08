@@ -100,7 +100,7 @@ class ProductTemplate(models.Model):
             
             values = {
                 'name': r.name,
-                'category_id': r.categ_id.categoria_equipo_id.id,
+                'category_id': r.public_categ_ids[0].categoria_equipo_id.id if r.public_categ_ids else False,
                 #'company_id': r.company_id.id, No tiene sentido, se generan segun el stock producto/compañia/lote/cantidad
                 'equipment_assign_to' : 'project',
                 #'purchase_date': No disponemos de ningun requerimiento al respecto.
