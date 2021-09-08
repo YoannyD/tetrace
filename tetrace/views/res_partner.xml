@@ -83,13 +83,14 @@
     </record>
     
     <record model="ir.ui.view" id="view_res_partner_filter_job_position_tetrace">
-        <field name="name">Partner search with job position</field>
+        <field name="name">res.partner.search.job.position.tetrace</field>
         <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_res_partner_filter" />
+        <field name="inherit_id" ref="partner_contact_job_position.view_res_partner_filter_job_position" />
         <field name="arch" type="xml">
-            <field name="category_id" position="after">
-                <field name="job_position_ids"/>
+            <field name="job_position_id" position="replace">
+                <field name="job_position_ids" string="Puestos de trabajo"/>
             </field>
+            <filter name="salesperson" position="replace"/>
         </field>
     </record>
 </odoo>
