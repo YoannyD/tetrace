@@ -28,7 +28,7 @@
         <field name="inherit_id" ref="maintenance.hr_equipment_view_kanban"/>
         <field name="model">maintenance.equipment</field>
         <field name="arch" type="xml">
-            <xpath expr="//div[@class='o_kanban_record_body']" position="inside">
+            <xpath expr="//div[hasclass('o_kanban_record_body')]" position="inside">
                 <field name="product_lot_id"/>
             </xpath>
         </field>
