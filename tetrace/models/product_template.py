@@ -93,17 +93,22 @@ class ProductTemplate(models.Model):
         return secuencia_int, code
     
     def crear_equipo(self):
-        Equipment = self.env['maintenance.equipment']
         for r in self:
             if not r.mantenimiento:
                 continue
-               
+            Equipment = self.env['maintenance.equipment']
             values = {
                 'name': r.name,
-                'company_id': r.company_id.id,
+                'category_id': r.public_categ_ids[0].categoria_equipo_id.id if r.public_categ_ids else False,
+                'equipment_assign_to' : 'project',
+                #'purchase_date': No disponemos de ningun requerimiento al respecto.
+                #'warranty_period': No disponemos de ningun requerimiento al respecto.
                 'product_id': r.product_variant_id.id,
+                'model': r.manufacturer.name if r.manufacturer.name else '',
+                #'effective_date': No disponemos de ningun requerimiento al respecto.
+                #'warranty_date': No disponemos de ningun requerimiento al respecto.
                 'cost': r.standard_price,
-                'serial_no': r.default_code
+                'owner_user_id': False,
             }
             
             if r.seller_ids:
@@ -112,13 +117,32 @@ class ProductTemplate(models.Model):
                     'partner_ref': r.seller_ids[0].product_code
                 })
             
-            lotes = None
-            if r.tracking in ['lot', 'serial']:
-                lotes = self.env['stock.production.lot'].search([('product_id', '=', r.product_variant_id.id)])
-                for lot in lotes:
-                    values.update({'serial_no': lot.name})
-                    Equipment.create(values)
-
-            if not lotes:
-                Equipment.create(values)
+            quants = self.env['stock.quant'].read_group([('product_id','=',r.product_variant_id.id),('location_id.usage','=','internal')],\
+                                                        fields=['product_id','company_id','location_id','lot_id','quantity:sum'],\
+                                                        groupby=['product_id','company_id','location_id','lot_id'],\
+                                                        lazy=False)
+            
+            for elemento in quants:
+                ubicacion = self.env['stock.location'].search([('id','=',elemento['location_id'][0])])
+                serie_lote = elemento['lot_id']
+                unidades = elemento['quantity']
+                if serie_lote:
+                    values.update({
+                        'company_id': elemento['company_id'][0],
+                        'location': ubicacion.complete_name,
+                        'product_lot_id': serie_lote[0]
+                    })
+                    equipos_creados = Equipment.search([('product_id','=',r.product_variant_id.id),('product_lot_id','=',serie_lote[0]),('location','=',ubicacion.complete_name)])
+                    while unidades > len(equipos_creados):
+                        Equipment.create(values)
+                        unidades -= 1
+                else:
+                    values.update({
+                        'company_id': elemento['company_id'][0],
+                        'location': ubicacion.complete_name,
+                    })
+                    equipos_creados = Equipment.search([('product_id','=',r.product_variant_id.id),('location','=',ubicacion.complete_name)])
+                    while unidades > len(equipos_creados):
+                        Equipment.create(values)
+                        unidades -= 1
             

@@ -16,3 +16,5 @@ class MaintenanceEquipment(models.Model):
     project_tecnico_ids = fields.Many2many('hr.employee', related="project_id.tecnico_ids")
     tecnico_id = fields.Many2one("hr.employee", string="Técnico proyecto")
     
+    product_lot_id = fields.Many2one("stock.production.lot", string="Lote/Nº de serie")
+    

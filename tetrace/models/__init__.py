@@ -71,3 +71,4 @@ from . import account_change_lock_date
 from . import tetrace_proceso_seleccion
 from . import tier_review
 from . import maintenance_equipment
+from . import product_public_category

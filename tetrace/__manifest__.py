@@ -115,6 +115,7 @@
         'views/account_change_lock_date.xml',
         'views/stock_picking.xml',
         'views/maintenance_equipment.xml',
+        'views/product_public_category.xml',
         'wizard/asset_modify.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',

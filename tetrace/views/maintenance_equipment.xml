@@ -16,6 +16,21 @@
                        domain="[('id', 'in', project_tecnico_ids)]"
                        attrs="{'invisible': [('equipment_assign_to', '!=', 'tecnico_proyecto')]}"/>
             </xpath>
+            
+            <xpath expr="//field[@name='serial_no']" position="after">
+                <field name="product_lot_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="maintenance_equipment_view_kanban_inherit_hr">
+        <field name="name">maintenance.equipment.view.kanban.inherit.hr.tetrace</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_kanban"/>
+        <field name="model">maintenance.equipment</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_kanban_record_body')]" position="inside">
+                <field name="product_lot_id"/>
+            </xpath>
         </field>
     </record>
 </odoo>
