@@ -93,15 +93,13 @@ class ProductTemplate(models.Model):
         return secuencia_int, code
     
     def crear_equipo(self):
-        Equipment = self.env['maintenance.equipment']
         for r in self:
             if not r.mantenimiento:
                 continue
-            
+            Equipment = self.env['maintenance.equipment']
             values = {
                 'name': r.name,
                 'category_id': r.public_categ_ids[0].categoria_equipo_id.id if r.public_categ_ids else False,
-                #'company_id': r.company_id.id, No tiene sentido, se generan segun el stock producto/compañia/lote/cantidad
                 'equipment_assign_to' : 'project',
                 #'purchase_date': No disponemos de ningun requerimiento al respecto.
                 #'warranty_period': No disponemos de ningun requerimiento al respecto.
@@ -130,6 +128,7 @@ class ProductTemplate(models.Model):
                 unidades = elemento['quantity']
                 if serie_lote:
                     values.update({
+                        'company_id': elemento['company_id'][0],
                         'location': ubicacion.complete_name,
                         'product_lot_id': serie_lote[0]
                     })
@@ -139,6 +138,7 @@ class ProductTemplate(models.Model):
                         unidades -= 1
                 else:
                     values.update({
+                        'company_id': elemento['company_id'][0],
                         'location': ubicacion.complete_name,
                     })
                     equipos_creados = Equipment.search([('product_id','=',r.product_variant_id.id),('location','=',ubicacion.complete_name)])
