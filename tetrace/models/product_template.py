@@ -100,7 +100,7 @@ class ProductTemplate(models.Model):
             
             values = {
                 'name': r.name,
-                #'category_id': Relacionar con categoria ecommerce
+                'category_id': r.categ_id.categoria_equipo_id.id,
                 #'company_id': r.company_id.id, No tiene sentido, se generan segun el stock producto/compañia/lote/cantidad
                 'equipment_assign_to' : 'project',
                 #'purchase_date': No disponemos de ningun requerimiento al respecto.
@@ -110,6 +110,7 @@ class ProductTemplate(models.Model):
                 #'effective_date': No disponemos de ningun requerimiento al respecto.
                 #'warranty_date': No disponemos de ningun requerimiento al respecto.
                 'cost': r.standard_price,
+                'owner_user_id': False,
             }
             
             if r.seller_ids:

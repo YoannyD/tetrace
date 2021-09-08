@@ -14,6 +14,7 @@ class ProductCategory(models.Model):
     referencia = fields.Char('Referencia')
     account_activo_id = fields.Many2one('account.account', string="Cuenta activo", company_dependent=True,
                                         domain="['&', ('deprecated', '=', False), ('company_id', '=', current_company_id)]",)
+    categoria_equipo_id = fields.Many2one('maintenance.equipment.category', string="Categoría equipo")
 
     def write(self, vals):
         res = super(ProductCategory, self).write(vals)
