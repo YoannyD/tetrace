@@ -97,13 +97,19 @@ class ProductTemplate(models.Model):
         for r in self:
             if not r.mantenimiento:
                 continue
-               
+            
             values = {
                 'name': r.name,
-                'company_id': r.company_id.id,
+                #'category_id': Relacionar con categoria ecommerce
+                #'company_id': r.company_id.id, No tiene sentido, se generan segun el stock producto/compañia/lote/cantidad
+                'equipment_assign_to' : 'project',
+                #'purchase_date': No disponemos de ningun requerimiento al respecto.
+                #'warranty_period': No disponemos de ningun requerimiento al respecto.
                 'product_id': r.product_variant_id.id,
+                'model': r.manufacturer.name if r.manufacturer.name else '',
+                #'effective_date': No disponemos de ningun requerimiento al respecto.
+                #'warranty_date': No disponemos de ningun requerimiento al respecto.
                 'cost': r.standard_price,
-                'serial_no': r.default_code
             }
             
             if r.seller_ids:
@@ -112,13 +118,25 @@ class ProductTemplate(models.Model):
                     'partner_ref': r.seller_ids[0].product_code
                 })
             
-            lotes = None
-            if r.tracking in ['lot', 'serial']:
-                lotes = self.env['stock.production.lot'].search([('product_id', '=', r.product_variant_id.id)])
-                for lot in lotes:
-                    values.update({'serial_no': lot.name})
-                    Equipment.create(values)
-
-            if not lotes:
-                Equipment.create(values)
+            quants = self.env['stock.quant'].read_group([('product_id','=',r.product_variant_id.id),('location_id.usage','=','internal')],fields=['product_id','company_id','location_id','lot_id','quantity:sum'], groupby=['product_id','company_id','location_id','lot_id'], lazy=False)
+            
+            for elemento in quants:
+                ubicacion = self.env['stock.location'].search([('id','=',elemento['location_id'][0])])
+                if elemento['lot_id']:
+                    values.update({
+                        'location': ubicacion.complete_name,
+                        'product_lot_id': elemento['lot_id'][0]
+                    })
+                    unidades = elemento['quantity']
+                    while unidades > 0:
+                        Equipment.create(values)
+                        unidades -= 1
+                else:
+                    values.update({
+                        'location': ubicacion.complete_name,
+                    })
+                    unidades = elemento['quantity']
+                    while unidades > 0:
+                        Equipment.create(values)
+                        unidades -= 1
             
