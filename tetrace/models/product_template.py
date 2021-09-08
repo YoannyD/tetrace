@@ -119,25 +119,30 @@ class ProductTemplate(models.Model):
                     'partner_ref': r.seller_ids[0].product_code
                 })
             
-            quants = self.env['stock.quant'].read_group([('product_id','=',r.product_variant_id.id),('location_id.usage','=','internal')],fields=['product_id','company_id','location_id','lot_id','quantity:sum'], groupby=['product_id','company_id','location_id','lot_id'], lazy=False)
+            quants = self.env['stock.quant'].read_group([('product_id','=',r.product_variant_id.id),('location_id.usage','=','internal')],\
+                                                        fields=['product_id','company_id','location_id','lot_id','quantity:sum'],\
+                                                        groupby=['product_id','company_id','location_id','lot_id'],\
+                                                        lazy=False)
             
             for elemento in quants:
                 ubicacion = self.env['stock.location'].search([('id','=',elemento['location_id'][0])])
-                if elemento['lot_id']:
+                serie_lote = elemento['lot_id']
+                unidades = elemento['quantity']
+                if serie_lote:
                     values.update({
                         'location': ubicacion.complete_name,
-                        'product_lot_id': elemento['lot_id'][0]
+                        'product_lot_id': serie_lote[0]
                     })
-                    unidades = elemento['quantity']
-                    while unidades > 0:
+                    equipos_creados = Equipment.search([('product_id','=',r.product_variant_id.id),('product_lot_id','=',serie_lote[0]),('location','=',ubicacion.complete_name)])
+                    while unidades > len(equipos_creados):
                         Equipment.create(values)
                         unidades -= 1
                 else:
                     values.update({
                         'location': ubicacion.complete_name,
                     })
-                    unidades = elemento['quantity']
-                    while unidades > 0:
+                    equipos_creados = Equipment.search([('product_id','=',r.product_variant_id.id),('location','=',ubicacion.complete_name)])
+                    while unidades > len(equipos_creados):
                         Equipment.create(values)
                         unidades -= 1
             
