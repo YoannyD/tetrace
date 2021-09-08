@@ -43,6 +43,54 @@
             </xpath>
         </field>
     </record>
+
+    <record model="ir.ui.view" id="view_partner_form_tetrace">
+        <field name="name">res.partner.form.tetrace</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <field name="function" position="before">
+                <field
+                    name="job_position_ids"
+                    attrs="{'invisible': [('is_company','=', True)]}"
+                    options='{"no_open": True}'
+                    widget="many2many_tags"
+                />
+            </field>
+            <xpath
+                expr="//field[@name='child_ids']/form//field[@name='function']"
+                position="before"
+            >
+                <field name="is_company" invisible="True" />
+                <field
+                    name="job_position_ids"
+                    attrs="{'invisible': [('is_company','=', True)]}"
+                    options='{"no_open": True}'
+                    widget="many2many_tags"
+                />
+            </xpath>
+        </field>
+    </record>
     
+    <record model="ir.ui.view" id="view_partner_form_job_position_tetrace">
+        <field name="name">res.partner.form.job.position.tetrace</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_contact_job_position.view_partner_form_job_position"/>
+        <field name="arch" type="xml">
+            <field name="job_position_id" position="replace"/>
+            <field name="job_position_id" position="replace"/>
+        </field>
+    </record>
     
+    <record model="ir.ui.view" id="view_res_partner_filter_job_position_tetrace">
+        <field name="name">res.partner.search.job.position.tetrace</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_contact_job_position.view_res_partner_filter_job_position" />
+        <field name="arch" type="xml">
+            <field name="job_position_id" position="replace">
+                <field name="job_position_ids" string="Puestos de trabajo"/>
+            </field>
+            <filter name="salesperson" position="replace"/>
+        </field>
+    </record>
 </odoo>

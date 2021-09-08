@@ -47,7 +47,8 @@
         'account_accountant',
         'report_qweb_element_page_visibility',
         'portal',
-        'hr_maintenance'
+        'hr_maintenance',
+        'partner_contact_job_position'
     ],
     'data': [
         'security/tetrace_security.xml',
