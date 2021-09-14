@@ -346,7 +346,7 @@ class SaleOrder(models.Model):
 
     def _create_analytic_account(self, prefix=None):
         for order in self:
-            if not order.asignar_cuenta_analitica_manual:
+            if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
                 analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
                 order.analytic_account_id = analytic
     
@@ -449,7 +449,6 @@ class SaleOrder(models.Model):
         return values
                         
     def action_crear_version(self):
-        self.ensure_one()
         wizard = self.env['tetrace.crear_version'].create({
             'sale_order_id': self.id,
             'version': self.env['tetrace.sale_order_version'].siguiente_version(self.id)
