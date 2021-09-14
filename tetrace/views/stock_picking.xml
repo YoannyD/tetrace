@@ -27,8 +27,12 @@
         <field name="model">stock.picking</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='origin']" position="after">
-                <field name="sale_id" attrs="{'invisible': [('sale_id', '=', False)]}"/>
-                <field name="purchase_id" attrs="{'invisible': [('purchase_id', '=', False)]}"/>
+                <field name="sale_order_ids" 
+                       widget="many2many_tags"
+                       attrs="{'invisible': [('sale_order_ids', '=', [])]}"/>
+                <field name="purchase_order_ids"
+                       widget="many2many_tags"
+                       attrs="{'invisible': [('purchase_order_ids', '=', [])]}"/>
                 <field name="previstacliente_date"/>
                 <field name="efectivacliente_date"/>
             </xpath>

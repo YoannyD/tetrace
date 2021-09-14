@@ -83,6 +83,9 @@ class MergePicking(models.TransientModel):
                         'state':product_line.state,
                         'product_uom':product_line.product_id.uom_id.id,
                         'name':product_line.product_id.name,
+                        'sale_line_id':product_line.sale_line_id.id,
+                        'purchase_line_id':product_line.purchase_line_id.id,
+                        'origin':product_line.origin,
                         'date_expected':product_line.date_expected
                         }))
                 info.action_cancel()
