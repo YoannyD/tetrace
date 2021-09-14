@@ -392,6 +392,7 @@ class SaleOrder(models.Model):
         return res
 
     def send_email_confirm(self):
+        self = self.sudo()
         partner_ids = []
         for seguidor in self.seguidor_proyecto_ids:
             if seguidor.partner_id and seguidor.partner_id.email:
