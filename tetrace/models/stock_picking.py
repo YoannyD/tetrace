@@ -33,7 +33,7 @@ class Picking(models.Model):
                 'purchase_order_ids': [(6, 0, purchase_order_ids)],
                 'sale_order_ids': [(6, 0, sale_order_ids)],
             })
-    
+            
     @api.onchange('picking_type_id')
     def _onchange_picking_type_id(self):
         warehouse = self.picking_type_id.warehouse_id

@@ -77,11 +77,22 @@ class SaleOrder(models.Model):
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
     send_date = fields.Datetime(string="Fecha Envío",copy=False)
     rfq_date = fields.Datetime(string="Fecha RFQ",copy=False)
+    all_picking_ids = fields.Many2many('stock.picking', compute="_compute_all_picking_ids")
 
     sql_constraints = [
         ('ref_proyecto_uniq', 'check(1=1)', "No error")
     ]
 
+    def _compute_all_picking_ids(self):
+        for r in self:
+            ids = self.env['stock.picking'].search([('sale_order_ids', 'in', [r.id])]).ids
+            r.all_picking_ids = r.picking_ids.ids + ids
+    
+    @api.depends('all_picking_ids')
+    def _compute_picking_ids(self):
+        for order in self:
+            order.delivery_count = len(order.all_picking_ids)
+    
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):
         for r in self:
@@ -346,7 +357,8 @@ class SaleOrder(models.Model):
 
     def _create_analytic_account(self, prefix=None):
         for order in self:
-            if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
+            _logger.warning(order.analytic_account_id)
+        if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
                 analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
                 order.analytic_account_id = analytic
     
@@ -535,10 +547,31 @@ class SaleOrder(models.Model):
         return wizard.open_wizard()
 
     def action_importar_productos(self):
-        self.ensure_one()
         wizard = self.env['tetrace.importar_producto_pv'].create({"order_id": self.id})
         return wizard.open_wizard()
 
+    def action_view_delivery(self):
+        action = self.env.ref('stock.action_picking_tree_all').read()[0]
+
+        pickings = self.mapped('all_picking_ids')
+        if len(pickings) > 1:
+            action['domain'] = [('id', 'in', pickings.ids)]
+        elif pickings:
+            form_view = [(self.env.ref('stock.view_picking_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state,view) for state,view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = pickings.id
+        # Prepare the context.
+        picking_id = pickings.filtered(lambda l: l.picking_type_id.code == 'outgoing')
+        if picking_id:
+            picking_id = picking_id[0]
+        else:
+            picking_id = pickings[0]
+        action['context'] = dict(self._context, default_partner_id=self.partner_id.id, default_picking_type_id=picking_id.picking_type_id.id, default_origin=self.name, default_group_id=picking_id.group_id.id)
+        return action
+    
     def action_imputar_variables(self):
         self.ensure_one()
         ImputacionLine = self.env["tetrace.imputacion_variable_line"]

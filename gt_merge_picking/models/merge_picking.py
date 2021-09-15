@@ -35,17 +35,17 @@ class MergePicking(models.TransientModel):
         stock_info=picking_obj.browse(stock_ids)
         for stock in stock_info:
             if stock.state=='done':
-                    raise UserError(('Merging is not allowed on done picking.'))			
+                raise UserError(('Merging is not allowed on done picking.'))	
+                
             stock_vals.append((0,0,{
-            'pick_name':stock.name,
-            'partner_id':stock.partner_id.id,
-            'origin':stock.origin,
-            'state':stock.state
+                'pick_name':stock.name,
+                'partner_id':stock.partner_id.id,
+                'origin':stock.origin,
+                'state':stock.state
             }))
 
             res.update({'merge_picking_line': stock_vals})
         return res
-
 
     def Create_new_picking_record(self):
         picking_obj = self.env['stock.picking']
@@ -64,6 +64,7 @@ class MergePicking(models.TransientModel):
             state_list.append(state_li.state)
         if state_list[1:] != state_list[:-1]:
             raise UserError(('Merging is only allowed on picking of same state'))
+            
         if stock_info:
             move_line_val=[]
             origin=''
@@ -91,22 +92,22 @@ class MergePicking(models.TransientModel):
                 info.action_cancel()
 
             vals={
-            'partner_id':stock_info[0].partner_id.id,
-            'origin':origin,
-            'scheduled_date':stock_info[0].scheduled_date,
-            'move_lines':move_line_val,
-            'move_type':stock_info[0].move_type,
-            'picking_type_id':stock_info[0].picking_type_id.id,
-            'priority':stock_info[0].priority,
-            'location_id':stock_info[0].location_id.id,
-            'location_dest_id':stock_info[0].location_dest_id.id
+                'partner_id':stock_info[0].partner_id.id,
+                'origin':origin,
+                'scheduled_date':stock_info[0].scheduled_date,
+                'move_lines':move_line_val,
+                'move_type':stock_info[0].move_type,
+                'picking_type_id':stock_info[0].picking_type_id.id,
+                'priority':stock_info[0].priority,
+                'location_id':stock_info[0].location_id.id,
+                'location_dest_id':stock_info[0].location_dest_id.id
             }
             picking = picking_obj.create(vals)
         return True
 
+    
 class MergePickingLine(models.TransientModel):
     _name='merge.pickingline'
-
 
     partner_id = fields.Many2one(
         'res.partner', 'Partner',
