@@ -48,7 +48,8 @@
         'report_qweb_element_page_visibility',
         'portal',
         'hr_maintenance',
-        'partner_contact_job_position'
+        'partner_contact_job_position',
+        'partner_contact_in_several_companies'
     ],
     'data': [
         'security/tetrace_security.xml',

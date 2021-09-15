@@ -57,17 +57,12 @@
                     widget="many2many_tags"
                 />
             </field>
-            <xpath
-                expr="//field[@name='child_ids']/form//field[@name='function']"
-                position="before"
-            >
+            <xpath expr="//field[@name='child_ids']/form//field[@name='function']" position="before">
                 <field name="is_company" invisible="True" />
-                <field
-                    name="job_position_ids"
-                    attrs="{'invisible': [('is_company','=', True)]}"
-                    options='{"no_open": True}'
-                    widget="many2many_tags"
-                />
+                <field name="job_position_ids"
+                        attrs="{'invisible': [('is_company','=', True)]}"
+                        options='{"no_open": True}'
+                        widget="many2many_tags"/>
             </xpath>
         </field>
     </record>
@@ -79,6 +74,27 @@
         <field name="arch" type="xml">
             <field name="job_position_id" position="replace"/>
             <field name="job_position_id" position="replace"/>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_partner_form_inherit_tetrace">
+        <field name="name">res.partner.form.contact.tetrace</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="partner_contact_in_several_companies.view_partner_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='other_contact_ids']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='other_contact_ids']/kanban[1]/field[@name='name'][1]" position="after">
+                <field name="job_position_ids"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='other_contact_ids']/kanban[1]/templates[1]//field[@name='name'][1]" position="after">
+                <div t-if="record.job_position_ids.raw_value">
+                    <field name="job_position_ids" widget="many2many_tags"/>
+                </div>
+            </xpath>
         </field>
     </record>
     
