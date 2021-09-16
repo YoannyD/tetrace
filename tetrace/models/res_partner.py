@@ -19,7 +19,6 @@ class Partner(models.Model):
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
     project_ids = fields.Many2many("project.project")
     labels_type = fields.Many2many('res.company', string='Compañías')
-    
     job_position_ids = fields.Many2many("res.partner.job_position", string="Puestos de trabajo")
     
     @api.model

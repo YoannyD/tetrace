@@ -64,6 +64,16 @@
                         options='{"no_open": True}'
                         widget="many2many_tags"/>
             </xpath>
+            
+            <xpath expr="//field[@name='child_ids']/kanban/field[@name='function'][1]" position="before">
+                <field name="job_position_ids"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='child_ids']/kanban/templates[1]//field[@name='name'][1]" position="after">
+                <div t-if="record.job_position_ids.raw_value">
+                    <field name="job_position_ids" widget="many2many_tags"/>
+                </div>
+            </xpath>
         </field>
     </record>
     
@@ -93,6 +103,7 @@
             <xpath expr="//field[@name='other_contact_ids']/kanban[1]/templates[1]//field[@name='name'][1]" position="after">
                 <div t-if="record.job_position_ids.raw_value">
                     <field name="job_position_ids" widget="many2many_tags"/>
+                    <field name="parent_id"/>
                 </div>
             </xpath>
         </field>

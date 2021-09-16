@@ -356,8 +356,6 @@ class SaleOrder(models.Model):
         )
 
     def _create_analytic_account(self, prefix=None):
-        for order in self:
-            _logger.warning(order.analytic_account_id)
         if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
                 analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
                 order.analytic_account_id = analytic
