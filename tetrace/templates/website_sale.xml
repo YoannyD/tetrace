@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="product" inherit_id="website_sale.product">
+        <xpath expr="//div[@id='product_details']/p[@class='alert alert-warning'][1]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+        <xpath expr="//div[@id='product_details']/p[@class='alert alert-warning'][2]" position="attributes">
+            <attribute name="style">display:none</attribute>
+        </xpath>
+    </template>
+</odoo>
