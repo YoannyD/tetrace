@@ -28,6 +28,7 @@
               </xpath> 
         </field>
     </record>
+    
     <record id="documents_view_list_tetrace" model="ir.ui.view">
         <field name="name">Document list view tetrace</field>
         <field name="model">documents.document</field>

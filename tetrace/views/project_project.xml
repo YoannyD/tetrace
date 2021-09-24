@@ -98,12 +98,12 @@
             
             <xpath expr="//button[@name='attachment_tree_view']" position="after">
                 <field name="id" invisible="1"/>
-                <button name="view_documentos"
+                <button name="%(documents.document_action)d"
                         context="{'search_default_res_model': 'project.project', 'search_default_res_id': str(id)}"
                         class="oe_stat_button"
                         groups="documents.group_documents_user"
                         icon="fa-file-text"
-                        type="object">
+                        type="action">
                     <field name="document_project_count" widget="statinfo"/>
                 </button>
             </xpath>

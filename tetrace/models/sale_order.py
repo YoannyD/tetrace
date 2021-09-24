@@ -356,7 +356,8 @@ class SaleOrder(models.Model):
         )
 
     def _create_analytic_account(self, prefix=None):
-        if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
+        for order in self:
+            if not order.asignar_cuenta_analitica_manual and not order.analytic_account_id:
                 analytic = self.env['account.analytic.account'].create(order._prepare_analytic_account_data(prefix))
                 order.analytic_account_id = analytic
     
@@ -395,7 +396,6 @@ class SaleOrder(models.Model):
         
     def _action_confirm(self):
         for order in self:
-            order.crear_num_proyecto()
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
         self.send_email_confirm()

@@ -17,27 +17,7 @@ HomeMenu.include({
 
     init: function (parent, menuData) {
         this._super.apply(this, arguments);
-//        this.horas = this._getHoras();
     },
-
-//    _getHoras: function (){
-//        var self = this;
-//        this._rpc({
-//            model: 'res.config.settings',
-//            method: 'horas_dashboard',
-//            domain: [],
-//        })
-//        .then(function(res) {
-//            console.log("cosas devueltas");
-//            console.log(res);
-//            return res
-////            self.$(".lst_horas").appendTo("<li>Alemani</li>");
-////            res = res[0];
-////            if (res.show_clock) {
-////                setInterval(self.renderTime, 1000);
-////            }
-//        });
-//    },
 
     start: function () {
         var self = this;
@@ -49,24 +29,6 @@ HomeMenu.include({
         this.$horasDashboard.html(QWeb.render('web_world_clock.Content', { horas: this.horas }));
         return this._super();
     },
-//    renderTime: function(){
-//        this.$(".main_clock").text(clockTemp.getTime());
-//    },
-//    getTime: function() {
-//    	  var today = new Date();
-//    	  var h = today.getHours();
-//    	  var m = today.getMinutes();
-//    	  var s = today.getSeconds();
-//          h = this.checkTime(h);
-//    	  m = this.checkTime(m);
-//    	  s = this.checkTime(s);
-//    	  var time = h + ":" + m + ":" + s;
-//    	  return time;
-//    	},
-//    checkTime: function (i) {
-//        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-//    	return i;
-//    }
 });
 
 });

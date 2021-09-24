@@ -131,6 +131,9 @@
         'wizard/tetrace_change_partner_sale_order.xml',
         'templates/portal.xml',
     ],
+    'qweb': [
+        "static/src/xml/tetrace_logo.xml",
+    ],
     'demo': [],
     'installable': True,
     'auto_install': False,
