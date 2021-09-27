@@ -50,7 +50,8 @@
         'hr_maintenance',
         'partner_contact_job_position',
         'partner_contact_in_several_companies',
-        'website_sale'
+        'website_sale',
+        'partner_contact_job_position'
     ],
     'data': [
         'security/tetrace_security.xml',

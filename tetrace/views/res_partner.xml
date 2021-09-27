@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
+    <record model="ir.ui.view" id="res_partner_kanban_view_tetrace">
+        <field name="name">res.partner.kanban.view.tetrace</field>
+        <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_kanban_partner_categories')]" position="inside">
+                <span class="oe_kanban_list_many2many">
+                    <field name="job_position_ids" widget="many2many_tags"/>
+                </span>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.ui.view" id="view_partner_form">
         <field name="name">res.partner.form.tetrace</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
@@ -115,7 +128,7 @@
         <field name="inherit_id" ref="partner_contact_job_position.view_res_partner_filter_job_position" />
         <field name="arch" type="xml">
             <field name="job_position_id" position="replace">
-                <field name="job_position_ids" string="Puestos de trabajo"/>
+                <field name="job_position_ids" string="Cat. comercial"/>
             </field>
             <filter name="salesperson" position="replace"/>
         </field>
