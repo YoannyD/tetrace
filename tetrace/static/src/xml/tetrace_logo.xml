@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="WebClient.TetraceLogo">
+        <li class="o_debug_manager" role="menuitem">
+            <img style="margin-top:5px;" src="/tetrace/static/src/img/logo_mini_menu.png"/>
+        </li>
+    </t>
+</templates>

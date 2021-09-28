@@ -59,30 +59,37 @@
                 <field name="prevision_facturacion"/>
                 <field name="invoicing_id" required="True"/>
             </xpath>
+            
             <xpath expr="//field[@name='estado_tetrace']" position="after">
-            <xpath expr="//field[@name='feedbacktetrace']" position="move"/>
+                <xpath expr="//field[@name='feedbacktetrace']" position="move"/>
             </xpath>
+            
             <xpath expr="//field[@name='invoicing_id']" position="attributes">
                 <attribute name="string">Frecuencia Facturación</attribute>
             </xpath>
             
-
-              <xpath expr="//field[@name='date_order']" position="after">
+            <xpath expr="//field[@name='date_order']" position="after">
                 <field name="send_date" string="Fecha Presupuesto"/>
             </xpath>
+            
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date']" position="attributes">
                 <attribute name="readonly">1</attribute>
             </xpath>
+            
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='date_order']" position="replace"/>
+            
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[2]/label[1]" position="attributes">
                 <attribute name="string">Fecha asignado</attribute>
             </xpath>
+            
             <xpath expr="//field[@name='date_order']" position="after">
                  <field name="rfq_date" attrs="{}" required="1"/>
             </xpath>
+            
             <xpath expr="//field[@name='date_order']" position="attributes">
                 <attribute name="attrs">{"readonly": [["state","not in",["draft","sent"]]], "invisible": [["estado_tetrace","!=","asignado"]]}</attribute>
             </xpath>
+            
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[1]/label[1]" position="replace"/>
 
             <xpath expr="//div[@name='button_box']" position="inside">
@@ -192,6 +199,10 @@
                 <attribute name="attrs">{}</attribute>
             </xpath>
             
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='qty_delivered']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_subtotal']" position="after">
                 <field name="no_imprimir" optional="hide"/>
             </xpath>
@@ -286,12 +297,11 @@
                     <div class="oe_clear"/>
                 </page>
             </xpath>
-             <xpath expr="//field[@name='invoicing_id']" position="after">
-            <xpath expr="//field[@name='prevision_facturacion']" position="move"/>
-            <xpath expr="//field[@name='estado_tetrace']" position="move"/>
-            </xpath>
-
             
+            <xpath expr="//field[@name='invoicing_id']" position="after">
+                <xpath expr="//field[@name='prevision_facturacion']" position="move"/>
+                <xpath expr="//field[@name='estado_tetrace']" position="move"/>
+            </xpath>
         </field>
     </record>
 

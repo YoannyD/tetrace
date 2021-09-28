@@ -92,6 +92,9 @@ class ProductTemplate(models.Model):
         code = "%s-%s-%s" % (tipo, categoria, secuencia)
         return secuencia_int, code
     
+    def _is_add_to_cart_possible(self, parent_combination=None):
+        return False
+    
     def crear_equipo(self):
         for r in self:
             if not r.mantenimiento:

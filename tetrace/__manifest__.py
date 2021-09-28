@@ -48,6 +48,9 @@
         'report_qweb_element_page_visibility',
         'portal',
         'hr_maintenance',
+        'partner_contact_job_position',
+        'partner_contact_in_several_companies',
+        'website_sale',
         'partner_contact_job_position'
     ],
     'data': [
@@ -129,6 +132,10 @@
         'wizard/tetrace_crear_tareas_act_desc.xml',
         'wizard/tetrace_change_partner_sale_order.xml',
         'templates/portal.xml',
+        'templates/website_sale.xml',
+    ],
+    'qweb': [
+        "static/src/xml/tetrace_logo.xml",
     ],
     'demo': [],
     'installable': True,

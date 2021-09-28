@@ -20,10 +20,7 @@ class TetracePortal(CustomerPortal):
     def _prepare_home_portal_values(self):
         values = super(TetracePortal, self)._prepare_home_portal_values()
         
-        equipment_count = request.env['maintenance.equipment'].sudo().search_count(['|',
-            ('employee_id.user_id', '=', request.env.user.id),
-            ('owner_user_id', '=', request.env.user.id)
-        ])
+        equipment_count = request.env['maintenance.equipment'].sudo().search_count([('allocation_ids.request_user_id', '=', request.env.user.id)])
         
         document_count = request.env['documents.document'].sudo().search_count([
             ('res_model', '=', 'hr.employee'),
@@ -41,10 +38,7 @@ class TetracePortal(CustomerPortal):
     def portal_my_equipments(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
         Equipment = request.env['maintenance.equipment'].sudo()
         values = self._prepare_portal_layout_values()
-        domain = ['|',
-            ('employee_id.user_id', '=', request.env.user.id),
-            ('owner_user_id', '=', request.env.user.id)
-        ]
+        domain = [('allocation_ids.request_user_id', '=', request.env.user.id)]
 
         searchbar_sortings = {
             'assign_date': {'label': _('Fecha de asignación'), 'order': 'assign_date desc'},
@@ -129,9 +123,7 @@ class TetracePortal(CustomerPortal):
     def portal_my_project(self, equipment_id=None, **kw):
         equipment = request.env['maintenance.equipment'].sudo().search([
             ('id', '=', equipment_id),
-            '|',
-            ('employee_id.user_id', '=', request.env.user.id),
-            ('owner_user_id', '=', request.env.user.id)
+            ('allocation_ids.request_user_id', '=', request.env.user.id)
         ], limit=1)
         
         if not equipment:

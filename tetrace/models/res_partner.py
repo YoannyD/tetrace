@@ -19,8 +19,7 @@ class Partner(models.Model):
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
     project_ids = fields.Many2many("project.project")
     labels_type = fields.Many2many('res.company', string='Compañías')
-    
-    job_position_ids = fields.Many2many("res.partner.job_position", string="Puestos de trabajo")
+    job_position_ids = fields.Many2many("res.partner.job_position", string="Cat. comercial")
     
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):

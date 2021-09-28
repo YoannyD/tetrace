@@ -20,8 +20,10 @@ class Followers(models.Model):
     
     def _add_followers(self, res_model, res_ids, partner_ids, partner_subtypes, channel_ids, channel_subtypes,
                        check_existing=False, existing_policy='skip'):
-        if self.env.context.get("add_follower"):
-            return super(Followers, self)._add_followers(res_model, res_ids, partner_ids, partner_subtypes, channel_ids, 
+        new, update = super(Followers, self)._add_followers(res_model, res_ids, partner_ids, partner_subtypes, channel_ids, 
                                                          channel_subtypes, check_existing, existing_policy)
-        return dict(), dict()
+        if not self.env.context.get("add_follower"):
+            new = dict()
+            
+        return new, update
         

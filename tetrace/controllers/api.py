@@ -91,12 +91,14 @@ class TetraceAPI(http.Controller):
             
         lines = request.env['account.bank.statement.line'].sudo().with_context(lang="es_ES").search(domain, offset=offset, limit=limit)
         data = []
+        currency_euro = request.env['res.currency'].browse(1)
         for line in lines:
-            data.append(self.get_values_bank_statement_line(line))
+            data.append(self.get_values_bank_statement_line(line, currency_euro))
 
         return request.make_response(json.dumps(data), headers=[('Content-Type', 'application/json')])
     
-    def get_values_bank_statement_line(self, line):
+    def get_values_bank_statement_line(self, line, currency_euro):
+        importe_euros = line.journal_currency_id._convert(line.amount, currency_euro, line.company_id, line.date)
         values = {
             'id': line.id,
             'company_id': line.company_id.id or '',
@@ -109,8 +111,9 @@ class TetraceAPI(http.Controller):
             'etiqueta': line.name or '',
             'empresa': line.partner_id.name or '',
             'importe': line.amount or 0,
-            'moneda' : line.currency_id.name,
+            'moneda' : line.currency_id.name or '',
             'importe_moneda': line.amount_currency or 0,
+            'importe_euros': importe_euros
         }
         
         return values    

@@ -6,12 +6,21 @@
                 var fecha;
                 function drawFechas(){
                     fecha = moment();
+                    $("#o_hora_costa_rica").html(fecha.tz('America/Costa_Rica').format('HH:mm'));
+                    $("#o_hora_uruguai").html(fecha.tz('America/Montevideo').format('HH:mm'));
+                    $("#o_hora_panama").html(fecha.tz('America/Panama').format('HH:mm'));
+                    $("#o_hora_peru").html(fecha.tz('America/Lima').format('HH:mm'));
+                    $("#o_hora_colombia").html(fecha.tz('America/Bogota').format('HH:mm'));
+                    $("#o_hora_egipto").html(fecha.tz('Africa/Cairo').format('HH:mm'));
+                    $("#o_hora_sudafrica").html(fecha.tz('Africa/Johannesburg').format('HH:mm'));
                     $("#o_hora_india").html(fecha.tz('Asia/Kolkata').format('HH:mm'));
                     $("#o_hora_espana").html(fecha.tz('Europe/Madrid').format('HH:mm'));
                     $("#o_hora_argentina").html(fecha.tz('America/Argentina/Buenos_Aires').format('HH:mm'));
                     $("#o_hora_chile").html(fecha.tz('America/Santiago').format('HH:mm'));
                     $("#o_hora_brasil").html(fecha.tz('America/Sao_Paulo').format('HH:mm'));
                     $("#o_hora_mexico").html(fecha.tz('America/Mexico_City').format('HH:mm'));
+                    $("#o_hora_filipinas").html(fecha.tz('Asia/Manila').format('HH:mm'));
+                    $("#o_hora_houston").html(fecha.tz('America/Chicago').format('HH:mm'));
                 }
                 setInterval(function(){
                     drawFechas();
@@ -19,10 +28,46 @@
                 drawFechas();
             });
         </script>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
                     <ul class="lst_horas text-center">
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=50&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_costa_rica"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=234&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_uruguai"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=172&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_panama"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=173&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_peru"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=247&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_sudafrica"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=65&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_egipto"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=176&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_filipinas"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=49&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_colombia"/>
+                        </li>
+                        <li>
+                            <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=233&amp;field=image"/>
+                            <div class="o_hora_display" id="o_hora_houston"/>
+                        </li>
                         <li>
                             <img class="img img-reponsive o_hora_flag" src="/web/image?model=res.country&amp;id=104&amp;field=image"/>
                             <div class="o_hora_display" id="o_hora_india"/>
