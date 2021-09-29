@@ -77,6 +77,7 @@ class SaleOrder(models.Model):
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
     send_date = fields.Datetime(string="Fecha Envío",copy=False)
     rfq_date = fields.Datetime(string="Fecha RFQ",copy=False)
+    fecha_entrega = fields.Date("Fecha entrega")
     
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):
