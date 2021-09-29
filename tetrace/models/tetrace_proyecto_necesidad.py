@@ -41,6 +41,7 @@ class ProcesoSeleccion(models.Model):
                 summary = _('Gestionar modificación necesidad del proyecto %s' % r.project_id.name)
                 
             tasks = self.env['project.task'].search([
+                ('project_id', '=', r.project_id.id),
                 ('activada', 'in', [True, False]),
                 ('busqueda_perfiles', '=', True)
             ])
