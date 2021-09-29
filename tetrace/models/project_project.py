@@ -517,3 +517,9 @@ class Project(models.Model):
             raise UserError(_("No puedes cerrar una cuenta analítica que no sea del proyecto."))
             
         self.analytic_account_id.write({'analitica_cerrada': True})
+        
+    def action_vacia_fecha_finalizacion(self):
+        self.write({'fecha_finalizacion': None})
+        
+    def action_vacia_fecha_cancelacion(self):
+        self.write({'fecha_cancelacion': None})
