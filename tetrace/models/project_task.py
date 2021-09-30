@@ -64,6 +64,7 @@ class ProjectTask(models.Model):
     pcr_ids = fields.One2many('tetrace.pcr', 'task_id')
     pcr = fields.Boolean("PCR")
     financiacion_ids = fields.One2many('tetrace.financiacion', 'task_id')
+    date_deadline = fields.Date(tracking=False)
 
     def _compute_proyecto_necesidad(self):
         for r in self:
@@ -121,6 +122,9 @@ class ProjectTask(models.Model):
                 entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
 
+        if 'date_deadline' in vals:
+            self.crear_mensaje_cambio_fecha_limite()
+                
         if 'info_puesto_id' in vals and not self.env.context.get("no_actualizar_info_puesto"):
             self.actualizar_info_puesto()
 
@@ -129,6 +133,11 @@ class ProjectTask(models.Model):
 
         return res
 
+    def crear_mensaje_cambio_fecha_limite(self):
+        for r in self:
+            body = _("La <strong>fecha límite</strong> a sido cambiada por el %s" % r.date_deadline.strftime("%d/%m/%Y"))
+            r.message_post(body=body, subject="Fecha límita cambiada", subtype_id=self.env.ref('mail.mt_comment').id)
+    
     def actualizar_tareas_individuales(self):
         for r in self:
             if not r.tarea_individual or not r.ref_individual:
