@@ -70,6 +70,7 @@
             
             <xpath expr="//field[@name='date_order']" position="after">
                 <field name="send_date" string="Fecha Presupuesto"/>
+                <field name="fecha_entrega" attrs="{'invisible': [('state', '=', 'draft')]}"/>
             </xpath>
             
             <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='send_date']" position="attributes">
@@ -353,12 +354,14 @@
             <xpath expr="//field[@name='commitment_date']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
-              <xpath expr="//tree[1]/field[@name='name']" position="replace"/> 
-                          <xpath expr="//field[@name='user_id']" position="before">
+            <xpath expr="//tree[1]/field[@name='name']" position="replace"/> 
+            
+            <xpath expr="//field[@name='user_id']" position="before">
                 <field name="rfq_date"/>
                 <field name="send_date" string="Fecha Presupuesto"/>
                 <field name="date_order" string="Fecha asignación"/>
-              </xpath>
+            </xpath>
+            
               <xpath expr="//field[@name='create_date']" position="attributes">
                 <attribute name="optional">hide</attribute>
               </xpath>

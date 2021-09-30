@@ -175,8 +175,22 @@
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="company_coordinador_id"/>
                 <field name="fecha_inicio"/>
-                <field name="fecha_cancelacion" attrs="{'readonly': [('fecha_cancelacion', '=', False)]}"/>
-                <field name="fecha_finalizacion" attrs="{'readonly': [('fecha_finalizacion', '=', False)]}"/>
+                <label for="fecha_cancelacion" class="oe_inline"/>
+                <div class="o_row">
+                    <field name="fecha_cancelacion" attrs="{'readonly': [('fecha_cancelacion', '=', False)]}"/>
+                    <button type="object" 
+                            attrs="{'invisible': [('fecha_cancelacion', '=', False)]}"
+                            name="action_vacia_fecha_cancelacion" 
+                            icon="fa-trash"/>
+                </div>
+                <label for="fecha_finalizacion" class="oe_inline"/>
+                <div class="o_row">
+                    <field name="fecha_finalizacion" attrs="{'readonly': [('fecha_finalizacion', '=', False)]}"/>
+                    <button type="object" 
+                            attrs="{'invisible': [('fecha_finalizacion', '=', False)]}"
+                            name="action_vacia_fecha_finalizacion" 
+                            icon="fa-trash"/>
+                </div>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
                 <field name="resource_calendar_id" string="Calendario por defecto"/>

@@ -77,21 +77,7 @@ class SaleOrder(models.Model):
     asignar_cuenta_analitica_manual = fields.Boolean("Asignar cuenta analítica existente")
     send_date = fields.Datetime(string="Fecha Envío",copy=False)
     rfq_date = fields.Datetime(string="Fecha RFQ",copy=False)
-    all_picking_ids = fields.Many2many('stock.picking', compute="_compute_all_picking_ids")
-
-    sql_constraints = [
-        ('ref_proyecto_uniq', 'check(1=1)', "No error")
-    ]
-
-    def _compute_all_picking_ids(self):
-        for r in self:
-            ids = self.env['stock.picking'].search([('sale_order_ids', 'in', [r.id])]).ids
-            r.all_picking_ids = r.picking_ids.ids + ids
-    
-    @api.depends('all_picking_ids')
-    def _compute_picking_ids(self):
-        for order in self:
-            order.delivery_count = len(order.all_picking_ids)
+    fecha_entrega = fields.Date("Fecha entrega")
     
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):
@@ -551,7 +537,7 @@ class SaleOrder(models.Model):
     def action_view_delivery(self):
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
 
-        pickings = self.mapped('all_picking_ids')
+        pickings = self.mapped('picking_ids')
         if len(pickings) > 1:
             action['domain'] = [('id', 'in', pickings.ids)]
         elif pickings:

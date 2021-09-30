@@ -20,6 +20,7 @@ class Partner(models.Model):
     project_ids = fields.Many2many("project.project")
     labels_type = fields.Many2many('res.company', string='Compañías')
     job_position_ids = fields.Many2many("res.partner.job_position", string="Cat. comercial")
+    website_show_price = fields.Boolean(default=False)
     
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
