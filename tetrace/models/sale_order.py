@@ -349,11 +349,12 @@ class SaleOrder(models.Model):
     
     @api.model
     def siguiente_num_proyecto(self, sequence_num_proyecto=0):
-        last_order = self.search([
+        companies = self.env['res.company'].search([])
+        last_order = self.with_context(allowed_company_ids=companies.ids).sudo().search([
             ('sequence_num_proyecto', '>', sequence_num_proyecto),
             ('sequence_num_proyecto', '!=', sequence_num_proyecto)
         ], limit=1, order="sequence_num_proyecto desc")
-
+        
         if last_order:
             num = last_order.sequence_num_proyecto + 1
         else:
@@ -363,7 +364,9 @@ class SaleOrder(models.Model):
         for i in range(len(num_str), 4):
             num_str = "0%s" % num_str
           
-        order_exist = self.search([('num_proyecto', '=', num_str)], limit=1)
+        order_exist = self.with_context(allowed_company_ids=companies.ids).sudo().search([
+            ('num_proyecto', '=', num_str)
+        ], limit=1)
         if order_exist:
             return self.siguiente_num_proyecto(int(order_exist.num_proyecto))
         
