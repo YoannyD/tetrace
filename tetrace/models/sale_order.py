@@ -34,7 +34,7 @@ class SaleOrder(models.Model):
     version_count = fields.Integer('Versiones', compute="_compute_version")
     referencia_proyecto_antigua = fields.Char("Ref. proyecto antigua", copy=False)
     coordinador_proyecto_id = fields.Many2one("res.users", string="Coordinador proyecto")
-    seguidor_proyecto_ids = fields.Many2many("res.users", string="Seguidores proyecto")
+    seguidor_proyecto_ids = fields.Many2many("res.users", string="Aviso responsables")
     seguidor_partner_proyecto_ids = fields.Many2many("res.partner", string="Contactos seguidores proyecto",
                                                      compute="_compute_seguidor_partner_proyecto_ids")
     visible_btn_generar_proyecto = fields.Boolean("Visible botón generar proyecto", store=True,

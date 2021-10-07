@@ -131,8 +131,8 @@ class SaleOrderLine(models.Model):
 
         self.write({'project_id': project.id})
 
-        if self.order_id.seguidor_partner_proyecto_ids:
-            project.with_context(add_follower=True).message_subscribe(self.order_id.seguidor_partner_proyecto_ids.ids, [])
+        if project.user_id and project.user_id.partner_id:
+            project.with_context(add_follower=True).message_subscribe(partner_ids=[project.user_id.partner_id.id])
 
         return project
 
@@ -167,18 +167,11 @@ class SaleOrderLine(models.Model):
 
         self.write({'project_id': project.id})
 
-        project_follower_ids = self.seguidores_proyecto_diseno()
-        if project_follower_ids:
-            project.with_context(add_follower=True).message_subscribe(project_follower_ids, [])
-
+        _logger.warning(project.user_id.partner_id)
+        if project.user_id and project.user_id.partner_id:
+            project.with_context(add_follower=True).message_subscribe(partner_ids=[project.user_id.partner_id.id])
+        
         return project
-
-    def seguidores_proyecto_diseno(self):
-        follower_ids = self.order_id.seguidor_partner_proyecto_ids.ids
-        if self.product_id and self.product_id.project_template_diseno_id and \
-            self.product_id.project_template_diseno_id.message_partner_ids:
-            follower_ids += self.product_id.project_template_diseno_id.message_partner_ids.ids
-        return follower_ids
 
     def _timesheet_create_task(self, project):
         task = self.existe_tarea_rel_linea(project)
