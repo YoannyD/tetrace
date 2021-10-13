@@ -26,7 +26,7 @@
             <field name="target">new</field>
         </record-->
     <act_window id="action_solicitud_wizard"
-            name="Curriculum en menu"
+            name="Currículum Tetrace Nombre"
             res_model="hr.applicant.wizard"
             binding_model="hr.applicant"
             binding_type="report"

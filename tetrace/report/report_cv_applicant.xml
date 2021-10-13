@@ -16,7 +16,7 @@
             report_type="qweb-pdf"
             file="tetrace.report_hr_employee_curriculum_applicant_name"
             name="tetrace.report_hr_employee_curriculum_applicant_name"
-            menu="True"
+            menu="False"
     />
    <template id="report_hr_employee_curriculum_applicant_name">
           <t t-call="web.basic_layout">

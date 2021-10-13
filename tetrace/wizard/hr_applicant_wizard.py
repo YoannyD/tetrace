@@ -13,9 +13,6 @@ class hr_applicant_wizard(models.TransientModel):
     
     def print_report(self):
         print('holaaaa', self.read()[0])
-        data = {
-            'model': 'hr.applicant.wizard',
-            'form': self.read()[0]
-        }
+        data = {}
         return self.env.ref('tetrace.action_report_curriculum_applicant_name').report_action([], data=data)
         
