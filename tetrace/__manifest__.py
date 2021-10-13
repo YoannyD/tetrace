@@ -121,6 +121,7 @@
         'views/maintenance_equipment.xml',
         'views/product_public_category.xml',
         'wizard/asset_modify.xml',
+        'wizard/hr_applicant_wizard.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',
         'wizard/tetrace_importar_tickelia.xml',

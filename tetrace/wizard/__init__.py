@@ -13,3 +13,4 @@ from . import tetrace_prevision_facturacion_cancelar
 from . import tetrace_crear_tareas_act_desc
 from . import tetrace_change_partner_sale_order
 from . import invite
+from . import hr_applicant_wizard

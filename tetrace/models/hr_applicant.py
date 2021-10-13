@@ -30,8 +30,13 @@ class Applicant(models.Model):
     observaciones = fields.Text("Observaciones")
     feedback_ids = fields.One2many("tetrace.feedback_applicant", "applicant_id")
 
+   # @api.depends("id")
+    #def _compute_reference(self):    
+    #    for r in self:
+    #        r.reference = "P" + str(r.id + 1)
+    
     def _compute_reference(self):
-        self.reference = "P" + str(self.id + 1)
+        self.reference = "E" + str(self.id + 1)
         
     def _compute_document_applicant(self):
         for r in self:

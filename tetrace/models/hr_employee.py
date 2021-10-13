@@ -38,8 +38,10 @@ class Employee(models.Model):
     project_country_asignado_id = fields.Many2one('res.country', string="País del proyecto asignado",
                                                  compute="_compute_project_asginado")
   
+    
     def _compute_reference(self):
         self.reference_employee = "E" + str(self.id + 1)
+    
     
     def _compute_project_asginado(self):
         for r in self:
