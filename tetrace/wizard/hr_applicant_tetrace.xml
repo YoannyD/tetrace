@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--Wizard-->
+    
+         <record id="hr_applicant_tetrace" model="ir.ui.view">
+        <field name="name">Currículums Tetrace</field>
+        <field name="model">hr.applicant.tetrace</field>
+        <field name="arch" type="xml">
+            <form string="Currículum Vitae">
+                <h1></h1>
+                <group>
+                    <field name="language" widget="radio"/>
+                </group>
+                <footer>
+                    <button class="oe_highlight" name="print_report" string="Aceptar" confirm="Este proceso de selección tiene empleado asignado. ¿Quieres seguir imprimiendo el curriculum??" type="object" />
+                    <button class="oe_highlight" string="Cancelar" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!--record id="action_hr_applicant_wizard" model="ir.actions.act_window">
+            <field name="name">Currículums Tetrace</field>
+            <field name="res_model">hr.applicant.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_applicant_wizard"/>
+            <field name="target">new</field>
+        </record-->
+    <!--act_window id="action_solicitud_wizard"
+            name="Currículum Tetrace Nombre"
+            res_model="hr.applicant.wizard"
+            binding_model="hr.applicant"
+            binding_type="report"
+            view_mode="form" target="new" /-->
+
+   	 <!--record id="view_hr_applicant_wizard" model="ir.ui.view">
+            <field name="name">view.hr.applicant.wizard</field>
+            <field name="model">hr.applicant</field>
+            <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+            <field name="arch" type="xml">
+                <button name="create_employee_from_applicant" position="before">
+                      <button name="tetrace.action_solicitud_wizard" string="Currículum Tetrace" type="action" confirm="Este proceso de selección tiene empleado asignado. ¿Quieres seguir imprimiendo el curriculum??" invisible="1"/>
+                </button>
+            </field>
+        </record-->
+         <act_window id="action_solicitud_wizard_2"
+            name="Currículum Tetrace"
+            res_model="hr.applicant.tetrace"
+            binding_model="hr.applicant"
+            binding_type="report"
+            view_mode="form" target="new" />
+</odoo>

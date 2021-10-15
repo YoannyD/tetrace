@@ -7,7 +7,7 @@
             report_type="qweb-pdf"
             file="tetrace.report_hr_employee_curriculum_applicant"
             name="tetrace.report_hr_employee_curriculum_applicant"
-            menu="True"
+            menu="False"
     />
       
     <report id="action_report_curriculum_applicant_name"
@@ -18,10 +18,29 @@
             name="tetrace.report_hr_employee_curriculum_applicant_name"
             menu="False"
     />
+       <report id="action_report_curriculum_applicant_name_english"
+            string="Currículum Tetrace Name"
+            model="hr.applicant"
+            report_type="qweb-pdf"
+            file="tetrace.report_hr_employee_curriculum_applicant_name_english"
+            name="tetrace.report_hr_employee_curriculum_applicant_name_english"
+            menu="False"
+    />
+     <report id="action_report_curriculum_applicant_english"
+            string="Currículum Tetrace English"
+            model="hr.applicant"
+            report_type="qweb-pdf"
+            file="tetrace.report_hr_employee_curriculum_applicant_english"
+            name="tetrace.report_hr_employee_curriculum_applicant_english"
+            menu="False"
+    />
    <template id="report_hr_employee_curriculum_applicant_name">
           <t t-call="web.basic_layout">
             <div class="page">
                 <t t-foreach="docs" t-as="applicant">
+                    <!--t t-call="tetrace.report_hr_employee_curriculum_applicant_name" t-lang="doc.partner_id.lang"/-->
+                    <!--t t-raw="translate_doc(doc_id, doc_model, 
+'partner_id.lang', 'tetrace.report_hr_employee_curriculum_applicant_name')"/-->
        <!-- quitar codigo             <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
                         <div t-if="applicant.reference" class="col-auto mw-100 mb-2">
                         <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código:</strong>
@@ -134,9 +153,136 @@
                                 </div>
 
           </t>
+                
             </div>
         </t>
 
     </template>
+     <!-- INGLES-->
+   <template id="report_hr_employee_curriculum_applicant_name_english">
+          <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="docs" t-as="applicant">
+                    <!--t t-call="tetrace.report_hr_employee_curriculum_applicant_name" t-lang="doc.partner_id.lang"/-->
+                    <!--t t-raw="translate_doc(doc_id, doc_model, 
+'partner_id.lang', 'tetrace.report_hr_employee_curriculum_applicant_name')"/-->
+       <!-- quitar codigo             <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                        <div t-if="applicant.reference" class="col-auto mw-100 mb-2">
+                        <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Código:</strong>
+                    <p class="m-0" t-field="applicant.reference"/>
+                        </div>
+                        </div>-->
+  
+                    <div class="row" style="margin:10px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                   <div t-if="applicant.name" class="col-auto mw-100 mb-2">
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Applicant's Name:</strong>
+                    <p class="m-0" t-field="applicant.name"/>
+              </div>
+                           <!--div t-if="applicant.email_from" class="col-auto mw-100 mb-2">
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Correo:</strong>
+                    <p class="m-0" t-field="applicant.email_from"/>
+                </div-->
+                           <!--div t-if="applicant.partner_phone" class="col-auto mw-100 mb-2">
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Teléfono:</strong>
+                    <p class="m-0" t-field="applicant.partner_phone"/>
+                </div>
+                    <div t-if="applicant.partner_mobile" class="col-auto mw-100 mb-2">
+                    <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Móvil:</strong>
+                    <p class="m-0" t-field="applicant.partner_mobile"/>
+                </div-->
+  
+                        
+                    </div>
+                    
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">                      
+                                <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
+ 
+<t t-foreach="line_type_ids" t-as="line_type"> <br/>
+    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
+    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
+                                
+                                 <span><strong><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
+        
+         <!--input type="checkbox" checked="checked"  t-field="line.date_actual"/-->
+                                    <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
+     &#160;
+                                    <span><t class="text-right" t-esc="line.description"/></span><br/> 
+    </t> 
+</t>
+                                </div>
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+                       <strong style="color:#872292;font-size:1.4em;font-weight:bold;">Complementary Training:</strong>
+                           </div>
+                         <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                
+           <t t-set="skill_type_ids" t-value="docs.applicant_skill_ids.mapped('skill_type_id')"/> 
+ 
+<t t-foreach="skill_type_ids" t-as="skill_type"> 
+     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="skill_type.name"/></span><br/>
+    <t t-foreach="docs.applicant_skill_ids.filtered(lambda type: type.skill_type_id.id == skill_type.id)" t-as="skill">
+        
+                                    <span><strong><t t-esc="skill.skill_id.name"/>-<t t-esc="skill.skill_level_id.name"/></strong></span><br/> 
+                                    <!--span><t t-esc="skill.skill_level_id.name"/></span><br/--> 
+    </t> 
+</t>
+                                </div>
+          </t>
+            </div>
+        </t>
+    </template>
+    
+    
+    <template id="report_hr_employee_curriculum_applicant_english">
+          <t t-call="web.basic_layout">
+            <div class="page">
+                <t t-foreach="docs" t-as="applicant">
+                    <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                        <div t-if="applicant.reference" class="col-auto mw-100 mb-2">
+                        <strong style="color:#872292;font-size:1.2em;font-weight:bold;">Code:</strong>
+                    <p class="m-0" t-field="applicant.reference"/>
+                        </div>
+                        </div>
+                        <!--div class="row" style="margin:100px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+          <strong><span style="color:#872292;font-size:1.2em;font-weight:bold;">Código:</span></strong><br/>
+                       
+        <span><t t-esc="applicant.referencia"/></span><br/>
+                           </div-->
+       
+                    <div class="row" style="margin:10px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">                      
+                                <t t-set="line_type_ids" t-value="docs.resume_line_ids.mapped('line_type_id')"/> 
+ 
+<t t-foreach="line_type_ids" t-as="line_type"> <br/>
+    <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="line_type.name"/></span><br/> 
+    <t t-foreach="docs.resume_line_ids.filtered(lambda type: type.line_type_id.id == line_type.id)" t-as="line"> <br/>
+                                
+                                <span><strong><t class="text-right" t-esc="line.name"/>&#160;&#160;&#160;<t t-esc="line.date_start"/>/<t t-esc="line.date_end"/><span t-if="line.date_actual==True">Actual</span></strong></span><br/> 
+                                    <!--span><t class="text-right" t-esc="line.date_start"/>|<t t-esc="line.date_end"/></span><br/--> 
+                                    <span><t class="text-right" t-esc="line.description"/></span><br/> 
+    </t> 
+</t>
+                                </div>
+                     <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:0px;float:right;clear:both;">
+                       <strong style="color:#872292;font-size:1.4em;font-weight:bold;">Complementary Training:</strong>
+                           </div>
+                    
+                        <div class="row" style="margin:0px auto 32px auto;width:95%;padding-right:20px;float:right;clear:both;">
+                                
+           <t t-set="skill_type_ids" t-value="docs.applicant_skill_ids.mapped('skill_type_id')"/> 
+ 
+<t t-foreach="skill_type_ids" t-as="skill_type"> 
+     <span style="color:#872292;font-size:1.4em;font-weight:bold;"><t t-esc="skill_type.name"/></span><br/>
+    <t t-foreach="docs.applicant_skill_ids.filtered(lambda type: type.skill_type_id.id == skill_type.id)" t-as="skill">
+        
+                                   <span><strong><t t-esc="skill.skill_id.name"/>-<t t-esc="skill.skill_level_id.name"/></strong></span><br/> 
+                                    <!--span><t t-esc="skill.skill_level_id.name"/></span><br/--> 
+    </t> 
+</t>
+                                </div>
 
+          </t>
+                
+            </div>
+        </t>
+
+    </template>
 </odoo>

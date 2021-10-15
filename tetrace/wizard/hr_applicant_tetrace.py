@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 
 class hr_applicant_wizard(models.TransientModel):
-    _name = "hr.applicant.wizard"
+    _name = "hr.applicant.tetrace"
     
     language = fields.Selection([('spanish', 'Español'), ('english', 'Inglés')])
     
@@ -18,6 +18,7 @@ class hr_applicant_wizard(models.TransientModel):
         print('holaaaa', self.read()[0])
         data = {}
         if self.language == 'spanish':
-            return self.env.ref('tetrace.action_report_curriculum_applicant_name').report_action([], data=data)
+            return self.env.ref('tetrace.action_report_curriculum_applicant').report_action([], data=data)
         else:
-            return self.env.ref('tetrace.action_report_curriculum_applicant_name_english').report_action([], data=data)
+            return self.env.ref('tetrace.action_report_curriculum_applicant_english').report_action([], data=data)
+        
