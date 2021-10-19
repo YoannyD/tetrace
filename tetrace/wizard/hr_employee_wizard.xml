@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--Wizard-->
+    
+         <record id="hr_applicant_wizard_employee" model="ir.ui.view">
+        <field name="name">Currículums Tetrace</field>
+        <field name="model">hr.employee.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Currículum Vitae">
+                <h1></h1>
+                <group>
+                    <field name="language" widget="radio"/>
+                </group>
+                <footer>
+                    <button class="oe_highlight" name="print_report" string="Aceptar" confirm="Este proceso de selección tiene empleado asignado. ¿Quieres seguir imprimiendo el curriculum??" type="object" />
+                    <button class="oe_highlight" string="Cancelar" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <!--record id="action_hr_applicant_wizard" model="ir.actions.act_window">
+            <field name="name">Currículums Tetrace</field>
+            <field name="res_model">hr.applicant.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_applicant_wizard"/>
+            <field name="target">new</field>
+        </record-->
+    <act_window id="action_solicitud_wizard_employee"
+            name="Currículum Tetrace Nombre"
+            res_model="hr.employee.wizard"
+            binding_model="hr.employee"
+            binding_type="report"
+            view_mode="form" target="new" />
+
+  
+</odoo>

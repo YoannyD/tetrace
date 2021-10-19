@@ -28,6 +28,8 @@ from . import hr_skill
 from . import res_partner
 from . import res_company
 from . import res_users
+from . import helpdesk_ticket
+from . import helpdesk_stage
 from . import resource_calendar
 from . import res_config_settings
 from . import sale_order

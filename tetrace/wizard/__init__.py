@@ -15,3 +15,5 @@ from . import tetrace_change_partner_sale_order
 from . import invite
 from . import hr_applicant_wizard
 from . import hr_applicant_tetrace
+from . import hr_employee_wizard
+from . import hr_employee_tetrace
