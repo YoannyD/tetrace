@@ -18,6 +18,8 @@ class HelpdeskTicket(models.Model):
     project_id = fields.Many2one("project.project", string="Proyecto")
     fecha_resuelto = fields.Date("Fecha resuelto", readonly=True)
     fecha_validado = fields.Date("Fecha validado", readonly=True)
+    fecha_previsto = fields.Date("Fecha previsto", readonly=True)
+    dias_totales = fields.Integer("Días totales", compute="_compute_dias_totales")
     priority = fields.Selection(selection_add=[('4', 'Muy urgente'), ('5', 'Prioritario')])
     current_user_id = fields.Many2one("res.user", string="Usuario actual", 
                                       compute="_compute_current_user")
@@ -40,6 +42,14 @@ class HelpdeskTicket(models.Model):
                 'current_user_user': user,
                 'current_user_manager': manager,
             })
+    
+    @api.depends("fecha_validado")
+    def _compute_dias_totales(self):
+        for r in self:
+            dias = 0
+            if r.fecha_validado and r.create_date:
+                dias = (r.fecha_validado - r.create_date.date()).days
+            r.dias_totales = dias
     
     @api.model
     def create(self, vals):

@@ -46,10 +46,13 @@
                 <field name="current_user_user" invisible="1"/>
                 <field name="current_user_manager" invisible="1"/>
                 <field name="priority" widget="priority" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="fecha_previsto" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
                 <field name="user_id" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
                 <field name="confirmado" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="kanban_state_label"/>
                 <field name="fecha_resuelto" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
                 <field name="fecha_validado" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="dias_totales"/>
             </xpath>
             
             <xpath expr="//field[@name='tag_ids']" position="after">
