@@ -140,6 +140,7 @@
         'wizard/tetrace_change_partner_sale_order.xml',
         'templates/portal.xml',
         'templates/website_sale.xml',
+        'wizard/modify_reference.xml',
     ],
     'qweb': [
         "static/src/xml/tetrace_logo.xml",

@@ -27,17 +27,12 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
     _inherit = "report.report_xlsx.abstract"
     
     def generate_xlsx_report(self, workbook, data, objects):
-        _logger.warning(data)
-        _logger.warning(objects)
-        
         # create worksheet
         report_name = u"{} - {}".format(
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
         
-        grupo_cuentas = self.env['account.analytic.line.rel'].read_group([
-            ('date','>=','01/01/2021')
-        ],['analytic_account_id'],['analytic_account_id'])
+        grupo_cuentas = self.env['account.analytic.line.rel'].read_group([], ['analytic_account_id'], ['analytic_account_id'])
         
         cuentas = []
         for cuenta in grupo_cuentas:
@@ -50,7 +45,13 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         if objects[0].tipo_proyecto_id:
             domain += [('project_ids.sale_order_id.tipo_proyecto_id', '=', objects[0].tipo_proyecto_id.id)]
         
-        analitycs = self.env['account.analytic.account'].search(domain)
+        offset = 0
+        limit = 9999999999
+        if objects[0].pag_fin:
+            offset = objects[0].pag_inicio
+            limit = objects[0].pag_fin
+        
+        analitycs = self.env['account.analytic.account'].search(domain, offset=offset, limit=limit)
         
         for analityc in analitycs:
             condition = {
@@ -79,7 +80,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
                 break
                 
         if not hay_datos:
-            return None
+            return False
             
         style_obj = self.env["mis.report.style"]
         
@@ -219,3 +220,4 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         min_col_pos = min(col_width.keys())
         max_col_pos = max(col_width.keys())
         sheet.set_column(min_col_pos, max_col_pos, data_col_width * COL_WIDTH)
+        return True

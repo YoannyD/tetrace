@@ -17,3 +17,4 @@ from . import hr_applicant_wizard
 from . import hr_applicant_tetrace
 from . import hr_employee_wizard
 from . import hr_employee_tetrace
+from . import modify_reference

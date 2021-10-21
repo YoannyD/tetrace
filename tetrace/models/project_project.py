@@ -509,6 +509,23 @@ class Project(models.Model):
         })
         return action
     
+    def update_followers(self):
+        for project in self:
+            if project.user_id.partner_id.id not in project.message_follower_ids.mapped('partner_id').ids:
+                project.message_follower_ids = [(0, 0, {
+                    'partner_id': project.user_id.partner_id.id,
+                    'res_model': 'project.project',
+                    'res_id': project.id,
+                })]
+            tasks = self.env['project.task'].sudo().search([('project_id', '=', project.id)])
+            for task in tasks:
+                if project.user_id.partner_id.id not in task.message_follower_ids.mapped('partner_id').ids:
+                    task.message_follower_ids = [(0, 0, {
+                        'partner_id': project.user_id.partner_id.id,
+                        'res_model': 'project.task',
+                        'res_id': task.id,
+                    })]
+    
     def cerrar_cuenta_analitica(self):
         if not self.analytic_account_id:
             return

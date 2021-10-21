@@ -20,6 +20,10 @@ class HelpdeskTicket(models.Model):
     fecha_validado = fields.Date("Fecha validado", readonly=True)
     fecha_previsto = fields.Date("Fecha previsto", readonly=True)
     dias_totales = fields.Integer("Días totales", compute="_compute_dias_totales")
+    dias_tic = fields.Integer("Días TIC", compute="_compute_dias_tic")
+    dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
+    dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
+    dias_comprobacion = fields.Integer("Días comprobacion", compute="_compute_dias_comprabacion")
     priority = fields.Selection(selection_add=[('4', 'Muy urgente'), ('5', 'Prioritario')])
     current_user_id = fields.Many2one("res.user", string="Usuario actual", 
                                       compute="_compute_current_user")
@@ -43,6 +47,7 @@ class HelpdeskTicket(models.Model):
                 'current_user_manager': manager,
             })
     
+    
     @api.depends("fecha_validado")
     def _compute_dias_totales(self):
         for r in self:
@@ -50,7 +55,39 @@ class HelpdeskTicket(models.Model):
             if r.fecha_validado and r.create_date:
                 dias = (r.fecha_validado - r.create_date.date()).days
             r.dias_totales = dias
+       
+    @api.depends("fecha_resuelto")
+    def _compute_dias_tic(self):
+        for r in self:
+            dias = 0
+            if r.fecha_resuelto and r.create_date:
+                dias = (r.fecha_resuelto - r.create_date.date()).days
+            r.dias_tic = dias
     
+    @api.depends("fecha_resuelto")
+    def _compute_dias_delay_tic(self):
+        for r in self:
+            dias = 0
+            if r.fecha_resuelto and r.fecha_previsto:
+                dias = (r.fecha_resuelto - r.fecha_previsto).days
+            r.dias_delay_tic = dias
+                        
+    @api.depends("fecha_resuelto","fecha_limite")
+    def _compute_dias_delay_user(self):
+        for r in self:
+            dias = 0
+            if r.fecha_resuelto and r.fecha_limite:
+                dias = (r.fecha_resuelto - r.fecha_limite).days
+            r.dias_delay_user = dias
+                        
+    @api.depends("fecha_resuelto","fecha_validado")
+    def _compute_dias_comprabacion(self):
+        for r in self:
+            dias = 0
+            if r.fecha_validado and r.fecha_resuelto:
+                dias = (r.fecha_validado - r.fecha_resuelto).days
+            r.dias_comprobacion = dias
+                        
     @api.model
     def create(self, vals):
         res = super(HelpdeskTicket, self).create(vals)
