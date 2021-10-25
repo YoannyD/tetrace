@@ -157,7 +157,8 @@ class AccountMoveLine(models.Model):
         res = super(AccountMoveLine, self).write(vals)
         if "price_unit" in vals or "quantity" in vals or "discount" in vals:
             for r in self:
-                r.move_id.write({"invoice_line_cambia": str(fields.Datetime.now())})
+                if r.exclude_from_invoice_tab == False:
+                    r.move_id.write({"invoice_line_cambia": str(fields.Datetime.now())})
         return res
     
     def _get_computed_account(self):
