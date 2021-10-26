@@ -61,7 +61,7 @@
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="enlace"/>
                 <field name="bloqueado"/>
-                <field name="fecha_limite"/>
+                <field name="fecha_limite" string="Fecha user"/>
                 <field name="solicitante"/>
                 <field name="puesto"/>
                 <field name="departamento"/>
@@ -96,7 +96,7 @@
             <field name="departamento" optional="hide"/>
             <field name="fecha_resuelto" optional="hide"/>
             <field name="fecha_validado" optional="hide"/>
-            <field name="fecha_limite" optional="hide"/>            
+            <field name="fecha_limite" string="Fecha user" optional="hide"/>            
             <field name="dias_delay_tic" optional="hide"/>
             <field name="dias_comprobacion" optional="hide"/>
             <field name="dias_totales" optional="hide"/>
