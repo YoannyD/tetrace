@@ -62,7 +62,7 @@
                 <field name="enlace"/>
                 <field name="bloqueado"/>
                 <field name="fecha_limite"/>
-                <field name="create_uid" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="solicitante"/>
                 <field name="puesto"/>
                 <field name="departamento"/>
             </xpath>            
@@ -79,7 +79,7 @@
           <xpath expr="//field[@name='partner_id']" position="replace"/>
           <xpath expr="//field[@name='team_id']" position="after">
             <field name="create_date" widget="date"/>
-            <field name="create_uid"/>  
+            <field name="solicitante"/>  
           </xpath>
           <xpath expr="//field[@name='user_id']" position="after">
             <field name="fecha_previsto"/>
