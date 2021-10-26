@@ -51,7 +51,7 @@ class ActivarTarea(models.TransientModel):
             if detalle.baja_it: opciones.append('informatica')
             if detalle.recoger_equipos: opciones.append('equipos')
             if detalle.reubicar: opciones.append('reubicacion')
-            if detalle.finalizar_contrato: opciones.append('facturacion')
+            if detalle.finalizar_contrato: opciones.append('baja')
             
             if opciones:
                 domain = expression.AND([domain, [('employee_id', '=', detalle.employee_id.id)]]) 
