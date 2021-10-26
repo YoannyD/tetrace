@@ -108,6 +108,7 @@
         'views/tetrace_vat_book.xml',
         'views/hr_job.xml',
         'views/helpdesk_ticket.xml',
+        'views/helpdesk_portal.xml',
         'views/helpdesk_stage.xml',
         'views/account_analytic_account.xml',
         'views/res_config_settings.xml',

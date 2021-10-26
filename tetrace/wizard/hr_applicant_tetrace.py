@@ -22,6 +22,7 @@ class hr_applicant_tetrace(models.TransientModel):
     language = fields.Selection([('spanish', 'Español'), ('english', 'Inglés')])
     emp_id= fields.Many2one(
         'hr.employee', string="Employee", default=_default_emp_id)
+    message = fields.Text(store=True)
     
     def print_report(self):
         print('holaaaa', self.read()[0])

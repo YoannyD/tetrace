@@ -23,8 +23,9 @@ class HelpdeskTicket(models.Model):
     dias_tic = fields.Integer("Días TIC", compute="_compute_dias_tic")
     dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
     dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
-    puesto = fields.Char(string="Puesto" , related="create_uid.employee_ids.job_id.display_name")
-    departamento = fields.Char(string="Departamento" , related="create_uid.employee_ids.department_id.display_name")
+    solicitante = fields.Many2one('res.users', default=lambda self: self.env.user)
+    puesto = fields.Char(string="Puesto" , related="solicitante.employee_ids.job_id.display_name")
+    departamento = fields.Char(string="Departamento" , related="solicitante.employee_ids.department_id.display_name")
     dias_comprobacion = fields.Integer("Días comprobacion", compute="_compute_dias_comprabacion")
     priority = fields.Selection(selection_add=[('4', 'Muy urgente'), ('5', 'Prioritario')])
     current_user_id = fields.Many2one("res.user", string="Usuario actual", 
@@ -79,7 +80,7 @@ class HelpdeskTicket(models.Model):
         for r in self:
             dias = 0
             if r.fecha_resuelto and r.fecha_limite:
-                dias = (r.fecha_resuelto - r.fecha_limite).days
+                dias = (r.fecha_resuelto - r.fecha_limite.date()).days
             r.dias_delay_user = dias
                         
     @api.depends("fecha_resuelto","fecha_validado")
