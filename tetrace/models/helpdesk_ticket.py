@@ -13,7 +13,7 @@ class HelpdeskTicket(models.Model):
     
     enlace = fields.Char("Enlace")
     bloqueado = fields.Boolean("Bloqueado")
-    fecha_limite = fields.Date("Fecha límite")
+    fecha_limite = fields.Date("Fecha user")
     confirmado = fields.Boolean("Confirmado por usuario", readonly=True)
     project_id = fields.Many2one("project.project", string="Proyecto")
     fecha_resuelto = fields.Date("Fecha resuelto", readonly=True)
@@ -23,6 +23,8 @@ class HelpdeskTicket(models.Model):
     dias_tic = fields.Integer("Días TIC", compute="_compute_dias_tic")
     dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
     dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
+    puesto = fields.Char(string="Puesto" , related="create_uid.employee_ids.job_id.display_name")
+    departamento = fields.Char(string="Departamento" , related="create_uid.employee_ids.department_id.display_name")
     dias_comprobacion = fields.Integer("Días comprobacion", compute="_compute_dias_comprabacion")
     priority = fields.Selection(selection_add=[('4', 'Muy urgente'), ('5', 'Prioritario')])
     current_user_id = fields.Many2one("res.user", string="Usuario actual", 

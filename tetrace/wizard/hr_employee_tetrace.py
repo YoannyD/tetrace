@@ -21,5 +21,8 @@ class hr_employee_tetrace(models.TransientModel):
             return self.env.ref('tetrace.action_report_curriculum').report_action([], data=data)
         else:
             return self.env.ref('tetrace.action_report_curriculum_english').report_action([], data=data)
+    
+    def cancel(self):
+        return {'type': 'ir.actions.act_window_close'}
         
         

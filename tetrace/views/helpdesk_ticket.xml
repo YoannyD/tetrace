@@ -57,14 +57,15 @@
                 <field name="dias_delay_tic"/>
                 <field name="dias_delay_user"/>
                 <field name="dias_comprobacion"/>               
-            </xpath>
-            
+            </xpath>           
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="enlace"/>
                 <field name="bloqueado"/>
                 <field name="fecha_limite"/>
-            </xpath>
-            
+                <field name="create_uid" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="puesto"/>
+                <field name="departamento"/>
+            </xpath>            
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="project_id"/>
             </xpath>
@@ -78,10 +79,11 @@
           <xpath expr="//field[@name='partner_id']" position="replace"/>
           <xpath expr="//field[@name='team_id']" position="after">
             <field name="create_date" widget="date"/>
+            <field name="create_uid"/>  
           </xpath>
           <xpath expr="//field[@name='user_id']" position="after">
             <field name="fecha_previsto"/>
-          </xpath>
+            </xpath>
           <xpath expr="//field[@name='priority']" position="attributes">
                 <attribute name="optional">show</attribute>
                 <field name="priority" widget="priority"/>
@@ -90,6 +92,11 @@
             <attribute name="optional">hide</attribute>
           </xpath>
           <xpath expr="//field[@name='activity_exception_decoration']" position="after">
+            <field name="puesto" optional="hide"/>
+            <field name="departamento" optional="hide"/>
+            <field name="fecha_resuelto" optional="hide"/>
+            <field name="fecha_validado" optional="hide"/>
+            <field name="fecha_limite" optional="hide"/>            
             <field name="dias_delay_tic" optional="hide"/>
             <field name="dias_comprobacion" optional="hide"/>
             <field name="dias_totales" optional="hide"/>

@@ -12,8 +12,8 @@
                     <field name="language" widget="radio"/>
                 </group>
                 <footer>
-                    <button class="oe_highlight" name="print_report" string="Aceptar" confirm="Este proceso de selección tiene empleado asignado. ¿Quieres seguir imprimiendo el curriculum??" type="object" />
-                    <button class="oe_highlight" string="Cancelar" />
+                    <button class="oe_highlight" name="print_report" string="Aceptar" type="object" />
+                    <button class="oe_highlight" string="Cancelar" name="cancel" type="object" />
                 </footer>
             </form>
         </field>
