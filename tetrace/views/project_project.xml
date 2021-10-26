@@ -128,6 +128,7 @@
                 <field name="partner_ids">
                     <tree editable="bottom">
                         <field name="name"/>
+                        <field name="job_position_ids" widget="many2many_tags"/>
                     </tree>
                 </field>
                 <field name="maps" string ="Maps" widget="url"/>

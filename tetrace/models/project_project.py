@@ -168,7 +168,6 @@ class Project(models.Model):
     def create(self, vals):
         vals = self.actualizar_vals(vals)
         res = super(Project, self).create(vals)
-        res.actualizar_geo_partner()
         res.default_etapa_tareas()
         if res.proyecto_necesidad_ids:
             res.tasks.filtered(lambda x: x.busqueda_perfiles).write({'activada': True})
@@ -185,9 +184,6 @@ class Project(models.Model):
         if 'company_coordinador_id' in vals:
             for r in self:
                 r.tasks.write({'company_coordinador_id': r.company_coordinador_id.id})
-        
-        if 'name' in vals or 'partner_latitude' in vals or 'partner_longitude' in vals:
-            self.actualizar_geo_partner()
 
         if 'experiencia_ids' in vals or 'tecnico_calendario_ids' in vals:
             self.actualizar_experiencias_tecnicos()
@@ -295,20 +291,6 @@ class Project(models.Model):
         if "estado_id" in vals and vals.get("estado_id") != 4:
             vals.update({"motivo_cancelacion_id": False})
         return vals
-
-    def actualizar_geo_partner(self):
-        for r in self:
-            values = {
-                'name': _("Geolocalización %s") % r.name,
-                'partner_latitude': r.partner_latitude,
-                'partner_longitude': r.partner_longitude,
-            }
-
-            if not r.partner_geo_id:
-                values.update({'project_geo_ids': [(6, 0, [r.id])]})
-                self.env['res.partner'].with_context(no_actualizar=True).create(values)
-            else:
-                r.partner_geo_id.with_context(no_actualizar=True).write(values)
 
     def default_etapa_tareas(self):
         for r in self:
@@ -508,6 +490,23 @@ class Project(models.Model):
             'domain': [('id', 'in', documents.ids)]
         })
         return action
+    
+    def update_followers(self):
+        for project in self:
+            if project.user_id.partner_id.id not in project.message_follower_ids.mapped('partner_id').ids:
+                project.message_follower_ids = [(0, 0, {
+                    'partner_id': project.user_id.partner_id.id,
+                    'res_model': 'project.project',
+                    'res_id': project.id,
+                })]
+            tasks = self.env['project.task'].sudo().search([('project_id', '=', project.id)])
+            for task in tasks:
+                if project.user_id.partner_id.id not in task.message_follower_ids.mapped('partner_id').ids:
+                    task.message_follower_ids = [(0, 0, {
+                        'partner_id': project.user_id.partner_id.id,
+                        'res_model': 'project.task',
+                        'res_id': task.id,
+                    })]
     
     def cerrar_cuenta_analitica(self):
         if not self.analytic_account_id:

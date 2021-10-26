@@ -33,6 +33,8 @@ class MisReportInstance(models.Model):
     ], string="Filtro estado cuenta analítica")
     tipo_proyecto_id = fields.Many2one('tetrace.tipo_proyecto', string="Tipo de proyecto", 
                                        context='{"display_tipo": True}')
+    pag_inicio = fields.Integer("Desde (paginación)")
+    pag_fin = fields.Integer("Hasta (paginación)")
 
     @api.constrains('filtro_estructurales', 'tipo_proyecto_id')
     def _check_filtro_estructurales(self):

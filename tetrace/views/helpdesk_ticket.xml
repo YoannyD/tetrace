@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="helpdesk_ticket_view_form" model="ir.ui.view">
+        <field name="name">helpdesk.ticket.form.tetrace</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='priority']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='partner_name']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='partner_email']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='email_cc']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='team_id']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='ticket_type_id']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='description']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="required">True</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="current_user_id" invisible="1"/>
+                <field name="current_user_user" invisible="1"/>
+                <field name="current_user_manager" invisible="1"/>
+                <field name="priority" widget="priority" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="fecha_previsto" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="user_id" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="confirmado" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="kanban_state_label"/>
+                <field name="fecha_resuelto" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="fecha_validado" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="dias_totales"/>
+                <field name="dias_tic"/>
+                <field name="dias_delay_tic"/>
+                <field name="dias_delay_user"/>
+                <field name="dias_comprobacion"/>               
+            </xpath>           
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="enlace"/>
+                <field name="bloqueado"/>
+                <field name="fecha_limite"/>
+                <field name="create_uid" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
+                <field name="puesto"/>
+                <field name="departamento"/>
+            </xpath>            
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="project_id"/>
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="helpdesk_ticket_view_tree">
+        <field name="name">helpdesk.tree.tetrace</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='partner_id']" position="replace"/>
+          <xpath expr="//field[@name='team_id']" position="after">
+            <field name="create_date" widget="date"/>
+            <field name="create_uid"/>  
+          </xpath>
+          <xpath expr="//field[@name='user_id']" position="after">
+            <field name="fecha_previsto"/>
+            </xpath>
+          <xpath expr="//field[@name='priority']" position="attributes">
+                <attribute name="optional">show</attribute>
+                <field name="priority" widget="priority"/>
+          </xpath>
+          <xpath expr="//field[@name='company_id']" position="attributes">
+            <attribute name="optional">hide</attribute>
+          </xpath>
+          <xpath expr="//field[@name='activity_exception_decoration']" position="after">
+            <field name="puesto" optional="hide"/>
+            <field name="departamento" optional="hide"/>
+            <field name="fecha_resuelto" optional="hide"/>
+            <field name="fecha_validado" optional="hide"/>
+            <field name="fecha_limite" optional="hide"/>            
+            <field name="dias_delay_tic" optional="hide"/>
+            <field name="dias_comprobacion" optional="hide"/>
+            <field name="dias_totales" optional="hide"/>
+            <field name="dias_delay_user" optional="hide"/>
+            <field name="dias_tic" optional="hide"/>
+          </xpath>
+        </field>
+    </record>
+</odoo>

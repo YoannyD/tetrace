@@ -25,13 +25,19 @@ class Applicant(models.Model):
     document_applicant_count = fields.Integer('Documentos', compute="_compute_document_applicant")
     proceso_seleccion_id = fields.Many2one('tetrace.proceso_seleccion', string="Proceso de selección")
     project_ids = fields.Many2many('project.project')
-    reference = fields.Char(compute="_compute_reference")
+    reference = fields.Char("Reference")
     habilidad_ids = fields.Many2many('tetrace.habilidad_applicant')
     observaciones = fields.Text("Observaciones")
     feedback_ids = fields.One2many("tetrace.feedback_applicant", "applicant_id")
 
+    @api.model
+    def create(self, vals):
+        res = super(Applicant, self).create(vals)
+        res.reference = "P" + str(res.id + 1)
+        return res
+    
     def _compute_reference(self):
-        self.reference = "P" + str(self.id + 1)
+        self.reference = "E" + str(self.id + 1)
         
     def _compute_document_applicant(self):
         for r in self:

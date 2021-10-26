@@ -51,7 +51,8 @@
         'partner_contact_job_position',
         'partner_contact_in_several_companies',
         'website_sale',
-        'partner_contact_job_position'
+        'partner_contact_job_position',
+        'helpdesk'
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -106,6 +107,8 @@
         'views/tetrace_tickelia.xml',
         'views/tetrace_vat_book.xml',
         'views/hr_job.xml',
+        'views/helpdesk_ticket.xml',
+        'views/helpdesk_stage.xml',
         'views/account_analytic_account.xml',
         'views/res_config_settings.xml',
         'views/tetrace_linea_analitica_rel.xml',
@@ -121,6 +124,10 @@
         'views/maintenance_equipment.xml',
         'views/product_public_category.xml',
         'wizard/asset_modify.xml',
+        'wizard/hr_employee_tetrace.xml',
+        'wizard/hr_employee_wizard.xml',
+        'wizard/hr_applicant_wizard.xml',
+        'wizard/hr_applicant_tetrace.xml',
         'wizard/tetrace_importar_nomina.xml',
         'wizard/tetrace_crear_version.xml',
         'wizard/tetrace_importar_tickelia.xml',
@@ -133,6 +140,7 @@
         'wizard/tetrace_change_partner_sale_order.xml',
         'templates/portal.xml',
         'templates/website_sale.xml',
+        'wizard/modify_reference.xml',
     ],
     'qweb': [
         "static/src/xml/tetrace_logo.xml",
