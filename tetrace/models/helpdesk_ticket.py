@@ -23,7 +23,7 @@ class HelpdeskTicket(models.Model):
     dias_tic = fields.Integer("Días TIC", compute="_compute_dias_tic")
     dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
     dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
-    solicitante = fields.Many2one('res.users', default=lambda self: self.env.user)
+    solicitante = fields.Many2one('res.users', default=lambda self: self._uid)
     puesto = fields.Char(string="Puesto" , related="solicitante.employee_ids.job_id.display_name")
     departamento = fields.Char(string="Departamento" , related="solicitante.employee_ids.department_id.display_name")
     dias_comprobacion = fields.Integer("Días comprobacion", compute="_compute_dias_comprabacion")
