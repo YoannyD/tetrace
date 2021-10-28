@@ -35,9 +35,7 @@ class Applicant(models.Model):
         res = super(Applicant, self).create(vals)
         res.reference = "P" + str(res.id + 1)
         return res
-    
-    def _compute_reference(self):
-        self.reference = "E" + str(self.id + 1)
+
         
     def _compute_document_applicant(self):
         for r in self:

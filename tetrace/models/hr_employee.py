@@ -32,16 +32,19 @@ class Employee(models.Model):
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'employee_id')
     country_visado_id = fields.Many2one('res.country', string="País Visado")
     type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
-    reference_employee = fields.Char(compute="_compute_reference", string="Código")
+    reference_employee = fields.Char("Código")
     project_asignado_id = fields.Many2one('project.project', string="Proyecto asignado",
                                           compute="_compute_project_asginado")
     project_country_asignado_id = fields.Many2one('res.country', string="País del proyecto asignado",
                                                  compute="_compute_project_asginado")
   
+    @api.model
+    def create(self, vals):
+        res = super(Employee, self).create(vals)
+        res. reference_employee = "E" + str(res.id + 1)
+        return res
     
-    def _compute_reference(self):
-        self.reference_employee = "E" + str(self.id + 1)
-    
+  
     
     def _compute_project_asginado(self):
         for r in self:
