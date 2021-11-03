@@ -2,8 +2,11 @@
 # © 2020 Ingetive - <info@ingetive.com>
 
 import logging
+import base64
 
+from io import BytesIO
 from odoo import models, fields, api, _
+from odoo.tools.misc import str2bool, xlsxwriter, file_open
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -95,3 +98,45 @@ class MisReportInstance(models.Model):
             .with_context(context)
             .report_action(self, data=dict(dummy=True))  # required to propagate context
         )
+    
+    
+    def generar_adjunto_xls(self):
+        cuentas_analiticas_count = self.env['account.analytic.account'].search_count([])
+        if self.pag_inicio >= cuentas_analiticas_count:
+            return
+        
+        nombre_adjunto = 'mis_report_instance_%s.xlsx' % self.id
+        adjunto = self.env['ir.attachment'].search([
+            ('name', '=', nombre_adjunto),
+            ('res_model', '=', self._name),
+            ('res_id', '=', self.id)
+        ], limit=1)
+        
+        
+        file_data = BytesIO()
+        if self.pag_inicio and adjunto and adjunto.datas:
+            file_data = base64.b64decode(adjunto.datas)
+            
+        workbook = xlsxwriter.Workbook(file_data, {})
+        context = dict(self._context_with_filters(), context={'mis_report_filters': []})
+        self = self.with_context(context)
+        report = self.env["report.tetrace.mis_report_instance_xlsx_multi_tab"].with_context(context)
+        report.generate_xlsx_report(workbook, context, self, self.pag_inicio, self.pag_fin)
+        
+        if not adjunto or not self.pag_inicio:
+            workbook.close()
+            file_data.seek(0)
+            file_data.read()
+            file_data = file_data.getvalue()
+        
+        if adjunto:
+            adjunto.write({'datas': base64.b64encode(file_data)})
+        else:
+            self.env['ir.attachment'].create({
+                'name': nombre_adjunto,
+                'res_model': self._name,
+                'res_id': self.id,
+                'datas': base64.b64encode(file_data)
+            })
+        
+        self.write({'pag_inicio': self.pag_inicio + self.pag_fin})

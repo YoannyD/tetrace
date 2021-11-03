@@ -75,3 +75,4 @@ from . import tier_review
 from . import maintenance_equipment
 from . import product_public_category
 from . import tetrace_helpdesk_ticket
+from . import tetrace_talla_employee

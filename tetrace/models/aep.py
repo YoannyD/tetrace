@@ -48,8 +48,8 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
         # get exchange rates for each company with its rouding
         company_rates = {}
         # target_rate = self.currency.with_context(date=date).rate
-
-        for company in self.companies:
+        companies = self.env['res.company'].sudo().search([])
+        for company in companies:
             if company.currency_id != self.currency:
                 cr = self.currency._get_rates(company, date)
                 rate = 1.0
@@ -84,7 +84,9 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
         self._data = defaultdict(dict)
         domain_by_mode = {}
         ends = []
+        company_rates = {}
         for key in self._map_account_ids:
+            
             domain, mode = key
             if mode == self.MODE_END and self.smart_end:
                 # postpone computation of ending balance
@@ -95,24 +97,29 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
                     date_from, date_to, mode, target_move
                 )
                 
+
             domain = list(domain) + domain_by_mode[mode]
             domain.append(("account_id", "in", self._map_account_ids[key]))
             if additional_move_line_filter:
                 domain.extend(additional_move_line_filter)
             # fetch sum of debit/credit, grouped by account_id
-            
             accs = aml_model.with_context(lang="en_US").read_group(
                 domain,
                 ["debit", "credit", "account_id", "company_id", "date"],
                 ["account_id", "company_id", "date:day"],
                 lazy=False,
             )
-            
+
             for acc in accs:
                 fecha_rate = datetime.strptime(acc["date:day"], "%d %b %Y")
                 fecha_rate = fecha_rate if self._informe_fecha_contable else date_to
-                company_rates = self._get_company_rates(fecha_rate)
-                rate, dp = company_rates[acc["company_id"][0]]
+
+                key_rates = str(fecha_rate)
+                if key_rates not in company_rates:
+                    rates = self._get_company_rates(fecha_rate)
+                    company_rates.update({key_rates: rates})
+
+                rate, dp = company_rates[key_rates][acc["company_id"][0]]
                 debit = acc["debit"] or 0.0
                 credit = acc["credit"] or 0.0
                 if mode in (self.MODE_INITIAL, self.MODE_UNALLOCATED) and float_is_zero(
@@ -128,6 +135,7 @@ class AccountingExpressionProcessor(AccountingExpressionProcessor):
                 d = valores[0] + debit * rate
                 c = valores[1] + credit * rate
                 self._data[key][acc["account_id"][0]] = (d, c)
+                
         # compute ending balances by summing initial and variation
         for key in ends:
             domain, mode = key

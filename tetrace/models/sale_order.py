@@ -313,7 +313,7 @@ class SaleOrder(models.Model):
                 
         if 'company_id' in vals:
             self.actualizar_company_project()
-
+        
         return res
 
     def actualizar_company_project(self):
@@ -387,6 +387,10 @@ class SaleOrder(models.Model):
         for order in self:
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
+        
+        for r in self:
+            if r.project_ids:
+                r.actualizar_datos_proyecto()
         self.send_email_confirm()
         return res
 
@@ -485,7 +489,7 @@ class SaleOrder(models.Model):
             
             if line.product_id.service_tracking in ['task_in_project', 'task_global_project']:
                 line.with_context(tracking_disable=True)._timesheet_create_task_desde_diseno(project)
-                
+          
         self.actualizar_datos_proyecto()
         if not self.env.context.get("no_enviar_email_tareas_asignadas"):
             project.enviar_email_tareas_asignadas()

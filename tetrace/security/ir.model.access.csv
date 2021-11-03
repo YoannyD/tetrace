@@ -42,3 +42,5 @@ access_tetrace_habilidad_applicant,access_tetrace_habilidad_applicant,model_tetr
 access_tetrace_feedback_applicant,access_tetrace_feedback_applicant,model_tetrace_feedback_applicant,base.group_user,1,1,1,1
 access_tetrace_pcr,access_tetrace_pcr,model_tetrace_pcr,base.group_user,1,1,1,1
 access_tetrace_financiacion,access_tetrace_financiacion,model_tetrace_financiacion,base.group_user,1,1,1,1
+access_tetrace_talla_employee,access_tetrace_talla_employee,model_tetrace_talla_employee,base.group_user,1,1,1,1
+access_tetrace_talla_concepto,access_tetrace_talla_concepto,model_tetrace_talla_concepto,base.group_user,1,1,1,1

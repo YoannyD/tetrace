@@ -79,6 +79,17 @@
                     </field>
                 </page>
             </xpath>
+            <xpath expr="//notebook[1]" position="inside">
+                <page string="Tallas">
+                    <field name="talla_ids" string="" nolabel="1">
+                        <tree editable="bottom">
+                        <field name="concepto_id"/>
+                        <field name="talla"/>
+                    </tree>
+                    </field>
+
+                </page>
+            </xpath>
         </field>
     </record>
 
