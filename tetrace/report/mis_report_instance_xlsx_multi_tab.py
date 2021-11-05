@@ -26,12 +26,12 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
     _description = "MIS Builder XLSX report Multi Tab"
     _inherit = "report.report_xlsx.abstract"
     
-    def generate_xlsx_report(self, workbook, data, objects):
+    def generate_xlsx_report(self, workbook, data, objects, offset=0, limit=50):
         # create worksheet
         report_name = u"{} - {}".format(
             objects[0].name, u", ".join([a.name for a in objects[0].query_company_ids])
         )
-        
+
         grupo_cuentas = self.env['account.analytic.line.rel'].read_group([], ['analytic_account_id'], ['analytic_account_id'])
         
         cuentas = []
@@ -45,13 +45,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         if objects[0].tipo_proyecto_id:
             domain += [('project_ids.sale_order_id.tipo_proyecto_id', '=', objects[0].tipo_proyecto_id.id)]
         
-        offset = 0
-        limit = 9999999999
-        if objects[0].pag_fin:
-            offset = objects[0].pag_inicio
-            limit = objects[0].pag_fin
-        
-        analitycs = self.env['account.analytic.account'].search(domain, offset=offset, limit=limit)
+        analitycs = self.env['account.analytic.account'].search(domain, offset=offset, limit=limit, order="id asc")
         
         for analityc in analitycs:
             condition = {
@@ -63,7 +57,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
 
             self.env.context = dict(self.env.context, mis_report_filters=condition)
             data['context'].update({'mis_report_filters': condition})
-            self.tab_anlitica(workbook, data, objects, analityc)
+            creada = self.tab_anlitica(workbook, data, objects, analityc)
         
     def tab_anlitica(self, workbook, data, objects, analityc):
         # get the computed result of the report
@@ -82,6 +76,7 @@ class MisBuilderXlsxMultiTab(models.AbstractModel):
         if not hay_datos:
             return False
             
+        _logger.warning("Nueva pestaña")
         style_obj = self.env["mis.report.style"]
         
         nombre_pestana = "%s - %s" % (analityc.id, analityc.name)

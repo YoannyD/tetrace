@@ -37,6 +37,7 @@ class Employee(models.Model):
                                           compute="_compute_project_asginado")
     project_country_asignado_id = fields.Many2one('res.country', string="País del proyecto asignado",
                                                  compute="_compute_project_asginado")
+    talla_ids = fields.One2many("tetrace.talla_employee", "emp_id")
   
     @api.model
     def create(self, vals):

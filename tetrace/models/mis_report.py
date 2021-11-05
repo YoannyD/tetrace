@@ -12,11 +12,12 @@ _logger = logging.getLogger(__name__)
 
 class MisReport(models.Model):
     _inherit = 'mis.report'
+    
+    search_analityc_account_ids = fields.Many2many("account.analytic.account")
 
     mostrar_cuenta_consolidacion = fields.Boolean('Mostrar cuenta consolidación')
     
     def _prepare_aep(self, companies, currency=None, informe_fecha_contable=False):
-        self.ensure_one()
         aep = AEP(companies, currency, self.account_model, informe_fecha_contable)
         for kpi in self.all_kpi_ids:
             for expression in kpi.expression_ids:
@@ -26,7 +27,6 @@ class MisReport(models.Model):
         return aep
     
     def prepare_kpi_matrix(self, multi_company=False):
-        self.ensure_one()
         kpi_matrix = KpiMatrix(self.env, multi_company, self.account_model)
         kpi_matrix.mostrar_cuenta_consolidacion = self.mostrar_cuenta_consolidacion
         for kpi in self.kpi_ids:
