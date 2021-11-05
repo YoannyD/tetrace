@@ -38,6 +38,8 @@ class MisReportInstance(models.Model):
                                        context='{"display_tipo": True}')
     pag_inicio = fields.Integer("Desde (paginación)")
     pag_fin = fields.Integer("Hasta (paginación)")
+    attachment_report_excel_id = fields.Many2one("ir.attachment", string="Informe Excel", 
+                                                 compute="_compute_attachment_report_excel")
 
     @api.constrains('filtro_estructurales', 'tipo_proyecto_id')
     def _check_filtro_estructurales(self):
@@ -64,7 +66,16 @@ class MisReportInstance(models.Model):
                 "value": self.tipo_proyecto_id.id,
                 "operator": "=",
             }
-            
+         
+    def _compute_attachment_report_excel(self):
+        for r in self:
+            attach = self.env['ir.attachment'].search([
+                ('res_model', '=', r._name),
+                ('res_id', '=', r.id),
+                ('name', '=', "mis_report_instance_%s.xlsx" % r.id)
+            ], limit=1)
+            r.attachment_report_excel_id = attach.id if attach else None
+        
     def _compute_matrix(self):
         aep = self.report_id._prepare_aep(self.query_company_ids, self.currency_id, self.informe_fecha_contable)
         kpi_matrix = self.report_id.prepare_kpi_matrix(self.multi_company)
