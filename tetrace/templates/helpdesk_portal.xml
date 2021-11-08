@@ -2,69 +2,76 @@
 <odoo>
     <template inherit_id="helpdesk.tickets_followup" id="tickets_followup">
         <xpath expr="//t[@t-set='o_portal_fullwidth_alert']" position="replace"/>
-        <xpath expr="//t[@t-set='card_body']/div[1]" position="after">
-            <div class="row mb-4">
-                <strong class="col-lg-2">Tipo</strong>
-                <span class="col-lg-10" t-field="ticket.ticket_type_id"/>
-            </div>
-            <div class="row mb-4">
-                <strong class="col-lg-2">Categoría</strong>
-                <span class="col-lg-10" t-field="ticket.tag_ids"/>
-            </div>
-            <div class="row mb-4">
-                <strong class="col-lg-2">Enlace</strong>
-                <span class="col-lg-10" t-field="ticket.enlace"/>
-            </div>
-            <div class="row mb-4">
-                <strong class="col-lg-2">Bloqueado</strong>
-                <span class="col-lg-10" t-field="ticket.bloqueado"/>
-            </div>
-            <div class="row mb-4">
-                <strong class="col-lg-2">Fecha user</strong>
-                <span class="col-lg-10" t-field="ticket.fecha_limite"/>
-            </div>
-        </xpath>
-        <xpath expr="//t[@t-set='card_body']/div[10]" position="after">
-            <div class="row mb-4">
-                <strong class="col-lg-2">Prioridad</strong>
-                <span class="col-lg-10" t-field="ticket.priority" widget="priority"/>
-            </div>   
-            <div class="row mb-4">
-                <strong class="col-lg-2">Fecha previsto</strong>
-                <span class="col-lg-10" t-field="ticket.fecha_previsto"/>
-            </div>
-            <div class="row mb-4">
-                <strong class="col-lg-2">Fecha resuelto</strong>
-                <span class="col-lg-10" t-field="ticket.fecha_resuelto"/>
-            </div>
-        </xpath>
-        
-        <xpath expr="//t[@t-call='portal.portal_record_layout']" position="after">
-           <div t-if="ticket.team_id.allow_portal_ticket_closing and not ticket.stage_id.is_close and not ticket.closed_by_partner" class="modal" tabindex="-1" role="dialog" id="helpdesk_ticket_close_modal">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Confirmar/denegar ticket</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">&amp;times;</button>
+        <xpath expr="//t[@t-set='card_body']" position="replace">
+            <t t-set="card_body">
+                <div class="row mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="row mb-4">
+                            <strong class="col-3">Reported on</strong>
+                            <span class="col-9" t-field="ticket.create_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
                         </div>
-                        <div class="modal-body">
-                            <p>Confirma estado de la resolución?</p>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Tipo</strong>
+                            <span class="col-9" t-field="ticket.ticket_type_id"/>
                         </div>
-                        <div class="modal-footer">
-                            <a role="button" class="btn btn-primary" t-att-href="'/my/ticket/close/%s/%s' % (ticket.id, ticket.access_token)">Close the ticket</a>
-                            <a role="button" class="btn btn-primary" t-att-href="'/my/ticket/close/%s/%s' % (ticket.id, ticket.access_token)">Reabrir ticket</a>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Categoría</strong>
+                            <span class="col-9" t-field="ticket.tag_ids"/>
+                        </div>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Enlace</strong>
+                            <span class="col-9" t-field="ticket.enlace"/>
+                        </div>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Bloqueado</strong>
+                            <span class="col-9" t-field="ticket.bloqueado"/>
+                        </div>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Fecha user</strong>
+                            <span class="col-9" t-field="ticket.fecha_limite"/>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <div class="row mb-4">
+                            <strong class="col-3">Prioridad</strong>
+                            <span class="col-9" t-field="ticket.priority" widget="priority"/>
+                        </div>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Fecha previsto</strong>
+                            <span class="col-9" t-field="ticket.fecha_previsto"/>
+                        </div>
+
+                        <div class="row mb-4">
+                            <strong class="col-3">Fecha resuelto</strong>
+                            <span class="col-9" t-field="ticket.fecha_resuelto"/>
+                        </div>
+                        
+                        <div class="row mb-4">
+                            <strong class="col-3">Fecha validado</strong>
+                            <span class="col-9" t-field="ticket.fecha_validado"/>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div t-if="ticket.team_id.allow_portal_ticket_closing and not ticket.stage_id.is_close and not ticket.closed_by_partner" class="text-center mt-5">
-                <button class="btn btn-primary mb-1 pt-1" data-target="#helpdesk_ticket_close_modal" data-toggle="modal"><small><b>Confirmar/denegar ticket
-                    </b></small></button>
-                <p><small>
-                    If the issue has been solved, you can close the request.
-                </small></p>
-            </div>
+                
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="row mb-4">
+                            <strong class="col-2">Description</strong>
+                            <div t-if="ticket.description" class="col-10" t-field="ticket.description"/>
+                            <div t-else="" class="col-10">
+                                <em class="text-muted"><small>No description</small></em>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
         </xpath>
     </template>
 </odoo>
