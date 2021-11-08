@@ -50,7 +50,6 @@ class HelpdeskTicket(models.Model):
                 'current_user_manager': manager,
             })
     
-    
     @api.depends("fecha_validado")
     def _compute_dias_totales(self):
         for r in self:
@@ -113,3 +112,10 @@ class HelpdeskTicket(models.Model):
                     })
                 elif r.stage_id.resuelto:
                     r.write({'fecha_resuelto': fields.Date.today()})
+                    
+    def _track_template(self, changes):
+        res = super(HelpdeskTicket, self)._track_template(changes)
+        ticket = self[0]
+        if 'stage_id' in changes and ticket.stage_id.template_id:
+            ticket.stage_id.template_id.sudo().send_mail(ticket.id, force_send=True)
+        return res
