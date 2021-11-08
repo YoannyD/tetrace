@@ -13,3 +13,4 @@ class HelpdeskStage(models.Model):
     
     validado = fields.Boolean("Validado")
     resuelto = fields.Boolean("Resuelto")
+    es_reabrir = fields.Boolean("Etapa de reabrir")
