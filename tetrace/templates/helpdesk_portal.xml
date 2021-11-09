@@ -40,7 +40,15 @@
                     <div class="col-12 col-md-6">
                         <div class="row mb-4">
                             <strong class="col-3">Prioridad</strong>
-                            <span class="col-9" t-field="ticket.priority" widget="priority"/>
+                            <div class="col-9">
+                                <div role="radiogroup" class="o_priority o_field_widget" name="priority" aria-label="Prioridad">
+                                    <span role="radio" title="Prioridad baja" aria-label="Prioridad baja" t-att-class="'o_priority_star fa fa-star' if ticket.priority and int(ticket.priority) &gt;= 1 else 'o_priority_star fa fa-star-o'"/>
+                                    <span role="radio" title="Alta prioridad" aria-label="Alta prioridad" t-att-class="'o_priority_star fa fa-star' if ticket.priority and int(ticket.priority) &gt;= 2 else 'o_priority_star fa fa-star-o'"/>
+                                    <span role="radio" title="Urgente" aria-label="Urgente" t-att-class="'o_priority_star fa fa-star' if ticket.priority and int(ticket.priority) &gt;= 3 else 'o_priority_star fa fa-star-o'"/>
+                                    <span role="radio" title="Muy urgente" t-att-class="'o_priority_star fa fa-star' if ticket.priority and int(ticket.priority) &gt;= 4 else 'o_priority_star fa fa-star-o'"/>
+                                    <span role="radio" title="Prioritario" aria-label="Prioritario" t-att-class="'o_priority_star fa fa-star' if ticket.priority and int(ticket.priority) &gt;= 5 else 'o_priority_star fa fa-star-o'"/>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row mb-4">
