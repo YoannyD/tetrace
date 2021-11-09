@@ -86,7 +86,7 @@
             </xpath>
           <xpath expr="//field[@name='priority']" position="attributes">
                 <attribute name="optional">show</attribute>
-                <field name="priority" widget="priority"/>
+              <attribute name="widget">priority</attribute>
           </xpath>
           <xpath expr="//field[@name='company_id']" position="attributes">
             <attribute name="optional">hide</attribute>
