@@ -5,9 +5,24 @@
         <field name="model">helpdesk.stage</field>
         <field name="inherit_id" ref="helpdesk.helpdesk_stage_view_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_close']" position="after">
+                <field name="es_reabrir"/>
+            </xpath>
+            
             <xpath expr="//field[@name='fold']" position="after">
                 <field name="validado"/>
                 <field name="resuelto"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="helpdesk_stage_view_tree" model="ir.ui.view">
+        <field name="name">helpdesk.stages.tree.tetrace</field>
+        <field name="model">helpdesk.stage</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_stage_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_close']" position="after">
+                <field name="es_reabrir"/>
             </xpath>
         </field>
     </record>

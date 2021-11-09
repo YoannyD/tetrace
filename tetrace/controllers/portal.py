@@ -252,3 +252,25 @@ class TetracePortal(CustomerPortal):
             'filterby': filterby,
         })
         return request.render("tetrace.portal_my_documents", values)
+    
+    @http.route([
+        '/my/ticket/reabrir/<int:ticket_id>',
+        '/my/ticket/reabrir/<int:ticket_id>/<access_token>',
+    ], type='http', auth="public", website=True)
+    def ticket_close(self, ticket_id=None, access_token=None, **kw):
+        try:
+            ticket_sudo = self._document_check_access('helpdesk.ticket', ticket_id, access_token)
+        except (AccessError, MissingError):
+            return request.redirect('/my')
+
+        if not ticket_sudo.team_id.allow_portal_ticket_closing:
+            raise UserError(_("The team does not allow ticket closing through portal"))
+
+        reabrir_stage = ticket_sudo.team_id._get_reabrir_stage()
+        if ticket_sudo.stage_id != reabrir_stage:
+            ticket_sudo.write({'stage_id': reabrir_stage[0].id})
+
+        body = _('Ticket reabierto por el cliente.')
+        ticket_sudo.with_context(mail_create_nosubscribe=True).message_post(body=body, message_type='comment', subtype='mt_note')
+
+        return request.redirect('/my/ticket/%s/%s' % (ticket_id, access_token or ''))
