@@ -135,7 +135,7 @@ class ProjectTask(models.Model):
 
     def crear_mensaje_cambio_fecha_limite(self):
         for r in self:
-            body = _("La <strong>fecha límite</strong> ha sido cambiada por el %s" % r.date_deadline.strftime("%d/%m/%Y"))
+            body = _("La <strong>fecha límite</strong> ha sido cambiada por el %s" % r.date_deadline.strftime("%d/%m/%Y") if r.date_deadline else "")
             r.message_post(body=body, subject="Fecha límita cambiada", subtype_id=self.env.ref('mail.mt_comment').id)
     
     def actualizar_tareas_individuales(self):

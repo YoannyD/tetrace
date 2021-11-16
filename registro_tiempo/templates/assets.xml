@@ -2,11 +2,13 @@
 <odoo>
     <template id="assets_frontend" inherit_id="website.assets_frontend">
         <xpath expr="//script[last()]" position="after">
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"/>
+<!--             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"/> -->
+            
             <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.4.4/cldr.min.js"/>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.4.4/cldr/event.min.js"/>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.4.4/cldr/supplemental.min.js"/>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/cldrjs/0.4.4/cldr/unresolved.min.js"/>
+            
             <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.1.1/globalize.min.js"/>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.1.1/globalize/message.min.js"/>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/globalize/1.1.1/globalize/number.min.js"/>

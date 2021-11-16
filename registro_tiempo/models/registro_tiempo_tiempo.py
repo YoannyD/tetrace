@@ -50,6 +50,7 @@ class RegistroTiempo(models.Model):
     tipo = fields.Selection(TIPOS, string="Tipo")
     unidades_realizadas = fields.Integer("Unidades realizadas")
     observaciones = fields.Text("Observaciones")
+    tareas = fields.Text("Tareas")
     tiempo_parada_ids = fields.One2many("registro_tiempo.tiempo_parada", "tiempo_id")
     horas_trabajadas = fields.Float("Horas trabajadas", compute='_compute_horas_trabajadas', store=True, readonly=True)
     horas_extra = fields.Float('Horas extras')
@@ -203,7 +204,6 @@ class RegistroTiempo(models.Model):
         return 0
 
     def get_data_api(self):
-        self.ensure_one()
         tipo = ""
         if self.tipo:
             tipo = dict(self._fields['tipo'].selection).get(self.tipo)
@@ -240,6 +240,8 @@ class RegistroTiempo(models.Model):
             'horas_trabajadas': self.horas_trabajadas or 0,
             'horas_extra': self.horas_extra or 0,
             'horas_extra_cliente': self.horas_extra_cliente or 0,
+            'tareas': self.tareas,
+            'observaciones': self.observaciones,
         }
         return data
 

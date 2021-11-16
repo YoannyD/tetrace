@@ -91,6 +91,12 @@
                                             <div id="unidades_realizadas_dx"/>
                                         </div>
                                     </div>
+                                     <div class="dx-field">
+                                        <div class="dx-field-label">Tareas</div>
+                                        <div class="dx-field-value">
+                                            <div id="tareas_dx"/>
+                                        </div>
+                                    </div>
                                     <div class="dx-field">
                                         <div class="dx-field-label">Observaciones</div>
                                         <div class="dx-field-value">
@@ -111,6 +117,114 @@
                 <div class="row mt-4">
                     <div class="col-12">
                         <div id="grid-registro"/>
+                    </div>
+                </div>
+            </div>
+
+            <div t-if="not employee" class="container mb-5">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                            No es un empleado.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    
+    <template id="ficha_parte_horas">
+        <t t-call="portal.frontend_layout">
+            <div t-if="employee" id="o_page_ficha_registro_hora" class="container mb-5">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <script>
+                            var tipoParadaSource = [
+                                <t t-foreach="tipos_parada" t-as="tipo">
+                                    {
+                                        "id": <t t-esc="tipo.id"/>,
+                                        "name": '<t t-esc="tipo.name"/>',
+                                    },
+                                </t>
+                            ];
+                        </script>
+                        <form id="form-registro-horas" style="max-width:600px;margin:0 auto;">
+                            <div class="dx-fieldset">
+                                 <div class="dx-field mb-2 dx-field-project_id">
+                                    <div class="dx-field-label">Proyecto</div>
+                                    <div class="dx-field-value">
+                                        <div id="project_id_dx"/>
+                                    </div>
+                                 </div>
+                                 <div class="form_fields">
+                                    <div class="dx-field mb-2">
+                                        <div class="dx-field-label">Tipo</div>
+                                        <div class="dx-field-value">
+                                            <div id="tipo_dx"/>
+                                        </div>
+                                    </div>
+                                     <div class="dx-field mb-2">
+                                        <div class="dx-field-label">Covid</div>
+                                        <div class="dx-field-value">
+                                            <div id="covid_dx" style="float:left;"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-fecha_entrada mb-2">
+                                        <div class="dx-field-label">Fecha entrada</div>
+                                        <div class="dx-field-value">
+                                            <div id="fecha_entrada_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-hora_entrada mb-2">
+                                        <div class="dx-field-label">Hora entrada</div>
+                                        <div class="dx-field-value">
+                                            <div id="hora_entrada_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-fecha_salida mb-2">
+                                        <div class="dx-field-label">Fecha salida</div>
+                                        <div class="dx-field-value">
+                                            <div id="fecha_salida_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-hora_salida mb-2">
+                                        <div class="dx-field-label">Hora salida</div>
+                                        <div class="dx-field-value">
+                                            <div id="hora_salida_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-paradas mb-2">
+                                        <div class="dx-field-label">Paradas</div>
+                                        <div class="dx-field-value">
+                                            <div id="paradas_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field dx-field-unidades_realizadas mb-2">
+                                        <div class="dx-field-label">Unidades realizadas</div>
+                                        <div class="dx-field-value">
+                                            <div id="unidades_realizadas_dx"/>
+                                        </div>
+                                    </div>
+                                     <div class="dx-field">
+                                        <div class="dx-field-label">Tareas</div>
+                                        <div class="dx-field-value">
+                                            <div id="tareas_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="dx-field">
+                                        <div class="dx-field-label">Observaciones</div>
+                                        <div class="dx-field-value">
+                                            <div id="observaciones_dx"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <div id="summary"/>
+                                        <div id="btn_enviar_dx" style="margin-right:25px;"/>
+                                        <div id="btn_limpiar_dx"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

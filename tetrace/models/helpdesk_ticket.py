@@ -11,9 +11,9 @@ _logger = logging.getLogger(__name__)
 class HelpdeskTicket(models.Model):
     _inherit = "helpdesk.ticket"
     
-    enlace = fields.Char("Enlace")
-    bloqueado = fields.Boolean("Bloqueado")
-    fecha_limite = fields.Date("Fecha user")
+    enlace = fields.Char("Enlace", help="Enlace web de Odoo u otra pagina donde este el ticket")
+    bloqueado = fields.Boolean("Bloqueado", help="Estas bloqueado para realizar la tarea y trabajar")
+    fecha_limite = fields.Date("Fecha user", help="Fecha límite para realizar tarea")
     confirmado = fields.Boolean("Confirmado por usuario", readonly=True)
     project_id = fields.Many2one("project.project", string="Proyecto")
     fecha_resuelto = fields.Date("Fecha resuelto", readonly=True)
@@ -28,7 +28,7 @@ class HelpdeskTicket(models.Model):
     departamento = fields.Char(string="Departamento" , related="solicitante.employee_ids.department_id.display_name")
     dias_comprobacion = fields.Integer("Días comprobacion", compute="_compute_dias_comprabacion")
     priority = fields.Selection(selection_add=[('4', 'Muy urgente'), ('5', 'Prioritario')])
-    current_user_id = fields.Many2one("res.user", string="Usuario actual", 
+    current_user_id = fields.Many2one("res.users", string="Usuario actual", 
                                       compute="_compute_current_user")
     current_user_user = fields.Boolean("Usuario actual permiso usuario",
                                       compute="_compute_current_user")

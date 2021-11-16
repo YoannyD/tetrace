@@ -49,9 +49,9 @@ class Project(models.Model):
     partner_geo_id = fields.Many2one("res.partner", string="Geolocalización")
     url_proyecto = fields.Char("URL proyecto", translate=True)
     maps = fields.Char("Maps")
-    fecha_inicio = fields.Date("Fecha inicio")
-    fecha_cancelacion = fields.Date("Fecha cancelación")
-    fecha_finalizacion = fields.Date("Fecha finalización")
+    fecha_inicio = fields.Date("Fecha inicio", track_visibility='onchange')
+    fecha_cancelacion = fields.Date("Fecha cancelación", track_visibility='onchange')
+    fecha_finalizacion = fields.Date("Fecha finalización", track_visibility='onchange')
     motivo_cancelacion_id = fields.Many2one('tetrace.motivo_cancelacion', string="Motivo cancelación")
     empresa_destino_nombre = fields.Char("Nombre empresa destino")
     cif_destino_nombre = fields.Char("CIF empresa destino")
@@ -59,12 +59,12 @@ class Project(models.Model):
     nombre_parque = fields.Char("Nombre parque")
     partner_ids = fields.Many2many("res.partner", string="Contactos")
     tecnico_calendario_ids = fields.One2many('tetrace.tecnico_calendario', 'project_id')
-    tecnico_ids = fields.Many2many("hr.employee", compute="_compute_tecnico_ids", store=True, string="Técnicos")
+    tecnico_ids = fields.Many2many("hr.employee", compute="_compute_tecnico_ids", store=True, string="Técnicos", track_visibility='onchange')
     visible_btn_crear_tareas_faltantes = fields.Boolean("Visible botón crear tareas faltantes", store=True,
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
-    experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id')
+    experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id', track_visibility='onchange')
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
-    proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id')
+    proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id', track_visibility='onchange')
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
     document_project_count = fields.Integer('Documentos', compute="_compute_document_project")
@@ -191,6 +191,15 @@ class Project(models.Model):
         if 'fecha_inicio' in vals:
             projects_activacion.enviar_email_estado_proyecto('activacion')
             projects_modificacion.enviar_email_estado_proyecto('modificacion')
+            for task in projects_activacion.tasks.filtered(lambda x: not x.tarea_individual):
+                date_deadline = fields.Date.from_string(task.project_id.fecha_inicio) + timedelta(days=task.deadline)
+                task.write({'date_deadline': date_deadline})
+            
+        if vals.get('fecha_finalizacion'):
+            for r in self:
+                for task in r.tasks.filtered(lambda x: not x.tarea_individual):
+                    date_deadline = fields.Date.from_string(task.project_id.fecha_finalizacion) + timedelta(days=task.deadline)
+                    task.write({'date_deadline': date_deadline})
             
         if vals.get('fecha_cancelacion') or vals.get('fecha_finalizacion'):
             self.enviar_email_estado_proyecto('desactivacion')
