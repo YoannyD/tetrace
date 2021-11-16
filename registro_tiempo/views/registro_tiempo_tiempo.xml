@@ -35,6 +35,7 @@
                             <field name="tipo" required="1"/>
                             <field name="unidades_realizadas"/>
                             <field name="observaciones"/>
+                            <field name="tareas"/>
                             <field name="entregado"/>
                             <field name="validacion"/>
                             <field name="validacion_observaciones"/>

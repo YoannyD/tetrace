@@ -249,6 +249,10 @@
                     </field>
                 </page>
             </xpath>
+            
+            <xpath expr="//field[@name='message_follower_ids']" position="after">
+                <field name="message_ids" widget="mail_thread"/>
+            </xpath>
         </field>
     </record>
 

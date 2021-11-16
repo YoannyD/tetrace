@@ -23,3 +23,17 @@ class RegistroHoras(CustomerPortal):
             'tipos_parada': tipos_parada
         }
         return request.render("registro_tiempo.home_parte_horas", values)
+    
+    @http.route('/my/timesheet/<int:tiempo_id>', type='http', auth="user", website=True)
+    def ficha_parte_horas(self, tiempo_id, **kwargs):
+        tiempo = request.env['registro_tiempo.tiempo'].sudo().browse(tiempo_id)
+        projects = request.env['project.project'].sudo().search([])
+        tipos_parada = request.env["registro_tiempo.tipo_parada"].sudo().search([])
+        employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
+        values = {
+            'employee': employee,
+            'projects': projects,
+            'tipos_parada': tipos_parada,
+            'tiempo': tiempo
+        }
+        return request.render("registro_tiempo.ficha_parte_horas", values)

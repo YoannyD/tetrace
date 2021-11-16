@@ -81,6 +81,12 @@ class RegistroTiempoAPI(http.Controller):
         for tipo in tipos:
             data.append(tipo.get_data_api())
         return json.dumps(data)
+    
+    @http.route('/api/time-data/<int:tiempo_id>', type='json', auth="user", website=True)
+    def datos_tiempo(self, tiempo_id, **kw):
+        tiempo = request.env["registro_tiempo.tiempo"].sudo().browse(tiempo_id)
+        data = tiempo.get_data_api()
+        return json.dumps(data)
 
     @http.route('/api/attendance/start', type='json', auth="user", website=True)
     def attendance_start(self, latitud=False, longitud=False, **kw):
@@ -211,6 +217,7 @@ class RegistroTiempoAPI(http.Controller):
             "fecha_salida": fecha_salida,
             "hora_salida": hora_salida,
             "observaciones": kw.get("observaciones"),
+            "tareas": kw.get("tareas"),
             "covid": kw.get("covid")
         }
 

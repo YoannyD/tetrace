@@ -22,6 +22,378 @@ $(function() {
     function get_position(position){
         current_position = position;
     }
+    
+    function project_data_source(){
+        var projectDataSource = new DevExpress.data.CustomStore({
+            key: "id",
+            load: function(loadOptions) {
+                var params = {
+                    "offset": loadOptions.skip,
+                    "limit": loadOptions.take,
+                }
+
+                if(loadOptions.searchValue){
+                    params["search"] = loadOptions.searchValue;
+                }
+
+                return sendRequest("/api/projects", params);
+            },
+        });
+        return projectDataSource;
+    }
+    
+    function project_id_load(projectDataSource, value){
+        if(typeof value == 'undefined') value = "";
+        console.log(value);
+        var selectBox = $("#project_id_dx").dxSelectBox({
+            dataSource: projectDataSource,
+            displayExpr: "name",
+            valueExpr: "id",
+            searchEnabled: true,
+            onValueChanged: function(data) {
+//                 grid_resgistro_dx.refresh();
+//                 if(fecha_entrada_dx.option("value") == null){
+//                     fecha_entrada_dx.option("value", new Date());
+//                 }
+//                 if(data.value){
+//                     $(".form_fields").show();
+//                 }else{
+//                     $(".form_fields").hide();
+//                 }
+            }
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "El proyecto es obligatorio."
+            }]
+        }).dxSelectBox("instance");
+        
+//         if(value){
+//             selectBox.option('value', '760'); 
+//         }
+        
+        return selectBox;
+    }
+    
+    function tipo_load(value){
+        if(typeof value == 'undefined') value = "Parte";
+        return $("#tipo_dx").dxRadioGroup({
+            layout: "horizontal",
+            items: ["Parte", "MOB", "DEMOB"],
+            value: value,
+            onValueChanged: function(data) {
+                if(data.value != 'Parte'){
+                    $(".dx-field-fecha_entrada .dx-field-label").html("Fecha entrada");
+                    $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
+                    $(".dx-field-fecha_salida .dx-field-label").html("Fecha salida");
+                    $(".dx-field-hora_entrada .dx-field-label").html("Hora entrada");
+                    $(".dx-field-paradas").hide();
+                    $(".dx-field-unidades_realizadas").hide();
+                }else{
+                    fecha_entrada_dx.option("onValueChanged");
+                    $(".dx-field-paradas").show();
+                    $(".dx-field-unidades_realizadas").show();
+                }
+            }
+        }).dxRadioGroup("instance");
+    }
+    
+    function covid_load(value){
+        if(typeof value == 'undefined') value = false;
+        return $("#covid_dx").dxCheckBox({
+            value: value
+        }).dxCheckBox("instance");
+    }
+    
+    var today = new Date();
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    function fecha_entrada_dx(){
+        return $("#fecha_entrada_dx").dxDateBox({
+            type: "date",
+            displayFormat: "dd/MM/yyyy",
+            max: tomorrow,
+            pickerType: "rollers",
+            onValueChanged: function(data) {
+                var fecha = new Date(data.value);
+                fecha_salida_dx.option("value", fecha);
+                var fecha_str = date_to_string(fecha);
+                var project_id = project_id_dx.option("value");
+                var tipo = tipo_dx.option("value");
+
+                var label = "Fecha entrada";
+                if(tipo != 'Parte'){
+                    $(".dx-field-fecha_entrada .dx-field-label").html(label);
+                    return;
+                }
+
+                if(!data.value || data.value == undefined || !project_id || project_id == undefined){
+                    DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
+                    return;
+                }
+
+                var params = {
+                    'project_id': project_id,
+                    'fecha': fecha_str
+                }
+
+                ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    fecha.setHours(data["desde_hora"], data["desde_min"]);
+                    hora_entrada_dx.option("value", fecha);
+                });
+
+                ajax.jsonRpc("/api/festivo", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    if(data["festivo"]){
+                        label += ' <span class="badge badge-danger">Festivo</span>';
+                    }
+                    $(".dx-field-fecha_entrada .dx-field-label").html(label);
+                });
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de entrada es obligatoria."
+            }]
+        }).dxDateBox("instance");
+    }
+    
+    function hora_entrada_dx(){
+        return $("#hora_entrada_dx").dxDateBox({
+            type: "time",
+            displayFormat: "HH:mm",
+            pickerType: "rollers",
+            onValueChanged: function(data) {
+                var f = new Date(data.value);
+                var label = "Hora entrada";
+                if(es_hora_nocturna(f.getHours())){
+                    label += ' <span class="badge badge-dark">Nocturno</span>';
+                }
+                $(".dx-field-hora_entrada .dx-field-label").html(label);
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de entrada es obligatoria."
+            }]
+        }).dxDateBox("instance");
+    }
+    
+    function fecha_salida_dx(){
+        return $("#fecha_salida_dx").dxDateBox({
+            type: "date",
+            displayFormat: "dd/MM/yyyy",
+            max: tomorrow,
+            pickerType: "rollers",
+            onValueChanged: function(data) {
+                var label = "Fecha salida";
+                var fecha = new Date(data.value);
+                var fecha_str = date_to_string(fecha);
+                var project_id = project_id_dx.option("value");
+                var tipo = tipo_dx.option("value");
+
+                if(!data.value || data.value == undefined || !project_id || project_id == undefined){
+                    DevExpress.ui.notify("Tiene que seleccionar un proyecto.", "error");
+                    return;
+                }
+
+                var params = {
+                    'project_id': project_id,
+                    'fecha': fecha_str
+                }
+
+                ajax.jsonRpc("/api/calendario/hora_dia_semana", 'call', params)
+                .then(function(result) {
+                    var data = $.parseJSON(result);
+                    fecha.setHours(data["hasta_hora"], data["hasta_min"]);
+                    hora_salida_dx.option("value", fecha);
+                });
+            },
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La fecha de salida es obligatoria."
+            }]
+        }).dxDateBox("instance");
+    }
+    
+    function hora_salida_dx(){
+        return $("#hora_salida_dx").dxDateBox({
+            type: "time",
+            displayFormat: "HH:mm",
+            pickerType: "rollers",
+        }).dxValidator({
+            validationRules: [{
+                type: "required",
+                message: "La hora de salida es obligatoria."
+            }]
+        }).dxDateBox("instance");
+    }
+    
+    function paradas_dx(tipoParadaSource){
+        return $("#paradas_dx").dxDataGrid({
+            dataSource: [],
+            onInitNewRow: function (e) {
+                e.data.fecha_entrada = fecha_entrada_dx.option("value");
+                e.data.fecha_salida = fecha_entrada_dx.option("value");
+            },
+            editing: {
+                mode: "cell",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true,
+                useIcons: true
+            },
+            columns: [
+                {
+                    caption: "Tipo parada",
+                    dataField: "tipo_parada_id",
+                    lookup: {
+                        dataSource: tipoParadaSource,
+                        displayExpr: "name",
+                        valueExpr: "id"
+                    },
+                    validationRules: [{
+                        type: "required",
+                        message: "El tipo de parada es obligatorio."
+                    }]
+                },
+                {
+                    caption: "Entrada",
+                    dataField: "fecha_entrada",
+                    dataType: "datetime",
+                },
+                {
+                    caption: "Salida",
+                    dataField: "fecha_salida",
+                    dataType: "datetime",
+                },
+            ],
+        }).dxDataGrid("instance");
+    }
+    
+    function unidades_realizadas_load(value){
+        if(typeof value == 'undefined') value = "";
+        $("#unidades_realizadas_dx").dxNumberBox({
+            showSpinButtons: true,
+            width: "100%",
+            value: value,
+        }).dxNumberBox("instance");
+    }
+    
+    function observaciones_load(value){
+        if(typeof value == 'undefined') value = "";
+        
+        return $("#observaciones_dx").dxTextArea({
+            height: 90,
+            width: "100%",
+            value: value,
+        }).dxTextArea("instance");
+    }
+    
+    function tareas_dx(){
+        return $("#tareas_dx").dxTextArea({
+            height: 90,
+            width: "100%"
+        }).dxTextArea("instance");
+    }
+    
+    if($("#o_page_ficha_registro_hora").length){
+        var observaciones_dx;
+        var project_id_dx;
+        var projectDataSource = project_data_source();
+        var unidades_realizadas_dx;
+        var tipo_dx;
+        var covid_dx;
+        
+        ajax.jsonRpc("/api/time-data/80", 'call', {})
+        .then(function(result) {
+            var data = $.parseJSON(result);
+            console.log(data);
+            
+            project_id_dx = project_id_load(projectDataSource, data.project_id);
+            tipo_dx = tipo_load(data.tipo);
+            covid_dx = covid_load(data.covid);
+            observaciones_dx = observaciones_load(data.observaciones);
+            unidades_realizadas_dx = unidades_realizadas_load(data.unidades_realizadas);
+        });
+        
+        var covid_dx = covid_dx();
+        var fecha_entrada_dx = fecha_entrada_dx();
+        var hora_entrada_dx = hora_entrada_dx();
+        var fecha_salida_dx = fecha_salida_dx();
+        var hora_salida_dx = hora_salida_dx();
+        var paradas_dx = paradas_dx(tipoParadaSource);
+        
+        var tareas_dx = tareas_dx();
+
+        var btn_enviar_dx = $("#btn_enviar_dx").dxButton({
+            stylingMode: "contained",
+            text: "Enviar",
+            type: "success",
+            useSubmitBehavior: true,
+        }).dxButton("instance");
+
+        var btn_limpiar_dx = $("#btn_limpiar_dx").dxButton({
+            stylingMode: "contained",
+            text: "Limpiar",
+            type: "normal",
+            onClick: function() {
+                project_id_dx.option("value", null);
+                tipo_dx.option("value", "Parte");
+                paradas_dx.option("dataSource", []);
+                unidades_realizadas_dx.reset();
+                observaciones_dx.reset();
+                tareas_dx.reset();
+            }
+        }).dxButton("instance");
+
+        $("#form-registro-horas").on("submit", function(e) {
+            e.preventDefault();
+            var hora_entrada = hora_entrada_dx.option("value");
+            var hora_salida = hora_salida_dx.option("value");
+            
+            var params = {
+                'project_id': project_id_dx.option("value"),
+                'fecha_entrada': date_to_string(fecha_entrada_dx.option("value")),
+                'hora_entrada': hora_entrada.getHours() + ":" + hora_entrada.getMinutes(),
+                'fecha_salida': date_to_string(fecha_salida_dx.option("value")),
+                'hora_salida': hora_salida.getHours() + ":" + hora_salida.getMinutes(),
+                'tipo': tipo_dx.option("value"),
+                'paradas': paradas_dx.option('dataSource'),
+                'unidades_realizadas': unidades_realizadas_dx.option("value"),
+                'observaciones': observaciones_dx.option("value"),
+                'tareas': tareas_dx.option("value"),
+                'covid': covid_dx.option("value"),
+            };
+
+            ajax.jsonRpc("/api/time/register", 'call', params)
+            .then(function(result) {
+                var data = $.parseJSON(result);
+                if(data["result"] == "ok"){
+                    DevExpress.ui.notify("Ha registrado el tiempo correctamente");
+                    fecha_entrada_dx.option("value", date_to_string(fecha_entrada_dx.option("value"), 1));
+
+                    var paradas = paradas_dx.option('dataSource');
+                    if(paradas != undefined){
+                        $.each(paradas, function( index, value ) {
+                            paradas[index]["fecha_entrada"] =  date_to_string(value["fecha_entrada"], 1);
+                            paradas[index]["fecha_salida"] = date_to_string(value["fecha_salida"], 1);
+                        });
+                        paradas_dx.option('dataSource', paradas);
+                    }
+
+                    grid_resgistro_dx.refresh();
+                }else{
+                    DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
+                }
+            });
+        });
+    }
 
     if($("#o_page_registro_horas").length){
         initGeolocation();
@@ -122,10 +494,11 @@ $(function() {
         var covid_dx = $("#covid_dx").dxCheckBox({
             value: false
         }).dxCheckBox("instance");
-
+        
         var fecha_entrada_dx = $("#fecha_entrada_dx").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
+            max: new Date(),
             pickerType: "rollers",
             onValueChanged: function(data) {
                 var fecha = new Date(data.value);
@@ -195,6 +568,7 @@ $(function() {
         var fecha_salida_dx = $("#fecha_salida_dx").dxDateBox({
             type: "date",
             displayFormat: "dd/MM/yyyy",
+            max: new Date(),
             pickerType: "rollers",
             onValueChanged: function(data) {
                 var label = "Fecha salida";
@@ -287,6 +661,11 @@ $(function() {
             height: 90,
             width: "100%"
         }).dxTextArea("instance");
+        
+        var tareas_dx = $("#tareas_dx").dxTextArea({
+            height: 90,
+            width: "100%"
+        }).dxTextArea("instance");
 
         var btn_enviar_dx = $("#btn_enviar_dx").dxButton({
             stylingMode: "contained",
@@ -305,6 +684,7 @@ $(function() {
                 paradas_dx.option("dataSource", []);
                 unidades_realizadas_dx.reset();
                 observaciones_dx.reset();
+                tareas_dx.reset();
             }
         }).dxButton("instance");
 
@@ -323,6 +703,7 @@ $(function() {
                 'paradas': paradas_dx.option('dataSource'),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
                 'observaciones': observaciones_dx.option("value"),
+                'tareas': tareas_dx.option("value"),
                 'covid': covid_dx.option("value"),
             };
 
@@ -458,9 +839,18 @@ $(function() {
                     dataField: "horas_extra",
                 },
                 {
-                    caption: "Horas extra cliente",
-                    dataField: "horas_extra_cliente",
-                },
+                    width: 75,
+                    alignment: 'center',
+                    cellTemplate: function (container, options) {
+                        $('<a/>').addClass('dx-link')
+                                .text('Editar')
+                                .attr('href', "my/timesheet/" + options.data.id)
+                                .appendTo(container);
+                    },
+                    editCellTemplate: function(e){
+                        return false;
+                    }
+                }
             ],
             summary: {
                 groupItems: [{
@@ -470,7 +860,7 @@ $(function() {
             },
         }).dxDataGrid('instance');
     }
-
+ 
     function sendRequest(url, params) {
         var d = $.Deferred();
         params = params || {};

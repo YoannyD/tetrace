@@ -173,7 +173,7 @@ class CrearTareasActDesc(models.TransientModel):
                     if detalle.fecha_inicio and task.tipo == 'activacion':
                         date_deadline = fields.Date.from_string(detalle.fecha_inicio) + timedelta(days=task.deadline)
                         values.update({'date_deadline': date_deadline})
-                        
+                    
                     responsable_id, seguidores_ids = task.get_responsable_y_seguidores(self.project_id.sale_order_id.company_coordinador_id) 
                     if responsable_id:
                         values.update({'user_id': responsable_id})
@@ -209,7 +209,6 @@ class CrearTareasActDesc(models.TransientModel):
                     new_task.with_context(add_follower=True).message_subscribe(seguidores_ids, [])
 
     def crear_tareas_desactivacion(self):
-        self.ensure_one()
         for detalle in self.detalle_desc_ids:
             opciones = []
             if detalle.baja_it: opciones.append('informatica')
@@ -232,9 +231,17 @@ class CrearTareasActDesc(models.TransientModel):
             for tarea in tareas:
                 if not detalle.fecha_fin:
                     continue
-
-                date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=tarea.deadline)
-                tarea.write({'date_deadline': date_deadline})
+                    
+                date_deadline = None
+                if task.tarea_individual:
+                    if detalle.fecha_fin:
+                        date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=tarea.deadline)
+                else:
+                    if self.project_id.fecha_finalizacion:
+                        date_deadline = fields.Date.from_string(self.project_id.fecha_finalizacion) + timedelta(days=tarea.deadline)
+                        
+                if date_deadline:
+                    tarea.write({'date_deadline': date_deadline})
          
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
                 ('project_id', '=', self.project_id.id),
