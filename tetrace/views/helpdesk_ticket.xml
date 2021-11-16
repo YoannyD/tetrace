@@ -59,9 +59,9 @@
                 <field name="dias_comprobacion"/>               
             </xpath>           
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="enlace"/>
+                <field name="enlace" help="Enlace web de Odoo u otra pagina donde este el ticket"/>
                 <field name="bloqueado"/>
-                <field name="fecha_limite" string="Fecha user"/>
+                <field name="fecha_limite" string="Fecha user" help="Fecha límite para realizar tarea"/>
                 <field name="solicitante"/>
                 <field name="puesto"/>
                 <field name="departamento"/>
