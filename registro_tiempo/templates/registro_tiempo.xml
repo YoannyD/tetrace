@@ -149,6 +149,7 @@
                             ];
                         </script>
                         <form id="form-registro-horas" style="max-width:600px;margin:0 auto;">
+                            <input type="hidden" name="tiempo_id" id="input_tiempo_id" t-att-value="tiempo.id"/>
                             <div class="dx-fieldset">
                                  <div class="dx-field mb-2 dx-field-project_id">
                                     <div class="dx-field-label">Proyecto</div>
