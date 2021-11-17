@@ -193,35 +193,13 @@ class RegistroTiempoAPI(http.Controller):
         return json.dumps(data)
 
     @http.route('/api/time/register', type='json', auth="user", website=True)
-    def time_register(self, project_id, **kw):
+    def time_register(self, **kw):
         employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
         
-        fecha_entrada = date_from_string(kw.get("fecha_entrada"))
-        try:
-            hora_entrada = time_str_to_float(kw.get("hora_entrada"))
-        except:
-            hora_entrada = 0
-
-        fecha_salida = date_from_string(kw.get("fecha_salida"))
-        try:
-            hora_salida = time_str_to_float(kw.get("hora_salida"))
-        except:
-            hora_salida = 0
-            
-        values = {
-            'project_id': project_id,
-            "employee_id": employee.id if employee else None,
-            "tipo": kw.get("tipo").lower(),
-            "fecha_entrada": fecha_entrada,
-            "hora_entrada": hora_entrada,
-            "fecha_salida": fecha_salida,
-            "hora_salida": hora_salida,
-            "observaciones": kw.get("observaciones"),
-            "tareas": kw.get("tareas"),
-            "covid": kw.get("covid")
-        }
-
+        values = self.parse_values_tiempo(kw)
+        _logger.warning(values)
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
+        
         values = {
             'horas_extra': tiempo.get_horas_extra(),
             'horas_extra_cliente': tiempo.get_horas_extra_cliente(),
@@ -264,14 +242,58 @@ class RegistroTiempoAPI(http.Controller):
                 "tiempo": {}
             })
 
+    @http.route('/api/time/edit/<int:tiempo_id>', type='json', auth="user", website=True)
+    def time_edit(self, tiempo_id, **kw):
+        employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
+        tiempo = request.env['registro_tiempo.tiempo'].sudo().browse(tiempo_id)
+        
+        values = self.parse_values_tiempo(kw)
+        tiempo.write(values)
+        
+        if tiempo:
+            return json.dumps({
+                "result": "ok",
+                "tiempo": tiempo.get_data_api()
+            })
+        else:
+            return json.dumps({
+                "result": "ko",
+                "tiempo": {}
+            })
+        
+    def parse_values_tiempo(self, params):
+        fecha_entrada = date_from_string(params.get("fecha_entrada"))
+        try:
+            hora_entrada = time_str_to_float(params.get("hora_entrada"))
+        except:
+            hora_entrada = 0
+
+        fecha_salida = date_from_string(params.get("fecha_salida"))
+        try:
+            hora_salida = time_str_to_float(params.get("hora_salida"))
+        except:
+            hora_salida = 0
+            
+        values = {
+            'project_id': params.get('project_id'),
+            'employee_id': request.env.user.employee_ids[0].id if request.env.user.employee_ids else None,
+            "tipo": params.get("tipo").lower() if params.get("tipo") else None,
+            "fecha_entrada": fecha_entrada,
+            "hora_entrada": hora_entrada,
+            "fecha_salida": fecha_salida,
+            "hora_salida": hora_salida,
+            "observaciones": params.get("observaciones"),
+            "tareas": params.get("tareas"),
+            "covid": params.get("covid")
+        }
+        return values
+    
     @http.route('/api/festivo', type='json', auth="user", website=True)
     def festivo(self, project_id, fecha, **kw):
         fecha = date_from_string(fecha)
         employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
         if not fecha or not employee:
             return json.dumps({"result": "ok"})
-        
-        
         
         tecnico_calendario = request.env['tetrace.tecnico_calendario'].sudo().search([
             ('project_id', '=', project_id),

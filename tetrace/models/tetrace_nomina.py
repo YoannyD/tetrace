@@ -81,7 +81,7 @@ class Nomina(models.Model):
 
                 tax_ids = []
                 tag_ids = []
-                if nomina_trabajador.account_id.group_id.code_prefix == "640":
+                if nomina_trabajador.account_id.tetrace_account_id.code == "64000000":
                     tax = self.env['account.tax'].sudo().search([
                         ('company_id', '=', r.company_id.id),
                         ('description', '=', 'P_IRPFTD')
@@ -90,7 +90,7 @@ class Nomina(models.Model):
                         tax_ids = [tax.id]
                     tag_ids = [4]
                         
-                if nomina_trabajador.account_id.group_id.code_prefix == "4751":
+                if nomina_trabajador.account_id.tetrace_account_id.code == "47510000":
                     tag_ids = [5]
                     
                 for analitica in nomina_trabajador.trabajador_analitica_ids:
@@ -158,20 +158,20 @@ class NominaTrabajador(models.Model):
     company_id = fields.Many2one(related='nomina_id.company_id')
     currency_id = fields.Many2one(related='company_id.currency_id')
     trabajador_analitica_ids = fields.One2many('tetrace.nomina.trabajador.analitica', 'nomina_trabajador_id')
-    permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica', store=True,
+    permitir_generar_analitica = fields.Boolean('Permitir generar distribución analítica',
                                                 compute="_compute_permitir_generar_analitica")
     texto_importado = fields.Text('Texto importado', translate=True)
-    incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion", store=True)
-    incorrecta_contrato_multiple = fields.Boolean('Incorrecta contrato', compute="_compute_incorrecta_multiple_contrato", store=True)
-    incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador", store=True)
-    aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento", store=True)
-    bloquear_linea = fields.Boolean("Bloquear línea", compute="_compute_bloquear_linea", store=True)
+    incorrecta_sin_distribucion = fields.Boolean('Incorrecta', compute="_compute_incorrecta_sin_distribucion")
+    incorrecta_contrato_multiple = fields.Boolean('Incorrecta contrato', compute="_compute_incorrecta_multiple_contrato")
+    incorrecta_trabajador = fields.Boolean('Incorrecta trabajador', compute="_compute_incorrecta_trabajador")
+    aviso_concepto_descuento = fields.Boolean('Aviso concepto descuento', compute="_compute_aviso_concepto_descuento")
+    bloquear_linea = fields.Boolean("Bloquear línea", compute="_compute_bloquear_linea")
 
     @api.depends('account_id', 'trabajador_analitica_ids')
     def _compute_incorrecta_sin_distribucion(self):
         for r in self:
             incorrecta_sin_distribucion = False
-            if (r.account_id and r.account_id.user_type_id in [13, 15] and not r.trabajador_analitica_ids):#cuentas type gasto o ingreso
+            if (r.account_id and r.account_id.user_type_id.id in [13, 15] and not r.trabajador_analitica_ids):#cuentas type gasto o ingreso
                 incorrecta_sin_distribucion = True
             r.incorrecta_sin_distribucion = incorrecta_sin_distribucion
     
@@ -201,7 +201,7 @@ class NominaTrabajador(models.Model):
     def _compute_aviso_concepto_descuento(self):
         for r in self:
             aviso_concepto_descuento = False
-            if r.account_id and r.account_id.code[0] in ['6'] and r.haber>0:
+            if r.account_id and r.account_id.user_type_id.id in [15] and r.haber>0:
                 aviso_concepto_descuento = True
             r.aviso_concepto_descuento = aviso_concepto_descuento
             
@@ -214,7 +214,8 @@ class NominaTrabajador(models.Model):
     def _compute_permitir_generar_analitica(self):
         for r in self:
             permitir = False
-            if r.employee_id and r.account_id and r.account_id.user_type_id in [13, 15]: #cuentas type gasto o ingreso
+            #_logger.warning('pasa1111111111111111111111111111111111111111111')
+            if r.employee_id and r.account_id and r.account_id.user_type_id.id in [13, 15]: #cuentas type gasto o ingreso
                 permitir = True
             r.permitir_generar_analitica = permitir
 
@@ -237,9 +238,10 @@ class NominaTrabajador(models.Model):
 
     def generar_distribucion_analitica(self):
         for r in self:
+        #    _logger.warning('pasa222222222222222222222222')
             if not r.permitir_generar_analitica:
                 continue
-
+           # _logger.warning('pasa3333333333333333333333')
             r.trabajador_analitica_ids.unlink()
             
             companies = self.env['res.company'].search([])

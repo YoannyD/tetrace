@@ -242,6 +242,8 @@ class RegistroTiempo(models.Model):
             'horas_extra_cliente': self.horas_extra_cliente or 0,
             'tareas': self.tareas,
             'observaciones': self.observaciones,
+            'unidades_realizadas': self.unidades_realizadas,
+            'covid': self.covid,
         }
         return data
 
