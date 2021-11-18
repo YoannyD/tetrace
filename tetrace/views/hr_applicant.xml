@@ -30,7 +30,13 @@
                     <field name="emp_id"/>
                 </group>
             </xpath>
-
+            
+            <xpath expr="//field[@name='source_id']" position="after">
+                <field name="competencia"/>
+                <field name="empresa_competencia" attrs="{'required': [('competencia','=', True)]}"/>
+            </xpath>
+            
+            
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="fecha_recepcion"/>
                 <field name="country_id"/>
@@ -157,6 +163,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='stage_id']" position="after">
                 <field name="icono_warning"/>
+                <field name="competencia"/>
             </xpath>
 
             <xpath expr="//div[hasclass('o_kanban_record_headings')]/b[1]" position="before">
@@ -166,6 +173,13 @@
                           aria-label="Alerta"
                           title="Alerta"
                           name="alerta"/>
+                </div>
+                <div class="float-right" t-if="record.competencia.raw_value" style="margin-right:15px;">
+                    <span class="fa fa-exclamation-triangle text-warning"
+                          role="img"
+                          aria-label="Competencia"
+                          title="Competencia"
+                          name="competencia"/>
                 </div>
             </xpath>
         </field>
