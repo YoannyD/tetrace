@@ -244,6 +244,8 @@ class RegistroTiempo(models.Model):
             'observaciones': self.observaciones,
             'unidades_realizadas': self.unidades_realizadas,
             'covid': self.covid,
+            'validacion': self.validacion,
+            'paradas': [parada.get_data_api() for parada in self.tiempo_parada_ids]
         }
         return data
 
@@ -262,7 +264,7 @@ class RegistroHoraParada(models.Model):
     @api.depends("tipo_parada_id", "horas_parada")
     def _compute_name(self):
         for r in self:
-            r.name = r.tipo_parada_id
+            r.name = r.tipo_parada_id.name
 
     @api.depends("fecha_entrada", "fecha_salida")
     def _compute_horas_parada(self):
@@ -274,8 +276,28 @@ class RegistroHoraParada(models.Model):
                 r.horas_parada = False
 
     def get_data_api(self):
-        self.ensure_one()
-        return {'id': self.id,}
+        user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz or 'UTC')
+        fecha_entrada = ""
+        if self.fecha_entrada:
+            fecha_entrada = self.fecha_entrada\
+                .astimezone(user_tz)\
+                .replace(tzinfo=None)\
+                .strftime("%Y/%m/%d %H:%M:00")
+
+        fecha_salida = ""
+        if self.fecha_salida:
+            fecha_salida = self.fecha_salida \
+                .astimezone(user_tz) \
+                .replace(tzinfo=None) \
+                .strftime("%Y/%m/%d %H:%M:00")
+        
+        return {
+            'id': self.id,
+            'name': self.name,
+            'fecha_entrada': fecha_entrada,
+            'fecha_salida': fecha_salida,
+            'tipo_parada_id': self.tipo_parada_id.id,
+        }
 
 
 class TipoParada(models.Model):

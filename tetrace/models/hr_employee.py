@@ -33,6 +33,7 @@ class Employee(models.Model):
     country_visado_id = fields.Many2one('res.country', string="País Visado")
     type_visado_id = fields.Many2one('hr.visado', string="Tipo de Visado")
     reference_employee = fields.Char("Código")
+    project_ids = fields.Many2many('project.project', string="Proyectos", compute="_compute_project_ids")
     project_asignado_id = fields.Many2one('project.project', string="Proyecto asignado",
                                           compute="_compute_project_asginado")
     project_country_asignado_id = fields.Many2one('res.country', string="País del proyecto asignado",
@@ -45,7 +46,9 @@ class Employee(models.Model):
         res. reference_employee = "E" + str(res.id + 1)
         return res
     
-  
+    def _compute_project_ids(self):
+        for r in self:
+            r.project_ids = [(6, 0, r.tecnico_calendario_ids.mapped("project_id").ids)]
     
     def _compute_project_asginado(self):
         for r in self:
@@ -123,6 +126,7 @@ class Employee(models.Model):
         action.update({'domain': [('id', 'in', document_ids)]})
         return action
 
+    
 class HrVisado(models.Model):
     _name = "hr.visado"
     _description = "Tipo Visado"

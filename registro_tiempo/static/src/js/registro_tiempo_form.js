@@ -23,28 +23,12 @@ $(function() {
         current_position = position;
     }
     
-    function project_data_source(){
-        var projectDataSource = new DevExpress.data.CustomStore({
-            key: "id",
-            load: function(loadOptions) {
-                var params = {
-                    "offset": loadOptions.skip,
-                    "limit": loadOptions.take,
-                }
-
-                if(loadOptions.searchValue){
-                    params["search"] = loadOptions.searchValue;
-                }
-
-                return sendRequest("/api/projects", params);
-            },
-        });
-        return projectDataSource;
-    }
-    
-    function project_id_load(projectDataSource){
+    function project_id_load(proyectoSource){
         return $("#project_id_dx").dxSelectBox({
-            dataSource: projectDataSource,
+            dataSource: new DevExpress.data.ArrayStore({
+                data: proyectoSource,
+                key: "id"
+            }),
             displayExpr: "name",
             valueExpr: "id",
             searchEnabled: true,
@@ -53,7 +37,7 @@ $(function() {
                     $("#grid-registro").dxDataGrid('instance').refresh();
                 }
                 
-                if($("#fecha_entrada_dx").dxDateBox("instance").option("value") == null){
+                if($("#fecha_entrada_dx").length && $("#fecha_entrada_dx").dxDateBox("instance").option("value") == null){
                     $("#fecha_entrada_dx").dxDateBox("instance").option("value", new Date());
                 }
                 
@@ -284,6 +268,48 @@ $(function() {
             width: "100%",
         }).dxTextArea("instance");
     }
+
+    function paradas_load(tipoParadaSource){
+        return $("#paradas_dx").dxDataGrid({
+            dataSource: [],
+            onInitNewRow: function (e) {
+                e.data.fecha_entrada = $("#fecha_entrada_dx").dxDateBox("instance").option("value");
+                e.data.fecha_salida = $("#fecha_entrada_dx").dxDateBox("instance").option("value");
+            },
+            editing: {
+                mode: "cell",
+                allowUpdating: true,
+                allowDeleting: true,
+                allowAdding: true,
+                useIcons: true
+            },
+            columns: [
+                {
+                    caption: "Tipo parada",
+                    dataField: "tipo_parada_id",
+                    lookup: {
+                        dataSource: tipoParadaSource,
+                        displayExpr: "name",
+                        valueExpr: "id"
+                    },
+                    validationRules: [{
+                        type: "required",
+                        message: "El tipo de parada es obligatorio."
+                    }]
+                },
+                {
+                    caption: "Entrada",
+                    dataField: "fecha_entrada",
+                    dataType: "datetime",
+                },
+                {
+                    caption: "Salida",
+                    dataField: "fecha_salida",
+                    dataType: "datetime",
+                },
+            ],
+        }).dxDataGrid("instance");
+    }
     
     function tareas_load(){
         return $("#tareas_dx").dxTextArea({
@@ -320,7 +346,6 @@ $(function() {
     if($("#o_page_ficha_registro_hora").length){
         var observaciones_dx;
         var project_id_dx;
-        var projectDataSource = project_data_source();
         var unidades_realizadas_dx;
         var tipo_dx;
         var covid_dx;
@@ -335,9 +360,7 @@ $(function() {
         ajax.jsonRpc("/api/time-data/" + tiempo_id, 'call', {})
         .then(function(result) {
             var data = $.parseJSON(result);
-            console.log(data);
-            
-            project_id_dx = project_id_load(projectDataSource);
+            project_id_dx = project_id_load(proyectoSource);
             tipo_dx = tipo_load();
             covid_dx = covid_load();
             observaciones_dx = observaciones_load();
@@ -347,10 +370,11 @@ $(function() {
             fecha_salida_dx = fecha_salida_load();
             hora_salida_dx = hora_salida_load();
             tareas_dx = tareas_load();
+            paradas_dx = paradas_load(tipoParadaSource);
             
-//             if(data.project_id){
-//                 project_id_dx.option('value', '760');
-//             }
+            if(data.project_id){
+                project_id_dx.option('value', data.project_id);
+            }
             
             if(data.fecha_hora_entrada){
                 var fecha_entrada_aux = data.fecha_hora_entrada.split(" ");
@@ -383,10 +407,14 @@ $(function() {
             if(data.tipo){
                 tipo_dx.option('value', data.tipo);
             }
-            
-//             paradas_dx = paradas_dx(tipoParadaSource, data.paradas);
-            
 
+            if(data.paradas){
+                var paradasSource = new DevExpress.data.ArrayStore({
+                    data: data.paradas,
+                    key: "id"
+                });
+                paradas_dx.option('dataSource', paradasSource);
+            }
         });
         
         var btn_enviar_dx = btn_enviar_load();
@@ -396,10 +424,6 @@ $(function() {
             e.preventDefault();
             var hora_entrada = hora_entrada_dx.option("value");
             var hora_salida = hora_salida_dx.option("value");
-            
-            console.log(hora_entrada);
-            console.log(hora_salida);
-            
             var params = {
                 'project_id': project_id_dx.option("value"),
                 'fecha_entrada': date_to_string(fecha_entrada_dx.option("value")),
@@ -407,7 +431,7 @@ $(function() {
                 'fecha_salida': date_to_string(fecha_salida_dx.option("value")),
                 'hora_salida': hora_salida,
                 'tipo': tipo_dx.option("value"),
-                //'paradas': paradas_dx.option('dataSource'),
+                'paradas': paradas_dx.getDataSource().items(),
                 'unidades_realizadas': unidades_realizadas_dx.option("value"),
                 'observaciones': observaciones_dx.option("value"),
                 'tareas': tareas_dx.option("value"),
@@ -420,17 +444,6 @@ $(function() {
                 if(data["result"] == "ok"){
                     DevExpress.ui.notify("Ha registrado el tiempo correctamente");
                     fecha_entrada_dx.option("value", date_to_string(fecha_entrada_dx.option("value"), 0));
-
-//                     var paradas = paradas_dx.option('dataSource');
-//                     if(paradas != undefined){
-//                         $.each(paradas, function( index, value ) {
-//                             paradas[index]["fecha_entrada"] =  date_to_string(value["fecha_entrada"], 1);
-//                             paradas[index]["fecha_salida"] = date_to_string(value["fecha_salida"], 1);
-//                         });
-//                         paradas_dx.option('dataSource', paradas);
-//                     }
-
-                    //grid_resgistro_dx.refresh();
                 }else{
                     DevExpress.ui.notify("Error. No se ha podido registrar el tiempo.", "error");
                 }
@@ -439,7 +452,6 @@ $(function() {
     }
 
     if($("#o_page_registro_horas").length){
-        console.log("no tiene que entrar");
         initGeolocation();
 
         $(".btn-registro-hora").click(function(event){
@@ -476,56 +488,14 @@ $(function() {
 
         $("#summary").dxValidationSummary({});
 
-        var projectDataSource = project_data_source();
-
-        var project_id_dx = project_id_load(projectDataSource);
+        var project_id_dx = project_id_load(proyectoSource);
         var tipo_dx = tipo_load();
         var covid_dx = covid_load();
         var fecha_entrada_dx = fecha_entrada_load();
         var hora_entrada_dx = hora_entrada_load();
         var fecha_salida_dx = fecha_salida_load();
         var hora_salida_dx = hora_salida_load();
-
-        var paradas_dx = $("#paradas_dx").dxDataGrid({
-            dataSource: [],
-            onInitNewRow: function (e) {
-                e.data.fecha_entrada = fecha_entrada_dx.option("value");
-                e.data.fecha_salida = fecha_entrada_dx.option("value");
-            },
-            editing: {
-                mode: "cell",
-                allowUpdating: true,
-                allowDeleting: true,
-                allowAdding: true,
-                useIcons: true
-            },
-            columns: [
-                {
-                    caption: "Tipo parada",
-                    dataField: "tipo_parada_id",
-                    lookup: {
-                        dataSource: tipoParadaSource,
-                        displayExpr: "name",
-                        valueExpr: "id"
-                    },
-                    validationRules: [{
-                        type: "required",
-                        message: "El tipo de parada es obligatorio."
-                    }]
-                },
-                {
-                    caption: "Entrada",
-                    dataField: "fecha_entrada",
-                    dataType: "datetime",
-                },
-                {
-                    caption: "Salida",
-                    dataField: "fecha_salida",
-                    dataType: "datetime",
-                },
-            ],
-        }).dxDataGrid("instance");
-
+        var paradas_dx = paradas_load(tipoParadaSource)
         var unidades_realizadas_dx = unidades_realizadas_load();
         var observaciones_dx = observaciones_load();
         var tareas_dx = tareas_load();
@@ -695,19 +665,21 @@ $(function() {
                     caption: "Horas extra",
                     dataField: "horas_extra",
                 },
-//                 {
-//                     width: 75,
-//                     alignment: 'center',
-//                     cellTemplate: function (container, options) {
-//                         $('<a/>').addClass('dx-link')
-//                                 .text('Editar')
-//                                 .attr('href', "/my/timesheet/" + options.data.id)
-//                                 .appendTo(container);
-//                     },
-//                     editCellTemplate: function(e){
-//                         return false;
-//                     }
-//                 }
+                {
+                    width: 75,
+                    alignment: 'center',
+                    cellTemplate: function (container, options) {
+                        if(!options.data.validacion){
+                            $('<a/>').addClass('dx-link')
+                                .text('Editar')
+                                .attr('href', "/my/timesheet/" + options.data.id)
+                                .appendTo(container);
+                        }
+                    },
+                    editCellTemplate: function(e){
+                        return false;
+                    }
+                }
             ],
             summary: {
                 groupItems: [{
