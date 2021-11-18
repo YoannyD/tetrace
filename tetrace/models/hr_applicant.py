@@ -29,6 +29,9 @@ class Applicant(models.Model):
     habilidad_ids = fields.Many2many('tetrace.habilidad_applicant')
     observaciones = fields.Text("Observaciones")
     feedback_ids = fields.One2many("tetrace.feedback_applicant", "applicant_id")
+    competencia = fields.Boolean('Competencia')
+    empresa_competencia = fields.Text("Empresa de la competencia")
+    
 
     @api.model
     def create(self, vals):
