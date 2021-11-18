@@ -171,7 +171,7 @@ class NominaTrabajador(models.Model):
     def _compute_incorrecta_sin_distribucion(self):
         for r in self:
             incorrecta_sin_distribucion = False
-            if (r.account_id and r.account_id.user_type_id.id in [13, 15] and not r.trabajador_analitica_ids):#cuentas type gasto o ingreso
+            if (r.account_id and r.account_id.user_type_id.id in [13, 15, 17] and not r.trabajador_analitica_ids):#cuentas type gasto o ingreso
                 incorrecta_sin_distribucion = True
             r.incorrecta_sin_distribucion = incorrecta_sin_distribucion
     
@@ -215,7 +215,7 @@ class NominaTrabajador(models.Model):
         for r in self:
             permitir = False
             #_logger.warning('pasa1111111111111111111111111111111111111111111')
-            if r.employee_id and r.account_id and r.account_id.user_type_id.id in [13, 15]: #cuentas type gasto o ingreso
+            if r.employee_id and r.account_id and r.account_id.user_type_id.id in [13, 15, 17]: #cuentas type gasto o ingreso
                 permitir = True
             r.permitir_generar_analitica = permitir
 
