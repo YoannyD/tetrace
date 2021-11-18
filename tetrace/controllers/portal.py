@@ -217,7 +217,6 @@ class TetracePortal(CustomerPortal):
         if search and search_in:
             domain = AND([domain, [('name', 'ilike', search)]])
 
-        _logger.warning(domain)
         document_count = Document.search_count(domain)
 
         pager = portal_pager(

@@ -33,6 +33,14 @@
                                     },
                                 </t>
                             ];
+                            var proyectoSource = [
+                                <t t-foreach="employee.project_ids" t-as="project">
+                                    {
+                                        "id": <t t-esc="project.id"/>,
+                                        "name": '<t t-esc="project.name"/>',
+                                    },
+                                </t>
+                            ];
                         </script>
                         <form id="form-registro-horas" style="max-width:600px;margin:0 auto;display:none;">
                             <div class="dx-fieldset">
@@ -144,6 +152,15 @@
                                     {
                                         "id": <t t-esc="tipo.id"/>,
                                         "name": '<t t-esc="tipo.name"/>',
+                                    },
+                                </t>
+                            ];
+                            
+                            var proyectoSource = [
+                                <t t-foreach="employee.project_ids" t-as="project">
+                                    {
+                                        "id": <t t-esc="project.id"/>,
+                                        "name": '<t t-esc="project.name"/>',
                                     },
                                 </t>
                             ];

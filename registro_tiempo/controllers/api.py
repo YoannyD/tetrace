@@ -6,6 +6,7 @@ import json
 
 from odoo import http, fields
 from odoo.http import request
+from datetime import datetime
 from odoo.addons.devexpress.models.utils import create_domain, data_groups
 from odoo.addons.registro_tiempo.models.date_utils import date_from_string, float_to_time, datetime_from_string, \
     date_str_to_float_time, time_str_to_float
@@ -196,28 +197,11 @@ class RegistroTiempoAPI(http.Controller):
     def time_register(self, **kw):
         employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
         
-        values = self.parse_values_tiempo(kw)
-        _logger.warning(values)
+        values = self.pre_parse_values_tiempo(kw)
         tiempo = request.env['registro_tiempo.tiempo'].sudo().create(values)
         
-        values = {
-            'horas_extra': tiempo.get_horas_extra(),
-            'horas_extra_cliente': tiempo.get_horas_extra_cliente(),
-        }
-        if tiempo.es_festivo():
-            values.update({'festivo': True})
-
-        if tiempo.es_festivo_cliente():
-            values.update({'festivo_cliente': True})
-
-        if tiempo.es_nocturno():
-            values.update({'nocturno': True})
-
-        if tiempo.tipo == 'parte':
-            values.update({'unidades_realizadas': kw.get("unidades_realizadas")})
-
-        if values:
-            tiempo.write(values)
+        values = self.pos_parse_values_tiempo(tiempo, kw)
+        tiempo.write(values)
 
         if tiempo.tipo == 'parte' and kw.get("paradas"):
             for parada in kw.get("paradas"):
@@ -246,9 +230,49 @@ class RegistroTiempoAPI(http.Controller):
     def time_edit(self, tiempo_id, **kw):
         employee = request.env.user.employee_ids[0] if request.env.user.employee_ids else None
         tiempo = request.env['registro_tiempo.tiempo'].sudo().browse(tiempo_id)
+        if tiempo.validacion:
+            return json.dumps({
+                "result": "ok",
+                "tiempo": tiempo.get_data_api()
+            })
         
-        values = self.parse_values_tiempo(kw)
+        values = self.pre_parse_values_tiempo(kw)
         tiempo.write(values)
+        
+        values = self.pos_parse_values_tiempo(tiempo, kw)
+        tiempo.write(values)
+        
+        parada_borrar_ids = tiempo.tiempo_parada_ids.ids
+        if tiempo.tipo == 'parte' and kw.get("paradas"):
+            for parada_data in kw.get("paradas"):
+                fecha_entrada = datetime_from_string(parada_data['fecha_entrada'].replace("/", "-"))
+                fecha_salida = datetime_from_string(parada_data['fecha_salida'].replace("/", "-"))
+                
+                try:
+                    parada_id = int(parada_data['id'])
+                except:
+                    parada_id = None
+                
+                parada = request.env['registro_tiempo.tiempo_parada'].sudo().browse(parada_id)
+
+                if parada:
+                    parada_borrar_ids.remove(parada.id)
+                    parada.write({
+                        "tipo_parada_id": parada_data['tipo_parada_id'],
+                        'fecha_entrada': fecha_entrada,
+                        'fecha_salida': fecha_salida,
+                    })
+                else:
+                    request.env['registro_tiempo.tiempo_parada'].sudo().create({
+                        'tiempo_id': tiempo.id,
+                        "tipo_parada_id": parada_data['tipo_parada_id'],
+                        'fecha_entrada': fecha_entrada,
+                        'fecha_salida': fecha_salida,
+                    })
+        
+        if parada_borrar_ids:
+            paradas = request.env['registro_tiempo.tiempo_parada'].sudo().browse(parada_borrar_ids)
+            paradas.unlink()
         
         if tiempo:
             return json.dumps({
@@ -261,7 +285,7 @@ class RegistroTiempoAPI(http.Controller):
                 "tiempo": {}
             })
         
-    def parse_values_tiempo(self, params):
+    def pre_parse_values_tiempo(self, params):
         fecha_entrada = date_from_string(params.get("fecha_entrada"))
         try:
             hora_entrada = time_str_to_float(params.get("hora_entrada"))
@@ -286,6 +310,25 @@ class RegistroTiempoAPI(http.Controller):
             "tareas": params.get("tareas"),
             "covid": params.get("covid")
         }
+        return values
+    
+    def pos_parse_values_tiempo(self, tiempo, params):
+        values = {
+            'horas_extra': tiempo.get_horas_extra(),
+            'horas_extra_cliente': tiempo.get_horas_extra_cliente(),
+        }
+        if tiempo.es_festivo():
+            values.update({'festivo': True})
+
+        if tiempo.es_festivo_cliente():
+            values.update({'festivo_cliente': True})
+
+        if tiempo.es_nocturno():
+            values.update({'nocturno': True})
+
+        if tiempo.tipo == 'parte':
+            values.update({'unidades_realizadas': params.get("unidades_realizadas")})
+        
         return values
     
     @http.route('/api/festivo', type='json', auth="user", website=True)
