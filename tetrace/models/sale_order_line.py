@@ -204,8 +204,8 @@ class SaleOrderLine(models.Model):
 
         tasks = []
         for task in tasks_individual:
-            if self.job_id:
-                name = "%s (%s)" % (task.name, self.job_id.name)
+            if task.employee_id:
+                name = "%s (%s)" % (task.name, task.employee_id.name)
             else:
                 name = task.name
 
