@@ -152,19 +152,20 @@ class ProjectTask(models.Model):
 
             for task in tasks:
                 values = {'job_id': r.job_id.id}
-                if r.employee_id:
+                if r.job_id:
                     pos1 = task.name.find("(")
                     pos2 = task.name.find(")")
                     if pos1 >= 0 and pos2 >= 0:
                         cadena_a_reemplazar = task.name[pos1 + 1:pos2]
-                        name = task.name.replace(cadena_a_reemplazar, r.employee_id.name)
+                        name = task.name.replace(cadena_a_reemplazar, r.job_id.name)
                     else:
-                        name = "%s (%s)" % (task.name, r.employee_id.name)
+                        name = "%s (%s)" % (task.name, r.job_id.name)
 
                     values.update({
                         'name': name,
                         'employee_id': r.employee_id.id,
                     })
+
                 task.with_context(no_actualizar_empleado=True).update(values)
 
     def actualizar_info_puesto(self):
