@@ -289,7 +289,7 @@ class Project(models.Model):
             for task in r.tasks.filtered(lambda x: x.tipo == 'activacion' and x.tarea_individual):
                 date_deadline = fields.Date.from_string(r.fecha_inicio) + timedelta(days=task.deadline)
                 task.write({'date_deadline': date_deadline})
-
+                
     def actualizar_partner_task(self):
         for r in self:
             if r.partner_id:
