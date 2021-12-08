@@ -153,8 +153,8 @@ class CrearTareasActDesc(models.TransientModel):
                     if task.check_task_exist(ref_created, ref_individual):
                         break
 
-                    if detalle.job_id.id:
-                        name = "%s (%s)" % (task.name, detalle.job_id.name)
+                    if detalle.employee_id.id:
+                        name = "%s (%s)" % (task.name, detalle.employee_id.name)
                     else:
                         name = task.name
                             
@@ -233,7 +233,7 @@ class CrearTareasActDesc(models.TransientModel):
                     continue
                     
                 date_deadline = None
-                if task.tarea_individual:
+                if tarea.tarea_individual:
                     if detalle.fecha_fin:
                         date_deadline = fields.Date.from_string(detalle.fecha_fin) + timedelta(days=tarea.deadline)
                 else:
@@ -285,7 +285,7 @@ class DetalleActivacion(models.TransientModel):
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo", required=True)
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
     resource_calendar_id = fields.Many2one('resource.calendar', string="Calendario", required=True)
-    fecha_inicio = fields.Date('Fecha inicio')
+    fecha_inicio = fields.Date('Fecha inicio', required=True)
     
 
 class DetalleDesactivacion(models.TransientModel):
@@ -294,10 +294,10 @@ class DetalleDesactivacion(models.TransientModel):
 
     tarea_act_id = fields.Many2one('tetrace.crear_tareas_act_desc', string="Wizard creación")
     employee_id = fields.Many2one('hr.employee', string="Técnico", required=True)
-    fecha_fin = fields.Date("Fecha fin")
+    fecha_fin = fields.Date("Fecha fin", required=True)
     finalizar_contrato = fields.Boolean("Finalizar contrato")
     reubicar = fields.Boolean("Reubicar", default=True)
-    baja_it = fields.Boolean("Baja IT")
+    baja_it = fields.Boolean("IT Baja")
     recoger_equipos = fields.Boolean("Recoger equipos")
     
     @api.onchange("finalizar_contrato")
