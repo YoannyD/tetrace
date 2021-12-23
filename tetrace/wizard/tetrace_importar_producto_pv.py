@@ -41,29 +41,9 @@ class ImportarProductoPV(models.TransientModel):
                         cell_referencia = int(cad_aux)
                 except:
                     pass
-                
-            refs_producto = self.env["product.customerinfo"].search([
-                ('company_id', '=', self.order_id.company_id.id),
-                ('product_code', '=', cell_referencia)
-            ])
-            
-            ref_producto = None
-            for ref in refs_producto:
-                if not ref_producto:
-                    ref_producto = ref
-                    continue
-                    
-                if ref.name.id == self.order_id.partner_id.id:
-                    ref_producto = ref
-                    break
 
-            product = False
-            if ref_producto:
-                if ref_producto.product_id:
-                    product = ref_producto.product_id
-                elif ref_producto.product_tmpl_id:
-                    product = ref_producto.product_tmpl_id.product_variant_id
-              
+            product = self.env['product.product'].search([('default_code', '=', cell_referencia)], limit=1)
+
             try:
                 cantidad = cell_cantidad.value
             except:
@@ -75,8 +55,8 @@ class ImportarProductoPV(models.TransientModel):
                     'product_id': product.id,
                     'product_uom': product.uom_id.id,
                     'product_uom_qty': cantidad,
-                    'price_unit': ref_producto.price,
-                    'name': ref_producto.product_name
+                    'price_unit': product.list_price,
+                    'name': product.display_name
                 })
             else:
                 RefProducto = self.env["tetrace.ref_producto"]

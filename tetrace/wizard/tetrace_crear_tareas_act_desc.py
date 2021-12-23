@@ -242,7 +242,7 @@ class CrearTareasActDesc(models.TransientModel):
                         
                 if date_deadline:
                     tarea.write({'date_deadline': date_deadline})
-         
+    
             tecnico_calendario = self.env['tetrace.tecnico_calendario'].search([
                 ('project_id', '=', self.project_id.id),
                 ('employee_id', '=', detalle.employee_id.id),

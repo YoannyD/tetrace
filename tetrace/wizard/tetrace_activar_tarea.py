@@ -44,6 +44,7 @@ class ActivarTarea(models.TransientModel):
             ('activada', '=', False),
         ]
         
+            
         for detalle in self.detalle_ids:
             domain = expression.AND([domain_base, [('employee_id', '=', detalle.employee_id.id)]]) 
             
@@ -58,12 +59,13 @@ class ActivarTarea(models.TransientModel):
             
             tasks = self.env['project.task'].search(domain)
             for task in tasks:
-                tasks.write({'activada': True})
+                task.write({'activada': True})
                 
             if detalle.fecha_fin:
                 for tc in self.project_id.tecnico_calendario_ids:
                     if not tc.fecha_fin and detalle.employee_id.id == tc.employee_id.id:
                         tc.write({'fecha_fin': detalle.fecha_fin})
+
         
         if self.viaje:
             tasks = self.env['project.task'].search([
