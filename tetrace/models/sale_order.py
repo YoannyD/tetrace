@@ -348,9 +348,10 @@ class SaleOrder(models.Model):
                 order.analytic_account_id = analytic
     
     @api.model
-    def siguiente_num_proyecto(self, sequence_num_proyecto=0):
+    def siguiente_num_proyecto(self, sequence_num_proyecto=0, year=fields.Date.today().strftime("%y")):
         companies = self.env['res.company'].search([])
         last_order = self.with_context(allowed_company_ids=companies.ids).sudo().search([
+            ('ejercicio_proyecto', '=', year),
             ('sequence_num_proyecto', '>', sequence_num_proyecto),
             ('sequence_num_proyecto', '!=', sequence_num_proyecto)
         ], limit=1, order="sequence_num_proyecto desc")
@@ -365,10 +366,11 @@ class SaleOrder(models.Model):
             num_str = "0%s" % num_str
           
         order_exist = self.with_context(allowed_company_ids=companies.ids).sudo().search([
-            ('num_proyecto', '=', num_str)
+            ('num_proyecto', '=', num_str),
+            ('ejercicio_proyecto', '=', year),
         ], limit=1)
         if order_exist:
-            return self.siguiente_num_proyecto(int(order_exist.num_proyecto))
+            return self.siguiente_num_proyecto(int(order_exist.num_proyecto), year)
         
         return num, num_str
             
@@ -377,7 +379,7 @@ class SaleOrder(models.Model):
             if r.num_proyecto:
                 continue
                 
-            sequence_num_proyecto, num_proyecto = r.siguiente_num_proyecto()
+            sequence_num_proyecto, num_proyecto = r.siguiente_num_proyecto(0, r.ejercicio_proyecto)
             r.write({
                 'num_proyecto': num_proyecto,
                 'sequence_num_proyecto': sequence_num_proyecto
