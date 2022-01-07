@@ -391,6 +391,10 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self)._action_confirm()
         
         for r in self:
+            if not r.analytic_account_id:
+                r._create_analytic_account()
+        
+        for r in self:
             if r.project_ids:
                 r.actualizar_datos_proyecto()
         self.send_email_confirm()
