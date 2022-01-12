@@ -352,6 +352,7 @@ class SaleOrder(models.Model):
         companies = self.env['res.company'].search([])
         last_order = self.with_context(allowed_company_ids=companies.ids).sudo().search([
             ('ejercicio_proyecto', '=', year),
+            ('num_proyecto', '!=', False),
             ('sequence_num_proyecto', '>', sequence_num_proyecto),
             ('sequence_num_proyecto', '!=', sequence_num_proyecto)
         ], limit=1, order="sequence_num_proyecto desc")
