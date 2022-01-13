@@ -30,6 +30,10 @@ ESTADOS_TETRACE = [
     ('enviada', 'Enviada'),
 ]
 
+CANAL_VALIDACION = [
+    ('contabilidad', 'Contabilidad'),
+]
+
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
 
 
@@ -68,6 +72,7 @@ class AccountMove(models.Model):
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", 'invoice_id')
     estado_tetrace = fields.Selection(ESTADOS_TETRACE, string="Estado")
+    canal_validacion = fields.Selection(CANAL_VALIDACION, string="Canal validación")
 
     @api.onchange("purchase_vendor_bill_id", "purchase_id")
     def _onchange_purchase_auto_complete(self):
