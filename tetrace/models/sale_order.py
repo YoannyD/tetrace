@@ -21,7 +21,7 @@ class SaleOrder(models.Model):
                                        context='{"display_tipo": True}')
     tipo_proyecto_name = fields.Char(related="tipo_proyecto_id.name", string="Nombre Tipo proyecto", store=True)
     num_proyecto = fields.Char('Nº proyecto', copy=False, readonly=True)
-    sequence_num_proyecto = fields.Integer("Secuencia nº de proyecto")
+    sequence_num_proyecto = fields.Integer("Secuencia nº de proyecto", copy=False)
     partner_siglas = fields.Char(related="partner_id.siglas")
     tipo_servicio_id = fields.Many2one('tetrace.tipo_servicio', string="Tipo de servicio", copy=False,
                                         domain="[('tipo_proyecto_ids', 'in', tipo_proyecto_id)]")
@@ -352,8 +352,8 @@ class SaleOrder(models.Model):
         companies = self.env['res.company'].search([])
         last_order = self.with_context(allowed_company_ids=companies.ids).sudo().search([
             ('ejercicio_proyecto', '=', year),
-            ('sequence_num_proyecto', '>', sequence_num_proyecto),
-            ('sequence_num_proyecto', '!=', sequence_num_proyecto)
+            ('num_proyecto', '!=', False),
+            ('sequence_num_proyecto', '>', sequence_num_proyecto)
         ], limit=1, order="sequence_num_proyecto desc")
         
         if last_order:
@@ -389,6 +389,10 @@ class SaleOrder(models.Model):
         for order in self:
             order.with_context(no_enviar_email_tareas_asignadas=True).action_generar_proyecto()
         res = super(SaleOrder, self)._action_confirm()
+        
+        for r in self:
+            if not r.analytic_account_id:
+                r._create_analytic_account()
         
         for r in self:
             if r.project_ids:
