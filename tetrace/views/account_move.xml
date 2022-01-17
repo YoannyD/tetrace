@@ -41,9 +41,10 @@
             </xpath>
             
             <xpath expr="//field[@name='ref']" position="after">
-                <field name="canal_validacion"/>
+                <field name="canal_validacion"
+                attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
             </xpath>
-
+            
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="create_uid" invisible="1"/>
                 <field name="validacion_id"
