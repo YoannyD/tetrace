@@ -27,7 +27,7 @@ ESTADOS_TETRACE = [
     ('pendiente_oc', 'Pendiente OC'),
     ('ok_cliente', 'OK Cliente'),
     ('publicada', 'Publicada'),
-    ('enviada', 'Enviada'),
+    ('ptocobro', 'PTE COBRO'),
 ]
 
 CANAL_VALIDACION = [
