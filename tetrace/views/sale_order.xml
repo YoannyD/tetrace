@@ -174,11 +174,14 @@
                 <field name="seguidor_proyecto_ids" widget="many2many_tags"/>
                 <field name="analytic_account_id" 
                        context="{'default_partner_id':partner_invoice_id, 'default_name':name}" 
-                       attrs="{'readonly': ['|', '|', ('invoice_count', '!=', 0), ('state','=','sale'), ('asignar_cuenta_analitica_manual', '=', False)]}" 
+                       attrs="{'readonly': ['|', '|', ('invoice_count', '!=', 0), ('state','=','sale'), ('asignar_cuenta_analitica_manual', '=', False)]}"
                        groups="analytic.group_analytic_accounting" 
                        force_save="1"/>
                 <field name="asignar_cuenta_analitica_manual"
                        attrs="{'readonly': ['|', ('invoice_count', '!=', 0), ('state','=','sale')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="attrs">{'required': [('asignar_cuenta_analitica_manual', '!=', False)]}</attribute>
             </xpath>
             
             <xpath expr="//field[@name='company_coordinador_id']" position="attributes">
