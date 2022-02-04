@@ -32,6 +32,7 @@ ESTADOS_TETRACE = [
 
 CANAL_VALIDACION = [
     ('contabilidad', 'Contabilidad'),
+    ('clitbras', 'Cambio Cliente TBRAS'),
 ]
 
 DEFAULT_FACTURX_DATE_FORMAT = '%Y%m%d'
