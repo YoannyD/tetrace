@@ -55,8 +55,9 @@ class ActivarTarea(models.TransientModel):
             if detalle.finalizar_contrato: opciones.append('baja')
             
             if opciones:
-                domain = expression.AND([domain, [('employee_id', '=', detalle.employee_id.id)]]) 
+                domain = expression.AND([domain, [('opciones_desactivacion', 'in', opciones)]]) 
             
+            _logger.warning(domain)
             tasks = self.env['project.task'].search(domain)
             for task in tasks:
                 task.write({'activada': True})
