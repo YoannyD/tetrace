@@ -4,3 +4,4 @@
 from . import tetrace_its
 from . import mis_report_instance_xlsx_multi_tab
 from . import stock_picking
+from . import vat_book_xlsx
