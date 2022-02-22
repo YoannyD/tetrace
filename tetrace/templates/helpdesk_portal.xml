@@ -17,7 +17,7 @@
                         </div>
 
                         <div class="row mb-4">
-                            <strong class="col-3">Categoría</strong>
+                            <strong class="col-3">Módulo/Programa</strong>
                             <span class="col-9" t-field="ticket.tag_ids"/>
                         </div>
 

@@ -39,6 +39,7 @@
             
             <xpath expr="//field[@name='tag_ids']" position="attributes">
                 <attribute name="required">True</attribute>
+                <attribute name="string">Módulo/Programa</attribute>
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="before">
