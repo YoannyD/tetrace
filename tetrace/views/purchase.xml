@@ -36,7 +36,7 @@
             </xpath>
             
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="tipo_proyecto_id" required="1"/>
+                 <!-- <field name="tipo_proyecto_id" required="1"/> -->
                 <field name="cuenta_activo"/>
                 <field name="date_planned" attrs="{'readonly': [('state', 'not in', ('draft', 'sent'))]}"/>
             </xpath>

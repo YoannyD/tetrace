@@ -315,12 +315,12 @@ class AccountMove(models.Model):
             rate = 0
             if r.invoice_date:
                 euro = self.env['res.currency.rate'].search([
-                    ('company_id', '=', r.company_id.id),
-                    ('currency_id', '=', 1),
+                    ('company_id', '=', 1),
+                    ('currency_id', '=', r.company_id.currency_id.id),
                     ('name', '<=', r.invoice_date.strftime('%Y-%m-%d'))
                 ], limit = 1)
                 if euro:
-                    rate = euro.rate
+                    rate = 1/euro.rate
             importe_original = r.amount_untaxed_signed
             r.update({'importe_validacion_euros': importe_original * rate})
             # Si no tasa para Euro el importe_validacion_euros sera igual a 0

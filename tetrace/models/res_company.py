@@ -16,6 +16,13 @@ class Company(models.Model):
     tetrace_cuenta_analitica_diferencia_cambio = fields.Many2one('account.analytic.account', 
                                                                  string='Cuenta anlítica apuntes diferencias de cambio')
     grupo_tetrace = fields.Boolean("Grupo Tetrace")
+    area_geografica = fields.Selection(selection=[
+        ('EMEA', 'EMEA'),
+        ('NCA', 'NCA'),
+        ('SAM', 'SAM'),
+        ('ASP', 'ASP'),
+        ('holding', 'Holding'),
+    ], string='Área Geográfica', default='EMEA')
     tax_agency_id = fields.Many2one("aeat.tax.agency", string="Tax Agency ")
     coordinador_ids = fields.One2many('tetrace.coordinador_company', 'company_id')
     coordinador_sale_order_ids = fields.One2many('sale.order', 'company_coordinador_id')
