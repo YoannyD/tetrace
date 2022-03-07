@@ -22,6 +22,7 @@ class Company(models.Model):
         ('SAM', 'SAM'),
         ('ASP', 'ASP'),
         ('holding', 'Holding'),
+        ('izaga', 'Izaga'),
     ], string='Área Geográfica', default='EMEA')
     tax_agency_id = fields.Many2one("aeat.tax.agency", string="Tax Agency ")
     coordinador_ids = fields.One2many('tetrace.coordinador_company', 'company_id')
