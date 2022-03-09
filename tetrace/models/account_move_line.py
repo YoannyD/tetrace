@@ -20,6 +20,14 @@ class AccountMoveLine(models.Model):
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
     account_move_fecha_servicio = fields.Date(related="move_id.fecha_servicio")
+    numero_proyecto = fields.Char(related="analytic_account_id.code", store=True)
+    tipo_proyecto = fields.Char(related="analytic_account_id.project_ids.tipo_proyecto_name", store=True)
+    importe_euros = fields.Monetary("Importe en euros", compute="_compute_importe_euros")
+    area_geografica = fields.Selection(related="company_id.area_geografica")
+    tipo_cuenta = fields.Many2one(related="account_id.user_type_id", store=True)
+    
+    
+
     
     @api.constrains("analytic_account_id", "account_id", "debit", "credit")	
     def _check_analytic_required(self):
@@ -33,6 +41,11 @@ class AccountMoveLine(models.Model):
     def _compute_tetrace_account_id(self):
         for r in self:
             r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else None
+            
+  #  @api.depends("account_id.area_geografica")
+  #  def _compute_area_geografica(self):
+  #     for r in self:
+  #          r.area_geografica = r.res.company.area_geografica if r.ar.res.company.area_geografica else None
            
     def _compute_asiento_anticipo_fecha_vencimiento(self):
         for r in self:
@@ -172,4 +185,20 @@ class AccountMoveLine(models.Model):
             return self.product_id.categ_id.account_activo_id.id
         
         return res
+            
+    @api.depends("balance", "date")
+    def _compute_importe_euros(self):
+        for r in self:
+            rate = 0
+            if r.date:
+                euro = self.env['res.currency.rate'].search([
+                    ('company_id', '=', 1),
+                    ('currency_id', '=', r.company_id.currency_id.id),
+                    ('name', '<=', r.date.strftime('%Y-%m-%d'))
+                ], limit = 1)
+                if euro:
+                    rate = 1/euro.rate
+            importe_original = r.balance *-1
+            r.update({'importe_euros': importe_original * rate})
+            # Si no tasa para Euro el importe_validacion_euros sera igual a 0
             
