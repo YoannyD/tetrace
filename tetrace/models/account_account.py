@@ -27,5 +27,15 @@ class TetraceAccount(models.Model):
 
     name = fields.Char('Nombre', required=True)
     code = fields.Char('Code')
+    grupo_id = fields.Many2one("tetrace.grupo_tetrace_account", string="Grupo")
     account_ids = fields.One2many('account.account', 'tetrace_account_id')
     account_move_line_ids = fields.One2many('account.account', 'tetrace_account_id')
+    
+    
+class grupo_tetrace_account(models.Model):
+    _name = "tetrace.grupo_tetrace_account"
+    _description = "Grupo Tetrace"
+    
+    name = fields.Char("Nombre", required=True)
+
+    

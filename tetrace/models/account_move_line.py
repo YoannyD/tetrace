@@ -20,15 +20,17 @@ class AccountMoveLine(models.Model):
                                                      compute="_compute_asiento_anticipo_fecha_vencimiento")
     confirmado = fields.Boolean('Confirmado')
     account_move_fecha_servicio = fields.Date(related="move_id.fecha_servicio")
-    numero_proyecto = fields.Char(related="analytic_account_id.code", store=True)
-    tipo_proyecto = fields.Char(related="analytic_account_id.project_ids.tipo_proyecto_name", store=True)
+    numero_proyecto = fields.Char(related="analytic_account_id.code", string="Número proyecto", store=True)
+    tipo_proyecto = fields.Char(related="analytic_account_id.project_ids.tipo_proyecto_name",string="Tipo proyecto", store=True)
     importe_euros = fields.Monetary("Importe en euros", compute="_compute_importe_euros")
-    area_geografica = fields.Selection(related="company_id.area_geografica")
-    tipo_cuenta = fields.Many2one(related="account_id.user_type_id", store=True)
+    area_geografica = fields.Char(string="Área geográfica", compute="_compute_area_geografica", store=True)
+    tipo_cuenta = fields.Many2one(related="account_id.user_type_id", string="Tipo cuenta", store=True)
+    tetrace_grupo_account_id = fields.Many2one("tetrace.account", string="Grupo Cuenta Tetrace", store=True,
+                                         compute="_compute_tetrace_grupo_account_id") 
+ 
     
     
-
-    
+   
     @api.constrains("analytic_account_id", "account_id", "debit", "credit")	
     def _check_analytic_required(self):
         #Evitamos la restricción de la cuenta/etiqueta analitica si se trata apuntes sobre el diario de diferencia
@@ -40,12 +42,17 @@ class AccountMoveLine(models.Model):
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
         for r in self:
-            r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else None
+            r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else False
             
-  #  @api.depends("account_id.area_geografica")
-  #  def _compute_area_geografica(self):
-  #     for r in self:
-  #          r.area_geografica = r.res.company.area_geografica if r.ar.res.company.area_geografica else None
+    @api.depends("account_id.tetrace_account_id.grupo_id")
+    def _compute_tetrace_grupo_account_id(self):
+        for r in self:
+           r.tetrace_grupo_account_id = r.account_id.tetrace_account_id.grupo_id.id if r.account_id.tetrace_account_id else False
+            
+    @api.depends("company_id.area_geografica")
+    def _compute_area_geografica(self):
+       for r in self:
+           r.area_geografica = r.company_id.area_geografica
            
     def _compute_asiento_anticipo_fecha_vencimiento(self):
         for r in self:
@@ -192,12 +199,12 @@ class AccountMoveLine(models.Model):
             rate = 0
             if r.date:
                 euro = self.env['res.currency.rate'].search([
-                    ('company_id', '=', 1),
-                    ('currency_id', '=', r.company_id.currency_id.id),
+                    ('company_id', '=', r.company_id.id),
+                    ('currency_id', '=', 1),
                     ('name', '<=', r.date.strftime('%Y-%m-%d'))
                 ], limit = 1)
                 if euro:
-                    rate = 1/euro.rate
+                    rate = euro.rate
             importe_original = r.balance *-1
             r.update({'importe_euros': importe_original * rate})
             # Si no tasa para Euro el importe_validacion_euros sera igual a 0
