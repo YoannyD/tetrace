@@ -23,6 +23,7 @@
                     <group>
                         <field name="name"/>
                         <field name="code"/>
+                        <field name="grupo_id"/>
                     </group>
                 </sheet>
             </form>

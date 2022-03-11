@@ -8,6 +8,7 @@
             <xpath expr="//field[@name='account_id']" position="after">
                 <field name="tetrace_account_id"/>
                 <field name="asiento_anticipo_id"/>
+                <field name="area_geografica"/>
             </xpath>
 
             <xpath expr="//field[@name='date_maturity']" position="after">
@@ -27,9 +28,11 @@
                 <field name="area_geografica" optional="hide"/>
                 <field name="tetrace_account_id" optional="hide"/>
                 <field name="tipo_cuenta" optional="hide"/>
+                <field name="tetrace_grupo_account_id" optional="hide"/>
+               
             </xpath>
              <xpath expr="//field[@name='balance']" position="after">
-                <field name="importe_euros" optional="hide"/>
+                <field name="importe_euros" sum="Total euros" optional="hide"/>
             </xpath>
         </field>
     </record>       
