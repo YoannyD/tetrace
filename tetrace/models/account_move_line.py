@@ -25,7 +25,7 @@ class AccountMoveLine(models.Model):
     importe_euros = fields.Monetary("Importe en euros", compute="_compute_importe_euros")
     area_geografica = fields.Char(string="Área geográfica", compute="_compute_area_geografica", store=True)
     tipo_cuenta = fields.Many2one(related="account_id.user_type_id", string="Tipo cuenta", store=True)
-    tetrace_grupo_account_id = fields.Many2one("tetrace.account", string="Grupo Cuenta Tetrace", store=True,
+    tetrace_grupo_account_id = fields.Char( string="Grupo Cuenta Tetrace", store=True,
                                          compute="_compute_tetrace_grupo_account_id") 
  
     
@@ -47,7 +47,7 @@ class AccountMoveLine(models.Model):
     @api.depends("account_id.tetrace_account_id.grupo_id")
     def _compute_tetrace_grupo_account_id(self):
         for r in self:
-           r.tetrace_grupo_account_id = r.account_id.tetrace_account_id.grupo_id.id if r.account_id.tetrace_account_id else False
+           r.tetrace_grupo_account_id = r.tetrace_account_id.grupo_id.name if r.tetrace_account_id.grupo_id else False
             
     @api.depends("company_id.area_geografica")
     def _compute_area_geografica(self):
