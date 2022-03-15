@@ -371,7 +371,7 @@ class Project(models.Model):
     def action_resultado(self):
         return {
             'name': _('Resultado'),
-            'view_mode': 'tree,dashboard,pivot,graph',
+            'view_mode': 'dashboard,pivot,graph,tree',
             'res_model': 'account.move.line',
             'type': 'ir.actions.act_window',
             'domain': ["&",
