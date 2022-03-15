@@ -368,6 +368,18 @@ class Project(models.Model):
             ]
         }
     
+    def action_resultado(self):
+        return {
+            'name': _('Resultado'),
+            'view_mode': 'dashboard,pivot,graph',
+            'res_model': 'account.move.line',
+            'type': 'ir.actions.act_window',
+            'domain': ["&",
+                ('analytic_account_id', '=', self.analytic_account_id.id),
+                "|",("account_id.user_type_id",'=',"Ingreso"),("account_id.user_type_id",'=',"Gasto")
+            ]
+        }
+    
     def action_view_entregas(self):
         return {
             'name': _('Entregas'),

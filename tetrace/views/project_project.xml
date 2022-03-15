@@ -82,6 +82,12 @@
                         name="action_gastos"
                         string="Gastos"
                         icon="fa-usd"/>
+                
+                <button class="oe_stat_button"
+                        type="object"
+                        name="action_resultado"
+                        string="Resultados"
+                        icon="fa-usd"/>
 
                 <button class="oe_stat_button"
                         type="object"
