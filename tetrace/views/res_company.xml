@@ -11,6 +11,7 @@
                 <field name="tetrace_cuenta_analitica_diferencia_cambio"/>
                 <field name="grupo_tetrace"/>
                 <field name="area_geografica"/>
+                <field name="autopublicacion_contabilidad"/>
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">

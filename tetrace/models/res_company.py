@@ -28,3 +28,4 @@ class Company(models.Model):
     coordinador_ids = fields.One2many('tetrace.coordinador_company', 'company_id')
     coordinador_sale_order_ids = fields.One2many('sale.order', 'company_coordinador_id')
     fecha_bloque_imputacion_horas = fields.Date("Fecha bloqueo imputación horas")
+    autopublicacion_contabilidad = fields.Boolean("Autopublicación contabilidad")
