@@ -256,7 +256,7 @@ class TetracePortal(CustomerPortal):
         '/my/ticket/reabrir/<int:ticket_id>',
         '/my/ticket/reabrir/<int:ticket_id>/<access_token>',
     ], type='http', auth="public", website=True)
-    def ticket_close(self, ticket_id=None, access_token=None, **kw):
+    def ticket_reabrir(self, ticket_id=None, access_token=None, **kw):
         try:
             ticket_sudo = self._document_check_access('helpdesk.ticket', ticket_id, access_token)
         except (AccessError, MissingError):
