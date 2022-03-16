@@ -72,6 +72,20 @@
             </xpath>
         </field>
     </record>
+    
+
+    <record model="ir.ui.view" id="view_account_move_line_filter">
+        <field name="name">account.move.line.search.tetrace</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+        <field name="model">account.move.line</field>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='receivable']" position="after">
+                <filter domain="[['account_id.user_type_id','ilike','Gastos']]" name="Gastos" string="Gastos"/>
+                <filter domain="[['account_id.user_type_id','ilike','Ingreso']]" name="Ingresos" string="Ingresos"/>
+            </xpath>          
+        </field>
+    </record>
+
 
     <record model="ir.actions.act_window" id="account_due_list.action_invoice_payments">
         <field name="domain">['|', ('account_id.gestionar_cartera', '=', True), ('account_id.internal_type', 'in', ['receivable', 'payable'])]</field>
