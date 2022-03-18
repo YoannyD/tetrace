@@ -12,6 +12,7 @@
             </xpath>
 
             <xpath expr="//field[@name='date_maturity']" position="after">
+                <field name="expected_pay_date"/>
                 <field name="confirmado"/>
             </xpath>
         </field>
