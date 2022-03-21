@@ -142,6 +142,17 @@
         </field>
     </record>
     
+    <record model="ir.ui.view" id="view_complete_invoice_refund_tree">
+        <field name="name">account.invoice_refound.tree.tetrace</field>
+        <field name="inherit_id" ref="l10n_cl.view_complete_invoice_refund_tree"/>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_origin']" position="after">
+                <field name="ref"/>
+            </xpath>
+        </field>
+    </record>
+    
     <record model="ir.ui.view" id="invoice_form_inherit_account_intrastat">
         <field name="name">account.move.form.inherit.account.intrastat.tetrace</field>
         <field name="inherit_id" ref="account_intrastat.invoice_form_inherit_account_intrastat"/>
