@@ -30,6 +30,7 @@
                 <field name="tetrace_account_id" optional="hide"/>
                 <field name="tipo_cuenta" optional="hide"/>
                 <field name="tetrace_grupo_account_id" optional="hide"/>
+                <field name="expected_pay_date" optional="hide"/>
                
             </xpath>
              <xpath expr="//field[@name='balance']" position="after">
@@ -52,6 +53,7 @@
 
             <xpath expr="//field[@name='date_maturity']" position="after">
                 <field name="confirmado"/>
+                <field name="expected_pay_date" optional="hide"/>
             </xpath>
         </field>
     </record>
