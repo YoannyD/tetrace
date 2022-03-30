@@ -21,7 +21,7 @@ class HelpdeskTicket(models.Model):
     fecha_previsto = fields.Date("Fecha previsto", readonly=True)
     fecha_priorizado = fields.Date("Fecha priorizado", readonly=True)
     dias_totales = fields.Integer("Días totales", compute="_compute_dias_totales")
-    dias_tic_apertura = fields.Integer("Días TIC apertura", compute="_compute_dias_tic")
+    dias_tic_apertura = fields.Integer("Días TIC apertura", compute="_compute_dias_tic_apertura")
     dias_tic_priorizado = fields.Integer("Días TIC priorizado", compute="_compute_dias_tic_priorizado")
     dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
     dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
@@ -61,12 +61,12 @@ class HelpdeskTicket(models.Model):
             r.dias_totales = dias
        
     @api.depends("fecha_resuelto")
-    def _compute_dias_tic(self):
+    def _compute_dias_tic_apertura(self):
         for r in self:
             dias = 0
             if r.fecha_resuelto and r.create_date:
                 dias = (r.fecha_resuelto - r.create_date.date()).days
-            r.dias_tic = dias
+            r.dias_tic_apertura = dias
     
     @api.depends("fecha_resuelto")
     def _compute_dias_delay_tic(self):
