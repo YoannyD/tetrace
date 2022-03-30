@@ -24,6 +24,8 @@
                 <field name="employee_id" attrs="{'invisible': [('tarea_individual', '=', False)]}"/>
                 <field name="tipo"/>
                 <field name="ref_created" invisible="1"/>
+                <field name="planned_date_begin"/>
+                <field name="planned_date_end"/>
             </xpath>
             
             <xpath expr="//page[@name='extra_info']//field[@name='company_id']" position="after">
@@ -193,6 +195,8 @@
                 <field name="job_id"/>
                 <field name="employee_id"/>
                 <field name="date_deadline"/>
+                <field name="planned_date_begin"/>
+                <field name="planned_date_end"/>
                 <field name="ref_created" invisible="1"/>
             </xpath>
         </field>

@@ -77,9 +77,9 @@
             </xpath>
             
             <xpath expr="//group[@id='header_right_group']" position="inside">
-                <field name="tipo_proyecto_id" 
+                <!--<field name="tipo_proyecto_id" 
                        context="{'mostrar_tipo_nombre': True}" 
-                       attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice'))]}"/>
+                       attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice'))]}"/>-->
                        <!--attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice')), ('baremo', '=', True)]}"/>-->
                 <field name="estado_tetrace"/>
             </xpath>
