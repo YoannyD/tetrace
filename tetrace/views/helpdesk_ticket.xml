@@ -54,7 +54,8 @@
                 <field name="fecha_resuelto" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
                 <field name="fecha_validado" attrs="{'readonly': [('current_user_manager', '=', False)]}"/>
                 <field name="dias_totales"/>
-                <field name="dias_tic"/>
+                <field name="dias_tic_apertura"/>
+                <field name="dias_tic_priorizado"/>                
                 <field name="dias_delay_tic"/>
                 <field name="dias_delay_user"/>
                 <field name="dias_comprobacion"/>               
@@ -102,7 +103,8 @@
             <field name="dias_comprobacion" optional="hide"/>
             <field name="dias_totales" optional="hide"/>
             <field name="dias_delay_user" optional="hide"/>
-            <field name="dias_tic" optional="hide"/>
+            <field name="dias_tic_apertura" optional="hide"/>
+            <field name="dias_tic_priorizado" optional="hide"/>
           </xpath>
         </field>
     </record>

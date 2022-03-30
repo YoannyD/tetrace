@@ -19,8 +19,10 @@ class HelpdeskTicket(models.Model):
     fecha_resuelto = fields.Date("Fecha resuelto", readonly=True)
     fecha_validado = fields.Date("Fecha validado", readonly=True)
     fecha_previsto = fields.Date("Fecha previsto", readonly=True)
+    fecha_priorizado = fields.Date("Fecha priorizado", readonly=True)
     dias_totales = fields.Integer("Días totales", compute="_compute_dias_totales")
-    dias_tic = fields.Integer("Días TIC", compute="_compute_dias_tic")
+    dias_tic_apertura = fields.Integer("Días TIC apertura", compute="_compute_dias_tic")
+    dias_tic_priorizado = fields.Integer("Días TIC priorizado", compute="_compute_dias_tic_priorizado")
     dias_delay_tic = fields.Integer("Días delay TIC", compute="_compute_dias_delay_tic")
     dias_delay_user = fields.Integer("Días delay user", compute="_compute_dias_delay_user")
     solicitante = fields.Many2one('res.users', default=lambda self: self.env.user.id)
@@ -89,6 +91,14 @@ class HelpdeskTicket(models.Model):
             if r.fecha_validado and r.fecha_resuelto:
                 dias = (r.fecha_validado - r.fecha_resuelto).days
             r.dias_comprobacion = dias
+            
+    @api.depends("fecha_resuelto","fecha_validado")
+    def _compute_dias_tic_priorizado(self):
+        for r in self:
+            dias = 0
+            if r.fecha_priorizado and r.fecha_resuelto:
+                dias = (r.fecha_resuelto - r.fecha_priorizado).days
+            r.dias_tic_priorizado = dias
                         
     @api.model
     def create(self, vals):
