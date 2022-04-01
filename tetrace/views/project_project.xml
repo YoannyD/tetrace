@@ -18,6 +18,9 @@
         <field name="model">project.project</field>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
+                <field name="company_coordinador_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_finalizacion"/>
                 <field name="estado_id"/>
             </xpath>
         </field>
@@ -349,6 +352,10 @@
 
             <xpath expr="//group[1]" position="inside">
                 <filter string="Estados" name="filter_estado_id" context="{'group_by': 'estado_id'}"/>
+                <filter string="Fecha inicio" name="filter_fecha_inicio" context="{'group_by': 'fecha_inicio'}"/>
+                <filter string="Fecha fin" name="filter_fecha_fin" context="{'group_by': 'fecha_finalizacion'}"/>
+                <filter string="Compañia" name="filter_company" context="{'group_by': 'company_id'}"/>
+                <filter string="Compañia coordinadora" name="filter_compan_coor" context="{'group_by': 'company_coordinador_id'}"/>
             </xpath>
         </field>
     </record>
