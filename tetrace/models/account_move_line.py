@@ -21,50 +21,49 @@ class AccountMoveLine(models.Model):
     confirmado = fields.Boolean('Confirmado')
     account_move_fecha_servicio = fields.Date(related="move_id.fecha_servicio")
     numero_proyecto = fields.Char(related="analytic_account_id.code", string="Número proyecto", store=True)
-    tipo_proyecto = fields.Char(related="analytic_account_id.project_ids.tipo_proyecto_name",string="Tipo proyecto", store=True)
+    tipo_proyecto = fields.Char(related="analytic_account_id.project_ids.tipo_proyecto_name", string="Tipo proyecto",
+                                store=True)
     importe_euros = fields.Monetary("Importe en euros", compute="_compute_importe_euros")
     area_geografica = fields.Char(string="Área geográfica", compute="_compute_area_geografica", store=True)
     tipo_cuenta = fields.Many2one(related="account_id.user_type_id", string="Tipo cuenta", store=True)
-    tetrace_grupo_account_id = fields.Char( string="Grupo Cuenta Tetrace", store=True,
-                                         compute="_compute_tetrace_grupo_account_id") 
- 
-    
-    
-   
-    @api.constrains("analytic_account_id", "account_id", "debit", "credit")	
+    tetrace_grupo_account_id = fields.Char(string="Grupo Cuenta Tetrace", store=True,
+                                           compute="_compute_tetrace_grupo_account_id")
+    project_partner = fields.Many2one('res.partner', related='analytic_account_id.partner_id', string='Cliente Proyecto')
+
+    @api.constrains("analytic_account_id", "account_id", "debit", "credit")
     def _check_analytic_required(self):
-        #Evitamos la restricción de la cuenta/etiqueta analitica si se trata apuntes sobre el diario de diferencia
-        #de cambio de la compañía
+        # Evitamos la restricción de la cuenta/etiqueta analitica si se trata apuntes sobre el diario de diferencia
+        # de cambio de la compañía
         for r in self:
-            if r.move_id.journal_id.id != self.env.company.currency_exchange_journal_id.id:	
-                super(AccountMoveLine, self)._check_analytic_required() 
-    
+            if r.move_id.journal_id.id != self.env.company.currency_exchange_journal_id.id:
+                super(AccountMoveLine, self)._check_analytic_required()
+
     @api.depends("account_id.tetrace_account_id")
     def _compute_tetrace_account_id(self):
         for r in self:
             r.tetrace_account_id = r.account_id.tetrace_account_id.id if r.account_id.tetrace_account_id else False
-            
+
     @api.depends("account_id.tetrace_account_id.grupo_id")
     def _compute_tetrace_grupo_account_id(self):
         for r in self:
-           r.tetrace_grupo_account_id = r.tetrace_account_id.grupo_id.name if r.tetrace_account_id.grupo_id else False
-            
+            r.tetrace_grupo_account_id = r.tetrace_account_id.grupo_id.name if r.tetrace_account_id.grupo_id else False
+
     @api.depends("company_id.area_geografica")
     def _compute_area_geografica(self):
-       for r in self:
-           r.area_geografica = r.company_id.area_geografica
-           
+        for r in self:
+            r.area_geografica = r.company_id.area_geografica
+
     def _compute_asiento_anticipo_fecha_vencimiento(self):
         for r in self:
             fecha_vencimiento = None
             if r.asiento_anticipo_id:
                 for line in r.asiento_anticipo_id.line_ids:
                     if line.date_maturity and line.account_id and line.account_id.group_id and \
-                        line.account_id.group_id.code_prefix == '5200':
+                            line.account_id.group_id.code_prefix == '5200':
                         fecha_vencimiento = line.date_maturity
                         break
             r.asiento_anticipo_fecha_vencimiento = fecha_vencimiento
-            
+
     def _sale_create_reinvoice_sale_line(self):
         sale_order_map = self._sale_determine_order()
 
@@ -85,12 +84,15 @@ class AccountMoveLine(models.Model):
 
             # raise if the sale order is not currenlty open
             if sale_order.state != 'sale':
-                message_unconfirmed = _('The Sales Order %s linked to the Analytic Account %s must be validated before registering expenses.')
+                message_unconfirmed = _(
+                    'The Sales Order %s linked to the Analytic Account %s must be validated before registering expenses.')
                 messages = {
                     'draft': message_unconfirmed,
                     'sent': message_unconfirmed,
-                    'done': _('The Sales Order %s linked to the Analytic Account %s is currently locked. You cannot register an expense on a locked Sales Order. Please create a new SO linked to this Analytic Account.'),
-                    'cancel': _('The Sales Order %s linked to the Analytic Account %s is cancelled. You cannot register an expense on a cancelled Sales Order.'),
+                    'done': _(
+                        'The Sales Order %s linked to the Analytic Account %s is currently locked. You cannot register an expense on a locked Sales Order. Please create a new SO linked to this Analytic Account.'),
+                    'cancel': _(
+                        'The Sales Order %s linked to the Analytic Account %s is cancelled. You cannot register an expense on a cancelled Sales Order.'),
                 }
                 raise UserError(messages[sale_order.state] % (sale_order.name, sale_order.analytic_account_id.name))
 
@@ -98,8 +100,10 @@ class AccountMoveLine(models.Model):
 
             # find the existing sale.line or keep its creation values to process this in batch
             sale_line = None
-            if move_line.product_id.expense_policy == 'sales_price' and (move_line.product_id.invoice_policy == 'delivery' or move_line.product_id.service_policy == 'delivered_manual'):  # for those case only, we can try to reuse one
-                map_entry_key = (sale_order.id, move_line.product_id.id, price)  # cache entry to limit the call to search
+            if move_line.product_id.expense_policy == 'sales_price' and (
+                    move_line.product_id.invoice_policy == 'delivery' or move_line.product_id.service_policy == 'delivered_manual'):  # for those case only, we can try to reuse one
+                map_entry_key = (
+                sale_order.id, move_line.product_id.id, price)  # cache entry to limit the call to search
                 sale_line = existing_sale_line_cache.get(map_entry_key)
                 if sale_line:  # already search, so reuse it. sale_line can be sale.order.line record or index of a "to create values" in `sale_line_values_to_create`
                     map_move_sale_line[move_line.id] = sale_line
@@ -116,13 +120,16 @@ class AccountMoveLine(models.Model):
                         # save value to create it
                         sale_line_values_to_create.append(move_line._sale_prepare_sale_line_values(sale_order, price))
                         # store it in the cache of existing ones
-                        existing_sale_line_cache[map_entry_key] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                        existing_sale_line_cache[map_entry_key] = len(
+                            sale_line_values_to_create) - 1  # save the index of the value to create sale line
                         # store it in the map_move_sale_line map
-                        map_move_sale_line[move_line.id] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                        map_move_sale_line[move_line.id] = len(
+                            sale_line_values_to_create) - 1  # save the index of the value to create sale line
 
             else:  # save its value to create it anyway
                 sale_line_values_to_create.append(move_line._sale_prepare_sale_line_values(sale_order, price))
-                map_move_sale_line[move_line.id] = len(sale_line_values_to_create) - 1  # save the index of the value to create sale line
+                map_move_sale_line[move_line.id] = len(
+                    sale_line_values_to_create) - 1  # save the index of the value to create sale line
 
         # create the sale lines in batch
         new_sale_lines = self.env['sale.order.line'].create(sale_line_values_to_create)
@@ -153,13 +160,13 @@ class AccountMoveLine(models.Model):
                 name = product.description_sale
         elif self.journal_id.type == 'purchase':
             if product.description_purchase:
-                name =  product.description_purchase
+                name = product.description_purchase
 
         if not name and product.partner_ref:
             name = product.partner_ref
 
         return name
-    
+
     def _prepare_analytic_line(self):
         res = super(AccountMoveLine, self)._prepare_analytic_line()
         for values in res:
@@ -169,10 +176,10 @@ class AccountMoveLine(models.Model):
                 company_id = move_line.move_id.company_id.id
             elif move_line:
                 company_id = move_line.analytic_account_id.company_id.id
-                
+
             values.update({'company_id': company_id})
         return res
-    
+
     def write(self, vals):
         res = super(AccountMoveLine, self).write(vals)
         if "price_unit" in vals or "quantity" in vals or "discount" in vals:
@@ -180,19 +187,19 @@ class AccountMoveLine(models.Model):
                 if r.exclude_from_invoice_tab == False:
                     r.move_id.write({"invoice_line_cambia": str(fields.Datetime.now())})
         return res
-    
+
     def _get_computed_account(self):
         self.ensure_one()
         if not self.product_id:
             return
-        
+
         res = super(AccountMoveLine, self)._get_computed_account()
-        
+
         if self.purchase_line_id.cuenta_activo:
             return self.product_id.categ_id.account_activo_id.id
-        
+
         return res
-            
+
     @api.depends("balance", "date")
     def _compute_importe_euros(self):
         for r in self:
@@ -202,10 +209,9 @@ class AccountMoveLine(models.Model):
                     ('company_id', '=', r.company_id.id),
                     ('currency_id', '=', 1),
                     ('name', '<=', r.date.strftime('%Y-%m-%d'))
-                ], limit = 1)
+                ], limit=1)
                 if euro:
                     rate = euro.rate
-            importe_original = r.balance *-1
+            importe_original = r.balance * -1
             r.update({'importe_euros': importe_original * rate})
             # Si no tasa para Euro el importe_validacion_euros sera igual a 0
-            
