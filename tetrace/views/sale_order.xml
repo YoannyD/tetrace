@@ -206,6 +206,7 @@
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='qty_delivered']" position="before">
                 <field name="project_id" invisible="1"/>
             </xpath>
+
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='qty_delivered']" position="attributes">
                 <attribute name="attrs">{'readonly': [('project_id', '!=', False)]}</attribute>
             </xpath>
