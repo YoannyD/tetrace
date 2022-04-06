@@ -31,10 +31,13 @@
                 <field name="tipo_cuenta" optional="hide"/>
                 <field name="tetrace_grupo_account_id" optional="hide"/>
                 <field name="expected_pay_date" optional="hide"/>
-               
             </xpath>
              <xpath expr="//field[@name='balance']" position="after">
                 <field name="importe_euros" sum="Total euros" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="project_partner" optional="show"/>
+                <field name="project_state" optional="show"/>
             </xpath>
         </field>
     </record>       

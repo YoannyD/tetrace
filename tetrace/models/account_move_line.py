@@ -28,7 +28,8 @@ class AccountMoveLine(models.Model):
     tipo_cuenta = fields.Many2one(related="account_id.user_type_id", string="Tipo cuenta", store=True)
     tetrace_grupo_account_id = fields.Char(string="Grupo Cuenta Tetrace", store=True,
                                            compute="_compute_tetrace_grupo_account_id")
-    project_partner = fields.Many2one('res.partner', related='analytic_account_id.partner_id', string='Cliente Proyecto')
+    project_partner = fields.Many2one('res.partner', related='analytic_account_id.project_ids.partner_id', string='Cliente Proyecto')
+    project_state = fields.Many2one('tetrace.project_state', related='analytic_account_id.project_ids.estado_id', string='Estado Proyecto')
 
     @api.constrains("analytic_account_id", "account_id", "debit", "credit")
     def _check_analytic_required(self):
