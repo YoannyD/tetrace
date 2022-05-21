@@ -57,12 +57,12 @@ class PurchaseOrder(models.Model):
             rate = 0
             if r.date_order:
                 euro = self.env['res.currency.rate'].search([
-                    ('company_id', '=', r.company_id.id),
-                    ('currency_id', '=', 1),
+                    ('company_id', '=', 1),
+                    ('currency_id', '=', r.currency_id.id),
                     ('name', '<=', r.date_order.strftime('%Y-%m-%d'))
                 ], limit = 1)
                 if euro:
-                    rate = euro.rate
+                    rate = 1/euro.rate
             importe_original = r.amount_untaxed
             r.update({'importe_validacion_euros': importe_original * rate})
             # Si no tasa para Euro el importe_validacion_euros sera igual a 0

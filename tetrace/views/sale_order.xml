@@ -210,6 +210,12 @@
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='qty_delivered']" position="attributes">
                 <attribute name="attrs">{'readonly': [('project_id', '!=', False)]}</attribute>
             </xpath>
+
+            <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='qty_invoiced']" position="after">
+                <field name="product_quantity" optional="hide"/>
+                <field name="product_purchase" optional="hide"/>
+                <field name="product_stock" optional="hide"/>
+            </xpath>
             
             <xpath expr="//field[@name='order_line'][1]/tree[1]/field[@name='price_subtotal']" position="after">
                 <field name="no_imprimir" optional="hide"/>

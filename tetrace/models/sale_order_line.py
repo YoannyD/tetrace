@@ -26,7 +26,7 @@ class SaleOrderLine(models.Model):
             purchase = 0
             stock = 0
             if line.product_id:
-                move_lines = self.env['stock.move.line'].search([('product_id', '=', self.product_id.id)])
+                move_lines = self.env['stock.move.line'].search([('product_id', '=', line.product_id.id)])
                 for move in move_lines:
                     if move.location_id.usage == 'supplier' and move.location_dest_id.usage == 'internal':
                         purchase += move.qty_done
@@ -37,8 +37,10 @@ class SaleOrderLine(models.Model):
 
     def _compute_product_quantity(self):
         for line in self:
+            qty_available = 0
             if line.product_id:
-                line.product_quantity = line.product_id.qty_available
+                qty_available = line.product_id.qty_available
+            line.product_quantity = qty_available
 
 
     @api.onchange('product_id')
