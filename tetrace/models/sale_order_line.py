@@ -34,14 +34,12 @@ class SaleOrderLine(models.Model):
             line.product_purchase = purchase
             line.product_stock = stock
 
-
     def _compute_product_quantity(self):
         for line in self:
-            qty_available = 0
+            virtual_available = 0
             if line.product_id:
-                qty_available = line.product_id.qty_available
-            line.product_quantity = qty_available
-
+                virtual_available = line.product_id.virtual_available
+            line.product_quantity = virtual_available
 
     @api.onchange('product_id')
     def product_id_change(self):
