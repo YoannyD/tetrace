@@ -64,6 +64,12 @@ class Project(models.Model):
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id', track_visibility='onchange')
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
+    clasificacion = fields.Selection(selection=[
+        ('service', 'servicio'),
+        ('it', 'IT'),
+        ('planner', 'Planner'),
+        ('estructural', 'Estructural'),
+    ], string='Clasificación Tetrace', copy=True)
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id', track_visibility='onchange')
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")

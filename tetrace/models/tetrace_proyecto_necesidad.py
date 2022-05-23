@@ -14,6 +14,11 @@ class ProcesoSeleccion(models.Model):
     
     project_id = fields.Many2one('project.project', string="Proyecto")
     job_id = fields.Many2one('hr.job', string="Puesto de trabajo")
+    nacionalidad = fields.Many2one('res.country', string="Nacionalidad")
+    maquina = fields.Char("Maquinas")
+    salario = fields.Integer("Salario")
+    formacion = fields.Many2many("hr.applicant.category", string="Formación")
+    fecha_entrega = fields.Date("Fecha entrega")
     necesidad = fields.Integer("Necesidad")
     realizado = fields.Boolean("Realizado")
     observaciones = fields.Text("Observaciones")

@@ -10,9 +10,13 @@
                     <field name="proyecto_necesidad_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="project_id"/>
-                            <field name="observaciones"/>
+                            <field name="nacionalidad"/>
+                            <field name="maquina"/>
+                            <field name="formacion" widget="many2many_tags"/>
+                            <field name="fecha_entrega"/>
+                            <field name="salario"/>
                             <field name="necesidad"/>
-                            <field name="realizado"/>
+                            <field name="realizado"/>   
                         </tree>
                     </field>
                 </group>
