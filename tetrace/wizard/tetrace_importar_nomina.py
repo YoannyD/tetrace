@@ -47,7 +47,7 @@ class ImportarNonmina(models.TransientModel):
                 line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
                 if len(line) >= 8:
                     employee = self.env['hr.employee'].search([
-                        ('codigo_trabajador_A3', '=', line[6]), 
+                        ('codigo_trabajador_company', '=', line[6]),
                         ('company_id', '=', self.company_id.id)
                     ], limit=1)
                     
@@ -128,7 +128,7 @@ class ImportarNonmina(models.TransientModel):
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
                 employee = self.env['hr.employee'].search([
-                    ('codigo_trabajador_A3', '=', key_trabajador[-6:]), 
+                    ('codigo_trabajador_company', '=', key_trabajador[-6:]),
                     ('company_id', '=', self.company_id.id)
                 ], limit=1)
 

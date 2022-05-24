@@ -7,7 +7,7 @@
     'author': "Ingetive",
     'website': "https://ingetive.com",
     'category': 'Uncategorized',
-    'version': '13.0.1.0.1',
+    'version': '13.0.1.0.3',
     'depends': [
         'base',
         'sale',

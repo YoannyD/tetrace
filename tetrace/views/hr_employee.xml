@@ -48,7 +48,8 @@
             </xpath>
 
             <xpath expr="//field[@name='mobile_phone']" position="before">
-                <field name="codigo_trabajador_A3"/>
+                <field name="codigo_trabajador_A3" invisible="1"/>
+                <field name="codigo_trabajador_company"/>
                 <field name="reference_employee"/>
                 <field name="nivel_validacion_compras_ids" widget="many2many_tags"/>
             </xpath>
