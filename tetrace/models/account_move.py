@@ -23,7 +23,7 @@ CODIGOS_SII = [
 ]
 
 ESTADOS_TETRACE = [
-    ('ptevalidación', 'PTE validación'),
+    ('ptevalidacion', 'PTE validación'),
     ('validada', 'Validada'),
     ('pendiente_oc', 'Pendiente OC'),
     ('ok_cliente', 'OK Cliente'),
