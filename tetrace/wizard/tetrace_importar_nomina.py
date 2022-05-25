@@ -46,9 +46,8 @@ class ImportarNonmina(models.TransientModel):
             else:
                 line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
                 if len(line) >= 8:
-                    employee = self.env['hr.employee'].search([
-                        ('codigo_trabajador_company', '=', line[6]),
-                        ('company_id', '=', self.company_id.id)
+                    employee = self.env['hr.employee'].with_context(force_company=self.company_id.id).search([
+                        ('codigo_trabajador_company', '=', line[6])
                     ], limit=1)
                     
                     account = self.env['account.account'].search([
@@ -76,19 +75,33 @@ class ImportarNonmina(models.TransientModel):
                     except:
                         haber = 0.0
                     
-                    values = {
-                        'nomina_id': self.nomina_id.id,
-                        'employee_id': employee.id,
-                        'account_id': account.id,
-                        'fecha_inicio': fecha_inicio,
-                        'fecha_fin': fecha_fin,
-                        'descripcion': line[5],
-                        'debe': debe,
-                        'haber': haber,
-                    }
-             
-                    nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values)
-                    nomina_trabajador.generar_distribucion_analitica()
+                    if employee and account:
+                        values = {
+                            'nomina_id': self.nomina_id.id,
+                            'employee_id': employee.id,
+                            'account_id': account.id,
+                            'fecha_inicio': fecha_inicio,
+                            'fecha_fin': fecha_fin,
+                            'descripcion': line[5],
+                            'debe': debe,
+                            'haber': haber,
+                        }
+                    else:
+                        linea_write = 'Trabajador con codigo %s no encontrado, en la compañía %s' % (
+                        line[6], self.company_id.name)
+                        values = {
+                            'nomina_id': self.nomina_id.id,
+                            'employee_id': False,
+                            'account_id': account.id,
+                            'fecha_inicio': fecha_inicio,
+                            'fecha_fin': fecha_fin,
+                            'descripcion': line[5],
+                            'debe': debe,
+                            'haber': haber,
+                            'texto_importado': linea_write
+                        }
+                        nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values)
+                        nomina_trabajador.generar_distribucion_analitica()
                 else:
                     raise Warning(_('Your File has less column please refer sample file'))
             
@@ -127,10 +140,16 @@ class ImportarNonmina(models.TransientModel):
             employee = False
             key_trabajador = linea[58:66].strip()
             if key_trabajador:
-                employee = self.env['hr.employee'].search([
-                    ('codigo_trabajador_company', '=', key_trabajador[-6:]),
-                    ('company_id', '=', self.company_id.id)
+                employee = self.env['hr.employee'].with_context(force_company=self.company_id.id).search([
+                    ('codigo_trabajador_company', '=', key_trabajador[-6:])
                 ], limit=1)
+
+            linea_write = ''
+            if employee:
+                linea_write = linea
+            else:
+                if key_trabajador:
+                    linea_write = 'Trabajador con codigo %s no encontrado, en la compañía %s' % (key_trabajador[-6:], self.company_id.name)
 
             values_nomina_trabajador = {
                 'nomina_id': self.nomina_id.id,
@@ -141,7 +160,7 @@ class ImportarNonmina(models.TransientModel):
                 'descripcion': descripcion,
                 'debe': debe,
                 'haber': haber,
-                'texto_importado': linea
+                'texto_importado': linea_write
             }
 
             nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values_nomina_trabajador)
