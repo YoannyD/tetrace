@@ -56,6 +56,7 @@ class SaleOrder(models.Model):
         ('asignado', 'Asignado'),
         ('Revisado', 'Revisado'),
         ('standby', 'Stand by'),
+        ('asignadono', 'Asignado NO realizado'),        
         ('terminado', 'Terminado'),
     ], string='Estado Tetrace', default='Pttrealizar',copy=False)
     motivo_cancelacion = fields.Selection(selection=[
