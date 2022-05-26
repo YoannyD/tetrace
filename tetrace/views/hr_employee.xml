@@ -68,7 +68,7 @@
             </xpath>
             
             <xpath expr="//notebook[1]" position="inside">
-                <page string="Formación">
+                <page string="Formación/documentación">
                     <field name="formacion_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="fecha_inicio"/>
@@ -76,6 +76,7 @@
                             <field name="curso"/>
                             <field name="fecha_vigencia"/>
                             <field name="tipo_id"/>
+                            <field name="certificado" widget ="url"/>
                         </tree>
                     </field>
                 </page>
