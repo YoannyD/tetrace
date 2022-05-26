@@ -45,6 +45,10 @@
                 attrs="{'invisible': [('type', 'not in', ('out_invoice', 'out_refund', 'out_receipt'))]}"/>
             </xpath>
             
+            <xpath expr="//field[@name='canal_validacion']" position="attributes">
+                <attribute name="groups">__export__.res_groups_4219_0f2e1e99</attribute>
+            </xpath>
+            
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="create_uid" invisible="1"/>
                 <field name="validacion_id"
@@ -81,7 +85,7 @@
                        context="{'mostrar_tipo_nombre': True}" 
                        attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice'))]}"/>-->
                        <!--attrs="{'invisible': [('type', 'not in', ('in_invoice'))], 'required': [('type', 'in', ('in_invoice')), ('baremo', '=', True)]}"/>-->
-                <field name="estado_tetrace"/>
+                <field name="estado_tetrace" attrs="{'invisible': [('type', 'not in', ('out_invoice'))]}"/>
             </xpath>
 
 
