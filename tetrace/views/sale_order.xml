@@ -54,6 +54,7 @@
             
             <xpath expr="//field[@name='sale_order_template_id']" position="after">
                 <field name="estado_tetrace" string="Estado Tetrace"/>
+                <field name="forecast_facturacion" string="Forecast facturación"/>
                 <field name="motivo_cancelacion" string="Motivo cancelación" attrs="{'invisible': [['estado_tetrace', '!=', 'Rechazado']], 'required': [['estado_tetrace','=','Rechazado']]}"/>
                 <field name="feedbacktetrace" string="Feedback" attrs="{'required': [['estado_tetrace', '=', 'Rechazado']]}"/>
                 <field name="prevision_facturacion"/>
@@ -315,6 +316,7 @@
             <xpath expr="//field[@name='invoicing_id']" position="after">
                 <xpath expr="//field[@name='prevision_facturacion']" position="move"/>
                 <xpath expr="//field[@name='estado_tetrace']" position="move"/>
+                <xpath expr="//field[@name='forecast_facturacion']" position="move"/>
             </xpath>
         </field>
     </record>
@@ -338,6 +340,7 @@
             </xpath>
             
             <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="forecast_facturacion" optional="hide"/>
                 <field name="estado_tetrace"/>
                 <field name="feedbacktetrace" optional="hide"/>
                 <field name="motivo_cancelacion" attrs="{}" optional="hide"/>

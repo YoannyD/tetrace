@@ -226,6 +226,12 @@
             </div>
         </t>
     </template>
+    
+    <template id="report_saleorder_proyecto_document2" inherit_id="report_saleorder_proyecto_document">       
+            <xpath expr="//t[@t-foreach='doc.order_line'][1]" position="attributes">
+            <attribute name="t-foreach">doc.order_line.filtered(lambda x: not x.no_imprimir)</attribute>
+            </xpath>
+    </template>
 
     <template id="html_report_proyecto">
         <main style="padding:0;margin:0;">
