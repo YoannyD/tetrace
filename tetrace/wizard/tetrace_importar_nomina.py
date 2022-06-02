@@ -46,8 +46,11 @@ class ImportarNonmina(models.TransientModel):
             else:
                 line = list(map(lambda row: isinstance(row.value, bytes) and row.value.encode('utf-8') or str(row.value), sheet.row(row_no)))
                 if len(line) >= 8:
+                    code_employee = line[6]
+                    if '.' in line[6]:
+                        code_employee = line[6].split('.')[0]
                     employee = self.env['hr.employee'].with_context(force_company=self.company_id.id).search([
-                        ('codigo_trabajador_company', '=', line[6])
+                        ('codigo_trabajador_company', '=', code_employee)
                     ], limit=1)
                     
                     account = self.env['account.account'].search([
@@ -86,9 +89,11 @@ class ImportarNonmina(models.TransientModel):
                             'debe': debe,
                             'haber': haber,
                         }
+                        nomina_trabajador = self.env['tetrace.nomina.trabajador'].create(values)
+                        nomina_trabajador.generar_distribucion_analitica()
                     else:
                         linea_write = 'Trabajador con codigo %s no encontrado, en la compañía %s' % (
-                        line[6], self.company_id.name)
+                        code_employee, self.company_id.name)
                         values = {
                             'nomina_id': self.nomina_id.id,
                             'employee_id': False,
