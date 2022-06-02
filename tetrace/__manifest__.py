@@ -139,6 +139,7 @@
         'wizard/tetrace_prevision_facturacion_cancelar.xml',
         'wizard/tetrace_crear_tareas_act_desc.xml',
         'wizard/tetrace_change_partner_sale_order.xml',
+        'wizard/fix_database_view.xml',
         'templates/portal.xml',
         'templates/website_sale.xml',
     ],
