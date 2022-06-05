@@ -22,6 +22,12 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_finalizacion"/>
                 <field name="estado_id"/>
+                <field name="prioridad" optional="hide"/>
+                <field name="departamento" optional="hide"/>
+                <field name="propietario" optional="hide"/>
+                <field name="key_user" optional="hide"/>
+                <field name="recurso_it" optional="hide"/>
+                <field name="estimacion_horas" optional="hide"/>
             </xpath>
         </field>
     </record>
@@ -130,8 +136,10 @@
             </xpath>
             
             <xpath expr="//page[@name='settings']//field[@name='user_id']" position="before">
-                <field name="tipo_proyecto_name"/>
-                <field name="clasificacion"/>
+                <field name="tipo_proyecto_name"
+                    attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
+                <field name="clasificacion"
+                    attrs="{'readonly': [('clasificacion', '=', 'service')], 'required': [('clasificacion', '!=', 'service')]}"/>
             </xpath>
             
             <xpath expr="//field[@name='partner_id']" position="after">
@@ -168,15 +176,16 @@
           </xpath>
             
             <xpath expr="//field[@name='analytic_account_id']" position="after">
-                <field name="analitica_cerrada"/>
+                <field name="analitica_cerrada"
+                   attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
             </xpath>
-            
+                     
           <xpath expr="//field[@name='analytic_account_id']" position="attributes">
-            <attribute name="attrs">{}</attribute>
+            <attribute name="attrs">{'invisible': [('clasificacion', '!=', 'service')]}</attribute>
             <attribute name="force_save">True</attribute>
             <attribute name="readonly">1</attribute>
           </xpath>
-            
+                            
           <xpath expr="//field[@name='company_id']" position="attributes">
             <attribute name="attrs">{}</attribute>
             <attribute name="force_save">True</attribute>
@@ -184,7 +193,8 @@
           </xpath>
 
             <xpath expr="//field[@name='company_id']" position="after">
-                <field name="company_coordinador_id"/>
+                <field name="company_coordinador_id"
+                    attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
                 <field name="fecha_inicio"/>
                 <label for="fecha_cancelacion" class="oe_inline"/>
                 <div class="o_row">
@@ -204,7 +214,18 @@
                 </div>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
-                <field name="resource_calendar_id" string="Calendario por defecto"/>
+                <field name="resource_calendar_id" string="Calendario por defecto"
+                       attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
+                <field name="prioridad" widget="priority" attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="propietario"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="departamento"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="key_user"  widget="many2many_tags" attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>                       
+                <field name="recurso_it"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="estimacion_horas"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
             </xpath>
 
             <xpath expr="//group[@name='misc'][1]" position="replace"/>

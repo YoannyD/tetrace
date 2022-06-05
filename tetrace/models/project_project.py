@@ -78,7 +78,25 @@ class Project(models.Model):
     analytic_account_code = fields.Char(related="analytic_account_id.code")
     mostrar_btn_cerrar_analitica = fields.Boolean("Mostrar botón cerrar cuenta analítica", 
                                                   compute="_compute_mostrar_btn_cerrar_analitica")
-
+    prioridad = fields.Selection(selection=[
+        ('0', '0'),
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    ], string='Prioridad')
+    departamento = fields.Char(string="Departamento" , related="propietario.employee_ids.department_id.display_name")
+    propietario= fields.Many2one('res.users', string="Propietario")
+    key_user= fields.Many2many('res.users')
+    recurso_it = fields.Selection(selection=[
+        ('interno', 'Interno'),
+        ('yoanny', 'Yoanny'),
+        ('vodoo', 'Vodoo'),
+        ('Landoo', 'Landoo'),
+    ], string='Recuerso IT')
+    estimacion_horas= fields.Integer(string="Estimación horas")
+    
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
         for r in self:
