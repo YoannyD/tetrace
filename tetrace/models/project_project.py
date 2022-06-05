@@ -96,6 +96,9 @@ class Project(models.Model):
         ('Landoo', 'Landoo'),
     ], string='Recuerso IT')
     estimacion_horas= fields.Integer(string="Estimación horas")
+    quickwin= fields.Boolean('QuickWin')
+    estimacion_coste= fields.Monetary(string="Estimación coste")
+
     
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
