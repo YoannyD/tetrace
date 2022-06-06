@@ -17,6 +17,31 @@ class SaleOrderLine(models.Model):
     product_entregado = fields.Boolean(related="product_id.producto_entrega")
     individual = fields.Boolean("Individual")
     imputacion_variable_line_ids = fields.One2many('tetrace.imputacion_variable_line', 'order_line_id')
+    product_quantity = fields.Float('Cantidad a mano', compute='_compute_product_quantity')
+    product_purchase = fields.Float('Comprado', compute='_compute_stock_quantity')
+    product_stock = fields.Float('Recepcionado', compute='_compute_stock_quantity')
+
+    def _compute_stock_quantity(self):
+        for line in self:
+            purchase = 0
+            stock = 0
+            if line.product_id:
+                move_lines = self.env['stock.move.line'].search([('product_id', '=', line.product_id.id)])
+                for move in move_lines:
+                    if move.location_id.usage == 'supplier' and move.location_dest_id.usage == 'internal':
+                        purchase += move.qty_done
+                        stock += move.qty_done
+            line.product_purchase = purchase
+            line.product_stock = stock
+
+
+    def _compute_product_quantity(self):
+        for line in self:
+            qty_available = 0
+            if line.product_id:
+                qty_available = line.product_id.qty_available
+            line.product_quantity = qty_available
+
 
     @api.onchange('product_id')
     def product_id_change(self):
