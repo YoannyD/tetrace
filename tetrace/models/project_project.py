@@ -92,9 +92,9 @@ class Project(models.Model):
     recurso_it = fields.Selection(selection=[
         ('interno', 'Interno'),
         ('yoanny', 'Yoanny'),
-        ('vodoo', 'Vodoo'),
+        ('voodoo', 'Voodoo'),
         ('Landoo', 'Landoo'),
-    ], string='Recuerso IT')
+    ], string='Recurso IT')
     estimacion_horas= fields.Integer(string="Estimación horas")
     quickwin= fields.Boolean('QuickWin')
     estimacion_coste= fields.Monetary(string="Estimación coste")
