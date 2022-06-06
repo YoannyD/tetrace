@@ -69,6 +69,7 @@ class Project(models.Model):
         ('it', 'IT'),
         ('planner', 'Planner'),
         ('estructural', 'Estructural'),
+        ('plantilla', 'Plantilla'),
     ], string='Clasificación Tetrace', copy=True)
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id', track_visibility='onchange')
     applicant_ids = fields.Many2many('hr.applicant')
