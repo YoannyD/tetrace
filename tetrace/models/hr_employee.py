@@ -12,6 +12,7 @@ class Employee(models.Model):
     _inherit = "hr.employee"
 
     codigo_trabajador_A3 = fields.Char('Código Externo')
+    codigo_trabajador_company = fields.Char('Código Externo', company_dependent=True)
     codigo_drive = fields.Char('Carpeta Drive')
     numero_ss = fields.Char('Nº Seguridad Social')
     IND_NoResidente_A3 = fields.Char('No residente A3')

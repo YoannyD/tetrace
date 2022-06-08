@@ -7,7 +7,7 @@
     'author': "Ingetive",
     'website': "https://ingetive.com",
     'category': 'Uncategorized',
-    'version': '13.0.1.0.1',
+    'version': '13.0.1.0.2',
     'depends': [
         'base',
         'sale',
@@ -139,11 +139,13 @@
         'wizard/tetrace_prevision_facturacion_cancelar.xml',
         'wizard/tetrace_crear_tareas_act_desc.xml',
         'wizard/tetrace_change_partner_sale_order.xml',
+        'wizard/fix_database_view.xml',
         'templates/portal.xml',
         'templates/website_sale.xml',
     ],
     'qweb': [
         "static/src/xml/tetrace_logo.xml",
+        "static/src/xml/web_gantt.xml",
     ],
     'demo': [],
     'installable': True,

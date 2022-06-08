@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+    <div t-name="GanttView" class="o_gantt_view">
+		<div class="container-fluid p-0">
+            <div class="row no-gutters o_gantt_header_container position-sticky bg-white">
+                <div class="col-2 o_gantt_row_sidebar text-center" t-if="widget.state.groupedBy.length">
+                    <span class="font-weight-bold" t-esc="widget.string"/>
+                </div>
+                <div class="col o_gantt_header_slots">
+                    <div class="row no-gutters">
+                        <div class="col text-center p-2">
+                            <t t-esc="widget._getFocusDateFormat()"/>
+                        </div>
+                    </div>
+                    <div class="row no-gutters o_gantt_header_scale">
+                        <t t-set="formats" t-value="{'week': 'dddd, Do', 'month': 'DD', 'year': 'w'}"/>
+
+                        <t t-foreach="widget.viewInfo.slots" t-as="slot">
+                            <t t-set="isToday" t-value="slot.isSame(new Date(), 'day') &amp;&amp; widget.state.scale !== 'day'"/>
+                            <div t-attf-class="col o_gantt_header_cell text-center #{isToday? 'o_gantt_today' : ''} ">
+                                <t t-if="widget.state.scale in formats" t-esc="slot.format(formats[widget.state.scale])"/>
+                                <small t-else="">
+                                    <b t-esc="slot.format('k')"/>
+                                    <span class="d-block d-xl-inline-block" t-esc="slot.format('a')"/>
+                                </small>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <div class="row no-gutters">
+                <div class="col o_gantt_row_container">
+                </div>
+            </div>
+            <div class="row no-gutters o_gantt_total position-relative" t-if="widget.totalRow">
+                <div class="col o_gantt_total_row_container">
+                </div>
+            </div>
+        </div>
+	</div>
+</templates>

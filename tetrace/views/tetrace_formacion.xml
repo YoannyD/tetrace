@@ -19,7 +19,7 @@
     <menuitem id="menu_tetrace_formacion"
               parent="hr.menu_hr_employee_payroll"
               action="tetrace_formacion_action"
-              name="Formación"
+              name="Formación/documentación"
               sequence="15"/>
 
     <record model="ir.ui.view" id="tetrace_formacion_tree">
@@ -33,6 +33,7 @@
                 <field name="tipo_id"/>
                 <field name="curso"/>
                 <field name="fecha_vigencia"/>
+                <field name="certificado" widget ="url"/>
             </tree>
         </field>
     </record>
@@ -53,6 +54,7 @@
                         <group>
                             <field name="fecha_inicio"/>
                             <field name="fecha_fin"/>
+                            <field name="certificado" widget ="url"/>
                         </group>
                     </group>
                 </sheet>

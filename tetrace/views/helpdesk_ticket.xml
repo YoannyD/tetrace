@@ -108,4 +108,17 @@
           </xpath>
         </field>
     </record>
+    
+    
+    <record model="ir.ui.view" id="view_helpdesk_filter">
+        <field name="name">helpdesk.ticket.list.select.tetrace</field>
+        <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>
+        <field name="model">helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="solicitante"/>
+                <field name="ticket_type_id"/>               
+            </xpath>
+        </field>
+    </record>
 </odoo>

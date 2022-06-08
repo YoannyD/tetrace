@@ -23,12 +23,14 @@ CODIGOS_SII = [
 ]
 
 ESTADOS_TETRACE = [
+    ('ptevalidacion', 'PTE validación'),
     ('validada', 'Validada'),
     ('pendiente_oc', 'Pendiente OC'),
     ('ok_cliente', 'OK Cliente'),
     ('publicada', 'Publicada'),
     ('ptocobro', 'PTE COBRO'),
-]
+    ('ptevencida', 'PTE Vencida'),    
+]  
 
 CANAL_VALIDACION = [
     ('contabilidad', 'Contabilidad'),
@@ -72,7 +74,7 @@ class AccountMove(models.Model):
     lineas_actualizadas = fields.Integer("Líneas actualizadas")
     tipo_proyecto_id = fields.Many2one("tetrace.tipo_proyecto", string="Tipo proyecto")
     prevision_facturacion_ids = fields.One2many("tetrace.prevision_facturacion", 'invoice_id')
-    estado_tetrace = fields.Selection(ESTADOS_TETRACE, string="Estado")
+    estado_tetrace = fields.Selection(ESTADOS_TETRACE, string='Estado Tetrace', default='ptevalidacion',copy=False)
     canal_validacion = fields.Selection(CANAL_VALIDACION, string="Canal validación")
 
     @api.onchange("purchase_vendor_bill_id", "purchase_id")

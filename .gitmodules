@@ -68,3 +68,8 @@
 	path = OCA/e-commerce
 	url = git@github.com:OCA/e-commerce.git
 	branch = 13.0
+
+[submodule "OCA/hr-expense"]
+	path = OCA/hr-expense
+	url = git@github.com:OCA/hr-expense.git
+	branch = 13.0

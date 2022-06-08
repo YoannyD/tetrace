@@ -56,6 +56,7 @@ class SaleOrder(models.Model):
         ('asignado', 'Asignado'),
         ('Revisado', 'Revisado'),
         ('standby', 'Stand by'),
+        ('asignadono', 'Asignado NO realizado'),        
         ('terminado', 'Terminado'),
     ], string='Estado Tetrace', default='Pttrealizar',copy=False)
     motivo_cancelacion = fields.Selection(selection=[
@@ -78,6 +79,7 @@ class SaleOrder(models.Model):
     send_date = fields.Datetime(string="Fecha Envío",copy=False)
     rfq_date = fields.Datetime(string="Fecha RFQ",copy=False)
     fecha_entrega = fields.Date("Fecha entrega")
+    forecast_facturacion = fields.Monetary("Forecast facturación")
     
     @api.constrains("num_proyecto")
     def _check_num_proyecto(self):

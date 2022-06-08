@@ -13,11 +13,12 @@ class Formacion(models.Model):
     _description = "Formaciones"
     
     employee_id = fields.Many2one('hr.employee', string="Empleado", required=True)
-    fecha_inicio = fields.Date('Fecha inicio')
-    fecha_fin = fields.Date('Fecha fin')
-    tipo_id = fields.Many2one("tetrace.tipo_formacion", string="Tipo")
-    curso = fields.Char('Curso')
-    fecha_vigencia = fields.Date('Vigencia')
+    fecha_inicio = fields.Date('Fecha inicio', required="True")
+    fecha_fin = fields.Date('Fecha fin', required="True")
+    tipo_id = fields.Many2one("tetrace.tipo_formacion", string="Tipo", required="True")
+    curso = fields.Char('Curso', required="True")
+    fecha_vigencia = fields.Date('Vigencia', required="True")
+    certificado = fields.Char('Certificado')
     
 
 class TipoFormacion(models.Model):

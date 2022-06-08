@@ -64,6 +64,13 @@ class Project(models.Model):
                                                         compute="_compute_visible_btn_crear_tareas_faltantes")
     experiencia_ids = fields.One2many('tetrace.experiencia', 'project_id', track_visibility='onchange')
     tipo_proyecto_name = fields.Char(related="sale_order_id.tipo_proyecto_name", store=True)
+    clasificacion = fields.Selection(selection=[
+        ('service', 'servicio'),
+        ('it', 'IT'),
+        ('planner', 'Planner'),
+        ('estructural', 'Estructural'),
+        ('plantilla', 'Plantilla'),
+    ], string='Clasificación Tetrace', copy=True)
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id', track_visibility='onchange')
     applicant_ids = fields.Many2many('hr.applicant')
     company_coordinador_id = fields.Many2one('res.company', string="Compañia coordinadora")
@@ -72,7 +79,28 @@ class Project(models.Model):
     analytic_account_code = fields.Char(related="analytic_account_id.code")
     mostrar_btn_cerrar_analitica = fields.Boolean("Mostrar botón cerrar cuenta analítica", 
                                                   compute="_compute_mostrar_btn_cerrar_analitica")
+    prioridad = fields.Selection(selection=[
+        ('0', '0'),
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    ], string='Prioridad')
+    departamento = fields.Char(string="Departamento" , related="propietario.employee_ids.department_id.display_name")
+    propietario= fields.Many2one('res.users', string="Propietario")
+    key_user= fields.Many2many('res.users')
+    recurso_it = fields.Selection(selection=[
+        ('interno', 'Interno'),
+        ('yoanny', 'Yoanny'),
+        ('voodoo', 'Voodoo'),
+        ('Landoo', 'Landoo'),
+    ], string='Recurso IT')
+    estimacion_horas= fields.Integer(string="Estimación horas")
+    quickwin= fields.Boolean('QuickWin')
+    estimacion_coste= fields.Monetary(string="Estimación coste")
 
+    
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
         for r in self:
