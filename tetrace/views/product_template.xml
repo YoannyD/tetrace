@@ -35,10 +35,11 @@
                 <field name="categ_id" string="Categoría contable" required="True"/>
                  <field name="public_categ_ids" string="Familias/subfamilias"/>
             </xpath>
-        
+            
             <xpath expr="//group[@name='bill']" position="attributes">
-                <attribute name="groups">__export__.res_groups_1301_ad93fb96</attribute>
+                <attribute name="groups"/>
             </xpath>
+        
         </field>
     </record>
     
