@@ -99,6 +99,9 @@ class Project(models.Model):
     estimacion_horas= fields.Integer(string="Estimación horas")
     quickwin= fields.Boolean('QuickWin')
     estimacion_coste= fields.Monetary(string="Estimación coste")
+    porcentaje = fields.Integer ("Porcentaje desarrollo")
+    progreso = fields.Integer(compute="_compute_progreso")
+    costes = fields.One2many("tetrace.imputacion_proyectos", 'concepto_id')
 
     
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
@@ -115,6 +118,11 @@ class Project(models.Model):
     def _compute_tecnico_ids(self):
         for r in self:
             r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
+    @api.depends("porcentaje")
+    def _compute_progreso(self):
+        for r in self:
+            r.progreso = r.porcentaje
             
     def _compute_document_project(self):
         for r in self:

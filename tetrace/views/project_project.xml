@@ -232,6 +232,10 @@
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="estimacion_coste"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="porcentaje"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>    
+                <field name="progreso" widget="progressbar"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
             </xpath>
 
             <xpath expr="//group[@name='misc'][1]" position="replace"/>
@@ -265,6 +269,8 @@
                     </field>
                 </page>
                 
+
+                
                 <page string="RRHH">
                     <field name="proyecto_necesidad_ids" nolabe="1">
                         <tree editable="bottom">
@@ -290,6 +296,8 @@
                         </tree>
                     </field>
                 </page>
+                
+
             </xpath>
             
             <xpath expr="//field[@name='message_follower_ids']" position="after">
