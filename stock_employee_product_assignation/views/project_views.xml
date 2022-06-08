@@ -12,13 +12,17 @@
                         <field name="id" invisible="1"/>
                         <field name="assignation_ids" nolabel="1" context="{'default_project_id': id}">
                             <tree editable="bottom">
-                                <field name="name"/>
-                                <field name="start_date"/>
-                                <field name="end_date"/>
+                                <field name="name" readonly="1" force_save="1"/>
+                                <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                                 <field name="project_id" invisible="1"/>
-                                <field name="product_id"/>
-                                <field name="employee_id" />
-                                <field name="warehouse_location"/>
+                                <field name="product_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="quantity" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                                <field name="picking_id" readonly="1" force_save="1"/>
+                                <field name="state" readonly="1" force_save="1"/>
+                                <button name="action_approved" type="object" string="Approve" class="btn-primary"
+                                        states="draft"/>
+                                <button name="action_open_assignations" type="object" string="Assignations"
+                                        icon="fa-list" states="approved"/>
                             </tree>
                         </field>
                     </page>

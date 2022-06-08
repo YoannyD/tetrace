@@ -22,6 +22,7 @@
 
         # Data
         'data/stock_location_data.xml',
+        'data/ir_sequence_data.xml',
 
         # Report
         # 'report/.xml',
@@ -29,7 +30,7 @@
         # Views
         'views/product_assignation_views.xml',
         'views/project_views.xml',
-        'views/hr_employee_views.xml',
+        # 'views/hr_employee_views.xml',
 
         # Wizard
         # 'wizard/.xml',
