@@ -10,20 +10,65 @@
                 <xpath expr="//notebook" position="inside">
                     <page name="equipment" string="Equipments">
                         <field name="id" invisible="1"/>
-                        <field name="assignation_ids" nolabel="1" context="{'default_project_id': id}">
-                            <tree editable="bottom">
-                                <field name="name" readonly="1" force_save="1"/>
-                                <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="project_id" invisible="1"/>
-                                <field name="product_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="quantity" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                                <field name="picking_id" readonly="1" force_save="1"/>
-                                <field name="state" readonly="1" force_save="1"/>
-                                <button name="action_approved" type="object" string="Approve" class="btn-primary"
-                                        states="draft"/>
-                                <button name="action_open_assignations" type="object" string="Assignations"
-                                        icon="fa-list" states="approved"/>
-                            </tree>
+                        <field name="assignation_ids" nolabel="1" context="{'default_project_id': id}" mode="kanban">
+                            <kanban>
+                                <field name="name"/>
+                                <field name="color"/>
+                                <field name="date"/>
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                                <field name="state"/>
+                                <field name="picking_id"/>
+                                <templates>
+                                    <t t-name="kanban-box">
+                                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click container">
+                                            <div class="row no-gutters">
+                                                <div class="col-10">
+                                                    <strong><field name="name"/></strong>
+                                                    <div>Date: <field name="date"/></div>
+                                                    <div>Product: <field name="product_id"/></div>
+                                                    <div>Quantity: <field name="quantity"/></div>
+                                                    <div>Picking: <field name="picking_id" widget="many2one"/></div>
+                                                </div>
+                                                <div class="col-2">
+                                                    <span t-att-class="record.state.raw_value == 'approved'  and 'float-right badge badge-success' or 'float-right badge badge-danger'">
+                                                        <field name="state"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="o_kanban_record_bottom">
+                                                <div class="oe_kanban_bottom_left">
+                                                    <button t-if="record.state.raw_value === 'draft'"
+                                                            name="action_approved" type="object"
+                                                            class="btn btn-primary btn-sm mt8">Approve</button>
+                                                    <button t-if="record.state.raw_value === 'approved'"
+                                                            name="action_view_picking" type="object"
+                                                            class="btn btn-secondary btn-sm mt8">View Picking</button>
+                                                    <button t-if="record.state.raw_value === 'approved'"
+                                                            name="action_open_assignations" type="object"
+                                                            class="btn btn-secondary btn-sm mt8">View Assignations</button>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </templates>
+                            </kanban>
+                            <form string="Assignation">
+                                <sheet>
+                                    <group col="12">
+                                        <group colspan="6">
+                                            <field name="name" readonly="True" force_save="1"/>
+                                            <field name="date"/>
+                                        </group>
+                                        <group colspan="6">
+                                            <field name="product_id"/>
+                                            <field name="quantity"/>
+                                            <field name="picking_id" readonly="True" force_save="1"/>
+                                        </group>
+                                    </group>
+                                </sheet>
+                            </form>
                         </field>
                     </page>
                 </xpath>

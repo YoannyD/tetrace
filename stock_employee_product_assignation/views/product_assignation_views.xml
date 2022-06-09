@@ -5,15 +5,16 @@
             <field name="name">view_product_assignation_tree</field>
             <field name="model">stock.product.assignation</field>
             <field name="arch" type="xml">
-                <tree>
-                    <field name="request_id"/>
-                    <field name="move_line_id"/>
-                    <field name="product_id"/>
+                <tree editable="bottom">
+                    <field name="code"/>
+                    <field name="product_id" readonly="1"/>
                     <field name="employee_id"/>
-                    <field name="start_date"/>
+                    <field name="request_id" readonly="1" optional="hide"/>
+                    <field name="move_line_id" readonly="1" optional="hide"/>
+                    <field name="start_date" readonly="1"/>
                     <field name="end_date"/>
                     <field name="observations"/>
-                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
                 </tree>
             </field>
         </record>
