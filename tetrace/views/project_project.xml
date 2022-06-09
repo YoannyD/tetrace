@@ -6,7 +6,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[('project_ids', 'in', [active_id])]</field>
     </record>
-    
+
     <record id="project.open_view_project_all" model="ir.actions.act_window">
         <field name="context">{'search_default_estado_id': 1}</field>
         <field name="view_mode">kanban,tree,form,map</field>
@@ -22,7 +22,7 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_finalizacion"/>
                 <field name="estado_id"/>
-                <field name="prioridad" widget= "priority" optional="hide"/>
+                <field name="prioridad" widget="priority" optional="hide"/>
                 <field name="departamento" optional="hide"/>
                 <field name="propietario" optional="hide"/>
                 <field name="key_user" optional="hide"/>
@@ -32,7 +32,7 @@
                 <field name="estimacion_coste" optional="hide"/>
                 <field name="progreso" widget="progressbar" optional="hide"/>
             </xpath>
-          </field>         
+        </field>
     </record>
 
     <record model="ir.ui.view" id="edit_project">
@@ -50,14 +50,14 @@
                         type="object"
                         name="action_crear_tareas_act_desc"
                         string="Crear tareas Activación/Desactivación"/>
-                
+
                 <field name="visible_btn_crear_tareas_faltantes" invisible="1"/>
                 <button class="oe_stat_button"
                         type="object"
                         name="action_crear_tareas_faltantes"
                         attrs="{'invisible':[('visible_btn_crear_tareas_faltantes', '=', False)]}"
                         string="Crear tareas faltantes"/>
-                
+
                 <field name="sale_order_ref_proyecto" invisible="1"/>
                 <field name="analytic_account_code" invisible="1"/>
                 <field name="mostrar_btn_cerrar_analitica" invisible="1"/>
@@ -88,13 +88,13 @@
                         name="%(view_applicant_project)d"
                         string="Procesos selección"
                         icon="fa-user-circle-o"/>
-                
+
                 <button class="oe_stat_button"
                         type="object"
                         name="action_gastos"
                         string="Gastos"
                         icon="fa-usd"/>
-                
+
                 <button class="oe_stat_button"
                         type="object"
                         name="action_resultado"
@@ -106,14 +106,14 @@
                         name="action_ingresos"
                         string="Ingresos"
                         icon="fa-usd"/>
-                
+
                 <button class="oe_stat_button"
                         type="object"
                         name="action_view_entregas"
                         string="Entregas"
                         icon="fa-calendar-o"/>
             </xpath>
-            
+
             <xpath expr="//button[@name='attachment_tree_view']" position="after">
                 <field name="id" invisible="1"/>
                 <button name="%(documents.document_action)d"
@@ -125,7 +125,7 @@
                     <field name="document_project_count" widget="statinfo"/>
                 </button>
             </xpath>
-            
+
             <xpath expr="//button[@name='attachment_tree_view']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -133,18 +133,18 @@
             <xpath expr="//h1[1]/field[@name='name']" position="attributes">
                 <attribute name="attrs">{'readonly': [('sale_order_id', '!=', False)]}</attribute>
             </xpath>
-            
+
             <xpath expr="//div[@name='options_active']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-            
+
             <xpath expr="//page[@name='settings']//field[@name='user_id']" position="before">
                 <field name="tipo_proyecto_name"
-                    attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
+                       attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
                 <field name="clasificacion"
-                    attrs="{'readonly': [('clasificacion', '=', 'service')], 'required': [('clasificacion', '!=', 'service')]}"/>
+                       attrs="{'readonly': [('clasificacion', '=', 'service')], 'required': [('clasificacion', '!=', 'service')]}"/>
             </xpath>
-            
+
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="partner_ids">
                     <tree editable="bottom">
@@ -152,7 +152,7 @@
                         <field name="job_position_ids" widget="many2many_tags"/>
                     </tree>
                 </field>
-                <field name="maps" string ="Maps" widget="url"/>
+                <field name="maps" string="Maps" widget="url"/>
                 <field name="url_proyecto" widget="url"/>
                 <field name="empresa_destino_nombre"/>
                 <field name="cif_destino_nombre"/>
@@ -163,68 +163,70 @@
             <xpath expr="//group[@name='extra_settings']" position="replace"/>
             <xpath expr="//field[@name='subtask_project_id']" position="replace"/>
             <xpath expr="//field[@name='privacy_visibility']" position="replace"/>
-            
-          <xpath expr="//page[@name='settings']" position="attributes">
-            <attribute name="string">Información</attribute>
-          </xpath>
-            
-          <xpath expr="//field[@name='active']" position="before">
-            <xpath expr="//field[@name='tipo_proyecto_name']" position="move"/>
-          </xpath>
-            
-          <xpath expr="//field[@name='partner_id']" position="attributes">
-            <attribute name="attrs">{}</attribute>
-            <attribute name="force_save">True</attribute>
-            <attribute name="readonly">1</attribute>
-          </xpath>
-            
+
+            <xpath expr="//page[@name='settings']" position="attributes">
+                <attribute name="string">Información</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='active']" position="before">
+                <xpath expr="//field[@name='tipo_proyecto_name']" position="move"/>
+            </xpath>
+
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='analytic_account_id']" position="after">
                 <field name="analitica_cerrada"
-                   attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
+                       attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
             </xpath>
-                     
-          <xpath expr="//field[@name='analytic_account_id']" position="attributes">
-            <attribute name="attrs">{'invisible': [('clasificacion', '!=', 'service')]}</attribute>
-            <attribute name="force_save">True</attribute>
-            <attribute name="readonly">1</attribute>
-          </xpath>
-                            
-          <xpath expr="//field[@name='company_id']" position="attributes">
-            <attribute name="attrs">{}</attribute>
-            <attribute name="force_save">True</attribute>
-            <attribute name="readonly">1</attribute>
-          </xpath>
+
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('clasificacion', '!=', 'service')]}</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="force_save">True</attribute>
+                <attribute name="readonly">1</attribute>
+            </xpath>
 
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="company_coordinador_id"
-                    attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
+                       attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
                 <field name="fecha_inicio"/>
                 <label for="fecha_cancelacion" class="oe_inline"/>
                 <div class="o_row">
                     <field name="fecha_cancelacion" attrs="{'readonly': [('fecha_cancelacion', '=', False)]}"/>
-                    <button type="object" 
+                    <button type="object"
                             attrs="{'invisible': [('fecha_cancelacion', '=', False)]}"
-                            name="action_vacia_fecha_cancelacion" 
+                            name="action_vacia_fecha_cancelacion"
                             icon="fa-trash"/>
                 </div>
                 <label for="fecha_finalizacion" class="oe_inline"/>
                 <div class="o_row">
                     <field name="fecha_finalizacion" attrs="{'readonly': [('fecha_finalizacion', '=', False)]}"/>
-                    <button type="object" 
+                    <button type="object"
                             attrs="{'invisible': [('fecha_finalizacion', '=', False)]}"
-                            name="action_vacia_fecha_finalizacion" 
+                            name="action_vacia_fecha_finalizacion"
                             icon="fa-trash"/>
                 </div>
                 <field name="motivo_cancelacion_id"
                        attrs="{'invisible': [('fecha_cancelacion', '=', False)], 'required': [('fecha_cancelacion', '!=', False)]}"/>
                 <field name="resource_calendar_id" string="Calendario por defecto"
                        attrs="{'invisible': [('clasificacion', '!=', 'service')]}"/>
-                <field name="prioridad" widget="priority" attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="prioridad" widget="priority"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="propietario"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="departamento"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
-                <field name="key_user"  widget="many2many_tags" attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>                       
+                <field name="key_user" widget="many2many_tags"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="recurso_it"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="estimacion_horas"
@@ -234,7 +236,7 @@
                 <field name="estimacion_coste"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="porcentaje"
-                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>    
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="progreso" widget="progressbar"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
             </xpath>
@@ -246,7 +248,7 @@
                     <field name="descripcion"/>
                 </group>
             </xpath>
-            
+
             <xpath expr="//page[@name='emails']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
@@ -254,7 +256,7 @@
             <xpath expr="//notebook[1]" position="inside">
                 <page string="Técnicos">
                     <field name="tecnico_ids" invisible="1"/>
-                    <field name="tecnico_calendario_ids" 
+                    <field name="tecnico_calendario_ids"
                            context="{'default_resource_calendar_id': resource_calendar_id, 'default_fecha_inicio': fecha_inicio}"
 
                            nolabel="1">
@@ -269,9 +271,8 @@
                         </tree>
                     </field>
                 </page>
-                
 
-                
+
                 <page string="RRHH">
                     <field name="proyecto_necesidad_ids" nolabe="1">
                         <tree editable="bottom">
@@ -287,7 +288,7 @@
                         </tree>
                     </field>
                 </page>
-                
+
                 <page string="Experiencias">
                     <field name="experiencia_ids" nolabel="1">
                         <tree editable="bottom">
@@ -297,10 +298,21 @@
                         </tree>
                     </field>
                 </page>
-                
+
+                <page string="Imputaciones">
+                    <field name="imputaciones_ids" nolabel="1" widget="one2many">
+                        <tree editable="bottom">
+                            <field name="concepto_id"/>
+                            <field name="unidades"/>
+                            <field name="precio"/>
+                            <field name="total"/>
+                        </tree>
+                    </field>
+                </page>
+
 
             </xpath>
-            
+
             <xpath expr="//field[@name='message_follower_ids']" position="after">
                 <field name="message_ids" widget="mail_thread"/>
             </xpath>
@@ -317,7 +329,7 @@
             </xpath>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="project_invoice_form_timesheet_tetrace">
         <field name="name">Inherit project form : Invoicing Data Tetrace</field>
         <field name="inherit_id" ref="hr_timesheet.project_invoice_form"/>
@@ -396,7 +408,8 @@
                 <filter string="Fecha inicio" name="filter_fecha_inicio" context="{'group_by': 'fecha_inicio'}"/>
                 <filter string="Fecha fin" name="filter_fecha_fin" context="{'group_by': 'fecha_finalizacion'}"/>
                 <filter string="Compañia" name="filter_company" context="{'group_by': 'company_id'}"/>
-                <filter string="Compañia coordinadora" name="filter_compan_coor" context="{'group_by': 'company_coordinador_id'}"/>
+                <filter string="Compañia coordinadora" name="filter_compan_coor"
+                        context="{'group_by': 'company_coordinador_id'}"/>
             </xpath>
         </field>
     </record>

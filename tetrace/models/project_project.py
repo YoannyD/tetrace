@@ -102,6 +102,7 @@ class Project(models.Model):
     porcentaje = fields.Integer ("Porcentaje desarrollo")
     progreso = fields.Integer(compute="_compute_progreso")
     costes = fields.One2many("tetrace.imputacion_proyectos", 'concepto_id')
+    imputaciones_ids = fields.One2many('tetrace.imputacion_proyectos', 'project_id', string='Imputaciones')
 
     
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")

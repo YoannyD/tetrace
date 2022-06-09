@@ -13,7 +13,7 @@ class imputacionhoras(models.Model):
     _name = "tetrace.imputacion_proyectos"
     _description = "Imputación Proyectos"
     
-    
+    project_id = fields.Many2one('project.project', 'Project')
     concepto_id = fields.Many2one('tetrace.imputacion_proyecto_nombre', string="Concepto")
     unidades = fields.Integer(string="Unidades")
     precio = fields.Integer(string="importe")
