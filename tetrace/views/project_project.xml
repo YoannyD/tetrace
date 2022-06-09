@@ -22,7 +22,7 @@
                 <field name="fecha_inicio"/>
                 <field name="fecha_finalizacion"/>
                 <field name="estado_id"/>
-                <field name="prioridad" optional="hide"/>
+                <field name="prioridad" widget= "priority" optional="hide"/>
                 <field name="departamento" optional="hide"/>
                 <field name="propietario" optional="hide"/>
                 <field name="key_user" optional="hide"/>
@@ -30,8 +30,9 @@
                 <field name="estimacion_horas" optional="hide"/>
                 <field name="quickwin" optional="hide"/>
                 <field name="estimacion_coste" optional="hide"/>
+                <field name="progreso" widget="progressbar" optional="hide"/>
             </xpath>
-        </field>
+          </field>         
     </record>
 
     <record model="ir.ui.view" id="edit_project">
@@ -336,7 +337,6 @@
             <xpath expr="//field[@name='allow_timesheet_timer']/../.." position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
-
             <xpath expr="//div[@id='allow_billable_container']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
