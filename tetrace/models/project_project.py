@@ -101,6 +101,8 @@ class Project(models.Model):
     estimacion_coste= fields.Monetary(string="Estimación coste")
     porcentaje = fields.Integer ("Porcentaje desarrollo")
     progreso = fields.Integer(compute="_compute_progreso")
+    real_coste= fields.Monetary(string="Real costes") 
+    real_horas= fields.Float(string="Real horas")
     costes = fields.One2many("tetrace.imputacion_proyectos", 'concepto_id')
     imputaciones_ids = fields.One2many('tetrace.imputacion_proyectos', 'project_id', string='Imputaciones')
 

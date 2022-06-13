@@ -30,6 +30,8 @@
                 <field name="estimacion_horas" optional="hide"/>
                 <field name="quickwin" optional="hide"/>
                 <field name="estimacion_coste" optional="hide"/>
+                <field name="real_coste" optional="hide"/>
+                <field name="real_horas" optional="hide"/>
                 <field name="progreso" widget="progressbar" optional="hide"/>
             </xpath>
         </field>
@@ -234,6 +236,10 @@
                 <field name="quickwin"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="estimacion_coste"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                 <field name="real_horas"
+                       attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
+                <field name="real_coste"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="porcentaje"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
