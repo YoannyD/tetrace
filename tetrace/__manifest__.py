@@ -52,7 +52,7 @@
         'partner_contact_in_several_companies',
         'website_sale',
         'partner_contact_job_position',
-        'helpdesk'
+        'helpdesk',
     ],
     'data': [
         'security/tetrace_security.xml',
