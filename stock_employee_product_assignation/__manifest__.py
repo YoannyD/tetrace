@@ -13,7 +13,8 @@
     'version': '13.0.1.0.1',
     'depends': [
         'stock',
-        'project'
+        'project',
+        'tetrace'
     ],
     'data': [
         # Security
@@ -30,6 +31,7 @@
         # Views
         'views/product_assignation_views.xml',
         'views/project_views.xml',
+        'views/product_views.xml',
         # 'views/hr_employee_views.xml',
 
         # Wizard

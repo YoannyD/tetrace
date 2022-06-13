@@ -3,8 +3,8 @@
 from odoo import models, fields, api
 
 
-class ProductProduct(models.Model):
-    _inherit = 'product.product'
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
 
     assignation_request_ids = fields.One2many('stock.product.assignation.request', 'product_id',
                                               string='Assignation requests')

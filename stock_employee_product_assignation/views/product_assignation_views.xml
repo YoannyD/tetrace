@@ -5,99 +5,27 @@
             <field name="name">view_product_assignation_tree</field>
             <field name="model">stock.product.assignation</field>
             <field name="arch" type="xml">
-                <tree editable="bottom">
-                    <field name="code"/>
+                <tree editable="bottom" create="false" decoration-muted="assignation_return == True">
+                    <field name="code" attrs="{'readonly': ['|', ('code_readonly', '=', True), ('assignation_return', '=', True)]}"
+                           required="True"/>
+                    <field name="code_readonly" invisible="1"/>
                     <field name="product_id" readonly="1"/>
-                    <field name="employee_id"/>
+                    <field name="employee_id" required="True"
+                           attrs="{'readonly': [('assignation_return', '=', True)]}"/>
                     <field name="request_id" readonly="1" optional="hide"/>
                     <field name="move_line_id" readonly="1" optional="hide"/>
                     <field name="start_date" readonly="1"/>
-                    <field name="end_date"/>
-                    <field name="observations"/>
+                    <field name="assignation_return" readonly="1" optional="hide"/>
+                    <field name="return_move_line_id" readonly="1" optional="hide"/>
+                    <field name="end_date" attrs="{'readonly': [('assignation_return', '=', True)]}"/>
+                    <field name="observations" attrs="{'readonly': [('assignation_return', '=', True)]}"/>
                     <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+                    <button class="text-danger" icon="fa-reply" type="object"
+                            name="action_return" string="Return"
+                            attrs="{'invisible': [('assignation_return', '=', True)]}"/>
                 </tree>
             </field>
         </record>
-
-<!--        <record id="view_product_assignation_kanban" model="ir.ui.view">-->
-<!--            <field name="name">view_product_assignation_kanban</field>-->
-<!--            <field name="model">stock.product.assignation</field>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <kanban>-->
-<!--                    <field name="id"/>-->
-<!--                    <field name="name"/>-->
-<!--                    <field name="start_date"/>-->
-<!--                    <field name="end_date"/>-->
-<!--                    <field name="project_id"/>-->
-<!--                    <field name="product_id"/>-->
-<!--                    <field name="employee_id"/>-->
-<!--                    <field name="warehouse_location"/>-->
-<!--                    <field name="company_id" groups="base.group_multi_company"/>-->
-<!--                    <templates>-->
-<!--                        <t t-name="kanban-box">-->
-<!--                            <div class="oe_kanban_global_click">-->
-<!--                                <div class="o_kanban_image">-->
-<!--                                    <img t-att-src="kanban_image('product.product', 'image_128', record.product_id.raw_value)" alt="Product" class="o_image_64_contain"/>-->
-<!--                                </div>-->
-<!--                                <div class="oe_kanban_details">-->
-<!--                                    <strong class="o_kanban_record_title">-->
-<!--                                        <field name="name"/> / <field name="product_id"/>-->
-<!--                                    </strong>-->
-<!--                                    <div name="tags"/>-->
-<!--                                    <ul>-->
-<!--                                        <li><b>Project:</b> <field name="project_id"/></li>-->
-<!--                                        <li><b>Employee:</b> <field name="employee_id"/></li>-->
-<!--                                    </ul>-->
-<!--                                    <div name="tags"/>-->
-<!--                                    <ul>-->
-<!--                                        <li><b>Start date:</b> <field name="start_date"/></li>-->
-<!--                                        <li><b>End date:</b> <field name="end_date"/></li>-->
-<!--                                        <li groups="base.group_multi_company">-->
-<!--                                            <b>Company:</b> <field name="company_id"/>-->
-<!--                                        </li>-->
-<!--                                    </ul>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </t>-->
-<!--                    </templates>-->
-<!--                </kanban>-->
-<!--            </field>-->
-<!--        </record>-->
-
-<!--        <record id="view_product_assignation_form" model="ir.ui.view">-->
-<!--            <field name="name">view_product_assignation_form</field>-->
-<!--            <field name="model">stock.product.assignation</field>-->
-<!--            <field name="arch" type="xml">-->
-<!--                <form>-->
-<!--                    <sheet>-->
-<!--                        <div class="oe_title">-->
-<!--                            <label for="name" class="oe_edit_only"/>-->
-<!--                            <h1>-->
-<!--                                <field name="name"/>-->
-<!--                            </h1>-->
-<!--                        </div>-->
-<!--                        <group>-->
-<!--                            <group>-->
-<!--                                <field name="start_date"/>-->
-<!--                                <field name="project_id"/>-->
-<!--                                <field name="employee_id"/>-->
-<!--                                <field name="company_id" groups="base.group_multi_company"/>-->
-<!--                            </group>-->
-<!--                            <group>-->
-<!--                                <field name="end_date"/>-->
-<!--                                <field name="product_id"/>-->
-<!--                                <field name="warehouse_location"/>-->
-<!--                            </group>-->
-<!--                        </group>-->
-<!--                        <notebook>-->
-<!--                            <page name="observations" string="Observations">-->
-<!--                                <field name="observations" nolabel="1"/>-->
-<!--                            </page>-->
-<!--                        </notebook>-->
-<!--                    </sheet>-->
-<!--                </form>-->
-<!--            </field>-->
-<!--        </record>-->
 
         <record id="view_product_assignation_search" model="ir.ui.view">
             <field name="name">view_product_assignation_search</field>
@@ -125,6 +53,7 @@
             <field name="res_model">stock.product.assignation</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_product_assignation_search"/>
+            <field name="context">{'search_default_group_request': 1}</field>
         </record>
 
         <menuitem id="menu_product_assignation"

@@ -9,7 +9,7 @@ class ProductAssignationRequest(models.Model):
     _name = 'stock.product.assignation.request'
     _description = 'Stock Product Assignation Request'
 
-    name = fields.Char(string='S/N')
+    name = fields.Char(string='Assignation Number')
     date = fields.Date(string='Date', default=fields.Date.today())
     project_id = fields.Many2one('project.project', string='Project')
     product_id = fields.Many2one('product.product', string='Product')
@@ -19,6 +19,20 @@ class ProductAssignationRequest(models.Model):
     picking_id = fields.Many2one('stock.picking', string='Picking')
     assignation_ids = fields.One2many('stock.product.assignation', 'request_id', string='Assignations')
     color = fields.Integer(string='Color Index', default=1)
+    observations = fields.Text('Observations')
+    task_id = fields.Many2one('project.task', 'Task', compute='_compute_task')
+
+    def _compute_task(self):
+        task = False
+        if self.project_id:
+            tasks = self.env['project.task'].search([
+                ('project_id', '=', self.project_id.id),
+                ('activada', 'in', [True, False]),
+                ('assignation', '=', True)
+            ])
+            if tasks:
+                task = tasks[0].id
+        self.task_id = task
 
     def unlink(self):
         for assignation in self:
@@ -30,8 +44,20 @@ class ProductAssignationRequest(models.Model):
     def create(self, values):
         values['name'] = self.env['ir.sequence'].next_by_code('stock.assignation.request')
         values['state'] = 'draft'
-        values['color'] = 1
+        values['company_id'] = self.env.company.id
         return super(ProductAssignationRequest, self).create(values)
+
+    def create_assignation_activity(self):
+        for record in self:
+            summary = _('Necesidad de equipo para el proyecto %s' % record.project_id.name)
+
+            tasks = self.env['project.task'].search([
+                ('project_id', '=', record.project_id.id),
+                ('activada', 'in', [True, False]),
+                ('assignation', '=', True)
+            ])
+            if tasks:
+                tasks.create_activity(summary)
 
     def action_approved(self):
         for record in self:
@@ -46,6 +72,7 @@ class ProductAssignationRequest(models.Model):
                     'move_line_id': line.id
                 }) for line in picking.move_line_ids]
             })
+            record.create_assignation_activity()
 
     def _prepare_picking(self):
         self.ensure_one()
@@ -120,3 +147,44 @@ class ProductAssignation(models.Model):
     observations = fields.Text(string='Observations')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     code = fields.Char('Serial Number')
+    task_id = fields.Many2one('project.task', 'Task')
+    code_readonly = fields.Boolean('Code Readonly', default=False)
+    assignation_return = fields.Boolean('Assignation return', default=True)
+    return_move_line_id = fields.Many2one('stock.move.line', string='Return Stock move line')
+
+    def _prepare_picking(self):
+        self.ensure_one()
+        if self.product_id.can_be_returned:
+            location_destiny = self.env.ref('stock_employee_product_assignation.stock_location_employee_assignation')
+        else:
+            location_destiny = self.product_id.property_stock_inventory
+        picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'internal'),
+            ('company_id', '=', self.company_id.id)
+        ], limit=1)
+        return {
+            'picking_type_id': picking_type.id or None,
+            'location_dest_id': picking_type.default_location_src_id.id or None,
+            'location_id': location_destiny.id or None,
+            'scheduled_date': fields.Date.context_today(self),
+            'origin': self.request_id.name,
+            'assignation_request_id': self.request_id.id,
+            'move_ids_without_package': [(0, 0, {
+                'name': self.product_id.name,
+                'product_id': self.product_id.id,
+                'product_uom': self.product_id.uom_id.id,
+                'product_uom_qty': 1,
+            })]
+        }
+
+    def action_return(self):
+        for record in self:
+            picking = self.env['stock.picking'].create(record._prepare_picking())
+            picking.action_confirm()
+            picking.action_assign()
+            for line in picking.move_ids_without_package.move_line_ids:
+                line.quantity_done = line.product_uom_qty
+                line.lot_id = record.move_line_id.lot_id.id or None
+                record.return_move_line_id = line.id
+            picking.button_validate()
+            record.assignation_return = False
