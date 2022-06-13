@@ -237,7 +237,7 @@
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="estimacion_coste"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
-                 <field name="real_horas"
+                <field name="real_horas"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
                 <field name="real_coste"
                        attrs="{'invisible': [('clasificacion', '!=', 'it')], 'required': [('clasificacion', '=', 'it')]}"/>
@@ -260,7 +260,7 @@
             </xpath>
 
             <xpath expr="//notebook[1]" position="inside">
-                <page string="Técnicos">
+                <page name ="tecnicos" string="Técnicos">
                     <field name="tecnico_ids" invisible="1"/>
                     <field name="tecnico_calendario_ids"
                            context="{'default_resource_calendar_id': resource_calendar_id, 'default_fecha_inicio': fecha_inicio}"
@@ -279,7 +279,7 @@
                 </page>
 
 
-                <page string="RRHH">
+                <page name ="rrhh" string="RRHH">
                     <field name="proyecto_necesidad_ids" nolabe="1">
                         <tree editable="bottom">
                             <field name="job_id"/>
@@ -295,7 +295,7 @@
                     </field>
                 </page>
 
-                <page string="Experiencias">
+                <page name ="experiencias" string="Experiencias">
                     <field name="experiencia_ids" nolabel="1">
                         <tree editable="bottom">
                             <field name="name"/>
@@ -305,7 +305,7 @@
                     </field>
                 </page>
 
-                <page string="Imputaciones">
+                <page name ="imputaciones" string="Imputaciones">
                     <field name="imputaciones_ids" nolabel="1" widget="one2many">
                         <tree editable="bottom">
                             <field name="concepto_id"/>
@@ -315,10 +315,12 @@
                         </tree>
                     </field>
                 </page>
-
-
             </xpath>
-
+            
+            <xpath expr="//page[@name='imputaciones']" position="attributes">
+                <attribute name="groups">helpdesk.group_helpdesk_manager</attribute>
+            </xpath>
+ 
             <xpath expr="//field[@name='message_follower_ids']" position="after">
                 <field name="message_ids" widget="mail_thread"/>
             </xpath>
