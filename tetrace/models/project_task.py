@@ -54,7 +54,8 @@ class ProjectTask(models.Model):
     ref_created = fields.Char("Referencia creación", copy=False, help="Compuesto por project_id-task_id de origen")
     notify_by_email = fields.Boolean("Notificado por email")
     asginacion_ids = fields.One2many('tetrace.asignacion', 'task_id')
-    project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id", string="Pedido de venta (Proyecto)")
+    project_id_sale_order_id = fields.Many2one("sale.order", related="project_id.sale_order_id",
+                                               string="Pedido de venta (Proyecto)")
     ausencia = fields.Boolean("Ausencia")
     ausencia_ids = fields.One2many('tetrace.ausencia', 'task_id', string="Ausencias")
     busqueda_perfiles = fields.Boolean("Búsqueda perfiles")
@@ -69,7 +70,7 @@ class ProjectTask(models.Model):
     def _compute_proyecto_necesidad(self):
         for r in self:
             r.proyecto_necesidad_count = len(r.project_id.proyecto_necesidad_ids)
-    
+
     @api.constrains('tarea_individual', 'tarea_seleccion', 'tipo')
     def _check_tipos_tareas(self):
         for r in self:
@@ -101,7 +102,7 @@ class ProjectTask(models.Model):
     def create(self, vals):
         self = self.with_context(add_follower=True)
         return super(ProjectTask, self).create(vals)
-                
+
     def write(self, vals):
         self = self.with_context(add_follower=True)
         entregas = {}
@@ -119,12 +120,12 @@ class ProjectTask(models.Model):
             if not r.desde_plantilla and r.producto_entrega and entregas[str(r.id)]['total'] != r.entrega_total:
                 r.sale_line_id.write({'qty_delivered': r.entrega_total})
                 body = _("<strong>Entrega:</strong><br/>Cantidad entregada %s -> %s") % (
-                entregas[str(r.id)]['total'], r.entrega_total)
+                    entregas[str(r.id)]['total'], r.entrega_total)
                 r.message_post(body=body, subject="Entrega")
 
         if 'date_deadline' in vals:
             self.crear_mensaje_cambio_fecha_limite()
-                
+
         if 'info_puesto_id' in vals and not self.env.context.get("no_actualizar_info_puesto"):
             self.actualizar_info_puesto()
 
@@ -135,9 +136,10 @@ class ProjectTask(models.Model):
 
     def crear_mensaje_cambio_fecha_limite(self):
         for r in self:
-            body = _("La <strong>fecha límite</strong> ha sido cambiada por el %s" % r.date_deadline.strftime("%d/%m/%Y") if r.date_deadline else "")
+            body = _("La <strong>fecha límite</strong> ha sido cambiada por el %s" % r.date_deadline.strftime(
+                "%d/%m/%Y") if r.date_deadline else "")
             r.message_post(body=body, subject="Fecha límita cambiada", subtype_id=self.env.ref('mail.mt_comment').id)
-    
+
     def actualizar_tareas_individuales(self):
         for r in self:
             if not r.tarea_individual or not r.ref_individual:
@@ -210,7 +212,7 @@ class ProjectTask(models.Model):
             ('partner_id', 'in', partner_ids or []),
             ('channel_id', 'in', channel_ids or [])
         ]).unlink()
-    
+
     def _message_auto_subscribe_followers(self, updated_values, default_subtype_ids):
         if self.env.context.get("no_notificar"):
             return []
@@ -236,7 +238,7 @@ class ProjectTask(models.Model):
                 email_layout_xmlid='mail.mail_notification_light',
                 model_description=r.name,
             )
-    
+
     @api.model
     def check_task_exist(self, ref_created, ref_individual=None):
         domain = [('ref_created', '=', ref_created)]
@@ -244,32 +246,31 @@ class ProjectTask(models.Model):
             domain += [('ref_individual', '=', ref_individual)]
         task_count = self.search_count(domain)
         return True if task_count > 0 else False
-    
+
     def get_responsable_y_seguidores(self, company_coordinador=None):
         seguidores_ids = []
         responsable_id = None
         if not company_coordinador:
             return responsable_id, seguidores_ids
-        
-        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == company_coordinador.id) 
+
+        asignaciones = self.asginacion_ids.filtered(lambda x: x.company_id.id == company_coordinador.id)
         for asignacion in asignaciones:
             for seguidor in asignacion.seguidor_ids.filtered(lambda x: x.partner_id):
                 seguidores_ids.append(seguidor.partner_id.id)
             if asignacion.responsable_id:
                 responsable_id = asignacion.responsable_id.id
-    
+
         return responsable_id, seguidores_ids
 
     def view_proyecto_necesidad_action(self):
         action = self.env.ref("tetrace.tetrace_proyecto_necesidad_action").read()[0]
         action.update({'domain': [('project_id', '=', self.project_id.id)]})
         return action
-    
+
     def create_activity(self, summary, fecha=None):
         for r in self:
             if not r.user_id:
                 continue
-                
             values = {
                 'summary': summary,
                 'activity_type_id': self.env.ref("mail.mail_activity_data_todo").id,
@@ -277,11 +278,10 @@ class ProjectTask(models.Model):
                 'res_id': r.id,
                 'user_id': r.user_id.id
             }
-
             if fecha:
                 values.update({'date_deadline': fecha})
-
             self.env['mail.activity'].create(values)
+
 
 class ProjectTaskType(models.Model):
     _inherit = 'project.task.type'
@@ -299,7 +299,7 @@ class ProjectTaskEntrega(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Técnico")
     entregado = fields.Float("Entregado")
     task_id = fields.Many2one("project.task", string="Tarea")
-    
+
     @api.constrains("fecha_inicio", "fecha_fin")
     def _check_fechas(self):
         for r in self:

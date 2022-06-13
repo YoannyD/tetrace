@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- inherit project form view -->
+        <record id="view_project_product_assignation_form_inherit" model="ir.ui.view">
+            <field name="name">view_project_product_assignation_form_inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page name="equipment" string="Equipments">
+                        <field name="id" invisible="1"/>
+                        <field name="assignation_ids" nolabel="1" context="{'default_project_id': id}">
+                            <tree decoration-warning="state == 'draft'"
+                                  decoration-success="state == 'approved'">
+                                <field name="name"/>
+                                <field name="date"/>
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                                <field name="state"/>
+                                <field name="company_id" optional="hide"/>
+                                <field name="picking_id" optional="hide"/>
+                                <button class="text-success" icon="fa-check" type="object"
+                                        name="action_approved" attrs="{'invisible': [('state','=','approved')]}"/>
+                                <button icon="fa-gears" type="object"
+                                        name="action_view_picking" string="Picking"
+                                        attrs="{'invisible': [('state','=','draft')]}"/>
+                                <button icon="fa-bars" type="object"
+                                        name="action_open_assignations" string="Assignations"
+                                        attrs="{'invisible': [('state','=','draft')]}"/>
+                            </tree>
+                            <form string="Assignation">
+                                <sheet>
+                                    <group col="12">
+                                        <group colspan="6">
+                                            <field name="name" readonly="True" force_save="1"/>
+                                            <field name="date"/>
+                                        </group>
+                                        <group colspan="6">
+                                            <field name="product_id"/>
+                                            <field name="quantity"/>
+                                        </group>
+                                    </group>
+                                    <group>
+                                        <field name="observations"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_task_form2">
+            <field name="name">project.task.form.tetrace</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <field name="busqueda_perfiles" position="after">
+                    <field name="assignation"/>
+                    <field name="assignation_ids" invisible="1"/>
+                </field>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_assignations"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-list"
+                        context="{'default_project_id': project_id}"
+                        attrs="{'invisible' : ['|', ('assignation', '=', False), ('assignation_ids', '=', False)]}">
+                    <field string="Asignaciones" name="assignation_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

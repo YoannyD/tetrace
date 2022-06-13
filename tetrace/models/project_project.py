@@ -69,6 +69,7 @@ class Project(models.Model):
         ('it', 'IT'),
         ('planner', 'Planner'),
         ('estructural', 'Estructural'),
+        ('plantilla', 'Plantilla'),
     ], string='Clasificación Tetrace', copy=True)
     proyecto_necesidad_ids = fields.One2many('tetrace.proyecto_necesidad', 'project_id', track_visibility='onchange')
     applicant_ids = fields.Many2many('hr.applicant')
@@ -78,7 +79,32 @@ class Project(models.Model):
     analytic_account_code = fields.Char(related="analytic_account_id.code")
     mostrar_btn_cerrar_analitica = fields.Boolean("Mostrar botón cerrar cuenta analítica", 
                                                   compute="_compute_mostrar_btn_cerrar_analitica")
+    prioridad = fields.Selection(selection=[
+        ('0', '0'),
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    ], string='Prioridad')
+    departamento = fields.Char(string="Departamento" , related="propietario.employee_ids.department_id.display_name")
+    propietario= fields.Many2one('res.users', string="Propietario")
+    key_user= fields.Many2many('res.users')
+    recurso_it = fields.Selection(selection=[
+        ('interno', 'Interno'),
+        ('yoanny', 'Yoanny'),
+        ('voodoo', 'Voodoo'),
+        ('Landoo', 'Landoo'),
+    ], string='Recurso IT')
+    estimacion_horas= fields.Integer(string="Estimación horas")
+    quickwin= fields.Boolean('QuickWin')
+    estimacion_coste= fields.Monetary(string="Estimación coste")
+    porcentaje = fields.Integer ("Porcentaje desarrollo")
+    progreso = fields.Integer(compute="_compute_progreso")
+    costes = fields.One2many("tetrace.imputacion_proyectos", 'concepto_id')
+    imputaciones_ids = fields.One2many('tetrace.imputacion_proyectos', 'project_id', string='Imputaciones')
 
+    
     @api.constrains("fecha_cancelacion", "motivo_cancelacion_id")
     def _check_motivo_cancelacion_id(self):
         for r in self:
@@ -93,6 +119,11 @@ class Project(models.Model):
     def _compute_tecnico_ids(self):
         for r in self:
             r.tecnico_ids = [(6, 0, [tc.employee_id.id for tc in r.tecnico_calendario_ids])]
+            
+    @api.depends("porcentaje")
+    def _compute_progreso(self):
+        for r in self:
+            r.progreso = r.porcentaje
             
     def _compute_document_project(self):
         for r in self:

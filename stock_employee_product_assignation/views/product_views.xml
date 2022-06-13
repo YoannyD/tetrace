@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_template_form_view">
+            <field name="name">product.template.common.form.tetrace</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="model">product.template</field>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='options']" position="inside">
+                    <div>
+                        <field name="can_be_returned"/>
+                        <label for="can_be_returned"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
