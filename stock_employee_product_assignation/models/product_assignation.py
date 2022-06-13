@@ -149,7 +149,7 @@ class ProductAssignation(models.Model):
     code = fields.Char('Serial Number')
     task_id = fields.Many2one('project.task', 'Task')
     code_readonly = fields.Boolean('Code Readonly', default=False)
-    assignation_return = fields.Boolean('Assignation return', default=True)
+    assignation_return = fields.Boolean('Assignation return', default=False)
     return_move_line_id = fields.Many2one('stock.move.line', string='Return Stock move line')
 
     def _prepare_picking(self):
