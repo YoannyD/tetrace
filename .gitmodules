@@ -120,3 +120,8 @@
 	path = OCA/hr-expense
 	url = git@github.com:OCA/hr-expense.git
 	branch = 13.0
+
+[submodule "landoo-es/custom-tetrace"]
+	path = landoo-es/custom-tetrace
+	url = git@github.com:landoo-es/custom-tetrace.git
+	branch = 13.0
