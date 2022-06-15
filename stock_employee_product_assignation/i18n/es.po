@@ -1,0 +1,287 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_employee_product_assignation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0+e-20211026\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-06-14 12:22+0000\n"
+"PO-Revision-Date: 2022-06-14 08:32-0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: es\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields.selection,name:stock_employee_product_assignation.selection__stock_product_assignation_request__state__approved
+msgid "Approved"
+msgstr "Aprobado"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_task_form2
+msgid "Asignaciones"
+msgstr "Asignaciones"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation
+msgid "Asignaciones de equipos"
+msgstr "Asignaciones de equipos"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
+msgid "Assignation"
+msgstr "Asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__name
+msgid "Assignation Number"
+msgstr "Número de asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_picking__assignation_request_id
+msgid "Assignation Request"
+msgstr "Solicitud de asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__request_id
+msgid "Assignation request"
+msgstr "Solicitud de asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_product__assignation_request_ids
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_template__assignation_request_ids
+msgid "Assignation requests"
+msgstr "Solicitudes de asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__assignation_return
+msgid "Assignation return"
+msgstr "Devolver"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation_ids
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__assignation_ids
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
+msgid "Assignations"
+msgstr "Asignaciones"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_product__can_be_returned
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_template__can_be_returned
+msgid "Can be returned"
+msgstr "Puede ser devuelto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__code_readonly
+msgid "Code Readonly"
+msgstr "Código solo lectura"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__color
+msgid "Color Index"
+msgstr "Índice de Colores"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__company_id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__company_id
+msgid "Company"
+msgstr "Compañía"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__create_uid
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__create_date
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__date
+msgid "Date"
+msgstr "Fecha"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__display_name
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__display_name
+msgid "Display Name"
+msgstr "Nombre a mostrar"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields.selection,name:stock_employee_product_assignation.selection__stock_product_assignation_request__state__draft
+msgid "Draft"
+msgstr "Borrador"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_hr_employee
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__employee_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "Employee"
+msgstr "Empleado"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__end_date
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "End date"
+msgstr "Fecha de fin"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_hr_employee__assignation_count
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_hr_employee__assignation_ids
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_project__assignation_ids
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
+msgid "Equipments"
+msgstr "Equipos"
+
+#. module: stock_employee_product_assignation
+#: model:ir.actions.act_window,name:stock_employee_product_assignation.action_product_assignation
+#: model:ir.ui.menu,name:stock_employee_product_assignation.menu_product_assignation
+msgid "Equipments assignation"
+msgstr "Asignación de equipos"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__id
+msgid "ID"
+msgstr "ID"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation____last_update
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request____last_update
+msgid "Last Modified on"
+msgstr "Ultima Modificación en"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__write_uid
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__write_uid
+msgid "Last Updated by"
+msgstr "Última actualización por"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__write_date
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualización en"
+
+#. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/models/product_assignation.py:0
+#, python-format
+msgid "Necesidad de equipo para el proyecto %s"
+msgstr "Necesidad de equipo para el proyecto %s"
+
+#. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/models/product_assignation.py:0
+#, python-format
+msgid "No puede eliminar una solicitud aprobada"
+msgstr "No puede eliminar una solicitud aprobada."
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation_count
+msgid "Nª Asignaciones"
+msgstr "Nª Asignaciones"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__observations
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__observations
+msgid "Observations"
+msgstr "Observaciones"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__picking_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
+msgid "Picking"
+msgstr "Transferencia"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__product_id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__product_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "Product"
+msgstr "Producto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_stock_move_line
+msgid "Product Moves (Stock Move Line)"
+msgstr "Movimientos de Producto (Stock Move Line)"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_product_template
+msgid "Product Template"
+msgstr "Plantilla de producto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_project_project
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__project_id
+msgid "Project"
+msgstr "Proyecto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__quantity
+msgid "Quantity"
+msgstr "Cantidad"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "Request"
+msgstr "Solicitud"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_tree
+msgid "Return"
+msgstr "Devolver"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__return_move_line_id
+msgid "Return Stock move line"
+msgstr "Devolver movimiento de producto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__code
+msgid "Serial Number"
+msgstr "Número de serie"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__start_date
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "Start date"
+msgstr "Fecha de inicio"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__state
+msgid "State"
+msgstr "Estado"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_stock_product_assignation_request
+msgid "Stock Product Assignation Request"
+msgstr "Solicitud de asignación"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_stock_product_assignation
+msgid "Stock Product Assignation for Employees"
+msgstr "Asignación de equipos a empleados"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__move_line_id
+msgid "Stock move line"
+msgstr "Movimientos de Producto"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_project_task
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__task_id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__task_id
+msgid "Task"
+msgstr "Tarea"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_stock_picking
+msgid "Transfer"
+msgstr "Transferencia"
