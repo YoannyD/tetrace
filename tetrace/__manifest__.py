@@ -145,7 +145,7 @@
     ],
     'qweb': [
         "static/src/xml/tetrace_logo.xml",
-        "static/src/xml/web_gantt.xml",
+        # "static/src/xml/web_gantt.xml",
     ],
     'demo': [],
     'installable': True,
