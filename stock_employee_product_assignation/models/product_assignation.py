@@ -22,6 +22,12 @@ class ProductAssignationRequest(models.Model):
     observations = fields.Text('Observations')
     task_id = fields.Many2one('project.task', 'Task', compute='_compute_task')
 
+    @api.model
+    def default_get(self, fields):
+        vals = super(ProductAssignationRequest, self).default_get(fields)
+        vals['state'] = 'draft'
+        return vals
+
     def _compute_task(self):
         task = False
         if self.project_id:
@@ -68,9 +74,6 @@ class ProductAssignationRequest(models.Model):
                 'state': 'approved',
                 'color': 10,
                 'picking_id': picking.id,
-                'assignation_ids': [(0, 0, {
-                    'move_line_id': line.id
-                }) for line in picking.move_line_ids]
             })
             record.create_assignation_activity()
 
@@ -152,6 +155,11 @@ class ProductAssignation(models.Model):
     assignation_return = fields.Boolean('Assignation return', default=False)
     return_move_line_id = fields.Many2one('stock.move.line', string='Return Stock move line')
 
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        if self.employee_id:
+            self.start_date = fields.Date.context_today(self)
+
     def _prepare_picking(self):
         self.ensure_one()
         location_origin = self.env.ref('stock_employee_product_assignation.stock_location_employee_assignation')
@@ -197,3 +205,4 @@ class ProductAssignation(models.Model):
                 record.return_move_line_id = line.id
             picking.button_validate()
             record.assignation_return = True
+            record.end_date = fields.Date.context_today(self)
