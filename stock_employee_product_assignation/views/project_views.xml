@@ -27,7 +27,7 @@
                                         attrs="{'invisible': [('state','=','draft')]}"/>
                                 <button icon="fa-bars" type="object"
                                         name="action_open_assignations" string="Assignations"
-                                        attrs="{'invisible': [('state','=','draft')]}"/>
+                                        />
                             </tree>
                             <form string="Assignation">
                                 <sheet>

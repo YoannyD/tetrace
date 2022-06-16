@@ -52,7 +52,7 @@
         'partner_contact_in_several_companies',
         'website_sale',
         'partner_contact_job_position',
-        'helpdesk'
+        'helpdesk',
     ],
     'data': [
         'security/tetrace_security.xml',
@@ -145,7 +145,7 @@
     ],
     'qweb': [
         "static/src/xml/tetrace_logo.xml",
-        "static/src/xml/web_gantt.xml",
+        # "static/src/xml/web_gantt.xml",
     ],
     'demo': [],
     'installable': True,

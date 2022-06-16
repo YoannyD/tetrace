@@ -7,8 +7,9 @@
             <script type="text/javascript" src="/tetrace/static/src/js/chatter.js"></script>
             <script type="text/javascript" src="/tetrace/static/src/js/form_rendered.js"/>
             <script type="text/javascript" src="/tetrace/static/src/js/documents_kanban_controllers.js"/>
-            <script type="text/javascript" src="/tetrace/static/src/js/task_gantt_view.js"/>
-            <script type="text/javascript" src="/tetrace/static/src/js/gantt_renderer.js"/>
+<!--            <script type="text/javascript" src="/tetrace/static/src/js/task_gantt_view.js"/>-->
+<!--            <script type="text/javascript" src="/tetrace/static/src/js/gantt_renderer.js"/>-->
+<!--            <script type="text/javascript" src="/tetrace/static/src/js/gantt_row.js"/>-->
         </xpath>
     </template>
 </odoo>

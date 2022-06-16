@@ -6,8 +6,7 @@
             <field name="model">stock.product.assignation</field>
             <field name="arch" type="xml">
                 <tree editable="bottom" create="false" decoration-muted="assignation_return == True">
-                    <field name="code" attrs="{'readonly': ['|', ('code_readonly', '=', True), ('assignation_return', '=', True)]}"
-                           required="True"/>
+                    <field name="code" readonly="1" force_save="1"/>
                     <field name="code_readonly" invisible="1"/>
                     <field name="product_id" readonly="1"/>
                     <field name="employee_id" required="True"

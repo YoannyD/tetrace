@@ -22,6 +22,7 @@ class StockMoveLine(models.Model):
                     values['request_id'] = move_line.picking_id.assignation_request_id.id
                     values['move_line_id'] = move_line.id
                     values['product_id'] = move_line.product_id.id
+                    values['assignation_return'] = False
                     if move_line.picking_id.assignation_request_id.task_id:
                         values['task_id'] = move_line.picking_id.assignation_request_id.task_id.id
                     if move_line.tracking in ['serial', 'lot']:

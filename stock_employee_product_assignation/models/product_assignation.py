@@ -22,6 +22,12 @@ class ProductAssignationRequest(models.Model):
     observations = fields.Text('Observations')
     task_id = fields.Many2one('project.task', 'Task', compute='_compute_task')
 
+    @api.model
+    def default_get(self, fields):
+        vals = super(ProductAssignationRequest, self).default_get(fields)
+        vals['state'] = 'draft'
+        return vals
+
     def _compute_task(self):
         task = False
         if self.project_id:
@@ -68,9 +74,6 @@ class ProductAssignationRequest(models.Model):
                 'state': 'approved',
                 'color': 10,
                 'picking_id': picking.id,
-                'assignation_ids': [(0, 0, {
-                    'move_line_id': line.id
-                }) for line in picking.move_line_ids]
             })
             record.create_assignation_activity()
 
@@ -149,13 +152,19 @@ class ProductAssignation(models.Model):
     code = fields.Char('Serial Number')
     task_id = fields.Many2one('project.task', 'Task')
     code_readonly = fields.Boolean('Code Readonly', default=False)
-    assignation_return = fields.Boolean('Assignation return', default=True)
+    assignation_return = fields.Boolean('Assignation return', default=False)
     return_move_line_id = fields.Many2one('stock.move.line', string='Return Stock move line')
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        if self.employee_id:
+            self.start_date = fields.Date.context_today(self)
 
     def _prepare_picking(self):
         self.ensure_one()
+        location_origin = self.env.ref('stock_employee_product_assignation.stock_location_employee_assignation')
         if self.product_id.can_be_returned:
-            location_destiny = self.env.ref('stock_employee_product_assignation.stock_location_employee_assignation')
+            location_destiny = self.move_line_id.location_id
         else:
             location_destiny = self.product_id.property_stock_inventory
         picking_type = self.env['stock.picking.type'].search([
@@ -164,8 +173,8 @@ class ProductAssignation(models.Model):
         ], limit=1)
         return {
             'picking_type_id': picking_type.id or None,
-            'location_dest_id': picking_type.default_location_src_id.id or None,
-            'location_id': location_destiny.id or None,
+            'location_dest_id': location_destiny.id or None,
+            'location_id': location_origin.id or None,
             'scheduled_date': fields.Date.context_today(self),
             'origin': self.request_id.name,
             'assignation_request_id': self.request_id.id,
@@ -177,14 +186,23 @@ class ProductAssignation(models.Model):
             })]
         }
 
+    def cron_return_out_date_assignation(self):
+        out_date_assignations = self.env['stock.product.assignation'].search([
+            ('assignation_return', '=', False),
+            ('end_date', '!=', False),
+            ('end_date', '<=', fields.Date.today())
+        ])
+        out_date_assignations.action_return()
+
     def action_return(self):
         for record in self:
             picking = self.env['stock.picking'].create(record._prepare_picking())
             picking.action_confirm()
             picking.action_assign()
             for line in picking.move_ids_without_package.move_line_ids:
-                line.quantity_done = line.product_uom_qty
+                line.qty_done = 1
                 line.lot_id = record.move_line_id.lot_id.id or None
                 record.return_move_line_id = line.id
             picking.button_validate()
-            record.assignation_return = False
+            record.assignation_return = True
+            record.end_date = fields.Date.context_today(self)

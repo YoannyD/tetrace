@@ -15,9 +15,9 @@ class imputacionhoras(models.Model):
     
     project_id = fields.Many2one('project.project', 'Project')
     concepto_id = fields.Many2one('tetrace.imputacion_proyecto_nombre', string="Concepto")
-    unidades = fields.Integer(string="Unidades")
-    precio = fields.Integer(string="importe")
-    total = fields.Integer(string="total",compute="_compute_total_linea")
+    unidades = fields.Float(string="Unidades")
+    precio = fields.Float(string="importe")
+    total = fields.Float(string="total",compute="_compute_total_linea")
     
     @api.depends('unidades','precio')
     def _compute_total_linea(self):
