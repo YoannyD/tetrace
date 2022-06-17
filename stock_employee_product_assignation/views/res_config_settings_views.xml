@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="grp_stock_report_res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">grp.stock.report.res.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <h2>Asignación de equipos</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-12 o_setting_box" id="legal_dispositions">
+                        <div class="o_setting_right_pane" style="width: 100% !important;">
+                            <label for="legal_dispositions"/>
+                            <div class="text-muted">
+                                Disposiciones legales a incluir en el reporte
+                            </div>
+                            <field name="legal_dispositions" style="width: 100% !important;"/>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-6 o_setting_box" id="warehouse_responsible_id">
+                        <div class="o_setting_right_pane" style="width: 100% !important;">
+                            <label for="warehouse_responsible_id"/>
+                            <div class="text-muted">
+                                Pie de firma para reporte
+                            </div>
+                            <field name="warehouse_responsible_id" style="width: 100% !important;"/>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-6 o_setting_box" id="warehouse_sign">
+                        <div class="o_setting_right_pane" style="width: 100% !important;">
+                            <label for="warehouse_sign"/>
+                            <div class="text-muted">
+                                Firma responsable del almacén
+                            </div>
+                            <div>
+                                <field name="warehouse_sign" widget="FieldBinary"
+                                       filename="warehouse_sign_filename" class="oe_inline"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

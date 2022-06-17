@@ -12,6 +12,87 @@ msgstr ""
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-left: 5px;\">Fecha de entrega de EPIS</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-left: 5px;\">Proyecto</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-left: 5px;\">Puesto de trabajo</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-left: 5px;\">Trabajador</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">FIRMA DEL TRABAJADOR</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">MARCA</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">MODELO</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">Nº DE SERIE</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">PRODUCTO</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<span style=\"margin-top: 5px; margin-bottom: 5px;\">UD</span>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<strong>EQUIPOS DE PROTECCIÓN INDIVIDUAL Y COLECTIVA</strong>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<strong>El trabajador/a acepta el compromiso para el cumplimiento de las siguientes normas:</strong>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<strong>El trabajador/a declara:</strong>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "<strong>La empresa declara:</strong>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.product_assignation_layout
+msgid "<strong>pág.: <span class=\"page\"/></strong>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
@@ -28,6 +109,11 @@ msgstr ""
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation
 msgid "Asignaciones de equipos"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.grp_stock_report_res_config_settings_view_form
+msgid "Asignación de equipos"
 msgstr ""
 
 #. module: stock_employee_product_assignation
@@ -71,6 +157,11 @@ msgid "Assignations"
 msgstr "Asignaciones"
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "CIRO LARRAÑETA"
+msgstr ""
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_product__can_be_returned
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_product_template__can_be_returned
 msgid "Can be returned"
@@ -87,10 +178,27 @@ msgid "Color Index"
 msgstr "Índice de Colores"
 
 #. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__company_id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__company_id
 msgid "Company"
 msgstr "Compañía"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_res_config_settings
+msgid "Config Settings"
+msgstr "Opciones de Configuración"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Consultar cualquier duda relacionada con la correcta utilización el equipo de protección individual\n"
+"                                    al Recurso Preventivo en obra."
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__count_to_assign
@@ -122,10 +230,26 @@ msgid "Devolver asignaciones"
 msgstr ""
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "Devolver los EPIs en condiciones óptimas y limpios según la política “Uso de EPIs” entregada."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_report_stock_employee_product_assignation_pa_report__display_name
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__display_name
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__display_name
 msgid "Display Name"
 msgstr "Nombre a mostrar"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.grp_stock_report_res_config_settings_view_form
+msgid "Disposiciones legales a incluir en el reporte"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.product_assignation_layout
+msgid "DocQ.14.01 Registro de Entrega de EPIs"
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields.selection,name:stock_employee_product_assignation.selection__stock_product_assignation_request__state__draft
@@ -139,6 +263,13 @@ msgstr "Borrador"
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
 msgid "Employee"
 msgstr "Empleado"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"En caso de pérdida o extravió de herramienta o EPI, será exclusivamente responsabilidad del técnico al\n"
+"                                    que se le ha asignado dicho equipo según la política “Uso de EPIs” entregada."
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__end_date
@@ -167,12 +298,51 @@ msgid "Equipments assignation request"
 msgstr "Solicitudes de asignación de equipos"
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Haber formado debidamente por el fabricante PETZL a la persona responsable de realizar las\n"
+"                                    revisiones de los Equipos de protección individual."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Haber llevado todos los Equipos de Protección Individual a realizar las inspecciones de\n"
+"                                    mantenimiento que correspondan según normativa a centros homologados."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "Haber recibido de la empresa"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "Haber revisado el listado de Equipos de Protección Individual contra caídas en altura."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_report_stock_employee_product_assignation_pa_report__id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__id
 msgid "ID"
 msgstr ""
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.product_assignation_layout
+msgid ""
+"ISO 9001:2015<br/>\n"
+"                            ISO 14001:2015<br/>\n"
+"                            ISO 45001:2018<br/>"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "Informar en caso de pérdida, robo o deterioro al Responsable de Revisión de EPIs."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_report_stock_employee_product_assignation_pa_report____last_update
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation____last_update
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request____last_update
 msgid "Last Modified on"
@@ -189,6 +359,17 @@ msgstr "Última actualización por"
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__write_date
 msgid "Last Updated on"
 msgstr "Ultima actualización en"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_company__legal_dispositions
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_config_settings__legal_dispositions
+msgid "Legal dispositions"
+msgstr "Disposiciones legales"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.product_assignation_layout
+msgid "Logo"
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: code:addons/stock_employee_product_assignation/models/product_assignation.py:0
@@ -226,6 +407,11 @@ msgid "Picking"
 msgstr "Transferencia"
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.grp_stock_report_res_config_settings_view_form
+msgid "Pie de firma para reporte"
+msgstr ""
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__product_id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__product_id
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_search
@@ -258,6 +444,22 @@ msgid "Quantity"
 msgstr "Cantidad"
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "REALIZADO POR:"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "REGISTRO DE ENTREGA Y CONFORMIDAD DE REVISIÓN DEL EQUIPO DE PROTECCIÓN INDIVIDUAL"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.actions.report,name:stock_employee_product_assignation.action_product_assignation_report
+#: model:ir.actions.report,print_report_name:stock_employee_product_assignation.action_product_assignation_report
+msgid "Registro de Entrega de EPIs"
+msgstr ""
+
+#. module: stock_employee_product_assignation
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
 msgid "Request"
 msgstr "Solicitud"
@@ -273,9 +475,30 @@ msgid "Return Stock move line"
 msgstr "Devolver movimiento de producto"
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Revisar los riesgos de manera continua para adecuar los equipos de protección individual\n"
+"                                    según se requiera."
+msgstr ""
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__code
 msgid "Serial Number"
 msgstr "Número de serie"
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_company__warehouse_sign
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_config_settings__warehouse_sign
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "Sign"
+msgstr "Frima"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Solicitar al Responsable de Revisión de EPIs cualquier equipo de protección individual que considere\n"
+"                                    necesario en función de los trabajos a realizar."
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__start_date
@@ -311,6 +534,60 @@ msgid "Task"
 msgstr "Tarea"
 
 #. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/models/res_config_settings.py:0
+#, python-format
+msgid "The file extension is not allowed, only accept [jpg, jpeg, png]."
+msgstr "La extensión del archivo no esta permitida, solamente se aceptan [jpg, jpeg, png]."
+
+#. module: stock_employee_product_assignation
 #: model:ir.model,name:stock_employee_product_assignation.model_stock_picking
 msgid "Transfer"
 msgstr "Albarán"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid ""
+"Utilizar mantener los equipos de protección individual suministrados según las recomendaciones del\n"
+"                                    fabricante, y siguiendo las instrucciones de la formación e información "
+"recibida sobre su uso y\n"
+"                                    mantenimiento y obligatoriedad de uso en función de la zona de trabajo."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_config_settings__warehouse_sign_filename
+msgid "Warehouse Sign Filename"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_company__warehouse_responsible_id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_res_config_settings__warehouse_responsible_id
+msgid "Warehouse responsible"
+msgstr "Responsable del almacén"
+
+#. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/reports/stock_eployee_product_assignation_report.py:0
+#, python-format
+msgid "You must select assignations for the same employee!"
+msgstr "Debe seleccionar asignaciones del mismo empleado!"
+
+#. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/reports/stock_eployee_product_assignation_report.py:0
+#, python-format
+msgid "You must select assignations for the same project!"
+msgstr "Debe seleccionar asignaciones del mismo proyecto!"
+
+#. module: stock_employee_product_assignation
+#: code:addons/stock_employee_product_assignation/reports/stock_eployee_product_assignation_report.py:0
+#, python-format
+msgid "You must select non returned assignations!"
+msgstr "Debe seleccionar asignaciones que no estén devueltas!"
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.pa_report
+msgid "los equipos de protección individual detallados en el presente documentos."
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model:ir.model,name:stock_employee_product_assignation.model_report_stock_employee_product_assignation_pa_report
+msgid "report.stock_employee_product_assignation.pa_report"
+msgstr ""

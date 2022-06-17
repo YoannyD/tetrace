@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="paper_format_product_assignation_report" model="report.paperformat">
+            <field name="name">Paper format product assignation report</field>
+            <field name="default" eval="True"/>
+            <field name="format">Letter</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">39</field>
+        </record>
+
+        <report id="action_product_assignation_report"
+                model="stock.product.assignation"
+                string="Registro de Entrega de EPIs"
+                report_type="qweb-pdf"
+                name="stock_employee_product_assignation.pa_report"
+                file="stock_employee_product_assignation.pa_report"
+                paperformat="stock_employee_product_assignation.paper_format_product_assignation_report"
+                menu="True"/>
+
+        <template id="product_assignation_layout">
+            <t t-if="not company">
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="docs[0] and 'company_id' in docs[0]">
+                    <t t-set="company" t-value="docs[0].company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <div class="header">
+                <div class="row">
+                    <div class="col-7" style="margin-top:5px;"/>
+                    <div class="col-5 text-right" style="margin-top:5px;">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 60px;" alt="Logo"/>
+                        <img t-else="" src="/stock_employee_product_assignation/static/src/img/logo.jpg"
+                             style="max-height: 50px;" alt="Logo"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-9 text-right" style="margin-top:5px; background-color: #efefef; border: 1px solid white;">
+                        <p style="margin: 5px;">
+                            DocQ.14.01 Registro de Entrega de EPIs
+                        </p>
+                    </div>
+                    <div class="col-3 text-right" style="margin-top:5px; background-color: #efefef; border: 1px solid white;">
+                        <p style="margin: 5px;">
+                            ISO 9001:2015<br/>
+                            ISO 14001:2015<br/>
+                            ISO 45001:2018<br/>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article o_report_layout_standard"  t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <t t-call="web.address_layout"/>
+                <t t-raw="0"/>
+            </div>
+
+            <div class="footer o_standard_footer">
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <strong>pág.: <span class="page"/></strong>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="pa_report" name="Product assignation template">
+            <t t-call="web.html_container">
+                <t t-call="stock_employee_product_assignation.product_assignation_layout">
+                    <div class="page">
+                        <div class="text-center">
+                            <h3>REGISTRO DE ENTREGA Y CONFORMIDAD DE REVISIÓN DEL EQUIPO DE PROTECCIÓN INDIVIDUAL</h3>
+                        </div>
+
+                        <t t-set="company" t-value="docs[0].company_id"/>
+                        <p class="text-justify">
+                            <span t-esc="company.legal_dispositions"/>
+                        </p>
+
+                        <p class="text-justify">
+                            <strong>La empresa declara:</strong>
+                            <ul>
+                                <li class="text-justify">
+                                    Haber revisado el listado de Equipos de Protección Individual contra caídas en altura.
+                                </li>
+                                <li class="text-justify">
+                                    Haber formado debidamente por el fabricante PETZL a la persona responsable de realizar las
+                                    revisiones de los Equipos de protección individual.
+                                </li>
+                                <li class="text-justify">
+                                    Haber llevado todos los Equipos de Protección Individual a realizar las inspecciones de
+                                    mantenimiento que correspondan según normativa a centros homologados.
+                                </li>
+                                <li class="text-justify">
+                                    Revisar los riesgos de manera continua para adecuar los equipos de protección individual
+                                    según se requiera.
+                                </li>
+                            </ul>
+                        </p>
+
+                        <p class="text-justify">
+                            <strong>El trabajador/a declara:</strong>
+                            <ul>
+                                <li class="text-justify">
+                                    Haber recibido de la empresa <b><span t-esc="company.name"/></b>
+                                    los equipos de protección individual detallados en el presente documentos.
+                                </li>
+                            </ul>
+                        </p>
+
+                        <p class="text-justify">
+                            <strong>El trabajador/a acepta el compromiso para el cumplimiento de las siguientes normas:</strong>
+                            <ul>
+                                <li class="text-justify">
+                                    Utilizar mantener los equipos de protección individual suministrados según las recomendaciones del
+                                    fabricante, y siguiendo las instrucciones de la formación e información recibida sobre su uso y
+                                    mantenimiento y obligatoriedad de uso en función de la zona de trabajo.
+                                </li>
+                                <li class="text-justify">
+                                    Consultar cualquier duda relacionada con la correcta utilización el equipo de protección individual
+                                    al Recurso Preventivo en obra.
+                                </li>
+                                <li class="text-justify">
+                                    Informar en caso de pérdida, robo o deterioro al Responsable de Revisión de EPIs.
+                                </li>
+                                <li class="text-justify">
+                                    Solicitar al Responsable de Revisión de EPIs cualquier equipo de protección individual que considere
+                                    necesario en función de los trabajos a realizar.
+                                </li>
+                                <li>
+                                    Devolver los EPIs en condiciones óptimas y limpios según la política “Uso de EPIs” entregada.
+                                </li>
+                                <li class="text-justify">
+                                    En caso de pérdida o extravió de herramienta o EPI, será exclusivamente responsabilidad del técnico al
+                                    que se le ha asignado dicho equipo según la política “Uso de EPIs” entregada.
+                                </li>
+                            </ul>
+                        </p>
+
+                        <t t-set="employee" t-value="docs[0].employee_id"/>
+                        <table width="90%">
+                            <tr>
+                                <td width="35%" class="text-left" style="border: 1px solid black;">
+                                    <span style="margin-left: 5px;">Trabajador</span>
+                                </td>
+                                <td width="65%" class="text-left" style="border: 1px solid black;">
+                                    <strong>
+                                        <span t-if="employee" style="margin-left: 5px;"
+                                          t-esc="employee.name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="35%" class="text-left" style="border: 1px solid black;">
+                                    <span style="margin-left: 5px;">Fecha de entrega de EPIS</span>
+                                </td>
+                                <td width="65%" class="text-left" style="border: 1px solid black;">
+                                    <strong>
+                                        <span style="margin-left: 5px;" t-esc="datetime.datetime.today().strftime('%d/%m/%Y')"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="35%" class="text-left" style="border: 1px solid black;">
+                                    <span style="margin-left: 5px;">Puesto de trabajo</span>
+                                </td>
+                                <td width="65%" class="text-left" style="border: 1px solid black;">
+                                    <strong>
+                                        <span t-if="employee and employee.job_id"
+                                              style="margin-left: 5px;" t-esc="employee.job_id.name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="35%" class="text-left" style="border: 1px solid black;">
+                                    <span style="margin-left: 5px;">Proyecto</span>
+                                </td>
+                                <td width="65%" class="text-left" style="border: 1px solid black;">
+                                    <strong>
+                                        <span t-if="employee and employee.project_asignado_id"
+                                              style="margin-left: 5px;" t-esc="employee.project_asignado_id.name"/>
+                                        <span t-else="">
+                                            <t t-set="request" t-value="docs[0].request_id"/>
+                                            <span t-if="request and request.project_id"
+                                                  style="margin-left: 5px;" t-esc="request.project_id.name_get()[0][1]"/>
+                                        </span>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <br/>
+
+                        <h4 style="color: #5b277d;">
+                            <strong>EQUIPOS DE PROTECCIÓN INDIVIDUAL Y COLECTIVA</strong>
+                        </h4>
+
+                        <table width="100%">
+                            <tr style="background-color: #b2a1c7; color: #ffffff;">
+                                <th width="25%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">PRODUCTO</span>
+                                </th>
+                                <th width="15%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">MARCA</span>
+                                </th>
+                                <th width="15%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">MODELO</span>
+                                </th>
+                                <th width="15%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">Nº DE SERIE</span>
+                                </th>
+                                <th width="10%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">UD</span>
+                                </th>
+                                <th width="20%" class="text-center" style="border: 1px double black;">
+                                    <span style="margin-top: 5px; margin-bottom: 5px;">FIRMA DEL TRABAJADOR</span>
+                                </th>
+                            </tr>
+                            <t t-foreach="docs" t-as="o">
+                                <tr>
+                                    <td class="text-left" style="border: 1px double;">
+                                        <span t-esc="o.product_id.name"
+                                              style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                    </td>
+                                    <td class="text-left" style="border: 1px double;">
+                                        <span t-if="o.product_id.manufacturer"
+                                              t-esc="o.product_id.manufacturer.name"
+                                              style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                        <span t-else="">
+                                            <span t-if="o.product_id.product_tmpl_id.manufacturer"
+                                                  t-esc="o.product_id.product_tmpl_id.manufacturer.name"
+                                                  style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-left" style="border: 1px double;">
+                                        <span t-if="o.product_id.manufacturer_pname" t-esc="o.product_id.manufacturer_pname"
+                                              style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                        <span t-else="">
+                                            <span t-esc="o.product_id.product_tmpl_id.manufacturer_pname"
+                                                  style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                        </span>
+                                    </td>
+                                    <td class="text-left" style="border: 1px double;">
+                                        <span t-esc="o.code"
+                                              style="margin-right: 3px; margin-left: 3px; margin-top: 3px; margin-bottom: 3px;"/>
+                                    </td>
+                                    <td class="text-center" style="border: 1px double;">
+                                        <span style="margin-top: 3px; margin-bottom: 3px;">
+                                            1
+                                        </span>
+                                    </td>
+                                    <td class="text-left" style="border: 1px double;"/>
+                                </tr>
+                            </t>
+                        </table>
+
+                        <br/>
+                        <br/>
+
+                        <table width="100%">
+                            <tr>
+                                <td width="5%" class="text-left"/>
+                                <td width="30%" class="text-left">
+                                    <p>REALIZADO POR: </p>
+                                    <img t-if="company.warehouse_sign" t-att-src="image_data_uri(company.warehouse_sign)"
+                                         style="max-height: 100px;" alt="Sign"/>
+                                    <p><span t-if="company.warehouse_responsible_id" t-esc="company.warehouse_responsible_id.name"/></p>
+                                </td>
+                                <td width="30%" class="text-left"/>
+                                <td width="30%" class="text-left">
+                                    <p>APROBADO POR: </p>
+                                    <img src="/stock_employee_product_assignation/static/src/img/tetrace_sign.png"
+                                         style="max-height: 100px;" alt="Sign"/>
+                                    <p>CIRO LARRAÑETA</p>
+                                </td>
+                                <td width="5%" class="text-left"/>
+                            </tr>
+                        </table>
+
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

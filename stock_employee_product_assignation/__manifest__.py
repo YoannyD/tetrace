@@ -27,16 +27,17 @@
         'data/ir_cron_data.xml',
 
         # Report
-        # 'report/.xml',
+        'reports/stock_employee_product_assignation_report.xml',
 
         # Views
         'views/product_assignation_views.xml',
         'views/project_views.xml',
         'views/product_views.xml',
         'views/hr_employee_views.xml',
+        'views/res_config_settings_views.xml',
 
         # Wizard
-        # 'wizard/.xml',
+        # 'wizards/.xml',
     ],
     'qweb': [
     ],
