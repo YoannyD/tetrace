@@ -21,6 +21,12 @@ class ProductAssignationRequest(models.Model):
     color = fields.Integer(string='Color Index', default=1)
     observations = fields.Text('Observations')
     task_id = fields.Many2one('project.task', 'Task', compute='_compute_task')
+    count_to_assign = fields.Integer('Count to assign', compute='_compute_count_to_assign')
+
+    def _compute_count_to_assign(self):
+        for obj in self:
+            count = obj.assignation_ids.filtered(lambda a: not a.employee_id)
+            obj.count_to_assign = len(count)
 
     @api.model
     def default_get(self, fields):
@@ -146,6 +152,7 @@ class ProductAssignation(models.Model):
     end_date = fields.Date(string='End date')
     move_line_id = fields.Many2one('stock.move.line', string='Stock move line')
     employee_id = fields.Many2one('hr.employee', string='Employee')
+    employee_ids = fields.Many2many('hr.employee', 'Employees', compute='_compute_employees')
     product_id = fields.Many2one('product.product', related='move_line_id.product_id', store=True)
     observations = fields.Text(string='Observations')
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
@@ -154,6 +161,14 @@ class ProductAssignation(models.Model):
     code_readonly = fields.Boolean('Code Readonly', default=False)
     assignation_return = fields.Boolean('Assignation return', default=False)
     return_move_line_id = fields.Many2one('stock.move.line', string='Return Stock move line')
+    project_id = fields.Many2one('project.project', related='request_id.project_id', store=True)
+
+    def _compute_employees(self):
+        if self.project_id:
+            employee_ids = self.project_id.mapped('tecnico_calendario_ids').mapped('employee_id').ids
+        else:
+            employee_ids = self.env['hr.employee'].search([]).ids
+        self.employee_ids = [(6, 0, employee_ids)]
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):

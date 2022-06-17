@@ -27,6 +27,6 @@ class ProjectTask(models.Model):
             'create': 0,
             'delete': 0
         })
-        action['domain'] = [('id', 'in', self.assignation_ids.ids), ('active', 'in' [False, True])]
+        action['domain'] = [('id', 'in', self.assignation_ids.ids)]
         action['context'] = ctx
         return action

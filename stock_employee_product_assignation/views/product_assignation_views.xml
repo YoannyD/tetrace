@@ -9,13 +9,16 @@
                     <field name="code" readonly="1" force_save="1"/>
                     <field name="code_readonly" invisible="1"/>
                     <field name="product_id" readonly="1"/>
-                    <field name="employee_id" required="True"
-                           attrs="{'readonly': [('assignation_return', '=', True)]}"/>
+                    <field name="employee_ids" invisible="1"/>
+                    <field name="employee_id" required="True" options="{'no_create': True, 'no_create_edit':True}"
+                           attrs="{'readonly': [('assignation_return', '=', True)]}"
+                           domain="[('id','in',employee_ids)]"/>
                     <field name="request_id" readonly="1" optional="hide"/>
                     <field name="move_line_id" readonly="1" optional="hide"/>
-                    <field name="start_date" readonly="1"/>
+                    <field name="start_date" readonly="1" force_save="1"/>
                     <field name="assignation_return" readonly="1" optional="hide"/>
                     <field name="return_move_line_id" readonly="1" optional="hide"/>
+                    <field name="project_id" readonly="1" optional="hide"/>
                     <field name="end_date" attrs="{'readonly': [('assignation_return', '=', True)]}"/>
                     <field name="observations" attrs="{'readonly': [('assignation_return', '=', True)]}"/>
                     <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
@@ -40,9 +43,11 @@
                     <filter name="group_request" string="Request" context="{'group_by': 'request_id'}"/>
                     <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
                     <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}"/>
                     <separator/>
                     <filter name="group_start_date" string="Start date" context="{'group_by': 'start_date'}"/>
                     <filter name="group_end_date" string="End date" context="{'group_by': 'end_date'}"/>
+                    <filter string="No Assign" name="no_assign" domain="[('employee_id', '=', False)]"/>
                 </search>
             </field>
         </record>
@@ -52,12 +57,91 @@
             <field name="res_model">stock.product.assignation</field>
             <field name="view_mode">tree,form</field>
             <field name="search_view_id" ref="view_product_assignation_search"/>
-            <field name="context">{'search_default_group_request': 1}</field>
+            <field name="context">{'search_default_group_project': 1, 'search_default_no_assign': 1}</field>
         </record>
 
         <menuitem id="menu_product_assignation"
                   action="action_product_assignation"
                   parent="stock.menu_stock_inventory_control"
                   sequence="100"/>
+
+        <record id="view_product_assignation_request_tree" model="ir.ui.view">
+            <field name="name">view_product_assignation_request_tree</field>
+            <field name="model">stock.product.assignation.request</field>
+            <field name="arch" type="xml">
+                <tree decoration-warning="state == 'draft'"
+                      decoration-success="state == 'approved'">
+                    <field name="name" readonly="1" force_save="1"/>
+                    <field name="date"/>
+                    <field name="product_id"/>
+                    <field name="quantity"/>
+                    <field name="state"/>
+                    <field name="count_to_assign"/>
+                    <field name="company_id" optional="hide"/>
+                    <field name="picking_id" optional="hide"/>
+                    <button class="text-success" icon="fa-check" type="object"
+                            name="action_approved" attrs="{'invisible': [('state','=','approved')]}"/>
+                    <button icon="fa-gears" type="object"
+                            name="action_view_picking" string="Picking"
+                            attrs="{'invisible': [('state','=','draft')]}"/>
+                    <button icon="fa-bars" type="object"
+                            name="action_open_assignations" string="Assignations"
+                    />
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_product_assignation_request_form" model="ir.ui.view">
+            <field name="name">cash.on.delivery.applicability.rule.form</field>
+            <field name="model">stock.product.assignation.request</field>
+            <field name="arch" type="xml">
+                <form string="Assignation">
+                    <sheet>
+                        <group col="12">
+                            <group colspan="6">
+                                <field name="name" readonly="True" force_save="1"/>
+                                <field name="date"/>
+                            </group>
+                            <group colspan="6">
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="observations"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_product_assignation_request_search" model="ir.ui.view">
+            <field name="name">view_product_assignation_request_search</field>
+            <field name="model">stock.product.assignation.request</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="project_id"/>
+                    <field name="product_id"/>
+
+                    <filter name="group_product" string="Product" context="{'group_by': 'product_id'}"/>
+                    <filter name="group_project" string="Project" context="{'group_by': 'project_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_product_assignation_request" model="ir.actions.act_window">
+            <field name="name">Equipments assignation request</field>
+            <field name="res_model">stock.product.assignation.request</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_product_assignation_request_search"/>
+            <field name="context">{'search_default_group_project': 1}</field>
+        </record>
+
+        <menuitem id="menu_product_assignation_request"
+                  action="action_product_assignation_request"
+                  parent="stock.menu_stock_inventory_control"
+                  sequence="90"/>
     </data>
 </odoo>
