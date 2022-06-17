@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 13.0+e-20211026\n"
+"Project-Id-Version: Odoo Server 13.0+e-20220228\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-14 12:22+0000\n"
-"PO-Revision-Date: 2022-06-14 08:32-0400\n"
+"POT-Creation-Date: 2022-06-16 21:40+0000\n"
+"PO-Revision-Date: 2022-06-16 21:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: es\n"
-"X-Generator: Poedit 2.3\n"
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields.selection,name:stock_employee_product_assignation.selection__stock_product_assignation_request__state__approved
@@ -25,14 +23,15 @@ msgstr "Aprobado"
 #. module: stock_employee_product_assignation
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_task_form2
 msgid "Asignaciones"
-msgstr "Asignaciones"
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation
 msgid "Asignaciones de equipos"
-msgstr "Asignaciones de equipos"
+msgstr ""
 
 #. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_form
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
 msgid "Assignation"
 msgstr "Asignación"
@@ -66,6 +65,7 @@ msgstr "Devolver"
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation_ids
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__assignation_ids
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_tree
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
 msgid "Assignations"
 msgstr "Asignaciones"
@@ -93,6 +93,11 @@ msgid "Company"
 msgstr "Compañía"
 
 #. module: stock_employee_product_assignation
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__count_to_assign
+msgid "Count to assign"
+msgstr "Cantidad por asignar"
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__create_uid
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__create_uid
 msgid "Created by"
@@ -110,6 +115,13 @@ msgid "Date"
 msgstr "Fecha"
 
 #. module: stock_employee_product_assignation
+#: model:ir.actions.server,name:stock_employee_product_assignation.cron_return_out_date_assignation_ir_actions_server
+#: model:ir.cron,cron_name:stock_employee_product_assignation.cron_return_out_date_assignation
+#: model:ir.cron,name:stock_employee_product_assignation.cron_return_out_date_assignation
+msgid "Devolver asignaciones"
+msgstr ""
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__display_name
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__display_name
 msgid "Display Name"
@@ -123,6 +135,7 @@ msgstr "Borrador"
 #. module: stock_employee_product_assignation
 #: model:ir.model,name:stock_employee_product_assignation.model_hr_employee
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__employee_id
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__employee_ids
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
 msgid "Employee"
 msgstr "Empleado"
@@ -148,10 +161,16 @@ msgid "Equipments assignation"
 msgstr "Asignación de equipos"
 
 #. module: stock_employee_product_assignation
+#: model:ir.actions.act_window,name:stock_employee_product_assignation.action_product_assignation_request
+#: model:ir.ui.menu,name:stock_employee_product_assignation.menu_product_assignation_request
+msgid "Equipments assignation request"
+msgstr "Solicitudes de asignación de equipos"
+
+#. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation____last_update
@@ -175,7 +194,12 @@ msgstr "Ultima actualización en"
 #: code:addons/stock_employee_product_assignation/models/product_assignation.py:0
 #, python-format
 msgid "Necesidad de equipo para el proyecto %s"
-msgstr "Necesidad de equipo para el proyecto %s"
+msgstr ""
+
+#. module: stock_employee_product_assignation
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
+msgid "No Assign"
+msgstr "No asignadas"
 
 #. module: stock_employee_product_assignation
 #: code:addons/stock_employee_product_assignation/models/product_assignation.py:0
@@ -186,7 +210,7 @@ msgstr "No puede eliminar una solicitud aprobada."
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_project_task__assignation_count
 msgid "Nª Asignaciones"
-msgstr "Nª Asignaciones"
+msgstr ""
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__observations
@@ -196,6 +220,7 @@ msgstr "Observaciones"
 
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__picking_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_tree
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_project_product_assignation_form_inherit
 msgid "Picking"
 msgstr "Transferencia"
@@ -203,6 +228,7 @@ msgstr "Transferencia"
 #. module: stock_employee_product_assignation
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__product_id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__product_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_search
 #: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
 msgid "Product"
 msgstr "Producto"
@@ -219,7 +245,10 @@ msgstr "Plantilla de producto"
 
 #. module: stock_employee_product_assignation
 #: model:ir.model,name:stock_employee_product_assignation.model_project_project
+#: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation__project_id
 #: model:ir.model.fields,field_description:stock_employee_product_assignation.field_stock_product_assignation_request__project_id
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_request_search
+#: model_terms:ir.ui.view,arch_db:stock_employee_product_assignation.view_product_assignation_search
 msgid "Project"
 msgstr "Proyecto"
 
@@ -284,4 +313,4 @@ msgstr "Tarea"
 #. module: stock_employee_product_assignation
 #: model:ir.model,name:stock_employee_product_assignation.model_stock_picking
 msgid "Transfer"
-msgstr "Transferencia"
+msgstr "Albarán"
