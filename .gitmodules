@@ -75,6 +75,7 @@
 [submodule "OCA/product-attribute"]
 	path = OCA/product-attribute
 	url = git@github.com:OCA/product-attribute.git
+        branch = 13.0
 
 [submodule "OCA/account-financial-reporting"]
 	path = OCA/account-financial-reporting
